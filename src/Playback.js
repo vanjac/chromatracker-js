@@ -153,6 +153,8 @@ function processCellFirst(playback, channel, cell) {
     let loParam = cell.param & 0xf;
     if (cell.pitch >= 0)
         channel.pitch = cell.pitch;
+    if (cell.effect == 0x9 && cell.param)
+        channel.memOff = cell.param; // store before playing note
     let noteDelay = (cell.effect == 0xE && hiParam == 0xD && loParam != 0);
     if (!noteDelay)
         processCellNote(playback, channel, cell);
@@ -300,7 +302,7 @@ function processCellNote(playback, channel, cell) {
         channel.volume = sample.volume;
     }
     if (cell.pitch >= 0 && cell.effect != 0x3) {
-        let offset = (cell.effect == 0x9) ? (cell.param * 256 / baseRate) : 0;
+        let offset = (cell.effect == 0x9) ? (channel.memOff * 256 / baseRate) : 0;
         playNote(playback, channel, offset);
     }
 }
