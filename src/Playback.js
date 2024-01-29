@@ -4,7 +4,7 @@ const masterGain = 0.5;
 
 const baseRate = 16574.27; // rate of C-3
 const basePeriod = periodTable[8][3*12];
-const resampleFactor = 2;
+const resampleFactor = 3;
 
 const minPeriod = 1;
 
