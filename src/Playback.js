@@ -275,7 +275,7 @@ function processCellRest(playback, channel, cell, tick) {
 function processCellAll(playback, channel, cell) {
     let volume = channel.volume;
     if (cell.effect == 0x7) { // tremolo
-        volume += Math.sin(channel.oscTick * 128 / Math.PI) * channel.memTremDepth;
+        volume += calcOscillator(channel.oscTick) * channel.memTremDepth;
         channel.oscTick += channel.memTremSpeed;
     }
     channel.gain.gain.setValueAtTime(masterGain * volume / maxVolume, playback.time);
@@ -283,7 +283,7 @@ function processCellAll(playback, channel, cell) {
     if (channel.source) {
         let period = channel.period;
         if (cell.effect == 0x4 || cell.effect == 0x6) { // vibrato
-            period += Math.sin(channel.oscTick * 128 / Math.PI) * channel.memVibDepth;
+            period += calcOscillator(channel.oscTick) * channel.memVibDepth;
             channel.oscTick += channel.memVibSpeed;
         }
         channel.source.playbackRate.setValueAtTime(basePeriod / channel.period, playback.time);
@@ -331,4 +331,12 @@ function playNote(playback, channel, offset) {
 
     channel.source.start(playback.time, offset);
     channel.period = periodTable[sample.finetune + 8][channel.pitch];
+    channel.oscTick = 0; // retrigger
+}
+
+/**
+ * @param {number} tick
+ */
+function calcOscillator(tick) {
+    return Math.sin(tick / 32 / Math.PI);
 }
