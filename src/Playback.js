@@ -75,8 +75,8 @@ function playModule(mod, startPos) {
     playback.time = playback.ctx.currentTime;
 
     let process = () => {
-      while (playback.time < playback.ctx.currentTime + 2)
-        processRow(playback);
+        while (playback.time < playback.ctx.currentTime + 2)
+            processRow(playback);
     };
     process();
     setInterval(process, 1000);
@@ -112,7 +112,7 @@ function processRow(playback) {
                 processCellFirst(playback, playback.channels[c], cell);
             else
                 processCellRest(playback, playback.channels[c], cell, tick);
-            processCellAll(playback, playback.channels[c], cell);
+            processCellAll(playback, playback.channels[c], cell, tick);
         }
         playback.time += (60 / playback.tempo / 24);
     }
@@ -223,14 +223,6 @@ function processCellRest(playback, channel, cell, tick) {
     let loParam = cell.param & 0xf;
     let sample = playback.mod.samples[channel.sample];
     switch (cell.effect) {
-        case 0x00:
-            if (cell.param) {
-                let pitchOffset = (tick % 3 == 1) ? hiParam :
-                    (tick % 3 == 2) ? loParam : 0;
-                let sample = playback.mod.samples[channel.sample];
-                channel.period = periodTable[sample.finetune + 8][channel.pitch + pitchOffset];
-            }
-            break;
         case 0x1:
             channel.period = Math.max(channel.period - cell.param, minPeriod);
             break;
@@ -272,9 +264,17 @@ function processCellRest(playback, channel, cell, tick) {
 /**
  * @param {Playback} playback
  * @param {ChannelPlayback} channel
- * @param {Cell} cell 
+ * @param {Cell} cell
+ * @param {number} tick
  */
-function processCellAll(playback, channel, cell) {
+function processCellAll(playback, channel, cell, tick) {
+    if (cell.effect == 0 && cell.param) {
+        let pitchOffset = (tick % 3 == 1) ? (cell.param >> 4) :
+            (tick % 3 == 2) ? (cell.param & 0xf) : 0;
+        let sample = playback.mod.samples[channel.sample];
+        channel.period = periodTable[sample.finetune + 8][channel.pitch + pitchOffset];
+    }
+
     let volume = channel.volume;
     if (cell.effect == 0x7) { // tremolo
         volume += calcOscillator(channel.oscTick) * channel.memTremDepth;
