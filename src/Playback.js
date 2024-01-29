@@ -54,7 +54,7 @@ ChannelPlayback.prototype = {
  */
 function playModule(mod, startPos) {
     let playback = new Playback();
-    playback.ctx = new AudioContext();
+    playback.ctx = new AudioContext({latencyHint: 'playback'});
     playback.mod = mod;
     playback.samples = mod.samples.map(s => (
         s ? createSampleAudioBuffer(playback.ctx, s) : null
