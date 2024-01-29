@@ -23,6 +23,7 @@ Playback.prototype = {
     speed: 6,
     pos: 0,
     row: 0,
+    patDelay: 0,
     time: 0,
 };
 
@@ -101,7 +102,8 @@ function createSampleAudioBuffer(ctx, sample) {
  */
 function processRow(playback) {
     let pat = playback.mod.sequence[playback.pos];
-    for (let tick = 0; tick < playback.speed; tick++) {
+    playback.patDelay = 0;
+    for (let tick = 0; tick < playback.speed * (playback.patDelay + 1); tick++) {
         for (let c = 0; c < playback.mod.numChannels; c++) {
             let cell = playback.mod.patterns[pat][c][playback.row];
             if (tick == 0)
@@ -190,6 +192,9 @@ function processCellFirst(playback, channel, cell) {
                     break;
                 case 0xB:
                     channel.volume = Math.max(channel.volume - extParam, 0);
+                    break;
+                case 0xE:
+                    playback.patDelay = extParam;
                     break;
             }
             break;
