@@ -74,10 +74,12 @@ function playModule(mod, startPos) {
     playback.pos = startPos;
     playback.time = playback.ctx.currentTime;
 
-    setInterval(() => {
-        while (playback.time < playback.ctx.currentTime + 2)
-            processRow(playback);
-    }, 1000);
+    let process = () => {
+      while (playback.time < playback.ctx.currentTime + 2)
+        processRow(playback);
+    };
+    process();
+    setInterval(process, 1000);
 }
 
 /**
