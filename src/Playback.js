@@ -149,9 +149,11 @@ function processRow(playback) {
  * @param {Cell} cell 
  */
 function processCellFirst(playback, channel, cell) {
+    let hiParam = cell.param >> 4;
+    let loParam = cell.param & 0xf;
     if (cell.pitch >= 0)
         channel.pitch = cell.pitch;
-    let noteDelay = (cell.effect == 0xE && (cell.param >> 4) == 0xD && cell.param != 0xD0);
+    let noteDelay = (cell.effect == 0xE && hiParam == 0xD && loParam != 0);
     if (!noteDelay)
         processCellNote(playback, channel, cell);
     switch (cell.effect) {
@@ -160,41 +162,40 @@ function processCellFirst(playback, channel, cell) {
                 channel.memPort = cell.param;
             break;
         case 0x4:
-            if (cell.param >> 4)
-                channel.memVibSpeed = cell.param >> 4;
-            if (cell.param & 0xf)
-                channel.memVibDepth = cell.param & 0xf;
+            if (hiParam)
+                channel.memVibSpeed = hiParam;
+            if (loParam)
+                channel.memVibDepth = loParam;
             break;
         case 0x7:
-            if (cell.param >> 4)
-                channel.memTremSpeed = cell.param >> 4;
-            if (cell.param & 0xf)
-                channel.memTremDepth = cell.param & 0xf;
+            if (hiParam)
+                channel.memTremSpeed = hiParam;
+            if (loParam)
+                channel.memTremDepth = loParam;
             break;
         case 0xC:
             channel.volume = Math.min(cell.param, maxVolume);
             break;
         case 0xE:
-            let extParam = cell.param & 0xf;
-            switch (cell.param >> 4) {
+            switch (hiParam) {
                 case 0x1:
-                    channel.period = Math.max(channel.period - extParam, minPeriod);
+                    channel.period = Math.max(channel.period - loParam, minPeriod);
                     break;
                 case 0x2:
-                    channel.period += extParam;
+                    channel.period += loParam;
                     break;
                 case 0x5:
-                    let finetune = cell.param & 0xf;
+                    let finetune = loParam;
                     finetune = (finetune >= 8) ? (finetune - 8) : (finetune + 8);
                     channel.period = periodTable[finetune + 8][channel.pitch];
                 case 0xA:
-                    channel.volume = Math.min(channel.volume + extParam, maxVolume);
+                    channel.volume = Math.min(channel.volume + loParam, maxVolume);
                     break;
                 case 0xB:
-                    channel.volume = Math.max(channel.volume - extParam, 0);
+                    channel.volume = Math.max(channel.volume - loParam, 0);
                     break;
                 case 0xE:
-                    playback.patDelay = extParam;
+                    playback.patDelay = loParam;
                     break;
             }
             break;
@@ -214,12 +215,14 @@ function processCellFirst(playback, channel, cell) {
  * @param {number} tick
  */
 function processCellRest(playback, channel, cell, tick) {
+    let hiParam = cell.param >> 4;
+    let loParam = cell.param & 0xf;
     let sample = playback.mod.samples[channel.sample];
     switch (cell.effect) {
         case 0x00:
             if (cell.param) {
-                let pitchOffset = (tick % 3 == 1) ? (cell.param >> 4) :
-                    (tick % 3 == 2) ? (cell.param & 0xf) : 0;
+                let pitchOffset = (tick % 3 == 1) ? hiParam :
+                    (tick % 3 == 2) ? loParam : 0;
                 let sample = playback.mod.samples[channel.sample];
                 channel.period = periodTable[sample.finetune + 8][channel.pitch + pitchOffset];
             }
@@ -239,26 +242,25 @@ function processCellRest(playback, channel, cell, tick) {
                 channel.period = Math.max(channel.period - channel.memPort, target);
             break;
         case 0xE:
-            let extParam = cell.param & 0xf;
-            switch (cell.param >> 4) {
+            switch (hiParam) {
                 case 0x9:
-                    if (tick % extParam == 0)
+                    if (tick % loParam == 0)
                         playNote(playback, channel, 0)
                     break;
                 case 0xC:
-                    if (tick == extParam)
+                    if (tick == loParam)
                         channel.volume = 0;
                     break;
                 case 0xD:
-                    if (tick == extParam)
+                    if (tick == loParam)
                         processCellNote(playback, channel, cell);
                     break;
             }
             break;
     }
     if (cell.effect == 0xA || cell.effect == 0x5 || cell.effect == 0x6) {
-        channel.volume += cell.param >> 4;
-        channel.volume -= cell.param & 0xf;
+        channel.volume += hiParam;
+        channel.volume -= loParam;
         channel.volume = Math.min(Math.max(channel.volume, 0), maxVolume);
     }
 }
