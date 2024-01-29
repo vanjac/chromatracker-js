@@ -211,6 +211,14 @@ function processCellFirst(playback, channel, cell) {
 function processCellRest(playback, channel, cell, tick) {
     let sample = playback.mod.samples[channel.sample];
     switch (cell.effect) {
+        case 0x00:
+            if (cell.param) {
+                let pitchOffset = (tick % 3 == 1) ? (cell.param >> 4) :
+                    (tick % 3 == 2) ? (cell.param & 0xf) : 0;
+                let sample = playback.mod.samples[channel.sample];
+                channel.period = periodTable[sample.finetune + 8][channel.pitch + pitchOffset];
+            }
+            break;
         case 0x1:
             channel.period = Math.max(channel.period - cell.param, minPeriod);
             break;
