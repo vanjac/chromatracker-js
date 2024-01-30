@@ -9,6 +9,8 @@
 
 <input id="file-select" type="file"><br>
 <button onclick="playFile()">Play File</button><br>
+<div>Base latency: <span id="base-latency"></span></div>
+<div>Output latency: <span id="output-latency"></span></div>
 <div>Active samplers: <span id="samplers"></span></div>
 
 <script>
@@ -37,6 +39,8 @@
 
   function update() {
     requestAnimationFrame(update);
+    query('#base-latency').textContent = playback.ctx.baseLatency * 1000;
+    query('#output-latency').textContent = playback.ctx.outputLatency * 1000;
     query('#samplers').textContent = playback.activeSources;
   }
 </script>
