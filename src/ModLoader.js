@@ -47,6 +47,15 @@ function readModule(buf) {
     // TODO: should this also include entries past songLen?
     let numPatterns = Math.max(...module.sequence) + 1;
 
+    let initials = utf8Decode.decode(new DataView(buf, 1080, 4));
+    if (initials.slice(1) == 'CHN') {
+        module.numChannels = parseInt(initials[0], 10);
+    } else if (initials.slice(2) == 'CH') {
+        module.numChannels = parseInt(initials.slice(0, 2), 10);
+    } else if (initials == 'FLT8') {
+        module.numChannels = 8;
+    }
+
     // TODO: get num channels
     let patternSize = module.numChannels * numRows * 4;
     for (let p = 0; p < numPatterns; p++) {
