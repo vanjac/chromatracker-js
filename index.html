@@ -8,7 +8,8 @@
 <script src="src/Playback.js"></script>
 
 <input id="file-select" type="file"><br>
-<button onclick="playFile()">Play File</button>
+<button onclick="loadFile()">Load</button>
+<button onclick="play()">Play</button>
 <button onclick="stop()">Stop</button><br>
 <div>Pos: <span id="pos"></span></div>
 <div>Pat: <span id="pat"></span></div>
@@ -25,32 +26,37 @@
   let animHandle;
   let intervalHandle;
 
+  let module;
   let context;
   let playback;
   let queuedLines = [];
 
-  function playFile() {
+  function loadFile() {
     /** @type File */
     let file = document.querySelector('#file-select').files[0];
     file.arrayBuffer().then(b => {
-      let mod = readModule(b);
-      console.log(mod);
-      context = new AudioContext({latencyHint: 'playback'});
-      playback = initPlayback(context, mod);
+      module = readModule(b);
+      console.log(module);
+      play();
+    });
+  }
+  
+  function play() {
+    context = new AudioContext({latencyHint: 'playback'});
+    playback = initPlayback(context, module);
 
-      let process = () => {
-        while (playback.time < context.currentTime + 0.5) {
-          let {time, pos, row} = playback;
-          processRow(playback);
-          let {tempo, speed} = playback;
-          queuedLines.push({time, pos, row, tempo, speed});
-        }
-      };
-      process();
-      intervalHandle = setInterval(process, 200);
+    let process = () => {
+      while (playback.time < context.currentTime + 0.5) {
+        let {time, pos, row} = playback;
+        processRow(playback);
+        let {tempo, speed} = playback;
+        queuedLines.push({time, pos, row, tempo, speed});
+      }
+    };
+    process();
+    intervalHandle = setInterval(process, 200);
 
-      animHandle = requestAnimationFrame(update);
-    })
+    animHandle = requestAnimationFrame(update);
   }
 
   function stop() {
