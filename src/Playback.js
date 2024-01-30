@@ -197,6 +197,7 @@ function processCellFirst(playback, channel, cell) {
                     let finetune = loParam;
                     finetune = (finetune >= 8) ? (finetune - 8) : (finetune + 8);
                     channel.period = periodTable[finetune + 8][channel.pitch];
+                    break;
                 case 0x6:
                     if (loParam == 0)
                         playback.patLoopRow = playback.row;
