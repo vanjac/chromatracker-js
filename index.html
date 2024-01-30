@@ -59,15 +59,12 @@
   function update() {
     animHandle = requestAnimationFrame(update);
 
-    let curLine;
-    for (let i = 1; i < queuedLines.length; i++) {
-      if (queuedLines[i].time > context.currentTime) {
-        curLine = queuedLines[i - 1];
-        queuedLines.splice(0, i - 1);
-        break;
-      }
-    }
-    if (curLine) {
+    if (queuedLines.length) {
+      let i = 0;
+      while (i < (queuedLines.length - 1) && queuedLines[i + 1].time <= context.currentTime)
+        i++;
+      queuedLines.splice(0, i);
+      let curLine = queuedLines[0];
       query('#pos').textContent = curLine.pos;
       query('#pat').textContent = playback.mod.sequence[curLine.pos];
       query('#row').textContent = curLine.row;
