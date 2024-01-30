@@ -3,19 +3,10 @@
 // https://eblong.com/zarf/blorb/mod-spec.txt
 // http://lclevy.free.fr/mo3/mod.txt
 
-// TODO: octaves 0 and 4 are different than periodTable!!
-const pitchToPeriod = [
-    1712,1616,1525,1440,1357,1281,1209,1141,1077,1017, 961, 907, // octave 0, nonstandard
-     856, 808, 762, 720, 678, 640, 604, 570, 538, 508, 480, 453, // octave 1
-     428, 404, 381, 360, 339, 320, 302, 285, 269, 254, 240, 226, // octave 2
-     214, 202, 190, 180, 170, 160, 151, 143, 135, 127, 120, 113, // octave 3
-     107, 101,  95,  90,  85,  80,  76,  71,  67,  64,  60,  57  // octave 4
-];
-
 /** @type {Map<number, number>} */
 const periodToPitch = new Map();
-for (let p = 0; p < pitchToPeriod.length; p++)
-    periodToPitch.set(pitchToPeriod[p], p);
+for (let p = 0; p < periodTable[8].length; p++)
+    periodToPitch.set(periodTable[8][p], p);
 
 const utf8Decode = new TextDecoder();
 
