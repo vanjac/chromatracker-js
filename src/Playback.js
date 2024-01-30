@@ -25,6 +25,8 @@ Playback.prototype = {
     row: 0,
     patDelay: 0,
     time: 0,
+    // for debugging:
+    activeSources: 0,
 };
 
 function ChannelPlayback() {}
@@ -50,9 +52,8 @@ ChannelPlayback.prototype = {
 
 /**
  * @param {Module} mod
- * @param {number} startPos
  */
-function playModule(mod, startPos) {
+function initPlayback(mod) {
     let playback = new Playback();
     playback.ctx = new AudioContext({latencyHint: 'playback'});
     playback.mod = mod;
@@ -71,15 +72,9 @@ function playModule(mod, startPos) {
         else
             channel.pan.pan.value = 0.5;
     }
-    playback.pos = startPos;
     playback.time = playback.ctx.currentTime;
 
-    let process = () => {
-        while (playback.time < playback.ctx.currentTime + 1)
-            processRow(playback);
-    };
-    process();
-    setInterval(process, 500);
+    return playback;
 }
 
 /**
@@ -322,9 +317,11 @@ function playNote(playback, channel, offset) {
     channel.source.onended = e => {
         if (e.target instanceof AudioNode) {
             e.target.disconnect();
+            playback.activeSources--;
         }
     }
     channel.source.connect(channel.gain);
+    playback.activeSources++;
     let sample = playback.mod.samples[channel.sample];
     channel.source.buffer = playback.samples[channel.sample];
     channel.source.loop = sample.loopEnd != sample.loopStart;

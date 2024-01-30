@@ -1,21 +1,42 @@
 <!DOCTYPE html>
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <script src="src/Module.js"></script>
 <script src="src/PeriodTable.js"></script>
 <script src="src/ModLoader.js"></script>
 <script src="src/Playback.js"></script>
+
 <input id="file-select" type="file"><br>
-<input id="position" type="number" value="0">
-<button onclick="readFiles()">Read Files</button>
+<button onclick="playFile()">Play File</button><br>
+<div>Active samplers: <span id="samplers"></span></div>
 
 <script>
-  function readFiles() {
+  const query = s => document.querySelector(s);
+
+  let playback;
+
+  function playFile() {
     /** @type File */
     let file = document.querySelector('#file-select').files[0];
     file.arrayBuffer().then(b => {
       let mod = readModule(b);
       console.log(mod);
-      playModule(mod, document.querySelector('#position').valueAsNumber);
+      playback = initPlayback(mod);
+
+      let process = () => {
+        while (playback.time < playback.ctx.currentTime + 0.5)
+          processRow(playback);
+      };
+      process();
+      setInterval(process, 200);
+
+      requestAnimationFrame(update);
     })
+  }
+
+  function update() {
+    requestAnimationFrame(update);
+    query('#samplers').textContent = playback.activeSources;
   }
 </script>
