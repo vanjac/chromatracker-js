@@ -24,6 +24,8 @@ Playback.prototype = {
     pos: 0,
     row: 0,
     patDelay: 0,
+    patLoopRow: 0,
+    patLoopCount: 0,
     time: 0,
     // for debugging:
     activeSources: 0,
@@ -125,6 +127,14 @@ function processRow(playback) {
             rowJump = cell.param; // TODO: is this hex or decimal???
             playback.pos++;
         }
+        if (cell.effect == 0xE && (cell.param >> 4) == 0x6 && cell.param != 0x60) {
+            if (playback.patLoopCount < (cell.param & 0xf)) {
+                playback.patLoopCount++;
+                rowJump = playback.patLoopRow;
+            } else {
+                playback.patLoopCount = 0;
+            }
+        }
     }
     if (rowJump != -1)
         playback.row = rowJump;
@@ -187,6 +197,10 @@ function processCellFirst(playback, channel, cell) {
                     let finetune = loParam;
                     finetune = (finetune >= 8) ? (finetune - 8) : (finetune + 8);
                     channel.period = periodTable[finetune + 8][channel.pitch];
+                case 0x6:
+                    if (loParam == 0)
+                        playback.patLoopRow = playback.row;
+                    break;
                 case 0xA:
                     channel.volume = Math.min(channel.volume + loParam, maxVolume);
                     break;
