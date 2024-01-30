@@ -147,9 +147,9 @@ function processRow(playback) {
     if (playback.row >= numRows) {
         playback.row = 0;
         playback.pos++;
-        if (playback.pos >= playback.mod.sequence.length)
-            playback.pos = 0; // loop song
     }
+    if (playback.pos >= playback.mod.sequence.length)
+        playback.pos = 0; // loop song
 }
 
 /**
