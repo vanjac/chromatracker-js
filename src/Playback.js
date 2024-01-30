@@ -55,28 +55,29 @@ ChannelPlayback.prototype = {
 };
 
 /**
+ * @param {AudioContext} context
  * @param {Module} mod
  */
-function initPlayback(mod) {
+function initPlayback(context, mod) {
     let playback = new Playback();
-    playback.ctx = new AudioContext({latencyHint: 'playback'});
+    playback.ctx = context;
     playback.mod = mod;
     playback.samples = mod.samples.map(s => (
-        s ? createSampleAudioBuffer(playback.ctx, s) : null
+        s ? createSampleAudioBuffer(context, s) : null
     ));
     for (let c = 0; c < mod.numChannels; c++) {
         let channel = new ChannelPlayback();
         playback.channels.push(channel);
-        channel.pan = playback.ctx.createStereoPanner();
-        channel.pan.connect(playback.ctx.destination);
-        channel.gain = playback.ctx.createGain();
+        channel.pan = context.createStereoPanner();
+        channel.pan.connect(context.destination);
+        channel.gain = context.createGain();
         channel.gain.connect(channel.pan);
         if ((c % 4) == 0 || (c % 4) == 3)
             channel.pan.pan.value = -0.5;
         else
             channel.pan.pan.value = 0.5;
     }
-    playback.time = playback.ctx.currentTime;
+    playback.time = context.currentTime;
 
     return playback;
 }

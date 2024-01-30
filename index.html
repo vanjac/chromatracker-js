@@ -8,15 +8,24 @@
 <script src="src/Playback.js"></script>
 
 <input id="file-select" type="file"><br>
-<button onclick="playFile()">Play File</button><br>
-<div>Base latency: <span id="base-latency"></span></div>
-<div>Output latency: <span id="output-latency"></span></div>
+<button onclick="playFile()">Play File</button>
+<button onclick="stop()">Stop</button><br>
+<div>Pos: <span id="pos"></span></div>
+<div>Pat: <span id="pat"></span></div>
+<div>Row: <span id="row"></span></div>
 <div>Active samplers: <span id="samplers"></span></div>
 
 <script>
+  "use strict";
+
   const query = s => document.querySelector(s);
 
+  let animHandle;
+  let intervalHandle;
+
+  let context;
   let playback;
+  let queuedLines = [];
 
   function playFile() {
     /** @type File */
@@ -24,23 +33,45 @@
     file.arrayBuffer().then(b => {
       let mod = readModule(b);
       console.log(mod);
-      playback = initPlayback(mod);
+      context = new AudioContext({latencyHint: 'playback'});
+      playback = initPlayback(context, mod);
 
       let process = () => {
-        while (playback.time < playback.ctx.currentTime + 0.5)
+        while (playback.time < context.currentTime + 0.5) {
+          queuedLines.push({time: playback.time, pos: playback.pos, row: playback.row});
           processRow(playback);
+        }
       };
       process();
-      setInterval(process, 200);
+      intervalHandle = setInterval(process, 200);
 
-      requestAnimationFrame(update);
+      animHandle = requestAnimationFrame(update);
     })
   }
 
+  function stop() {
+    clearInterval(intervalHandle);
+    cancelAnimationFrame(animHandle);
+    context.close();
+    queuedLines = [];
+  }
+
   function update() {
-    requestAnimationFrame(update);
-    query('#base-latency').textContent = playback.ctx.baseLatency * 1000;
-    query('#output-latency').textContent = playback.ctx.outputLatency * 1000;
+    animHandle = requestAnimationFrame(update);
+
+    let curLine;
+    for (let i = 1; i < queuedLines.length; i++) {
+      if (queuedLines[i].time > context.currentTime) {
+        curLine = queuedLines[i - 1];
+        queuedLines.splice(0, i - 1);
+        break;
+      }
+    }
+    if (curLine) {
+      query('#pos').textContent = curLine.pos;
+      query('#pat').textContent = playback.mod.sequence[curLine.pos];
+      query('#row').textContent = curLine.row;
+    }
     query('#samplers').textContent = playback.activeSources;
   }
 </script>
