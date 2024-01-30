@@ -1,5 +1,7 @@
 "use strict";
 
+// https://github.com/johnnovak/nim-mod/blob/master/doc/Protracker%20effects%20(FireLight)%20(.mod).txt
+
 const masterGain = 0.5;
 
 const baseRate = 16574.27; // rate of C-3
@@ -287,7 +289,8 @@ function processCellAll(playback, channel, cell, tick) {
 
     let volume = channel.volume;
     if (cell.effect == 0x7) { // tremolo
-        volume += calcOscillator(channel.oscTick) * channel.memTremDepth;
+        volume += calcOscillator(channel.oscTick) * channel.memTremDepth * 4
+        volume = Math.max(Math.min(volume, maxVolume), 0);
         channel.oscTick += channel.memTremSpeed;
     }
     channel.gain.gain.setValueAtTime(masterGain * volume / maxVolume, playback.time);
@@ -295,10 +298,10 @@ function processCellAll(playback, channel, cell, tick) {
     if (channel.source) {
         let period = channel.period;
         if (cell.effect == 0x4 || cell.effect == 0x6) { // vibrato
-            period += calcOscillator(channel.oscTick) * channel.memVibDepth;
+            period += calcOscillator(channel.oscTick) * channel.memVibDepth * 2;
             channel.oscTick += channel.memVibSpeed;
         }
-        channel.source.playbackRate.setValueAtTime(basePeriod / channel.period, playback.time);
+        channel.source.playbackRate.setValueAtTime(basePeriod / period, playback.time);
     }
 }
 
@@ -352,5 +355,5 @@ function playNote(playback, channel, offset) {
  * @param {number} tick
  */
 function calcOscillator(tick) {
-    return Math.sin(tick / 32 / Math.PI);
+    return Math.sin(tick * Math.PI / 32);
 }
