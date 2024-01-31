@@ -33,6 +33,7 @@
   let animHandle;
   let intervalHandle;
 
+  let queuedTime = 0;
   let queuedLines = [];
 
   function loadFile() {
@@ -61,11 +62,12 @@
     }
 
     let process = () => {
-      while (playback.time < context.currentTime + 0.5) {
-        let {time, pos, row} = playback;
+      while (queuedTime < context.currentTime + 0.5) {
+        queuedTime = playback.time;
+        let {pos, row} = playback;
         processRow(playback);
         let {tempo, speed} = playback;
-        queuedLines.push({time, pos, row, tempo, speed});
+        queuedLines.push({time: queuedTime, pos, row, tempo, speed});
       }
     };
     process();
