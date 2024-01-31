@@ -12,10 +12,9 @@
 <button onclick="play()">Play</button>
 <button onclick="play(true)">Play from</button>
 <button onclick="stop()">Stop</button><br>
-<div>
-  Pos: <input type="number" size="6" id="pos">
-  Pat: <span id="pat"></span>
-</div>
+<div>Title: <span id="title"></span></div>
+<select id="sequence" size="10" style="width:30pt"></select>
+<select id="samples" size="10" style="width:130pt"></select>
 <div>Row: <input type="number" size="6" id="row"></div>
 <div>Tempo: <input type="number" size="6" id="tempo"></div>
 <div>Speed: <input type="number" size="6" id="speed"></div>
@@ -48,6 +47,25 @@
     file.arrayBuffer().then(b => {
       module = readModule(b);
       console.log(module);
+
+      query('#title').textContent = module.name;
+
+      let seqElem = query('#sequence');
+      seqElem.textContent = '';
+      for (let [i, pos] of module.sequence.entries()) {
+        let option = document.createElement('option')
+        option.textContent = pos;
+        seqElem.appendChild(option);
+      }
+
+      let samplesElem = query('#samples');
+      samplesElem.textContent = '';
+      for (let [i, sample] of module.samples.entries()) {
+        let option = document.createElement('option')
+        option.textContent = i + ': ' + (sample ? sample.name : '(none)');
+        samplesElem.appendChild(option);
+      }
+
       play();
     });
   }
@@ -61,7 +79,8 @@
       stop();
     playback = initPlayback(context, module);
     if (resume) {
-      playback.pos = query('#pos').valueAsNumber;
+      playback.pos = query('#sequence').selectedIndex;
+      if (playback.pos == -1) playback.pos = 0;
       playback.row = query('#row').valueAsNumber;
       playback.tempo = query('#tempo').valueAsNumber;
       playback.speed = query('#speed').valueAsNumber;
@@ -107,8 +126,7 @@
         i++;
       queuedLines.splice(0, i);
       let curLine = queuedLines[0];
-      query('#pos').value = curLine.pos;
-      query('#pat').textContent = playback.mod.sequence[curLine.pos];
+      query('#sequence').selectedIndex = curLine.pos;
       query('#row').value = curLine.row;
       query('#tempo').value = curLine.tempo;
       query('#speed').value = curLine.speed;
