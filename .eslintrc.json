@@ -11,6 +11,7 @@
         "no-undef": "off",
         "no-unused-vars": "off",
         "no-var": "error",
-        "semi": "error"
+        "semi": "error",
+        "strict": ["error", "global"]
     }
 }
