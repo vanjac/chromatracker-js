@@ -25,7 +25,6 @@ Playback.prototype = {
     speed: 6,
     pos: 0,
     row: 0,
-    patDelay: 0,
     patLoopRow: 0,
     patLoopCount: 0,
     time: 0,
@@ -53,6 +52,14 @@ ChannelPlayback.prototype = {
     memTremDepth: 0,// 7xx
     memOff: 0,      // 9xx
 };
+
+function RowPlayback() {}
+RowPlayback.prototype = {
+    patDelay: 0,
+    posJump: -1,
+    patBreak: -1,
+    patLoop: false,
+}
 
 /**
  * @param {AudioContext} context
@@ -103,13 +110,16 @@ function createSampleAudioBuffer(ctx, sample) {
  * @param {Playback} playback
  */
 function processRow(playback) {
-    let pat = playback.mod.sequence[playback.pos];
-    playback.patDelay = 0;
-    for (let tick = 0; tick < playback.speed * (playback.patDelay + 1); tick++) {
+    let patIdx = playback.mod.sequence[playback.pos];
+    let pattern = playback.mod.patterns[patIdx];
+
+    // first tick
+    let rowPlay = new RowPlayback();
+    for (let tick = 0; tick < playback.speed * (rowPlay.patDelay + 1); tick++) {
         for (let c = 0; c < playback.mod.numChannels; c++) {
-            let cell = playback.mod.patterns[pat][c][playback.row];
+            let cell = pattern[c][playback.row];
             if (tick == 0)
-                processCellFirst(playback, playback.channels[c], cell);
+                processCellFirst(playback, playback.channels[c], cell, rowPlay);
             else
                 processCellRest(playback, playback.channels[c], cell, tick);
             processCellAll(playback, playback.channels[c], cell, tick);
@@ -117,34 +127,21 @@ function processRow(playback) {
         playback.time += (60 / playback.tempo / 24);
     }
 
-    // TODO: ??????
-    let rowJump = -1;
-    let posJump = -1;
-    for (let c = 0; c < playback.mod.numChannels; c++) {
-        let cell = playback.mod.patterns[pat][c][playback.row];
-        if (cell.effect == 0xB) {
-            playback.row = 0;
-            posJump = cell.param;
-        }
-        if (cell.effect == 0xD) {
-            rowJump = cell.param; // TODO: is this hex or decimal???
-            playback.pos++;
-        }
-        if (cell.effect == 0xE && (cell.param >> 4) == 0x6 && cell.param != 0x60) {
-            if (playback.patLoopCount < (cell.param & 0xf)) {
-                playback.patLoopCount++;
-                rowJump = playback.patLoopRow;
-            } else {
-                playback.patLoopCount = 0;
-            }
-        }
+    if (rowPlay.posJump != -1) {
+        playback.pos = rowPlay.posJump;
+    } else if (rowPlay.patBreak != -1) {
+        playback.pos++;
     }
-    if (rowJump != -1)
-        playback.row = rowJump;
-    if (posJump != -1)
-        playback.pos = posJump;
-    if (rowJump == -1 && posJump == -1)
+    if (rowPlay.patLoop) {
+        playback.row = playback.patLoopRow;
+    } else if (rowPlay.patBreak != -1) {
+        playback.row = rowPlay.patBreak;
+    } else if (rowPlay.posJump != -1) {
+        playback.row = 0;
+    } else {
         playback.row++;
+    }
+
     if (playback.row >= numRows) {
         playback.row = 0;
         playback.pos++;
@@ -156,9 +153,10 @@ function processRow(playback) {
 /**
  * @param {Playback} playback 
  * @param {ChannelPlayback} channel
- * @param {Cell} cell 
+ * @param {Cell} cell
+ * @param {RowPlayback} row
  */
-function processCellFirst(playback, channel, cell) {
+function processCellFirst(playback, channel, cell, row) {
     let hiParam = cell.param >> 4;
     let loParam = cell.param & 0xf;
     if (cell.pitch >= 0)
@@ -185,8 +183,14 @@ function processCellFirst(playback, channel, cell) {
             if (loParam)
                 channel.memTremDepth = loParam;
             break;
+        case 0xB:
+            row.posJump = cell.param;
+            break;
         case 0xC:
             channel.volume = Math.min(cell.param, maxVolume);
+            break;
+        case 0xD:
+            row.patBreak = cell.param; // TODO: is this hex or decimal???
             break;
         case 0xE:
             switch (hiParam) {
@@ -202,8 +206,14 @@ function processCellFirst(playback, channel, cell) {
                     channel.period = periodTable[finetune + 8][channel.pitch];
                     break;
                 case 0x6:
-                    if (loParam == 0)
+                    if (loParam == 0) {
                         playback.patLoopRow = playback.row;
+                    } else if (playback.patLoopCount < loParam) {
+                        playback.patLoopCount++;
+                        row.patLoop = true;
+                    } else {
+                        playback.patLoopCount = 0;
+                    }
                     break;
                 case 0xA:
                     channel.volume = Math.min(channel.volume + loParam, maxVolume);
@@ -212,7 +222,7 @@ function processCellFirst(playback, channel, cell) {
                     channel.volume = Math.max(channel.volume - loParam, 0);
                     break;
                 case 0xE:
-                    playback.patDelay = loParam;
+                    row.patDelay = loParam;
                     break;
             }
             break;
