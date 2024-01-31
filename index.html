@@ -10,12 +10,15 @@
 <input id="file-select" type="file"><br>
 <button onclick="loadFile()">Load</button>
 <button onclick="play()">Play</button>
+<button onclick="play(true)">Play from</button>
 <button onclick="stop()">Stop</button><br>
-<div>Pos: <span id="pos"></span></div>
-<div>Pat: <span id="pat"></span></div>
-<div>Row: <span id="row"></span></div>
-<div>Tempo: <span id="tempo"></span></div>
-<div>Speed: <span id="speed"></span></div>
+<div>
+  Pos: <input type="number" size="6" id="pos">
+  Pat: <span id="pat"></span>
+</div>
+<div>Row: <input type="number" size="6" id="row"></div>
+<div>Tempo: <input type="number" size="6" id="tempo"></div>
+<div>Speed: <input type="number" size="6" id="speed"></div>
 <div>Active samplers: <span id="samplers"></span></div>
 
 <script>
@@ -40,10 +43,16 @@
       play();
     });
   }
-  
-  function play() {
+
+  function play(resume) {
     context = new AudioContext({latencyHint: 'playback'});
     playback = initPlayback(context, module);
+    if (resume) {
+      playback.pos = query('#pos').valueAsNumber;
+      playback.row = query('#row').valueAsNumber;
+      playback.tempo = query('#tempo').valueAsNumber;
+      playback.speed = query('#speed').valueAsNumber;
+    }
 
     let process = () => {
       while (playback.time < context.currentTime + 0.5) {
@@ -75,11 +84,11 @@
         i++;
       queuedLines.splice(0, i);
       let curLine = queuedLines[0];
-      query('#pos').textContent = curLine.pos;
+      query('#pos').value = curLine.pos;
       query('#pat').textContent = playback.mod.sequence[curLine.pos];
-      query('#row').textContent = curLine.row;
-      query('#tempo').textContent = curLine.tempo;
-      query('#speed').textContent = curLine.speed;
+      query('#row').value = curLine.row;
+      query('#tempo').value = curLine.tempo;
+      query('#speed').value = curLine.speed;
     }
     query('#samplers').textContent = playback.activeSources;
   }
