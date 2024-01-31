@@ -371,24 +371,34 @@ function playNote(playback, channel, offset) {
     if (channel.source) {
         channel.source.stop(playback.time);
     }
-    channel.source = playback.ctx.createBufferSource();
-    channel.activeSources.add(channel.source);
-    channel.source.onended = e => {
+    channel.source = createNoteSource(playback, channel.sample, channel.activeSources);
+    channel.source.connect(channel.gain);
+    channel.source.start(playback.time, offset);
+    let sample = playback.mod.samples[channel.sample];
+    channel.period = periodTable[sample.finetune + 8][channel.pitch];
+    channel.oscTick = 0; // retrigger
+}
+
+/**
+ * @param {Playback} playback
+ * @param {number} s
+ * @param {Set<AudioBufferSourceNode>} sourceSet
+ */
+function createNoteSource(playback, s, sourceSet) {
+    let source = playback.ctx.createBufferSource();
+    source.buffer = playback.samples[s];
+    let sample = playback.mod.samples[s];
+    source.loop = sample.loopEnd != sample.loopStart;
+    source.loopStart = sample.loopStart / baseRate;
+    source.loopEnd = sample.loopEnd / baseRate;
+    sourceSet.add(source);
+    source.onended = e => {
         if (e.target instanceof AudioBufferSourceNode) {
-            channel.activeSources.delete(e.target);
+            sourceSet.delete(e.target);
             e.target.disconnect();
         }
     };
-    channel.source.connect(channel.gain);
-    let sample = playback.mod.samples[channel.sample];
-    channel.source.buffer = playback.samples[channel.sample];
-    channel.source.loop = sample.loopEnd != sample.loopStart;
-    channel.source.loopStart = sample.loopStart / baseRate;
-    channel.source.loopEnd = sample.loopEnd / baseRate;
-
-    channel.source.start(playback.time, offset);
-    channel.period = periodTable[sample.finetune + 8][channel.pitch];
-    channel.oscTick = 0; // retrigger
+    return source;
 }
 
 /**
