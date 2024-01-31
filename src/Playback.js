@@ -59,7 +59,7 @@ RowPlayback.prototype = {
     posJump: -1,
     patBreak: -1,
     patLoop: false,
-}
+};
 
 /**
  * @param {AudioContext} context
@@ -200,11 +200,12 @@ function processCellFirst(playback, channel, cell, row) {
                 case 0x2:
                     channel.period += loParam;
                     break;
-                case 0x5:
+                case 0x5: {
                     let finetune = loParam;
                     finetune = (finetune >= 8) ? (finetune - 8) : (finetune + 8);
                     channel.period = periodTable[finetune + 8][channel.pitch];
                     break;
+                }
                 case 0x6:
                     if (loParam == 0) {
                         playback.patLoopRow = playback.row;
@@ -253,18 +254,19 @@ function processCellRest(playback, channel, cell, tick) {
             channel.period += cell.param;
             break;
         case 0x3:
-        case 0x5:
+        case 0x5: {
             let target = periodTable[sample.finetune + 8][channel.pitch];
             if (target > channel.period)
                 channel.period = Math.min(channel.period + channel.memPort, target);
             else
                 channel.period = Math.max(channel.period - channel.memPort, target);
             break;
+        }
         case 0xE:
             switch (hiParam) {
                 case 0x9:
                     if (tick % loParam == 0)
-                        playNote(playback, channel, 0)
+                        playNote(playback, channel, 0);
                     break;
                 case 0xC:
                     if (tick == loParam)
@@ -300,7 +302,7 @@ function processCellAll(playback, channel, cell, tick) {
 
     let volume = channel.volume;
     if (cell.effect == 0x7) { // tremolo
-        volume += calcOscillator(channel.oscTick) * channel.memTremDepth * 4
+        volume += calcOscillator(channel.oscTick) * channel.memTremDepth * 4;
         volume = Math.max(Math.min(volume, maxVolume), 0);
         channel.oscTick += channel.memTremSpeed;
     }
@@ -348,7 +350,7 @@ function playNote(playback, channel, offset) {
             e.target.disconnect();
             playback.activeSources--;
         }
-    }
+    };
     channel.source.connect(channel.gain);
     playback.activeSources++;
     let sample = playback.mod.samples[channel.sample];
