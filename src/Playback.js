@@ -52,6 +52,7 @@ ChannelPlayback.prototype = {
     memTremSpeed: 0,// 7xx
     memTremDepth: 0,// 7xx
     memOff: 0,      // 9xx
+    userMute: false,
 };
 
 function RowPlayback() {}
@@ -99,6 +100,20 @@ function stopPlayback(playback) {
             source.stop();
         }
     }
+}
+
+/**
+ * @param {Playback} playback
+ * @param {number} c
+ * @param {boolean} mute
+ */
+function setChannelMute(playback, c, mute) {
+    let channel = playback.channels[c];
+    if (mute && !channel.userMute)
+        channel.pan.disconnect();
+    else if (!mute && channel.userMute)
+        channel.pan.connect(playback.ctx.destination);
+    channel.userMute = mute;
 }
 
 /**

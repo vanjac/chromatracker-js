@@ -20,6 +20,12 @@
 <div>Tempo: <input type="number" size="6" id="tempo"></div>
 <div>Speed: <input type="number" size="6" id="speed"></div>
 <div>Active samplers: <span id="samplers"></span></div>
+<div>
+  <input type="checkbox" onchange="muteCheck(0, this.checked)" checked>
+  <input type="checkbox" onchange="muteCheck(1, this.checked)" checked>
+  <input type="checkbox" onchange="muteCheck(2, this.checked)" checked>
+  <input type="checkbox" onchange="muteCheck(3, this.checked)" checked>
+</div>
 
 <script>
   "use strict";
@@ -84,6 +90,11 @@
       queuedLines = [];
       playback = null;
     }
+  }
+
+  function muteCheck(channel, checked) {
+    if (playback)
+      setChannelMute(playback, channel, !checked);
   }
 
   function update() {
