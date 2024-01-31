@@ -26,12 +26,13 @@
 
   const query = s => document.querySelector(s);
 
-  let animHandle;
-  let intervalHandle;
-
   let module;
   let context;
   let playback;
+
+  let animHandle;
+  let intervalHandle;
+
   let queuedLines = [];
 
   function loadFile() {
@@ -45,7 +46,8 @@
   }
 
   function play(resume) {
-    context = new AudioContext({latencyHint: 'playback'});
+    if (!context)
+      context = new AudioContext({latencyHint: 'playback'});
     playback = initPlayback(context, module);
     if (resume) {
       playback.pos = query('#pos').valueAsNumber;
@@ -69,9 +71,9 @@
   }
 
   function stop() {
+    stopPlayback(playback);
     clearInterval(intervalHandle);
     cancelAnimationFrame(animHandle);
-    context.close();
     queuedLines = [];
   }
 
@@ -90,6 +92,9 @@
       query('#tempo').value = curLine.tempo;
       query('#speed').value = curLine.speed;
     }
-    query('#samplers').textContent = playback.activeSources;
+    let activeSources = 0;
+    for (let channel of playback.channels)
+      activeSources += channel.activeSources.size;
+    query('#samplers').textContent = activeSources;
   }
 </script>

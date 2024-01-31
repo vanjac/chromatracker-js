@@ -28,11 +28,12 @@ Playback.prototype = {
     patLoopRow: 0,
     patLoopCount: 0,
     time: 0,
-    // for debugging:
-    activeSources: 0,
 };
 
-function ChannelPlayback() {}
+function ChannelPlayback() {
+    /** @type {Set<AudioBufferSourceNode>} */
+    this.activeSources = new Set();
+}
 ChannelPlayback.prototype = {
     /** @type {AudioBufferSourceNode} */
     source: null,
@@ -87,6 +88,17 @@ function initPlayback(context, mod) {
     playback.time = context.currentTime;
 
     return playback;
+}
+
+/**
+ * @param {Playback} playback
+ */
+function stopPlayback(playback) {
+    for (let channel of playback.channels) {
+        for (let source of channel.activeSources) {
+            source.stop();
+        }
+    }
 }
 
 /**
@@ -345,14 +357,14 @@ function playNote(playback, channel, offset) {
         channel.source.stop(playback.time);
     }
     channel.source = playback.ctx.createBufferSource();
+    channel.activeSources.add(channel.source);
     channel.source.onended = e => {
-        if (e.target instanceof AudioNode) {
+        if (e.target instanceof AudioBufferSourceNode) {
+            channel.activeSources.delete(e.target);
             e.target.disconnect();
-            playback.activeSources--;
         }
     };
     channel.source.connect(channel.gain);
-    playback.activeSources++;
     let sample = playback.mod.samples[channel.sample];
     channel.source.buffer = playback.samples[channel.sample];
     channel.source.loop = sample.loopEnd != sample.loopStart;
