@@ -162,8 +162,10 @@ function processRow(playback) {
     }
 
     if (rowPlay.posJump != -1) {
+        window.onerror(`Pos jump to ${rowPlay.posJump}`);
         playback.pos = rowPlay.posJump;
     } else if (rowPlay.patBreak != -1) {
+        window.onerror(`Pat break`);
         playback.pos++;
     }
     if (rowPlay.patLoop) {
@@ -180,8 +182,10 @@ function processRow(playback) {
         playback.row = 0;
         playback.pos++;
     }
-    if (playback.pos >= playback.mod.sequence.length)
+    if (playback.pos >= playback.mod.sequence.length) {
+        window.onerror(`Loop song`);
         playback.pos = 0; // loop song
+    }
 }
 
 /**
