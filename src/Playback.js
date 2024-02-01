@@ -1,6 +1,7 @@
 "use strict";
 
 // https://github.com/johnnovak/nim-mod/blob/master/doc/Protracker%20effects%20(FireLight)%20(.mod).txt
+// https://padenot.github.io/web-audio-perf/
 
 const masterGain = 0.5;
 
@@ -44,7 +45,9 @@ ChannelPlayback.prototype = {
     sample: 0,
     pitch: 0,
     period: 0,
+    scheduledPeriod: -1,
     volume: 0,
+    scheduledVolume: -1,
     oscTick: 0,
     memPort: 0,     // 3xx, 5xx
     memVibSpeed: 0, // 4xx, 6xx
@@ -333,7 +336,9 @@ function processCellAll(playback, channel, cell, tick) {
         volume = Math.max(Math.min(volume, maxVolume), 0);
         channel.oscTick += channel.memTremSpeed;
     }
-    channel.gain.gain.setValueAtTime(masterGain * volume / maxVolume, playback.time);
+    if (volume != channel.scheduledVolume)
+        channel.gain.gain.setValueAtTime(masterGain * volume / maxVolume, playback.time);
+    channel.scheduledVolume = channel.volume;
 
     if (channel.source) {
         let period = channel.period;
@@ -341,7 +346,9 @@ function processCellAll(playback, channel, cell, tick) {
             period += calcOscillator(channel.oscTick) * channel.memVibDepth * 2;
             channel.oscTick += channel.memVibSpeed;
         }
-        channel.source.playbackRate.setValueAtTime(basePeriod / period, playback.time);
+        if (period != channel.scheduledPeriod)
+            channel.source.playbackRate.setValueAtTime(basePeriod / period, playback.time);
+        channel.scheduledPeriod = channel.period;
     }
 }
 
