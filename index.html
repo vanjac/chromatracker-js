@@ -51,8 +51,9 @@
   function loadFile() {
     /** @type File */
     let file = document.querySelector('#file-select').files[0];
-    file.arrayBuffer().then(b => {
-      module = readModule(b);
+    let reader = new FileReader();
+    reader.onload = () => {
+      module = readModule(reader.result);
       console.log(module);
 
       query('#title').textContent = module.name;
@@ -74,7 +75,8 @@
       }
 
       play();
-    });
+    };
+    reader.readAsArrayBuffer(file);
   }
 
   function play(resume) {
