@@ -104,7 +104,16 @@ function initPlayback(context, mod) {
 function stopPlayback(playback) {
     for (let channel of playback.channels) {
         for (let source of channel.activeSources) {
-            source.stop();
+            try {
+                source.stop();
+            } catch (e) {
+                // bug found on iOS 12, can't stop before sample has started
+                // https://stackoverflow.com/a/59653104/11525734
+                // will this leak memory for looping samples?
+                console.error(e);
+                source.disconnect();
+                channel.activeSources.delete(source);
+            }
         }
     }
 }
