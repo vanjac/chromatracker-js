@@ -37,7 +37,8 @@
 </div>
 <div>
   Jam pitch: <input type="number" size="6" value="36" id="jam-pitch">
-  <button onmousedown="jamDown()" onmouseup="jamUp()">Jam</button>
+  <button onmousedown="jamDown(event)" onmouseup="jamUp(event)"
+    ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
 </div>
 <div id="errors">
   Errors:</br>
@@ -146,7 +147,8 @@
       setChannelMute(playback, channel, !checked);
   }
 
-  function jamDown() {
+  function jamDown(e) {
+    e.preventDefault();
     if (playback) {
       let s = query('#samples').selectedIndex;
       if (s > 0)
@@ -154,7 +156,8 @@
     }
   }
 
-  function jamUp() {
+  function jamUp(e) {
+    e.preventDefault();
     if (playback)
       jamRelease(playback);
   }
