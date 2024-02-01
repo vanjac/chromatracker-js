@@ -33,11 +33,19 @@
   <input type="checkbox" onchange="muteCheck(2, this.checked)" checked>
   <input type="checkbox" onchange="muteCheck(3, this.checked)" checked>
 </div>
+<div id="errors">
+  Errors:</br>
+</div>
 
 <script>
   "use strict";
 
   const query = s => document.querySelector(s);
+
+  window.onerror = (message, source, line) => {
+    query('#errors').insertAdjacentHTML('beforeend',
+      `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
+  };
 
   let module;
   let context;
