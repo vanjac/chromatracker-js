@@ -40,7 +40,7 @@ ChannelPlayback.prototype = {
     source: null,
     /** @type {GainNode} */
     gain: null,
-    /** @type {StereoPannerNode} */
+    /** @type {StereoPannerNode|PannerNode} */
     pan: null,
     sample: 0,
     pitch: 0,
@@ -80,14 +80,18 @@ function initPlayback(context, mod) {
     for (let c = 0; c < mod.numChannels; c++) {
         let channel = new ChannelPlayback();
         playback.channels.push(channel);
-        channel.pan = context.createStereoPanner();
+        let pan = ((c % 4) == 0 || (c % 4) == 3) ? -0.5 : 0.5;
+        if (context.createStereoPanner) {
+            channel.pan = context.createStereoPanner();
+            channel.pan.pan.value = pan;
+        } else {
+            channel.pan = context.createPanner();
+            channel.pan.panningModel = 'equalpower';
+            channel.pan.setPosition(pan, 0, 1 - Math.abs(pan));
+        }
         channel.pan.connect(context.destination);
         channel.gain = context.createGain();
         channel.gain.connect(channel.pan);
-        if ((c % 4) == 0 || (c % 4) == 3)
-            channel.pan.pan.value = -0.5;
-        else
-            channel.pan.pan.value = 0.5;
     }
     playback.time = context.currentTime;
 
