@@ -100,7 +100,7 @@
       return;
     if (!context) {
       let AudioContext = window.AudioContext || window.webkitAudioContext;
-      context = new AudioContext({latencyHint: 'playback'});
+      context = new AudioContext({latencyHint: 'interactive'});
     }
     if (intervalHandle)
       stop();
