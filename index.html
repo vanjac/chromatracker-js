@@ -102,33 +102,34 @@
       let AudioContext = window.AudioContext || window.webkitAudioContext;
       context = new AudioContext({latencyHint: 'interactive'});
     }
-    if (intervalHandle)
-      stop();
-    playback = initPlayback(context, module);
-    if (resume) {
-      playback.pos = query('#sequence').selectedIndex;
-      if (playback.pos == -1) playback.pos = 0;
-      playback.row = query('#row').valueAsNumber;
-      playback.tempo = query('#tempo').valueAsNumber;
-      playback.speed = query('#speed').valueAsNumber;
-    }
-
-    let process = () => {
-      while (queuedTime < context.currentTime + 0.5) {
-        queuedTime = playback.time;
-        let {pos, row} = playback;
-        processRow(playback);
-        let {tempo, speed} = playback;
-        queuedLines.push({time: queuedTime, pos, row, tempo, speed});
+    // for iOS:
+    context.resume().then(() => {
+      if (intervalHandle)
+        stop();
+      playback = initPlayback(context, module);
+      if (resume) {
+        playback.pos = query('#sequence').selectedIndex;
+        if (playback.pos == -1) playback.pos = 0;
+        playback.row = query('#row').valueAsNumber;
+        playback.tempo = query('#tempo').valueAsNumber;
+        playback.speed = query('#speed').valueAsNumber;
       }
-      query('#queued').textContent = queuedTime.toFixed(3);
-    };
-    process();
-    intervalHandle = setInterval(process, 200);
 
-    animHandle = requestAnimationFrame(update);
+      let process = () => {
+        while (queuedTime < context.currentTime + 0.5) {
+          queuedTime = playback.time;
+          let {pos, row} = playback;
+          processRow(playback);
+          let {tempo, speed} = playback;
+          queuedLines.push({time: queuedTime, pos, row, tempo, speed});
+        }
+        query('#queued').textContent = queuedTime.toFixed(3);
+      };
+      process();
+      intervalHandle = setInterval(process, 200);
 
-    context.resume(); // for iOS
+      animHandle = requestAnimationFrame(update);
+    })
   }
 
   function stop() {
