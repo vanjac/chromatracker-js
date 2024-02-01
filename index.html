@@ -35,6 +35,10 @@
   <input type="checkbox" onchange="muteCheck(2, this.checked)" checked>
   <input type="checkbox" onchange="muteCheck(3, this.checked)" checked>
 </div>
+<div>
+  Jam pitch: <input type="number" size="6" value="36" id="jam-pitch">
+  <button onmousedown="jamDown()" onmouseup="jamUp()">Jam</button>
+</div>
 <div id="errors">
   Errors:</br>
 </div>
@@ -97,7 +101,7 @@
       let AudioContext = window.AudioContext || window.webkitAudioContext;
       context = new AudioContext({latencyHint: 'playback'});
     }
-    if (playback)
+    if (intervalHandle)
       stop();
     playback = initPlayback(context, module);
     if (resume) {
@@ -127,19 +131,32 @@
   }
 
   function stop() {
-    if (playback) {
+    if (intervalHandle) {
       stopPlayback(playback);
       clearInterval(intervalHandle);
       cancelAnimationFrame(animHandle);
       queuedLines = [];
       queuedTime = 0;
-      playback = null;
+      intervalHandle = null;
     }
   }
 
   function muteCheck(channel, checked) {
     if (playback)
       setChannelMute(playback, channel, !checked);
+  }
+
+  function jamDown() {
+    if (playback) {
+      let s = query('#samples').selectedIndex;
+      if (s > 0)
+        jamPlay(playback, s, query('#jam-pitch').valueAsNumber);
+    }
+  }
+
+  function jamUp() {
+    if (playback)
+      jamRelease(playback);
   }
 
   function update() {

@@ -16,12 +16,16 @@ function Playback() {
     this.samples = [];
     /** @type {ChannelPlayback[]} */
     this.channels = [];
+    /** @type {Set<AudioBufferSourceNode>} */
+    this.jamSources = new Set();
 }
 Playback.prototype = {
     /** @type {AudioContext} */
     ctx: null,
     /** @type {Module} */
     mod: null,
+    /** @type {GainNode} */
+    jamGain: null,
     tempo: 125,
     speed: 6,
     pos: 0,
@@ -93,6 +97,9 @@ function initPlayback(context, mod) {
         channel.gain = context.createGain();
         channel.gain.connect(channel.pan);
     }
+    playback.jamGain = context.createGain();
+    playback.jamGain.connect(context.destination);
+    playback.jamGain.gain.value = masterGain;
     playback.time = context.currentTime;
 
     return playback;
@@ -109,6 +116,7 @@ function stopPlayback(playback) {
             } catch (e) {
                 // bug found on iOS 12, can't stop before sample has started
                 // https://stackoverflow.com/a/59653104/11525734
+                // https://github.com/webaudio/web-audio-api/issues/15
                 // will this leak memory for looping samples?
                 console.error(e);
                 source.disconnect();
@@ -246,7 +254,7 @@ function processCellFirst(playback, channel, cell, row) {
                 case 0x5: {
                     let finetune = loParam;
                     finetune = (finetune >= 8) ? (finetune - 8) : (finetune + 8);
-                    channel.period = periodTable[finetune + 8][channel.pitch];
+                    channel.period = pitchToPeriod(channel.pitch, finetune);
                     break;
                 }
                 case 0x6:
@@ -298,7 +306,7 @@ function processCellRest(playback, channel, cell, tick) {
             break;
         case 0x3:
         case 0x5: {
-            let target = periodTable[sample.finetune + 8][channel.pitch];
+            let target = pitchToPeriod(channel.pitch, sample.finetune);
             if (target > channel.period)
                 channel.period = Math.min(channel.period + channel.memPort, target);
             else
@@ -340,7 +348,7 @@ function processCellAll(playback, channel, cell, tick) {
         let pitchOffset = (tick % 3 == 1) ? (cell.param >> 4) :
             (tick % 3 == 2) ? (cell.param & 0xf) : 0;
         let sample = playback.mod.samples[channel.sample];
-        channel.period = periodTable[sample.finetune + 8][channel.pitch + pitchOffset];
+        channel.period = pitchToPeriod(channel.pitch + pitchOffset, sample.finetune);
     }
 
     let volume = channel.volume;
@@ -360,9 +368,31 @@ function processCellAll(playback, channel, cell, tick) {
             channel.oscTick += channel.memVibSpeed;
         }
         if (period != channel.scheduledPeriod)
-            channel.source.playbackRate.setValueAtTime(basePeriod / period, playback.time);
+            channel.source.playbackRate.setValueAtTime(periodToRate(period), playback.time);
         channel.scheduledPeriod = period;
     }
+}
+
+/**
+ * @param {number} pitch
+ * @param {number} finetune
+ */
+function pitchToPeriod(pitch, finetune) {
+    return periodTable[finetune + 8][pitch];
+}
+
+/**
+ * @param {number} period
+ */
+function periodToRate(period) {
+    return basePeriod / period;
+}
+
+/**
+ * @param {number} tick
+ */
+function calcOscillator(tick) {
+    return Math.sin(tick * Math.PI / 32);
 }
 
 /**
@@ -395,7 +425,7 @@ function playNote(playback, channel, offset) {
     channel.source.connect(channel.gain);
     channel.source.start(playback.time, offset);
     let sample = playback.mod.samples[channel.sample];
-    channel.period = periodTable[sample.finetune + 8][channel.pitch];
+    channel.period = pitchToPeriod(channel.pitch, sample.finetune);
     channel.scheduledPeriod = -1;
     channel.oscTick = 0; // retrigger
 }
@@ -423,8 +453,22 @@ function createNoteSource(playback, s, sourceSet) {
 }
 
 /**
- * @param {number} tick
+ * @param {Playback} playback
+ * @param {number} s
+ * @param {number} pitch
  */
-function calcOscillator(tick) {
-    return Math.sin(tick * Math.PI / 32);
+function jamPlay(playback, s, pitch) {
+    let source = createNoteSource(playback, s, playback.jamSources);
+    source.connect(playback.jamGain);
+    let sample = playback.mod.samples[s];
+    source.playbackRate.value = periodToRate(pitchToPeriod(pitch, sample.finetune));
+    source.start();
+}
+
+/**
+ * @param {Playback} playback
+ */
+function jamRelease(playback) {
+    for (let source of playback.jamSources)
+        source.stop();
 }
