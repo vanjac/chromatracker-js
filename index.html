@@ -66,7 +66,17 @@
 
   function loadFile() {
     /** @type File */
-    let file = document.querySelector('#file-select').files[0];
+    let files = document.querySelector('#file-select').files;
+    if (files.length) {
+      readModuleBlob(files[0]);
+    } else {
+      fetch('https://chroma.zone/share/space_debris.mod').then(
+        r => r.blob().then(
+          b => readModuleBlob(b)));
+    }
+  }
+
+  function readModuleBlob(blob) {
     let reader = new FileReader();
     reader.onload = () => {
       module = readModule(reader.result);
@@ -92,7 +102,7 @@
 
       play();
     };
-    reader.readAsArrayBuffer(file);
+    reader.readAsArrayBuffer(blob);
   }
 
   function play(resume) {
