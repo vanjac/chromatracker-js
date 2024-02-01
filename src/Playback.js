@@ -165,7 +165,6 @@ function processRow(playback) {
         window.onerror(`Pos jump to ${rowPlay.posJump}`);
         playback.pos = rowPlay.posJump;
     } else if (rowPlay.patBreak != -1) {
-        window.onerror(`Pat break`);
         playback.pos++;
     }
     if (rowPlay.patLoop) {
@@ -182,10 +181,8 @@ function processRow(playback) {
         playback.row = 0;
         playback.pos++;
     }
-    if (playback.pos >= playback.mod.sequence.length) {
-        window.onerror(`Loop song`);
+    if (playback.pos >= playback.mod.sequence.length)
         playback.pos = 0; // loop song
-    }
 }
 
 /**
@@ -222,6 +219,7 @@ function processCellFirst(playback, channel, cell, row) {
                 channel.memTremDepth = loParam;
             break;
         case 0xB:
+            window.onerror(`Pos jump from cell event`);
             row.posJump = cell.param;
             break;
         case 0xC:
