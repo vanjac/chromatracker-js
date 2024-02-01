@@ -162,7 +162,6 @@ function processRow(playback) {
     }
 
     if (rowPlay.posJump != -1) {
-        window.onerror(`Pos jump to ${rowPlay.posJump}`);
         playback.pos = rowPlay.posJump;
     } else if (rowPlay.patBreak != -1) {
         playback.pos++;
@@ -219,7 +218,6 @@ function processCellFirst(playback, channel, cell, row) {
                 channel.memTremDepth = loParam;
             break;
         case 0xB:
-            window.onerror(`Pos jump from cell event`);
             row.posJump = cell.param;
             break;
         case 0xC:
