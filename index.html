@@ -122,6 +122,8 @@
     intervalHandle = setInterval(process, 200);
 
     animHandle = requestAnimationFrame(update);
+
+    context.resume(); // for iOS
   }
 
   function stop() {
