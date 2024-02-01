@@ -27,6 +27,8 @@
 <div>Tempo: <input type="number" size="6" id="tempo"></div>
 <div>Speed: <input type="number" size="6" id="speed"></div>
 <div>Active samplers: <span id="samplers"></span></div>
+<div>Time: <span id="time"></span></div>
+<div>Queued time: <span id="queued"></span></div>
 <div>
   <input type="checkbox" onchange="muteCheck(0, this.checked)" checked>
   <input type="checkbox" onchange="muteCheck(1, this.checked)" checked>
@@ -114,6 +116,7 @@
         let {tempo, speed} = playback;
         queuedLines.push({time: queuedTime, pos, row, tempo, speed});
       }
+      query('#queued').textContent = queuedTime.toFixed(3);
     };
     process();
     intervalHandle = setInterval(process, 200);
@@ -157,5 +160,6 @@
     for (let channel of playback.channels)
       activeSources += channel.activeSources.size;
     query('#samplers').textContent = activeSources;
+    query('#time').textContent = context.currentTime.toFixed(3);
   }
 </script>
