@@ -91,8 +91,10 @@
   function play(resume) {
     if (!module)
       return;
-    if (!context)
+    if (!context) {
+      let AudioContext = window.AudioContext || window.webkitAudioContext;
       context = new AudioContext({latencyHint: 'playback'});
+    }
     if (playback)
       stop();
     playback = initPlayback(context, module);
