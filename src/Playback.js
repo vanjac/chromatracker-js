@@ -338,7 +338,7 @@ function processCellAll(playback, channel, cell, tick) {
     }
     if (volume != channel.scheduledVolume)
         channel.gain.gain.setValueAtTime(masterGain * volume / maxVolume, playback.time);
-    channel.scheduledVolume = channel.volume;
+    channel.scheduledVolume = volume;
 
     if (channel.source) {
         let period = channel.period;
@@ -348,7 +348,7 @@ function processCellAll(playback, channel, cell, tick) {
         }
         if (period != channel.scheduledPeriod)
             channel.source.playbackRate.setValueAtTime(basePeriod / period, playback.time);
-        channel.scheduledPeriod = channel.period;
+        channel.scheduledPeriod = period;
     }
 }
 
