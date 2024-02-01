@@ -383,6 +383,7 @@ function playNote(playback, channel, offset) {
     channel.source.start(playback.time, offset);
     let sample = playback.mod.samples[channel.sample];
     channel.period = periodTable[sample.finetune + 8][channel.pitch];
+    channel.scheduledPeriod = -1;
     channel.oscTick = 0; // retrigger
 }
 
