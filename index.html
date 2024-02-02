@@ -42,7 +42,9 @@
   <input type="checkbox" onchange="muteCheck(3, this.checked)" checked>
 </div>
 <div>
-  Jam pitch: <input type="number" size="6" value="36" id="jam-pitch">
+  Jam pitch:
+  <input type="range" min="0" max="59" id="jam-pitch-range" oninput="query('#jam-pitch').value=this.value">
+  <input type="number" size="6" value="36" id="jam-pitch" oninput="query('#jam-pitch-range').value=this.value">
   <button onmousedown="jamDown(event)" onmouseup="jamUp(event)"
     ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
 </div>
