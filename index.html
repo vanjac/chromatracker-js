@@ -15,6 +15,7 @@
 <script src="src/ModLoader.js"></script>
 <script src="src/ModWriter.js"></script>
 <script src="src/Playback.js"></script>
+<script src="src/View.js"></script>
 
 <div>
   <input id="file-select" type="file">
@@ -48,6 +49,7 @@
   <button onmousedown="jamDown(event)" onmouseup="jamUp(event)"
     ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
 </div>
+<textarea cols="48" rows="16" id="pattern" style="white-space:pre" autocomplete="off"></textarea>
 <div id="errors">
   Errors:<br>
 </div>
@@ -71,6 +73,8 @@
 
   let queuedTime = 0;
   let queuedLines = [];
+
+  let curPattern = -1;
 
   function loadFile() {
     /** @type File */
@@ -107,6 +111,8 @@
         option.textContent = i + ': ' + (sample ? sample.name : '(none)');
         samplesElem.appendChild(option);
       }
+
+      curPattern = -1;
 
       play();
     };
@@ -202,6 +208,22 @@
       query('#row').value = curLine.row;
       query('#tempo').value = curLine.tempo;
       query('#speed').value = curLine.speed;
+
+      let p = module.sequence[curLine.pos];
+      if (p != curPattern) {
+        console.log('update pattern');
+        curPattern = p;
+        let pattern = module.patterns[p];
+        let str = '';
+        for (let row = 0; row < numRows; row++) {
+          for (let c = 0; c < module.numChannels; c++) {
+            let cell = pattern[c][row];
+            str += cellString(cell) + '  ';
+          }
+          str += '\n';
+        }
+        query('#pattern').value = str;
+      }
     }
     let activeSources = 0;
     for (let channel of playback.channels)
