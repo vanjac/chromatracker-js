@@ -13,13 +13,19 @@
 <script src="src/Module.js"></script>
 <script src="src/PeriodTable.js"></script>
 <script src="src/ModLoader.js"></script>
+<script src="src/ModWriter.js"></script>
 <script src="src/Playback.js"></script>
 
-<input id="file-select" type="file">
-<button onclick="loadFile()">Load</button><br>
-<button onclick="play()">Play</button>
-<button onclick="play(true)">Play from</button>
-<button onclick="stop()">Stop</button><br>
+<div>
+  <input id="file-select" type="file">
+  <button onclick="loadFile()">Load</button>
+  <button onclick="saveFile()">Save</button>
+</div>
+<div>
+  <button onclick="play()">Play</button>
+  <button onclick="play(true)">Play from</button>
+  <button onclick="stop()">Stop</button>
+</div>
 <div>Title: <span id="title"></span></div>
 <select id="sequence" size="10" style="width:30pt"></select>
 <select id="samples" size="10" style="width:130pt"></select>
@@ -41,7 +47,7 @@
     ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
 </div>
 <div id="errors">
-  Errors:</br>
+  Errors:<br>
 </div>
 
 <script>
@@ -103,6 +109,11 @@
       play();
     };
     reader.readAsArrayBuffer(blob);
+  }
+
+  function saveFile() {
+    let blob = new Blob([writeModule(module)], {type: 'application/octet-stream'});
+    window.open(URL.createObjectURL(blob));
   }
 
   function play(resume) {

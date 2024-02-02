@@ -8,7 +8,7 @@ const periodToPitch = new Map();
 for (let p = 0; p < periodTable[8].length; p++)
     periodToPitch.set(periodTable[8][p], p);
 
-const utf8Decode = new TextDecoder();
+const textDecode = new TextDecoder();
 
 /**
  * Read a null-terminated UTF-8 string
@@ -21,7 +21,7 @@ function readStringZ(buf, start, length) {
     let strlen = 0;
     while (strlen < length && u8[strlen] != 0)
         strlen++;
-    return utf8Decode.decode(new DataView(buf, start, strlen));
+    return textDecode.decode(new DataView(buf, start, strlen));
 }
 
 /**
@@ -38,7 +38,7 @@ function readModule(buf) {
     // TODO: should this also include entries past songLen?
     let numPatterns = Math.max(...module.sequence) + 1;
 
-    let initials = utf8Decode.decode(new DataView(buf, 1080, 4));
+    let initials = textDecode.decode(new DataView(buf, 1080, 4));
     if (initials.slice(1) == 'CHN') {
         module.numChannels = parseInt(initials[0], 10);
     } else if (initials.slice(2) == 'CH') {
@@ -47,7 +47,6 @@ function readModule(buf) {
         module.numChannels = 8;
     }
 
-    // TODO: get num channels
     let patternSize = module.numChannels * numRows * 4;
     for (let p = 0; p < numPatterns; p++) {
         let patOff = 1084 + patternSize * p;
