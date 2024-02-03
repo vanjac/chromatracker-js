@@ -26,18 +26,21 @@ Cell.prototype = {
 };
 
 /**
- * @typedef {Cell[][]} Pattern
+ * @typedef {Readonly<Cell>[]} Channel
  */
 
-function Module() {
-    /** @type {number[]} */
-    this.sequence = [];
-    /** @type {Pattern[]} */
-    this.patterns = [];
-    /** @type {Sample[]} */
-    this.samples = [];
-}
+/**
+ * @typedef {Readonly<Channel>[]} Pattern
+ */
+
+function Module() {}
 Module.prototype = {
     name: "",
     numChannels: 4,
+    /** @type {readonly number[]} */
+    sequence: Object.freeze([]),
+    /** @type {readonly Readonly<Pattern>[]} */
+    patterns: Object.freeze([]),
+    /** @type {readonly Readonly<Sample>[]} */
+    samples: Object.freeze([]),
 };

@@ -34,7 +34,7 @@ function readModule(buf) {
     module.name = readStringZ(buf, 0, 20);
 
     let songLen = Math.min(view.getUint8(950), numSongPositions);
-    module.sequence = Array.from(new Uint8Array(buf, 952, songLen));
+    module.sequence = Object.freeze(Array.from(new Uint8Array(buf, 952, songLen)));
     // TODO: should this also include entries past songLen?
     let numPatterns = Math.max(...module.sequence) + 1;
 
@@ -44,21 +44,19 @@ function readModule(buf) {
         module.numChannels = parseInt(chanStr);
 
     let patternSize = module.numChannels * numRows * 4;
+    /** @type {Readonly<Pattern>[]} */
+    let patterns = [];
     for (let p = 0; p < numPatterns; p++) {
         let patOff = 1084 + patternSize * p;
         /** @type {Pattern} */
         let pat = [];
-        module.patterns.push(pat);
 
         for (let c = 0; c < module.numChannels; c++) {
-            /** @type {Cell[]} */
+            /** @type {Readonly<Cell>[]} */
             let chan = [];
-            pat.push(chan);
-
             for (let row = 0; row < numRows; row++) {
                 let cellOff = patOff + (c * 4) + (row * module.numChannels * 4);
                 let cell = new Cell();
-                chan.push(cell);
 
                 let w1 = view.getUint16(cellOff);
                 let b3 = view.getUint8(cellOff + 2);
@@ -67,16 +65,22 @@ function readModule(buf) {
                 cell.sample = (b3 >> 4) | (w1 >> 12 << 4);
                 cell.effect = b3 & 0xf;
                 cell.param = view.getUint8(cellOff + 3);
-            }
-        }
-    }
 
-    module.samples.push(null); // sample 0 is empty
+                chan.push(Object.freeze(cell));
+            }
+            pat.push(Object.freeze(chan));
+        }
+        patterns.push(Object.freeze(pat));
+    }
+    module.patterns = Object.freeze(patterns);
+
+    /** @type {Readonly<Sample>[]} */
+    let samples = [];
+    samples.push(null); // sample 0 is empty
     let wavePos = 1084 + patternSize * numPatterns;
     for (let s = 1; s < numSamples; s++) {
         let offset = s * 30 - 10;
         let sample = new Sample();
-        module.samples.push(sample);
 
         sample.name = readStringZ(buf, offset, 22);
         sample.length = view.getUint16(offset + 22) * 2;
@@ -90,9 +94,15 @@ function readModule(buf) {
             repLen = 0; // no loop
         sample.loopEnd = sample.loopStart + repLen * 2;
 
+        // TODO: what does this mean?
+        // "The data for a sample must _ALWAYS_ start with two zeros, as it is used for
+        //  repeating is the sample is to be terminated."
         sample.wave = new Int8Array(buf, wavePos, sample.length).slice();
         wavePos += sample.length;
+
+        samples.push(Object.freeze(sample));
     }
+    module.samples = Object.freeze(samples);
 
     return module;
 }

@@ -1,6 +1,7 @@
 "use strict";
 
 // https://github.com/johnnovak/nim-mod/blob/master/doc/Protracker%20effects%20(FireLight)%20(.mod).txt
+// https://wiki.openmpt.org/Development:_Test_Cases/MOD
 // https://padenot.github.io/web-audio-perf/
 
 const masterGain = 0.5;
