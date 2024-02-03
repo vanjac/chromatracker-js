@@ -21,7 +21,8 @@
 <script src="src/ModLoader.js"></script>
 <script src="src/ModWriter.js"></script>
 <script src="src/Playback.js"></script>
-<script src="src/View.js"></script>
+<script src="src/PatternView.js"></script>
+<script src="src/PatternEdit.js"></script>
 
 <div>
   <input id="file-select" type="file">
@@ -54,6 +55,7 @@
   <input type="number" size="6" value="36" id="jam-pitch" oninput="query('#jam-pitch-range').value=this.value">
   <button onmousedown="jamDown(event)" onmouseup="jamUp(event)"
     ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
+  <button onclick="writeCell()">Write</button>
 </div>
 <div style="height:200pt; overflow-y:auto;">
   <table id="pattern-table" style="font-family:monospace;"></table>
@@ -83,6 +85,7 @@
   let queuedLines = [];
 
   let curPattern = null;
+  let curPatternIdx = -1;
   let selRow = -1;
   let selChannel = -1;
 
@@ -217,29 +220,8 @@
       query('#tempo').value = curLine.tempo;
       query('#speed').value = curLine.speed;
 
-      let pattern = module.patterns[module.sequence[curLine.pos]];
-      if (pattern != curPattern) {
-        console.log('update pattern');
-        curPattern = pattern;
-        let table = query('#pattern-table');
-        table.textContent = '';
-        for (let row = 0; row < numRows; row++) {
-          let tr = document.createElement('tr');
-          table.appendChild(tr);
-          for (let c = 0; c < module.numChannels; c++) {
-            const c_row = row, c_c = c;
-            let cell = pattern[c][row];
-            let td = document.createElement('td');
-            td.textContent = cellString(cell);
-            td.onclick = () => {
-              selRow = c_row;
-              selChannel = c_c;
-              updateSelCell();
-            }
-            tr.appendChild(td);
-          }
-        }
-      }
+      curPatternIdx = module.sequence[curLine.pos];
+      refreshPattern();
     }
     let activeSources = 0;
     for (let channel of playback.channels)
@@ -248,10 +230,51 @@
     query('#time').textContent = context.currentTime.toFixed(3);
   }
 
+  function refreshPattern() {
+    let pattern = module.patterns[curPatternIdx];
+    if (pattern != curPattern) {
+      console.log('update pattern');
+      curPattern = pattern;
+      let table = query('#pattern-table');
+      table.textContent = '';
+      for (let row = 0; row < numRows; row++) {
+        let tr = document.createElement('tr');
+        table.appendChild(tr);
+        for (let c = 0; c < module.numChannels; c++) {
+          const c_row = row, c_c = c;
+          let cell = pattern[c][row];
+          let td = document.createElement('td');
+          td.textContent = cellString(cell);
+          td.onclick = () => {
+            selRow = c_row;
+            selChannel = c_c;
+            updateSelCell();
+          }
+          tr.appendChild(td);
+        }
+      }
+      updateSelCell();
+    }
+  }
+
   function updateSelCell() {
     let existing = query('.sel-cell');
     if (existing)
       existing.classList.remove('sel-cell');
-    query('#pattern-table').children[selRow].children[selChannel].classList.add('sel-cell');
+    if (selRow >= 0 && selChannel >= 0)
+      query('#pattern-table').children[selRow].children[selChannel].classList.add('sel-cell');
+  }
+
+  function writeCell() {
+    let cell = new Cell();
+    cell.pitch = query('#jam-pitch').valueAsNumber;
+    cell.sample = query('#samples').selectedIndex;
+    if (cell.sample == -1)
+      cell.sample = 0;
+    module = editPutCell(module, curPatternIdx, selChannel, selRow, Object.freeze(cell));
+    console.log(module);
+    if (playback)
+      playback.module = module;
+    refreshPattern();
   }
 </script>
