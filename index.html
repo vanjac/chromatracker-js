@@ -16,6 +16,9 @@
   .sel-cell {
     background: pink;
   }
+  .hilite-row {
+    background: lightblue;
+  }
 </style>
 
 <script src="src/Module.js"></script>
@@ -288,6 +291,11 @@
 
       curPatternIdx = module.sequence[curLine.pos];
       refreshPattern();
+      
+      let oldHilite = query('.hilite-row');
+      if (oldHilite)
+        oldHilite.classList.remove('hilite-row');
+      query('#pattern-table').children[curLine.row].classList.add('hilite-row');
     }
     let activeSources = 0;
     for (let channel of playback.channels)
