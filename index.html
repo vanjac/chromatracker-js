@@ -126,6 +126,9 @@
     ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
   <button style="flex-grow:1" onmousedown="jamDown(event); writeCell()" onmouseup="jamUp(event)"
     ontouchstart="jamDown(event); writeCell()" ontouchend="jamUp(event)">Write</button>
+  <button style="flex-grow:1" onclick="clearCell()">Clear</button>
+  <button style="flex-grow:1" onmousedown="liftCell(); jamDown(event)" onmouseup="jamUp(event)"
+    ontouchstart="liftCell(); jamDown(event)" ontouchend="jamUp(event)">Lift</button>
 </div>
 <div style="height:200pt; overflow-y:auto;">
   <table id="pattern-table" style="font-family:monospace;"></table>
@@ -354,7 +357,8 @@
           Object.freeze(new Cell()))))))); // lisp is so cool
     newMod.sequence = Object.freeze([...Array(16).keys()]);
     module = newMod;
-    playback.module = newMod;
+    if (playback)
+      playback.module = module;
     refreshSequence();
     refreshPattern();
   }
@@ -370,10 +374,30 @@
     cell.param = query('#param0').selectedIndex << 4;
     cell.param |= query('#param1').selectedIndex;
     module = editPutCell(module, curPatternIdx, selChannel, selRow, Object.freeze(cell));
-    console.log(module);
     if (playback)
       playback.module = module;
     selRow++;
     refreshPattern();
+  }
+
+  function clearCell() {
+    module = editPutCell(module, curPatternIdx, selChannel, selRow, Object.freeze(new Cell()));
+    if (playback)
+      playback.module = module;
+    selRow++;
+    refreshPattern();
+  }
+
+  function liftCell() {
+    let cell = module.patterns[curPatternIdx][selChannel][selRow];
+    query('#pitch-enable').checked = cell.pitch >= 0;
+    if (cell.pitch >= 0) {
+      query('#jam-pitch').value = cell.pitch;
+    }
+    if (cell.sample)
+      query('#samples').selectedIndex = cell.sample;
+    query('#effect').selectedIndex = cell.effect;
+    query('#param0').selectedIndex = cell.param >> 4;
+    query('#param1').selectedIndex = cell.param & 0xf;
   }
 </script>
