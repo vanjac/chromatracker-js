@@ -52,14 +52,73 @@
   <input type="checkbox" onchange="muteCheck(3, this.checked)" checked>
 </div>
 <div style="display:flex">
-  Jam pitch:
+  <label for="pitch-enable">Pitch</label>
+  <input type="checkbox" checked id="pitch-enable">
   <input style="flex-grow:1" type="range" min="0" max="59" id="jam-pitch-range"
     oninput="query('#jam-pitch').value=this.value;jamUp();jamDown()"
     onmousedown="jamDown()" onmouseup="jamUp()" ontouchstart="jamDown()" ontouchend="jamUp()">
-  <input type="number" size="6" value="36" id="jam-pitch" oninput="query('#jam-pitch-range').value=this.value">
-  <button onmousedown="jamDown(event)" onmouseup="jamUp(event)"
+  <input style="width:36pt;" type="number" value="36" id="jam-pitch" oninput="query('#jam-pitch-range').value=this.value">
+</div>
+<div>
+  <select id="effect">
+    <option>0: Arpeggio</option>
+    <option>1: Port Up</option>
+    <option>2: Port Down</option>
+    <option>3: Tone Port</option>
+    <option>4: Vibrato</option>
+    <option>5: Volslide+Toneport</option>
+    <option>6: Volslide+Vibrato</option>
+    <option>7: Tremolo</option>
+    <option>8: Panning</option>
+    <option>9: Offset</option>
+    <option>A: Volume Slide</option>
+    <option>B: Position Jump</option>
+    <option>C: Volume</option>
+    <option>D: Pattern Break</option>
+    <option>E: Extended</option>
+    <option>F: Tempo</option>
+  </select>
+  <select id="param0">
+    <option>0</option>
+    <option>1</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+    <option>6</option>
+    <option>7</option>
+    <option>8</option>
+    <option>9</option>
+    <option>A</option>
+    <option>B</option>
+    <option>C</option>
+    <option>D</option>
+    <option>E</option>
+    <option>F</option>
+  </select>
+  <select id="param1">
+    <option>0</option>
+    <option>1</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+    <option>6</option>
+    <option>7</option>
+    <option>8</option>
+    <option>9</option>
+    <option>A</option>
+    <option>B</option>
+    <option>C</option>
+    <option>D</option>
+    <option>E</option>
+    <option>F</option>
+  </select>
+</div>
+<div style="display:flex">
+  <button style="flex-grow:1" onmousedown="jamDown(event)" onmouseup="jamUp(event)"
     ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
-  <button onmousedown="jamDown(event); writeCell()" onmouseup="jamUp(event)"
+  <button style="flex-grow:1" onmousedown="jamDown(event); writeCell()" onmouseup="jamUp(event)"
     ontouchstart="jamDown(event); writeCell()" ontouchend="jamUp(event)">Write</button>
 </div>
 <div style="height:200pt; overflow-y:auto;">
@@ -274,10 +333,14 @@
 
   function writeCell() {
     let cell = new Cell();
-    cell.pitch = query('#jam-pitch').valueAsNumber;
+    if (query('#pitch-enable').checked)
+      cell.pitch = query('#jam-pitch').valueAsNumber;
     cell.sample = query('#samples').selectedIndex;
     if (cell.sample == -1)
       cell.sample = 0;
+    cell.effect = query('#effect').selectedIndex;
+    cell.param = query('#param0').selectedIndex << 4;
+    cell.param |= query('#param1').selectedIndex;
     module = editPutCell(module, curPatternIdx, selChannel, selRow, Object.freeze(cell));
     console.log(module);
     if (playback)
