@@ -8,6 +8,12 @@
     overflow: hidden;
     position: fixed;
   }
+  td {
+    border: 1px solid black;
+  }
+  .sel-cell {
+    background: pink;
+  }
 </style>
 
 <script src="src/Module.js"></script>
@@ -49,7 +55,9 @@
   <button onmousedown="jamDown(event)" onmouseup="jamUp(event)"
     ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
 </div>
-<textarea cols="48" rows="16" id="pattern" style="white-space:pre" autocomplete="off"></textarea>
+<div style="height:200pt; overflow-y:auto;">
+  <table id="pattern-table" style="font-family:monospace;"></table>
+</div>
 <div id="errors">
   Errors:<br>
 </div>
@@ -74,7 +82,9 @@
   let queuedTime = 0;
   let queuedLines = [];
 
-  let curPattern = -1;
+  let curPattern = null;
+  let selRow = -1;
+  let selChannel = -1;
 
   function loadFile() {
     /** @type File */
@@ -111,8 +121,6 @@
         option.textContent = i + ': ' + (sample ? sample.name : '(none)');
         samplesElem.appendChild(option);
       }
-
-      curPattern = -1;
 
       play();
     };
@@ -209,19 +217,28 @@
       query('#tempo').value = curLine.tempo;
       query('#speed').value = curLine.speed;
 
-      let p = module.sequence[curLine.pos];
-      if (p != curPattern) {
-        curPattern = p;
-        let pattern = module.patterns[p];
-        let str = '';
+      let pattern = module.patterns[module.sequence[curLine.pos]];
+      if (pattern != curPattern) {
+        console.log('update pattern');
+        curPattern = pattern;
+        let table = query('#pattern-table');
+        table.textContent = '';
         for (let row = 0; row < numRows; row++) {
+          let tr = document.createElement('tr');
+          table.appendChild(tr);
           for (let c = 0; c < module.numChannels; c++) {
+            const c_row = row, c_c = c;
             let cell = pattern[c][row];
-            str += cellString(cell) + '  ';
+            let td = document.createElement('td');
+            td.textContent = cellString(cell);
+            td.onclick = () => {
+              selRow = c_row;
+              selChannel = c_c;
+              updateSelCell();
+            }
+            tr.appendChild(td);
           }
-          str += '\n';
         }
-        query('#pattern').value = str;
       }
     }
     let activeSources = 0;
@@ -229,5 +246,12 @@
       activeSources += channel.activeSources.size;
     query('#samplers').textContent = activeSources;
     query('#time').textContent = context.currentTime.toFixed(3);
+  }
+
+  function updateSelCell() {
+    let existing = query('.sel-cell');
+    if (existing)
+      existing.classList.remove('sel-cell');
+    query('#pattern-table').children[selRow].children[selChannel].classList.add('sel-cell');
   }
 </script>
