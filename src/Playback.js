@@ -298,7 +298,6 @@ function processCellFirst(playback, channel, cell, row) {
 function processCellRest(playback, channel, cell, tick) {
     let hiParam = cell.param >> 4;
     let loParam = cell.param & 0xf;
-    let sample = playback.mod.samples[channel.sample];
     switch (cell.effect) {
         case 0x1:
             channel.period = Math.max(channel.period - cell.param, minPeriod);
@@ -308,13 +307,16 @@ function processCellRest(playback, channel, cell, tick) {
             break;
         case 0x3:
         case 0x5: {
-            let target = pitchToPeriod(channel.pitch, sample.finetune);
-            if (target > channel.period)
-                channel.period = Math.min(channel.period + channel.memPort, target);
-            else
-                channel.period = Math.max(channel.period - channel.memPort, target);
-            break;
+            if (channel.sample) {
+                let sample = playback.mod.samples[channel.sample];
+                let target = pitchToPeriod(channel.pitch, sample.finetune);
+                if (target > channel.period)
+                    channel.period = Math.min(channel.period + channel.memPort, target);
+                else
+                    channel.period = Math.max(channel.period - channel.memPort, target);
+            }
         }
+            break;
         case 0xE:
             switch (hiParam) {
                 case 0x9:
@@ -346,7 +348,7 @@ function processCellRest(playback, channel, cell, tick) {
  * @param {number} tick
  */
 function processCellAll(playback, channel, cell, tick) {
-    if (cell.effect == 0 && cell.param) {
+    if (cell.effect == 0 && cell.param && channel.sample) {
         let pitchOffset = (tick % 3 == 1) ? (cell.param >> 4) :
             (tick % 3 == 2) ? (cell.param & 0xf) : 0;
         let sample = playback.mod.samples[channel.sample];
@@ -420,6 +422,8 @@ function processCellNote(playback, channel, cell) {
  * @param {number} offset
  */
 function playNote(playback, channel, offset) {
+    if (!channel.sample)
+        return;
     if (channel.source) {
         channel.source.stop(playback.time);
     }
