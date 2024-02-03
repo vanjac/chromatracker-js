@@ -91,7 +91,7 @@
   function readModuleBlob(blob) {
     let reader = new FileReader();
     reader.onload = () => {
-      module = readModule(reader.result);
+      module = Object.freeze(readModule(reader.result));
       console.log(module);
 
       query('#title').textContent = module.name;

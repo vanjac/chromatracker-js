@@ -23,7 +23,7 @@ function Playback() {
 Playback.prototype = {
     /** @type {AudioContext} */
     ctx: null,
-    /** @type {Module} */
+    /** @type {Readonly<Module>} */
     mod: null,
     /** @type {GainNode} */
     jamGain: null,
@@ -73,7 +73,7 @@ RowPlayback.prototype = {
 
 /**
  * @param {AudioContext} context
- * @param {Module} mod
+ * @param {Readonly<Module>} mod
  */
 function initPlayback(context, mod) {
     let playback = new Playback();

@@ -18,7 +18,7 @@ function writeString(buf, start, length, string) {
 }
 
 /**
- * @param {Module} module
+ * @param {Readonly<Module>} module
  */
 function writeModule(module) {
     let buf = new ArrayBuffer(calcModuleSize(module));
@@ -87,7 +87,7 @@ function writeModule(module) {
 }
 
 /**
- * @param {Module} module
+ * @param {Readonly<Module>} module
  */
 function calcModuleSize(module) {
     let patternSize = module.numChannels * numRows * 4;
