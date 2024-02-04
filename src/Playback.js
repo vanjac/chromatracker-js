@@ -180,16 +180,18 @@ function processRow(playback) {
 
     // first tick
     let rowPlay = new RowPlayback();
-    for (let tick = 0; tick < playback.speed * (rowPlay.patDelay + 1); tick++) {
-        for (let c = 0; c < playback.mod.numChannels; c++) {
-            let cell = pattern[c][playback.row];
-            if (tick == 0)
-                processCellFirst(playback, playback.channels[c], cell, rowPlay);
-            else
-                processCellRest(playback, playback.channels[c], cell, tick);
-            processCellAll(playback, playback.channels[c], cell, tick);
+    for (let repeat = 0; repeat < rowPlay.patDelay + 1; repeat++) {
+        for (let tick = 0; tick < playback.speed; tick++) {
+            for (let c = 0; c < playback.mod.numChannels; c++) {
+                let cell = pattern[c][playback.row];
+                if (tick == 0 && repeat == 0)
+                    processCellFirst(playback, playback.channels[c], cell, rowPlay);
+                else
+                    processCellRest(playback, playback.channels[c], cell, tick);
+                processCellAll(playback, playback.channels[c], cell, tick);
+            }
+            playback.time += (60 / playback.tempo / 24);
         }
-        playback.time += (60 / playback.tempo / 24);
     }
 
     if (rowPlay.posJump != -1) {
@@ -298,6 +300,10 @@ function processCellFirst(playback, channel, cell, row) {
                     break;
                 case 0x8:
                     channel.panning = loParam * 0x11;
+                    break;
+                case 0x9:
+                    if (cell.pitch < 0 && loParam)
+                        playNote(playback, channel, 0);
                     break;
                 case 0xA:
                     channel.volume = Math.min(channel.volume + loParam, maxVolume);
@@ -410,7 +416,7 @@ function processCellAll(playback, channel, cell, tick) {
     if (channel.source) {
         let period = channel.period;
         let detune = 0;
-        if (cell.effect == 0x0 && cell.param && channel.sample) {
+        if (cell.effect == 0x0 && cell.param) {
             detune = (tick % 3 == 1) ? (cell.param >> 4) :
                 (tick % 3 == 2) ? (cell.param & 0xf) : 0;
         }
