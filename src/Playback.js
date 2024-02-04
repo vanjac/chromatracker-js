@@ -317,6 +317,13 @@ function processCellRest(playback, channel, cell, tick) {
             }
         }
             break;
+        case 0x4:
+        case 0x6:
+            channel.oscTick += channel.memVibSpeed;
+            break;
+        case 0x7:
+            channel.oscTick += channel.memTremSpeed;
+            break;
         case 0xE:
             switch (hiParam) {
                 case 0x9:
@@ -352,7 +359,6 @@ function processCellAll(playback, channel, cell, tick) {
     if (cell.effect == 0x7) { // tremolo
         volume += calcOscillator(channel.oscTick) * channel.memTremDepth * 4;
         volume = Math.max(Math.min(volume, maxVolume), 0);
-        channel.oscTick += channel.memTremSpeed;
     }
     if (volume != channel.scheduledVolume)
         channel.gain.gain.setValueAtTime(masterGain * volume / maxVolume, playback.time);
@@ -367,10 +373,8 @@ function processCellAll(playback, channel, cell, tick) {
             period = pitchToPeriod(channel.pitch + pitchOffset, sample.finetune);
         }
 
-        if (cell.effect == 0x4 || cell.effect == 0x6) { // vibrato
+        if (cell.effect == 0x4 || cell.effect == 0x6) // vibrato
             period += calcOscillator(channel.oscTick) * channel.memVibDepth * 2;
-            channel.oscTick += channel.memVibSpeed;
-        }
         if (period != channel.scheduledPeriod)
             channel.source.playbackRate.setValueAtTime(periodToRate(period), playback.time);
         channel.scheduledPeriod = period;
