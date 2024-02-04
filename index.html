@@ -41,9 +41,12 @@
   <button onclick="patternZap()">Pattern Zap</button>
 </div>
 <div>Title: <span id="title"></span></div>
-<select id="sequence" size="10" style="width:30pt"></select>
+<select id="sequence" size="10" style="width:30pt" oninput="refreshPattern()"></select>
 <select id="samples" size="10" style="width:130pt"></select>
-<div>Row: <input style="width:36pt;" type="number" id="row"></div>
+<div>
+  <input type="checkbox" checked id="follow">
+  <label for="follow">Follow playback</label>
+</div>
 <div>
   Tempo: <input style="width:36pt;" type="number" id="tempo">
   Speed: <input style="width:36pt;" type="number" id="speed">
@@ -158,9 +161,8 @@
   let queuedLines = [];
 
   let curPattern = null;
-  let curPatternIdx = -1;
-  let selRow = -1;
-  let selChannel = -1;
+  let selRow = 0;
+  let selChannel = 0;
 
   function loadFile() {
     /** @type File */
@@ -183,6 +185,7 @@
       query('#title').textContent = module.name;
 
       refreshSequence();
+      refreshPattern();
 
       let samplesElem = query('#samples');
       samplesElem.textContent = '';
@@ -191,6 +194,8 @@
         option.textContent = i + ': ' + (sample ? sample.name : '(none)');
         samplesElem.appendChild(option);
       }
+      if (samplesElem.selectedIndex == -1)
+        samplesElem.selectedIndex = 0;
 
       play();
     };
@@ -216,8 +221,7 @@
       playback = initPlayback(context, module);
       if (resume) {
         playback.pos = query('#sequence').selectedIndex;
-        if (playback.pos == -1) playback.pos = 0;
-        playback.row = query('#row').valueAsNumber;
+        playback.row = selRow;
         playback.tempo = query('#tempo').valueAsNumber;
         playback.speed = query('#speed').valueAsNumber;
       }
@@ -284,24 +288,32 @@
         i++;
       queuedLines.splice(0, i);
       let curLine = queuedLines[0];
-      query('#sequence').selectedIndex = curLine.pos;
-      query('#row').value = curLine.row;
+
       query('#tempo').value = curLine.tempo;
       query('#speed').value = curLine.speed;
 
-      curPatternIdx = module.sequence[curLine.pos];
-      refreshPattern();
-      
+      if (query('#follow').checked) {
+        selRow = curLine.row;
+        updateSelCell();
+        query('#sequence').selectedIndex = curLine.pos;
+        refreshPattern();
+      }
+
       let oldHilite = query('.hilite-row');
       if (oldHilite)
         oldHilite.classList.remove('hilite-row');
-      query('#pattern-table').children[curLine.row].classList.add('hilite-row');
+      if (selPattern() == module.sequence[curLine.pos])
+        query('#pattern-table').children[curLine.row].classList.add('hilite-row');
     }
     let activeSources = 0;
     for (let channel of playback.channels)
       activeSources += channel.activeSources.size;
     query('#samplers').textContent = activeSources;
     query('#time').textContent = context.currentTime.toFixed(3);
+  }
+
+  function selPattern() {
+    return module.sequence[query('#sequence').selectedIndex];
   }
 
   function refreshSequence() {
@@ -312,10 +324,12 @@
       option.textContent = pos;
       seqElem.appendChild(option);
     }
+    if (seqElem.selectedIndex == -1)
+      seqElem.selectedIndex = 0;
   }
 
   function refreshPattern() {
-    let pattern = module.patterns[curPatternIdx];
+    let pattern = module.patterns[selPattern()];
     if (pattern != curPattern) {
       console.log('update pattern');
       curPattern = pattern;
@@ -368,12 +382,10 @@
     if (query('#pitch-enable').checked)
       cell.pitch = query('#jam-pitch').valueAsNumber;
     cell.sample = query('#samples').selectedIndex;
-    if (cell.sample == -1)
-      cell.sample = 0;
     cell.effect = query('#effect').selectedIndex;
     cell.param = query('#param0').selectedIndex << 4;
     cell.param |= query('#param1').selectedIndex;
-    module = editPutCell(module, curPatternIdx, selChannel, selRow, Object.freeze(cell));
+    module = editPutCell(module, selPattern(), selChannel, selRow, Object.freeze(cell));
     if (playback)
       playback.module = module;
     selRow++;
@@ -381,7 +393,7 @@
   }
 
   function clearCell() {
-    module = editPutCell(module, curPatternIdx, selChannel, selRow, Object.freeze(new Cell()));
+    module = editPutCell(module, selPattern(), selChannel, selRow, Object.freeze(new Cell()));
     if (playback)
       playback.module = module;
     selRow++;
@@ -389,7 +401,7 @@
   }
 
   function liftCell() {
-    let cell = module.patterns[curPatternIdx][selChannel][selRow];
+    let cell = module.patterns[selPattern()][selChannel][selRow];
     query('#pitch-enable').checked = cell.pitch >= 0;
     if (cell.pitch >= 0) {
       query('#jam-pitch').value = cell.pitch;
