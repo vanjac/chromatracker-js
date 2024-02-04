@@ -1,0 +1,18 @@
+body {
+    width: 100%;
+    height: 100%;
+    margin:0;
+    overflow: hidden;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+}
+td {
+    border: 1px solid black;
+}
+.sel-cell {
+    background: pink;
+}
+.hilite-row {
+    background: lightblue;
+}
