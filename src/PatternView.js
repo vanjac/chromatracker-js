@@ -15,3 +15,25 @@ function cellString(cell) {
         (cell.effect || cell.param) ? ('0' + cell.param.toString(16).toUpperCase()) : '..';
     return `${noteStr}${octStr} ${smpStr} ${effStr}${prmStr}`;
 }
+
+/**
+ * @param {Module} module
+ * @param {Pattern} pattern
+ * @param {Element} table
+ * @param {(r: number, c: number) => void} onclick
+ */
+function makePatternTable(module, pattern, table, onclick) {
+    table.textContent = '';
+    for (let row = 0; row < numRows; row++) {
+        let tr = document.createElement('tr');
+        table.appendChild(tr);
+        for (let c = 0; c < module.numChannels; c++) {
+            let cell = pattern[c][row];
+            let td = document.createElement('td');
+            td.textContent = cellString(cell);
+            const c_row = row, c_c = c;
+            td.onclick = () => onclick(c_row, c_c);
+            tr.appendChild(td);
+        }
+    }
+}
