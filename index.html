@@ -194,7 +194,11 @@
       query('#title').textContent = module.name;
 
       refreshSequence();
+      query('#sequence').selectedIndex = 0;
+      selRow = 0;
+      selChannel = 0;
       refreshPattern();
+      scrollToSelCell();
 
       let samplesElem = query('#samples');
       samplesElem.textContent = '';
