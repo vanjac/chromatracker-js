@@ -62,8 +62,10 @@
     <input type="checkbox" onchange="muteCheck(3, this.checked)" checked>
   </div>
 </div>
-<div style="flex-grow:1; height:200pt; overflow-y:auto;">
+<div style="flex-grow:1; height:200pt; overflow-y:auto;" id="pattern-scroll">
+  <div style="height:50%"></div>
   <table id="pattern-table" style="font-family:monospace;"></table>
+  <div style="height:50%"></div>
 </div>
 <div>
   <div id="errors">
@@ -206,6 +208,8 @@
       if (samplesElem.selectedIndex == -1)
         samplesElem.selectedIndex = 0;
 
+      if (intervalHandle)
+        stop();
       if (!context) {
         let AudioContext = window.AudioContext || window.webkitAudioContext;
         context = new AudioContext({latencyHint: 'interactive'});
@@ -303,6 +307,7 @@
       if (query('#follow').checked) {
         selRow = curLine.row;
         updateSelCell();
+        scrollToSelCell();
         query('#sequence').selectedIndex = curLine.pos;
         refreshPattern();
       }
@@ -336,7 +341,9 @@
     if (pattern != curPattern) {
       console.log('update pattern');
       curPattern = pattern;
-      makePatternTable(module, pattern, query('#pattern-table'), (r, c) => {
+      let table = query('#pattern-table');
+      table.textContent = '';
+      makePatternTable(module, pattern, table, (r, c) => {
         selRow = r;
         selChannel = c;
         updateSelCell();
@@ -351,6 +358,13 @@
       existing.classList.remove('sel-cell');
     if (selRow >= 0 && selChannel >= 0)
       query('#pattern-table').children[selRow].children[selChannel].classList.add('sel-cell');
+  }
+
+  function scrollToSelCell() {
+    let parent = query('#pattern-scroll');
+    let parentRect = parent.getBoundingClientRect();
+    let childRect = query('#pattern-table').children[selRow].getBoundingClientRect();
+    parent.scrollTop += (childRect.top - parentRect.top) - (parent.clientHeight / 2);
   }
 
   function patternZap() {
@@ -387,6 +401,7 @@
       playback.module = module;
     selRow++;
     refreshPattern();
+    scrollToSelCell();
   }
 
   function clearCell() {
@@ -395,6 +410,7 @@
       playback.module = module;
     selRow++;
     refreshPattern();
+    scrollToSelCell();
   }
 
   function liftCell() {

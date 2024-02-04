@@ -23,7 +23,6 @@ function cellString(cell) {
  * @param {(r: number, c: number) => void} onclick
  */
 function makePatternTable(module, pattern, table, onclick) {
-    table.textContent = '';
     for (let row = 0; row < numRows; row++) {
         let tr = document.createElement('tr');
         table.appendChild(tr);
