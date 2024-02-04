@@ -11,7 +11,7 @@ const baseRate = 16574.27; // rate of C-3
 const basePeriod = periodTable[8][3*12];
 const resampleFactor = 3;
 
-const minPeriod = 1;
+const minPeriod = 15;
 
 function Playback() {
     /** @type {AudioBuffer[]} */
@@ -51,13 +51,14 @@ ChannelPlayback.prototype = {
     /** @type {StereoPannerNode|PannerNode} */
     panner: null,
     sample: 0,
-    pitch: 0,
     period: 0,
     scheduledPeriod: -1,
+    scheduledDetune: 0,
     volume: 0,
     scheduledVolume: -1,
     panning: 128,
     scheduledPanning: -1,
+    portTarget: 0,
     memPort: 0,     // 3xx, 5xx
     memOff: 0,      // 9xx
     userMute: false,
@@ -223,8 +224,6 @@ function processRow(playback) {
 function processCellFirst(playback, channel, cell, row) {
     let hiParam = cell.param >> 4;
     let loParam = cell.param & 0xf;
-    if (cell.pitch >= 0)
-        channel.pitch = cell.pitch;
     if (cell.effect == 0x9 && cell.param)
         channel.memOff = cell.param; // store before playing note
     let noteDelay = (cell.effect == 0xE && hiParam == 0xD && loParam != 0);
@@ -233,6 +232,10 @@ function processCellFirst(playback, channel, cell, row) {
         processCellNote(playback, channel, cell);
     switch (cell.effect) {
         case 0x3:
+            if (cell.pitch >= 0 && channel.sample) {
+                let sample = playback.mod.samples[channel.sample];
+                channel.portTarget = pitchToPeriod(cell.pitch, sample.finetune);
+            }
             if (cell.param)
                 channel.memPort = cell.param;
             break;
@@ -253,6 +256,7 @@ function processCellFirst(playback, channel, cell, row) {
             break;
         case 0xB:
             row.posJump = cell.param;
+            row.patBreak = -1;
             break;
         case 0xC:
             channel.volume = Math.min(cell.param, maxVolume);
@@ -272,11 +276,12 @@ function processCellFirst(playback, channel, cell, row) {
                     channel.vibrato.waveform = loParam & 0x3;
                     channel.vibrato.continue = (loParam & 0x4) != 0;
                     break;
-                case 0x5: {
-                    let finetune = (loParam >= 8) ? (loParam - 16) : loParam;
-                    channel.period = pitchToPeriod(channel.pitch, finetune);
+                case 0x5: 
+                    if (cell.pitch >= 0) {
+                        let finetune = (loParam >= 8) ? (loParam - 16) : loParam;
+                        channel.period = pitchToPeriod(cell.pitch, finetune);
+                    }
                     break;
-                }
                 case 0x6:
                     if (loParam == 0) {
                         playback.patLoopRow = playback.row;
@@ -332,13 +337,14 @@ function processCellRest(playback, channel, cell, tick) {
             break;
         case 0x3:
         case 0x5: {
-            if (channel.sample) {
-                let sample = playback.mod.samples[channel.sample];
-                let target = pitchToPeriod(channel.pitch, sample.finetune);
-                if (target > channel.period)
-                    channel.period = Math.min(channel.period + channel.memPort, target);
-                else
-                    channel.period = Math.max(channel.period - channel.memPort, target);
+            if (channel.portTarget) {
+                if (channel.portTarget > channel.period) {
+                    channel.period = Math.min(channel.period + channel.memPort, channel.portTarget);
+                } else {
+                    channel.period = Math.max(channel.period - channel.memPort, channel.portTarget);
+                }
+                if (channel.portTarget == channel.period)
+                    channel.portTarget = 0;
             }
         }
             break;
@@ -403,11 +409,10 @@ function processCellAll(playback, channel, cell, tick) {
 
     if (channel.source) {
         let period = channel.period;
+        let detune = 0;
         if (cell.effect == 0x0 && cell.param && channel.sample) {
-            let pitchOffset = (tick % 3 == 1) ? (cell.param >> 4) :
+            detune = (tick % 3 == 1) ? (cell.param >> 4) :
                 (tick % 3 == 2) ? (cell.param & 0xf) : 0;
-            let sample = playback.mod.samples[channel.sample];
-            period = pitchToPeriod(channel.pitch + pitchOffset, sample.finetune);
         }
 
         if (cell.effect == 0x4 || cell.effect == 0x6) // vibrato
@@ -415,6 +420,9 @@ function processCellAll(playback, channel, cell, tick) {
         if (period != channel.scheduledPeriod)
             channel.source.playbackRate.setValueAtTime(periodToRate(period), playback.time);
         channel.scheduledPeriod = period;
+        if (detune != channel.scheduledDetune)
+            channel.source.detune.setValueAtTime(detune * 100, playback.time);
+        channel.scheduledDetune = detune;
     }
 }
 
@@ -463,7 +471,9 @@ function processCellNote(playback, channel, cell) {
         channel.sample = cell.sample;
         channel.volume = sample.volume;
     }
-    if (cell.pitch >= 0 && cell.effect != 0x3) {
+    if (cell.pitch >= 0 && cell.effect != 0x3 && channel.sample) {
+        let sample = playback.mod.samples[channel.sample];
+        channel.period = pitchToPeriod(cell.pitch, sample.finetune);
         let offset = (cell.effect == 0x9) ? (channel.memOff * 256 / baseRate) : 0;
         playNote(playback, channel, offset);
     }
@@ -487,9 +497,8 @@ function playNote(playback, channel, offset) {
     channel.gain.gain.setValueAtTime(0, playback.time); // ramp up from zero
     channel.scheduledVolume = 0;
 
-    let sample = playback.mod.samples[channel.sample];
-    channel.period = pitchToPeriod(channel.pitch, sample.finetune);
     channel.scheduledPeriod = -1;
+    channel.scheduledDetune = 0;
     if (!channel.vibrato.continue) channel.vibrato.tick = 0;
     if (!channel.tremolo.continue) channel.tremolo.tick = 0;
 }
