@@ -232,32 +232,29 @@
   function play(resume) {
     if (!module)
       return;
-    // for iOS:
-    context.resume().then(() => {
-      if (intervalHandle)
-        stop();
-      playback = initPlayback(context, module);
-      if (resume) {
-        playback.pos = query('#sequence').selectedIndex;
-        playback.row = selRow;
-        playback.tempo = query('#tempo').valueAsNumber;
-        playback.speed = query('#speed').valueAsNumber;
+    if (intervalHandle)
+      stop();
+    playback = initPlayback(context, module);
+    if (resume) {
+      playback.pos = query('#sequence').selectedIndex;
+      playback.row = selRow;
+      playback.tempo = query('#tempo').valueAsNumber;
+      playback.speed = query('#speed').valueAsNumber;
+    }
+
+    let process = () => {
+      while (queuedTime < context.currentTime + 0.5) {
+        queuedTime = playback.time;
+        let {pos, row} = playback;
+        processRow(playback);
+        let {tempo, speed} = playback;
+        queuedLines.push({time: queuedTime, pos, row, tempo, speed});
       }
+    };
+    process();
+    intervalHandle = setInterval(process, 200);
 
-      let process = () => {
-        while (queuedTime < context.currentTime + 0.5) {
-          queuedTime = playback.time;
-          let {pos, row} = playback;
-          processRow(playback);
-          let {tempo, speed} = playback;
-          queuedLines.push({time: queuedTime, pos, row, tempo, speed});
-        }
-      };
-      process();
-      intervalHandle = setInterval(process, 200);
-
-      animHandle = requestAnimationFrame(update);
-    });
+    animHandle = requestAnimationFrame(update);
   }
 
   function stop() {
