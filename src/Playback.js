@@ -217,7 +217,8 @@ function processCellFirst(playback, channel, cell, row) {
     if (cell.effect == 0x9 && cell.param)
         channel.memOff = cell.param; // store before playing note
     let noteDelay = (cell.effect == 0xE && hiParam == 0xD && loParam != 0);
-    if (!noteDelay)
+    let noNote = (cell.effect == 0xE && cell.param == 0xC0);
+    if (!noteDelay && !noNote)
         processCellNote(playback, channel, cell);
     switch (cell.effect) {
         case 0x3:
