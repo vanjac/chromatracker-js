@@ -214,7 +214,7 @@ function processRow(playback) {
         playback.pos++;
     }
     if (playback.pos >= playback.mod.sequence.length)
-        playback.pos = 0; // loop song
+        playback.pos = playback.mod.restartPos;
 }
 
 /**
