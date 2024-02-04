@@ -46,13 +46,15 @@ ChannelPlayback.prototype = {
     /** @type {GainNode} */
     gain: null,
     /** @type {StereoPannerNode|PannerNode} */
-    pan: null,
+    panner: null,
     sample: 0,
     pitch: 0,
     period: 0,
     scheduledPeriod: -1,
     volume: 0,
     scheduledVolume: -1,
+    panning: 128,
+    scheduledPanning: -1,
     oscTick: 0,
     memPort: 0,     // 3xx, 5xx
     memVibSpeed: 0, // 4xx, 6xx
@@ -85,18 +87,16 @@ function initPlayback(context, mod) {
     for (let c = 0; c < mod.numChannels; c++) {
         let channel = new ChannelPlayback();
         playback.channels.push(channel);
-        let pan = ((c % 4) == 0 || (c % 4) == 3) ? -0.5 : 0.5;
+        channel.panning = ((c % 4) == 0 || (c % 4) == 3) ? 64 : 191;
         if (context.createStereoPanner) {
-            channel.pan = context.createStereoPanner();
-            channel.pan.pan.value = pan;
+            channel.panner = context.createStereoPanner();
         } else {
-            channel.pan = context.createPanner();
-            channel.pan.panningModel = 'equalpower';
-            channel.pan.setPosition(pan, 0, 1 - Math.abs(pan));
+            channel.panner = context.createPanner();
+            channel.panner.panningModel = 'equalpower';
         }
-        channel.pan.connect(context.destination);
+        channel.panner.connect(context.destination);
         channel.gain = context.createGain();
-        channel.gain.connect(channel.pan);
+        channel.gain.connect(channel.panner);
     }
     playback.jamGain = context.createGain();
     playback.jamGain.connect(context.destination);
@@ -135,9 +135,9 @@ function stopPlayback(playback) {
 function setChannelMute(playback, c, mute) {
     let channel = playback.channels[c];
     if (mute && !channel.userMute)
-        channel.pan.disconnect();
+        channel.panner.disconnect();
     else if (!mute && channel.userMute)
-        channel.pan.connect(playback.ctx.destination);
+        channel.panner.connect(playback.ctx.destination);
     channel.userMute = mute;
 }
 
@@ -236,6 +236,9 @@ function processCellFirst(playback, channel, cell, row) {
             if (loParam)
                 channel.memTremDepth = loParam;
             break;
+        case 0x8:
+            channel.panning = cell.param;
+            break;
         case 0xB:
             row.posJump = cell.param;
             break;
@@ -268,6 +271,9 @@ function processCellFirst(playback, channel, cell, row) {
                     } else {
                         playback.patLoopCount = 0;
                     }
+                    break;
+                case 0x8:
+                    channel.panning = loParam * 0x11;
                     break;
                 case 0xA:
                     channel.volume = Math.min(channel.volume + loParam, maxVolume);
@@ -363,6 +369,18 @@ function processCellAll(playback, channel, cell, tick) {
     if (volume != channel.scheduledVolume)
         channel.gain.gain.setValueAtTime(masterGain * volume / maxVolume, playback.time);
     channel.scheduledVolume = volume;
+
+    if (channel.panning != channel.scheduledPanning) {
+        let pan = channel.panning / 127.5 - 1.0;
+        if (channel.panner instanceof StereoPannerNode)
+            channel.panner.pan.setValueAtTime(pan, playback.time);
+        else if (channel.panner instanceof PannerNode)
+            channel.panner.setPosition(pan, 0, 1 - Math.abs(pan));
+        // TODO: this isn't correct!
+        // setPosition doesn't have time argument, but iOS doesn't support positionX/Y/Z until 14.1,
+        // so....???
+    }
+    channel.scheduledPanning = channel.panning;
 
     if (channel.source) {
         let period = channel.period;
