@@ -5,6 +5,7 @@
 // https://padenot.github.io/web-audio-perf/
 
 const masterGain = 0.5;
+const rampTimeConstant = 0.003;
 
 const baseRate = 16574.27; // rate of C-3
 const basePeriod = periodTable[8][3*12];
@@ -88,15 +89,19 @@ function initPlayback(context, mod) {
         let channel = new ChannelPlayback();
         playback.channels.push(channel);
         channel.panning = ((c % 4) == 0 || (c % 4) == 3) ? 64 : 191;
+        let pan = channel.panning / 127.5 - 1.0;
         if (context.createStereoPanner) {
             channel.panner = context.createStereoPanner();
+            channel.panner.pan.value = pan;
         } else {
             channel.panner = context.createPanner();
             channel.panner.panningModel = 'equalpower';
+            channel.panner.setPosition(pan, 0, 1 - Math.abs(pan));
         }
         channel.panner.connect(context.destination);
         channel.gain = context.createGain();
         channel.gain.connect(channel.panner);
+        channel.gain.gain.value = 0;
     }
     playback.jamGain = context.createGain();
     playback.jamGain.connect(context.destination);
@@ -366,17 +371,17 @@ function processCellAll(playback, channel, cell, tick) {
         volume += calcOscillator(channel.oscTick) * channel.memTremDepth * 4;
         volume = Math.max(Math.min(volume, maxVolume), 0);
     }
-    if (volume != channel.scheduledVolume)
-        channel.gain.gain.setValueAtTime(masterGain * volume / maxVolume, playback.time);
+    if (volume != channel.scheduledVolume) {
+        channel.gain.gain.setTargetAtTime(masterGain * volume / maxVolume, playback.time,
+            rampTimeConstant);
+    }
     channel.scheduledVolume = volume;
 
     if (channel.panning != channel.scheduledPanning) {
         let pan = channel.panning / 127.5 - 1.0;
         if (channel.panner instanceof StereoPannerNode)
-            channel.panner.pan.setValueAtTime(pan, playback.time);
-        else if (channel.panner instanceof PannerNode)
-            channel.panner.setPosition(pan, 0, 1 - Math.abs(pan));
-        // TODO: this isn't correct!
+            channel.panner.pan.setTargetAtTime(pan, playback.time, rampTimeConstant);
+        // TODO: what about PannerNode?
         // setPosition doesn't have time argument, but iOS doesn't support positionX/Y/Z until 14.1,
         // so....???
     }
@@ -452,6 +457,10 @@ function playNote(playback, channel, offset) {
     channel.source = createNoteSource(playback, channel.sample, channel.activeSources);
     channel.source.connect(channel.gain);
     channel.source.start(playback.time, offset);
+
+    channel.gain.gain.setValueAtTime(0, playback.time); // ramp up from zero
+    channel.scheduledVolume = 0;
+
     let sample = playback.mod.samples[channel.sample];
     channel.period = pitchToPeriod(channel.pitch, sample.finetune);
     channel.scheduledPeriod = -1;
