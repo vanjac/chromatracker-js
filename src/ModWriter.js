@@ -38,9 +38,14 @@ function writeModule(module) {
         view.setUint16(offset + 22, (sample.length / 2) | 0);
         view.setUint8(offset + 24, sample.finetune & 0xf);
         view.setUint8(offset + 25, sample.volume);
-        view.setUint16(offset + 26, (sample.loopStart / 2) | 0);
-        let repLen = ((sample.loopEnd - sample.loopStart) / 2) | 0;
-        view.setUint16(offset + 28, repLen || 1); // 1 = no loop
+        if (sample.loopStart == sample.loopEnd) {
+            view.setUint16(offset + 26, 0);
+            view.setUint16(offset + 28, 1);
+        } else {
+            view.setUint16(offset + 26, (sample.loopStart / 2) | 0);
+            let repLen = ((sample.loopEnd - sample.loopStart) / 2) | 0;
+            view.setUint16(offset + 28, repLen);
+        }
     }
 
     view.setUint8(950, module.sequence.length);
