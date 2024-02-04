@@ -405,7 +405,7 @@ function processCellAll(playback, channel, cell, tick) {
 
     if (channel.panning != channel.scheduledPanning) {
         let pan = channel.panning / 127.5 - 1.0;
-        if (channel.panner instanceof StereoPannerNode)
+        if (typeof StereoPannerNode !== 'undefined' && (channel.panner instanceof StereoPannerNode))
             channel.panner.pan.setTargetAtTime(pan, playback.time, rampTimeConstant);
         // TODO: what about PannerNode?
         // setPosition doesn't have time argument, but iOS doesn't support positionX/Y/Z until 14.1,
