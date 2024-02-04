@@ -49,17 +49,18 @@ function writeModule(module) {
     }
 
     view.setUint8(950, module.sequence.length);
-    view.setUint8(951, 127); // TODO: repeat point?
+    view.setUint8(951, module.restartPos);
     let seqArr = new Uint8Array(buf, 952, numSongPositions);
     seqArr.set(module.sequence);
+    // TODO: save additional patterns
 
     let initials;
     if (module.numChannels == 4) {
         initials = 'M.K.';
     } else if (module.numChannels < 10) {
-        initials = 'CHN' + module.numChannels;
+        initials = module.numChannels + 'CHN';
     } else {
-        initials = 'CH' + module.numChannels;
+        initials = module.numChannels + 'CH';
     }
     writeString(buf, 1080, 4, initials);
 

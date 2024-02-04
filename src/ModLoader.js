@@ -34,11 +34,15 @@ function readModule(buf) {
     module.name = readStringZ(buf, 0, 20);
 
     let songLen = Math.min(view.getUint8(950), numSongPositions);
-    module.sequence = Object.freeze(Array.from(new Uint8Array(buf, 952, songLen)));
-    // TODO: should this also include entries past songLen?
-    let numPatterns = Math.max(...module.sequence) + 1;
+    module.restartPos = view.getUint8(951);
+    if (module.restartPos >= songLen)
+        module.restartPos = 0;
+    let seq = Array.from(new Uint8Array(buf, 952, numSongPositions));
+    let numPatterns = Math.max(...seq) + 1;
+    module.sequence = Object.freeze(seq.slice(0, songLen));
 
     let initials = textDecode.decode(new DataView(buf, 1080, 4));
+    // TODO: support old 15-sample formats?
     let chanStr = initials.replace(/\D/g, ''); // remove non-digits
     if (chanStr)
         module.numChannels = parseInt(chanStr);
@@ -82,8 +86,12 @@ function readModule(buf) {
         let offset = s * 30 - 10;
         let sample = new Sample();
 
-        sample.name = readStringZ(buf, offset, 22);
         sample.length = view.getUint16(offset + 22) * 2;
+        if (sample.length <= 2) {
+            samples.push(null);
+            continue;
+        }
+        sample.name = readStringZ(buf, offset, 22);
         sample.finetune = view.getUint8(offset + 24) & 0xf;
         if (sample.finetune >= 8)
             sample.finetune -= 16; // sign-extend nibble
@@ -94,9 +102,8 @@ function readModule(buf) {
             repLen = 0; // no loop
         sample.loopEnd = sample.loopStart + repLen * 2;
 
-        // TODO: what does this mean?
-        // "The data for a sample must _ALWAYS_ start with two zeros, as it is used for
-        //  repeating is the sample is to be terminated."
+        // The first two bytes will "always" (usually) be zeros but they should still be included
+        // TODO: is that correct?
         sample.wave = new Int8Array(buf, wavePos, sample.length).slice();
         wavePos += sample.length;
 

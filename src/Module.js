@@ -39,6 +39,7 @@ Module.prototype = {
     numChannels: 4,
     /** @type {readonly number[]} */
     sequence: Object.freeze([]),
+    restartPos: 0,
     /** @type {readonly Readonly<Pattern>[]} */
     patterns: Object.freeze([]),
     /** @type {readonly Readonly<Sample>[]} */
