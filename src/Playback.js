@@ -246,7 +246,7 @@ function processCellFirst(playback, channel, cell, row) {
             channel.volume = Math.min(cell.param, maxVolume);
             break;
         case 0xD:
-            row.patBreak = cell.param; // TODO: is this hex or decimal???
+            row.patBreak = cell.param;
             break;
         case 0xE:
             switch (hiParam) {
@@ -257,8 +257,7 @@ function processCellFirst(playback, channel, cell, row) {
                     channel.period += loParam;
                     break;
                 case 0x5: {
-                    let finetune = loParam;
-                    finetune = (finetune >= 8) ? (finetune - 8) : (finetune + 8);
+                    let finetune = (loParam >= 8) ? (loParam - 16) : loParam;
                     channel.period = pitchToPeriod(channel.pitch, finetune);
                     break;
                 }
