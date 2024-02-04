@@ -40,6 +40,8 @@ Playback.prototype = {
 function ChannelPlayback() {
     /** @type {Set<AudioBufferSourceNode>} */
     this.activeSources = new Set();
+    this.vibrato = new OscillatorPlayback();
+    this.tremolo = new OscillatorPlayback();
 }
 ChannelPlayback.prototype = {
     /** @type {AudioBufferSourceNode} */
@@ -58,12 +60,15 @@ ChannelPlayback.prototype = {
     scheduledPanning: -1,
     oscTick: 0,
     memPort: 0,     // 3xx, 5xx
-    memVibSpeed: 0, // 4xx, 6xx
-    memVibDepth: 0, // 4xx, 6xx
-    memTremSpeed: 0,// 7xx
-    memTremDepth: 0,// 7xx
     memOff: 0,      // 9xx
     userMute: false,
+};
+
+function OscillatorPlayback() {}
+OscillatorPlayback.prototype = {
+    waveform: 0,
+    speed: 0,
+    depth: 0,
 };
 
 function RowPlayback() {}
@@ -232,15 +237,15 @@ function processCellFirst(playback, channel, cell, row) {
             break;
         case 0x4:
             if (hiParam)
-                channel.memVibSpeed = hiParam;
+                channel.vibrato.speed = hiParam;
             if (loParam)
-                channel.memVibDepth = loParam;
+                channel.vibrato.depth = loParam;
             break;
         case 0x7:
             if (hiParam)
-                channel.memTremSpeed = hiParam;
+                channel.tremolo.speed = hiParam;
             if (loParam)
-                channel.memTremDepth = loParam;
+                channel.tremolo.depth = loParam;
             break;
         case 0x8:
             channel.panning = cell.param;
@@ -262,6 +267,9 @@ function processCellFirst(playback, channel, cell, row) {
                 case 0x2:
                     channel.period += loParam;
                     break;
+                case 0x4:
+                    channel.vibrato.waveform = loParam & 0x3;
+                    break;
                 case 0x5: {
                     let finetune = (loParam >= 8) ? (loParam - 16) : loParam;
                     channel.period = pitchToPeriod(channel.pitch, finetune);
@@ -276,6 +284,9 @@ function processCellFirst(playback, channel, cell, row) {
                     } else {
                         playback.patLoopCount = 0;
                     }
+                    break;
+                case 0x7:
+                    channel.tremolo.waveform = loParam & 0x3;
                     break;
                 case 0x8:
                     channel.panning = loParam * 0x11;
@@ -330,10 +341,10 @@ function processCellRest(playback, channel, cell, tick) {
             break;
         case 0x4:
         case 0x6:
-            channel.oscTick += channel.memVibSpeed;
+            channel.oscTick += channel.vibrato.speed;
             break;
         case 0x7:
-            channel.oscTick += channel.memTremSpeed;
+            channel.oscTick += channel.tremolo.speed;
             break;
         case 0xE:
             switch (hiParam) {
@@ -368,7 +379,7 @@ function processCellRest(playback, channel, cell, tick) {
 function processCellAll(playback, channel, cell, tick) {
     let volume = channel.volume;
     if (cell.effect == 0x7) { // tremolo
-        volume += calcOscillator(channel.oscTick) * channel.memTremDepth * 4;
+        volume += calcOscillator(channel.tremolo, channel.oscTick, -1) * 4;
         volume = Math.max(Math.min(volume, maxVolume), 0);
     }
     if (volume != channel.scheduledVolume) {
@@ -397,7 +408,7 @@ function processCellAll(playback, channel, cell, tick) {
         }
 
         if (cell.effect == 0x4 || cell.effect == 0x6) // vibrato
-            period += calcOscillator(channel.oscTick) * channel.memVibDepth * 2;
+            period += calcOscillator(channel.vibrato, channel.oscTick, 1) * 2;
         if (period != channel.scheduledPeriod)
             channel.source.playbackRate.setValueAtTime(periodToRate(period), playback.time);
         channel.scheduledPeriod = period;
@@ -420,10 +431,23 @@ function periodToRate(period) {
 }
 
 /**
+ * @param {OscillatorPlayback} osc
  * @param {number} tick
+ * @param {number} sawDir
  */
-function calcOscillator(tick) {
-    return Math.sin(tick * Math.PI / 32);
+function calcOscillator(osc, tick, sawDir) {
+    let value;
+    if (osc.waveform == 1) { // sawtooth
+        value = (((tick + 32) % 64) / 32) - 1;
+        value *= sawDir;
+    } else if (osc.waveform == 2) { // square
+        value = ((tick % 64) >= 32) ? -1 : 1;
+    } else if (osc.waveform == 3) { // random
+        value = Math.random() * 2 - 1;
+    } else {
+        value = Math.sin(tick * Math.PI / 32);
+    }
+    return value * osc.depth;
 }
 
 /**
