@@ -348,13 +348,6 @@ function processCellRest(playback, channel, cell, tick) {
  * @param {number} tick
  */
 function processCellAll(playback, channel, cell, tick) {
-    if (cell.effect == 0 && cell.param && channel.sample) {
-        let pitchOffset = (tick % 3 == 1) ? (cell.param >> 4) :
-            (tick % 3 == 2) ? (cell.param & 0xf) : 0;
-        let sample = playback.mod.samples[channel.sample];
-        channel.period = pitchToPeriod(channel.pitch + pitchOffset, sample.finetune);
-    }
-
     let volume = channel.volume;
     if (cell.effect == 0x7) { // tremolo
         volume += calcOscillator(channel.oscTick) * channel.memTremDepth * 4;
@@ -367,6 +360,13 @@ function processCellAll(playback, channel, cell, tick) {
 
     if (channel.source) {
         let period = channel.period;
+        if (cell.effect == 0x0 && cell.param && channel.sample) {
+            let pitchOffset = (tick % 3 == 1) ? (cell.param >> 4) :
+                (tick % 3 == 2) ? (cell.param & 0xf) : 0;
+            let sample = playback.mod.samples[channel.sample];
+            period = pitchToPeriod(channel.pitch + pitchOffset, sample.finetune);
+        }
+
         if (cell.effect == 0x4 || cell.effect == 0x6) { // vibrato
             period += calcOscillator(channel.oscTick) * channel.memVibDepth * 2;
             channel.oscTick += channel.memVibSpeed;
