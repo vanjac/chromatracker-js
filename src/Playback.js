@@ -224,6 +224,8 @@ function processRow(playback) {
  * @param {RowPlayback} row
  */
 function processCellFirst(playback, channel, cell, row) {
+    // TODO: for row delays (EEx), some of this should only happen in the first "first tick"
+    // and some should happen every "first tick"
     let hiParam = cell.param >> 4;
     let loParam = cell.param & 0xf;
     if (cell.effect == 0x9 && cell.param)
