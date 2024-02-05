@@ -96,7 +96,7 @@ function writeModule(module) {
         }
     }
 
-    writeString(buf, wavePos, 24, `ChromaTracker v${version}`);
+    writeString(buf, wavePos + 8, 24, `ChromaTracker v${version}`);
 
     return buf;
 }
@@ -112,5 +112,5 @@ function calcModuleSize(module) {
         if (sample)
             size += sample.length & ~1;
     }
-    return size + 24;
+    return size + 32;
 }

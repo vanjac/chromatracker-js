@@ -75,7 +75,9 @@ function readModuleBlob(blob) {
 
 function saveFile() {
     let blob = new Blob([writeModule(module)], {type: 'application/octet-stream'});
-    window.open(URL.createObjectURL(blob));
+    let url = URL.createObjectURL(blob);
+    console.log(url);
+    window.open(url);
 }
 
 function play(resume) {
