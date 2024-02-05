@@ -28,19 +28,15 @@ function writeModule(module) {
 
     writeString(buf, 0, 20, module.name);
 
-    let lastUnnamed = -1;
     for (let s = 1; s < numSamples; s++) {
         let offset = s * 30 - 10;
         if (s >= module.samples.length || !module.samples[s]) {
             // empty sample
             view.setUint8(offset + 25, maxVolume);
             view.setUint16(offset + 28, 1);
-            lastUnnamed = s;
             continue;
         }
         let sample = module.samples[s];
-        if (!sample.name)
-            lastUnnamed = s;
         writeString(buf, offset, 22, sample.name);
         view.setUint16(offset + 22, (sample.length / 2) | 0);
         view.setUint8(offset + 24, sample.finetune & 0xf);
@@ -54,8 +50,6 @@ function writeModule(module) {
             view.setUint16(offset + 28, repLen);
         }
     }
-    if (lastUnnamed >= 0)
-        writeString(buf, lastUnnamed * 30 - 10, 22, `ChromaTracker ${version}`);
 
     view.setUint8(950, module.sequence.length);
     view.setUint8(951, module.restartPos);
@@ -101,6 +95,9 @@ function writeModule(module) {
             wavePos += sample.length & ~1;
         }
     }
+
+    writeString(buf, wavePos, 24, `ChromaTracker v${version}`);
+
     return buf;
 }
 
@@ -115,5 +112,5 @@ function calcModuleSize(module) {
         if (sample)
             size += sample.length & ~1;
     }
-    return size;
+    return size + 24;
 }
