@@ -40,7 +40,7 @@ function readModuleBlob(blob) {
         module = Object.freeze(readModule(reader.result));
         console.log(module);
 
-        query('#title').textContent = module.name;
+        query('#title').value = module.name;
 
         refreshSequence();
         query('#sequence').selectedIndex = 0;
