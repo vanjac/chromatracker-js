@@ -1,3 +1,14 @@
+/* reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+* {
+    margin: 0;
+}
+input, button, textarea, select {
+    font: inherit;
+}
+
 body {
     width: 100%;
     height: 100%;
@@ -6,6 +17,7 @@ body {
     position: fixed;
     display: flex;
     flex-direction: column;
+    font-family: sans-serif;
 }
 td {
     border: 1px solid black;
