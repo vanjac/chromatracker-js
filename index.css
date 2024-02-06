@@ -30,6 +30,12 @@ body {
     flex-direction: column;
     font-family: sans-serif;
 }
+
+label {
+    display: inline-flex;
+    align-items: center;
+}
+
 td {
     border: 1px solid black;
     white-space: nowrap;
