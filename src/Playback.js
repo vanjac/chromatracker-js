@@ -150,9 +150,9 @@ function stopPlayback(playback) {
 function setChannelMute(playback, c, mute) {
     let channel = playback.channels[c];
     if (mute && !channel.userMute)
-        channel.panner.disconnect();
+        channel.gain.disconnect();
     else if (!mute && channel.userMute)
-        channel.panner.connect(playback.ctx.destination);
+        channel.gain.connect(channel.panner);
     channel.userMute = mute;
 }
 
