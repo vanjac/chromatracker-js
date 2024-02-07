@@ -144,15 +144,26 @@ function jamDown(e) {
         e.preventDefault();
     if (playback) {
         let s = Number(sampleEntry.sample.value);
-        jamPlay(playback, s, pitchEntry.jamPitch.valueAsNumber);
+        if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
+            for (let touch of e.changedTouches)
+                jamPlay(playback, touch.identifier, s, pitchEntry.jamPitch.valueAsNumber);
+        } else {
+            jamPlay(playback, -1, s, pitchEntry.jamPitch.valueAsNumber);
+        }
     }
 }
 
 function jamUp(e) {
     if (e)
         e.preventDefault();
-    if (playback)
-        jamRelease(playback);
+    if (playback) {
+        if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
+            for (let touch of e.changedTouches)
+                jamRelease(playback, touch.identifier);
+        } else {
+            jamRelease(playback, -1);
+        }
+    }
 }
 
 function update() {
