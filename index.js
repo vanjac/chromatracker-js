@@ -262,18 +262,22 @@ function getEntryCell() {
     let cell = new Cell();
     cell.pitch = pitchEntry.jamPitch.valueAsNumber;
     cell.inst = Number(sampleEntry.sample.value);
-    cell.effect = effectEntry.effect.selectedIndex;
-    cell.param = effectEntry.param0.selectedIndex << 4;
-    cell.param |= effectEntry.param1.selectedIndex;
+    if (effectEntry.effectEnable.checked) {
+        cell.effect = effectEntry.effect.selectedIndex;
+        cell.param = effectEntry.param0.selectedIndex << 4;
+        cell.param |= effectEntry.param1.selectedIndex;
+    }
     return cell;
 }
 
 function writeCell() {
-    let parts = CellParts.effect | CellParts.param;
+    let parts = CellParts.none;
     if (pitchEntry.pitchEnable.checked)
         parts |= CellParts.pitch;
     if (sampleEntry.sampleEnable.checked)
         parts |= CellParts.inst;
+    if (effectEntry.effectEnable.checked)
+        parts |= CellParts.effect | CellParts.param;
     module = editPutCell(module, selPattern(), selChannel, selRow, getEntryCell(), parts);
     if (playback)
         playback.module = module;
@@ -299,7 +303,10 @@ function liftCell() {
     sampleEntry.sampleEnable.checked = cell.inst;
     if (cell.inst)
         sampleEntry.sample.value = cell.inst;
-    effectEntry.effect.selectedIndex = cell.effect;
-    effectEntry.param0.selectedIndex = cell.param >> 4;
-    effectEntry.param1.selectedIndex = cell.param & 0xf;
+    effectEntry.effectEnable.checked = cell.effect || cell.param;
+    if (cell.effect || cell.param) {
+        effectEntry.effect.selectedIndex = cell.effect;
+        effectEntry.param0.selectedIndex = cell.param >> 4;
+        effectEntry.param1.selectedIndex = cell.param & 0xf;
+    }
 }

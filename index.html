@@ -83,6 +83,10 @@
     <span id="sampleList" class="hflex" style="flex-wrap:wrap"></span>
   </form>
   <form id="effectEntry" class="hflex">
+    <label>
+      <input type="checkbox" checked id="effectEnable">
+      Effect
+    </label>
     <select id="effect">
       <option>0: Arpeggio</option>
       <option>1: Port Up</option>
@@ -137,7 +141,6 @@
       <option>E</option>
       <option>F</option>
     </select>
-    <button type="reset">Reset</button>
   </form>
   <div class="hflex">
     <button style="flex-grow:1" onmousedown="jamDown()" onmouseup="jamUp()"

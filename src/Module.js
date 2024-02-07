@@ -32,6 +32,8 @@ const CellParts = {
     inst: 0x2,
     effect: 0x4,
     param: 0x8,
+
+    none: 0x0,
     all: 0xf,
 };
 
