@@ -227,9 +227,9 @@ function refreshPattern() {
                 selRow = r;
                 selChannel = c;
                 updateSelCell();
-                jamDown(e, selCell());
+                jamDown(0, selCell());
             };
-            td.onmouseup = td.ontouchend = jamUp;
+            td.onmouseup = td.ontouchend = () => jamUp();
         });
         updateSelCell();
     }
