@@ -26,6 +26,16 @@ let curPattern = null;
 let selRow = 0;
 let selChannel = 0;
 
+function makeRadioButton(group, value, text) {
+    let label = document.createElement('label');
+    label.classList.add('radio-box');
+    let radio = label.appendChild(document.createElement('input'));
+    Object.assign(radio, {type: 'radio', name: group, value});
+    let span = label.appendChild(document.createElement('span'));
+    span.textContent = text;
+    return label;
+}
+
 function loadFile() {
     /** @type File */
     let files = playbackControls.fileSelect.files;
@@ -57,13 +67,7 @@ function readModuleBlob(blob) {
         samplesElem.textContent = '';
         for (let [i, sample] of module.samples.entries()) {
             if (!sample) continue;
-            let label = samplesElem.appendChild(document.createElement('label'));
-            label.classList.add('radio-box');
-            let radio = label.appendChild(document.createElement('input'));
-            Object.assign(radio, {type: 'radio', name: 'sample', value: i});
-            let span = label.appendChild(document.createElement('span'));
-            span.textContent = i;
-
+            let label = samplesElem.appendChild(makeRadioButton('sample', i, i));
             label.onmousedown = label.ontouchstart = () => jamDown();
             label.onmouseup = label.ontouchend = () => jamUp();
         }
