@@ -69,10 +69,14 @@ function readModuleBlob(blob) {
             if (!sample) continue;
             let label = samplesElem.appendChild(makeRadioButton('sample', i, i));
             label.onmousedown = label.ontouchstart = e => {
+                e.preventDefault();
                 sampleEntry.sample.value = i;
-                jamDown(e);
+                jamDown();
             };
-            label.onmouseup = label.ontouchend = jamUp;
+            label.onmouseup = label.ontouchend = e => {
+                e.preventDefault();
+                jamUp();
+            };
         }
         sampleEntry.sample.value = 1;
 
@@ -139,18 +143,14 @@ function muteCheck(channel, checked) {
         setChannelMute(playback, channel, !checked);
 }
 
-function jamDown(e) {
-    if (e)
-        e.preventDefault();
+function jamDown() {
     if (playback) {
         let s = Number(sampleEntry.sample.value);
         jamPlay(playback, s, pitchEntry.jamPitch.valueAsNumber);
     }
 }
 
-function jamUp(e) {
-    if (e)
-        e.preventDefault();
+function jamUp() {
     if (playback)
         jamRelease(playback);
 }

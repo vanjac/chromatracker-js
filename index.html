@@ -142,13 +142,13 @@
     <button type="reset">Reset</button>
   </form>
   <div class="hflex">
-    <button style="flex-grow:1" onmousedown="jamDown(event)" onmouseup="jamUp(event)"
-      ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
-    <button style="flex-grow:1" onmousedown="jamDown(event); writeCell()" onmouseup="jamUp(event)"
-      ontouchstart="jamDown(event); writeCell()" ontouchend="jamUp(event)">Write</button>
+    <button style="flex-grow:1" onmousedown="jamDown()" onmouseup="jamUp()"
+      ontouchstart="jamDown()" ontouchend="jamUp()">Jam</button>
+    <button style="flex-grow:1" onmousedown="jamDown(); writeCell()" onmouseup="jamUp()"
+      ontouchstart="jamDown(); writeCell()" ontouchend="jamUp()">Write</button>
     <button style="flex-grow:1" onclick="clearCell()">Clear</button>
-    <button style="flex-grow:1" onmousedown="liftCell(); jamDown(event)" onmouseup="jamUp(event)"
-      ontouchstart="liftCell(); jamDown(event)" ontouchend="jamUp(event)">Lift</button>
+    <button style="flex-grow:1" onmousedown="liftCell(); jamDown()" onmouseup="jamUp()"
+      ontouchstart="liftCell(); jamDown()" ontouchend="jamUp()">Lift</button>
   </div>
 </div>
 
