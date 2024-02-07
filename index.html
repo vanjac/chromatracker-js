@@ -145,10 +145,10 @@
   <div class="hflex">
     <button style="flex-grow:1" onmousedown="jamDown()" onmouseup="jamUp()"
       ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
-    <button style="flex-grow:1" onmousedown="jamDown(); writeCell()" onmouseup="jamUp()"
+    <button style="flex-grow:1" onmousedown="writeCell(); jamDown(0,selCell()); advance()" onmouseup="jamUp()"
       ontouchstart="jamDown(event); writeCell()" ontouchend="jamUp(event)">Write</button>
     <button style="flex-grow:1" onclick="clearCell()">Clear</button>
-    <button style="flex-grow:1" onmousedown="liftCell(); jamDown()" onmouseup="jamUp()"
+    <button style="flex-grow:1" onmousedown="liftCell(); jamDown(0,selCell())" onmouseup="jamUp()"
       ontouchstart="liftCell(); jamDown(event)" ontouchend="jamUp(event)">Lift</button>
   </div>
 </div>

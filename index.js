@@ -139,15 +139,17 @@ function muteCheck(channel, checked) {
         setChannelMute(playback, channel, !checked);
 }
 
-function jamDown(e) {
+function jamDown(e, cell) {
     if (e)
         e.preventDefault();
+    if (!cell)
+        cell = entryCell();
     if (playback) {
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches)
-                jamPlay(playback, touch.identifier, selChannel, getEntryCell());
+                jamPlay(playback, touch.identifier, selChannel, cell);
         } else {
-            jamPlay(playback, -1, selChannel, getEntryCell());
+            jamPlay(playback, -1, selChannel, cell);
         }
     }
 }
@@ -258,7 +260,7 @@ function patternZap() {
     refreshPattern();
 }
 
-function getEntryCell() {
+function entryCell() {
     let cell = new Cell();
     cell.pitch = pitchEntry.jamPitch.valueAsNumber;
     cell.inst = Number(sampleEntry.sample.value);
@@ -270,6 +272,10 @@ function getEntryCell() {
     return cell;
 }
 
+function selCell() {
+    return module.patterns[selPattern()][selChannel][selRow];
+}
+
 function writeCell() {
     let parts = CellParts.none;
     if (pitchEntry.pitchEnable.checked)
@@ -278,11 +284,15 @@ function writeCell() {
         parts |= CellParts.inst;
     if (effectEntry.effectEnable.checked)
         parts |= CellParts.effect | CellParts.param;
-    module = editPutCell(module, selPattern(), selChannel, selRow, getEntryCell(), parts);
+    module = editPutCell(module, selPattern(), selChannel, selRow, entryCell(), parts);
     if (playback)
         playback.module = module;
-    selRow++;
     refreshPattern();
+}
+
+function advance() {
+    selRow++;
+    updateSelCell();
     scrollToSelCell();
 }
 
@@ -290,13 +300,12 @@ function clearCell() {
     module = editPutCell(module, selPattern(), selChannel, selRow, new Cell());
     if (playback)
         playback.module = module;
-    selRow++;
     refreshPattern();
-    scrollToSelCell();
+    advance();
 }
 
 function liftCell() {
-    let cell = module.patterns[selPattern()][selChannel][selRow];
+    let cell = selCell();
     pitchEntry.pitchEnable.checked = cell.pitch >= 0;
     if (cell.pitch >= 0)
         pitchEntry.jamPitch.value = cell.pitch;
