@@ -222,10 +222,14 @@ function refreshPattern() {
         curPattern = pattern;
         let table = $`#patternTable`;
         table.textContent = '';
-        makePatternTable(module, pattern, table, (r, c) => {
-            selRow = r;
-            selChannel = c;
-            updateSelCell();
+        makePatternTable(module, pattern, table, (td, r, c) => {
+            td.onmousedown = td.ontouchstart = e => {
+                selRow = r;
+                selChannel = c;
+                updateSelCell();
+                jamDown(e, selCell());
+            };
+            td.onmouseup = td.ontouchend = jamUp;
         });
         updateSelCell();
     }

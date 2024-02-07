@@ -20,9 +20,9 @@ function cellString(cell) {
  * @param {Module} module
  * @param {Pattern} pattern
  * @param {Element} table
- * @param {(r: number, c: number) => void} onclick
+ * @param {(td: HTMLTableCellElement, r: number, c: number) => void} cellCB
  */
-function makePatternTable(module, pattern, table, onclick) {
+function makePatternTable(module, pattern, table, cellCB) {
     for (let row = 0; row < numRows; row++) {
         let tr = document.createElement('tr');
         table.appendChild(tr);
@@ -30,8 +30,7 @@ function makePatternTable(module, pattern, table, onclick) {
             let cell = pattern[c][row];
             let td = document.createElement('td');
             td.textContent = cellString(cell);
-            const c_row = row, c_c = c;
-            td.onclick = () => onclick(c_row, c_c);
+            cellCB(td, row, c);
             tr.appendChild(td);
         }
     }

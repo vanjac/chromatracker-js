@@ -143,8 +143,6 @@
     </select>
   </form>
   <div class="hflex">
-    <button style="flex-grow:1" onmousedown="jamDown()" onmouseup="jamUp()"
-      ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>
     <button style="flex-grow:1" onmousedown="writeCell(); jamDown(0,selCell()); advance()" onmouseup="jamUp()"
       ontouchstart="jamDown(event); writeCell()" ontouchend="jamUp(event)">Write</button>
     <button style="flex-grow:1" onclick="clearCell()">Clear</button>
