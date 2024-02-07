@@ -1,11 +1,10 @@
 // @ts-nocheck
 "use strict";
 
-const query = s => document.querySelector(s);
+function $(strings) { return document.querySelector(strings[0]); }
 
 window.onerror = (message, source, line) => {
-    query('#errors').insertAdjacentHTML('beforeend',
-        `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
+    $`#errors`.insertAdjacentHTML('beforeend', `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
 };
 
 let playbackControls = document.forms.playbackControls.elements;
@@ -169,11 +168,11 @@ function update() {
             refreshPattern();
         }
 
-        let oldHilite = query('.hilite-row');
+        let oldHilite = $`.hilite-row`;
         if (oldHilite)
             oldHilite.classList.remove('hilite-row');
         if (selPattern() == module.sequence[curLine.pos])
-            query('#pattern-table').children[curLine.row].classList.add('hilite-row');
+            $`#pattern-table`.children[curLine.row].classList.add('hilite-row');
     }
 }
 
@@ -198,7 +197,7 @@ function refreshPattern() {
     if (pattern != curPattern) {
         console.log('update pattern');
         curPattern = pattern;
-        let table = query('#pattern-table');
+        let table = $`#pattern-table`;
         table.textContent = '';
         makePatternTable(module, pattern, table, (r, c) => {
             selRow = r;
@@ -210,17 +209,17 @@ function refreshPattern() {
 }
 
 function updateSelCell() {
-    let existing = query('.sel-cell');
+    let existing = $`.sel-cell`;
     if (existing)
         existing.classList.remove('sel-cell');
     if (selRow >= 0 && selChannel >= 0)
-        query('#pattern-table').children[selRow].children[selChannel].classList.add('sel-cell');
+        $`#pattern-table`.children[selRow].children[selChannel].classList.add('sel-cell');
 }
 
 function scrollToSelCell() {
-    let parent = query('#pattern-scroll');
+    let parent = $`#pattern-scroll`;
     let parentRect = parent.getBoundingClientRect();
-    let childRect = query('#pattern-table').children[selRow].getBoundingClientRect();
+    let childRect = $`#pattern-table`.children[selRow].getBoundingClientRect();
     parent.scrollTop += (childRect.top - parentRect.top) - (parent.clientHeight / 2);
 }
 
