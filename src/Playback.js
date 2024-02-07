@@ -260,6 +260,7 @@ function processCellFirst(playback, channel, cell, row) {
             break;
         case 0xB:
             row.posJump = cell.param;
+            // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PatternJump.mod
             row.patBreak = -1;
             break;
         case 0xC:
@@ -304,6 +305,7 @@ function processCellFirst(playback, channel, cell, row) {
                     channel.panning = loParam * 0x11;
                     break;
                 case 0x9:
+                    // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PTRetrigger.mod
                     if (cell.pitch < 0 && loParam)
                         playNote(playback, channel, 0);
                     break;
@@ -351,6 +353,7 @@ function processCellRest(playback, channel, cell, tick) {
                 } else {
                     channel.period = Math.max(channel.period - channel.memPort, channel.portTarget);
                 }
+                // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PortaTarget.mod
                 if (channel.portTarget == channel.period)
                     channel.portTarget = 0;
             }
