@@ -65,3 +65,11 @@ td {
 .radio-box :checked + span {
     background: lightgray;
 }
+
+.hselect {
+    display: table-row;
+}
+
+.hselect option {
+    display: table-cell;
+}
