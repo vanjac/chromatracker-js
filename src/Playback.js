@@ -408,8 +408,7 @@ function processCellAll(playback, channel, cell, tick) {
         volume = Math.max(Math.min(volume, maxVolume), 0);
     }
     if (volume != channel.scheduledVolume) {
-        channel.gain.gain.setTargetAtTime(masterGain * volume / maxVolume, playback.time,
-            rampTimeConstant);
+        channel.gain.gain.setTargetAtTime(volumeToGain(volume), playback.time, rampTimeConstant);
     }
     channel.scheduledVolume = volume;
 
@@ -443,6 +442,13 @@ function processCellAll(playback, channel, cell, tick) {
 }
 
 /**
+ * @param {number} volume
+ */
+function volumeToGain(volume) {
+    return masterGain * volume / maxVolume;
+}
+
+/**
  * @param {number} pitch
  * @param {number} finetune
  */
@@ -455,6 +461,13 @@ function pitchToPeriod(pitch, finetune) {
  */
 function periodToRate(period) {
     return basePeriod / period;
+}
+
+/**
+ * @param {number} param
+ */
+function calcSampleOffset(param) {
+    return param * 256 / baseRate;
 }
 
 /**
@@ -491,7 +504,7 @@ function processCellNote(playback, channel, cell) {
     if (cell.pitch >= 0 && cell.effect != 0x3 && cell.effect != 0x5 && channel.sample) {
         let sample = playback.mod.samples[channel.sample];
         channel.period = pitchToPeriod(cell.pitch, sample.finetune);
-        let offset = (cell.effect == 0x9) ? (channel.memOff * 256 / baseRate) : 0;
+        let offset = (cell.effect == 0x9) ? calcSampleOffset(channel.memOff) : 0;
         playNote(playback, channel, offset);
     }
 }
@@ -550,16 +563,19 @@ function createNoteSource(playback, inst) {
 function jamPlay(playback, id, channel, cell) {
     if (!cell.inst || cell.pitch < 0)
         return;
+    let sample = playback.mod.samples[cell.inst];
+
     let note = new JamNote();
     note.gain = playback.ctx.createGain();
     note.gain.connect(playback.channels[channel].panner);
-    note.gain.gain.value = masterGain;
+    note.gain.gain.value = volumeToGain((cell.effect == 0xC) ? cell.param : sample.volume);
 
     note.source = createNoteSource(playback, cell.inst);
     note.source.connect(note.gain);
-    let sample = playback.mod.samples[cell.inst];
     note.source.playbackRate.value = periodToRate(pitchToPeriod(cell.pitch, sample.finetune));
-    note.source.start();
+
+    let offset = (cell.effect == 0x9) ? calcSampleOffset(cell.param) : 0;
+    note.source.start(0, offset);
 
     playback.jamNotes.set(id, note);
 }
