@@ -545,19 +545,20 @@ function createNoteSource(playback, inst) {
  * @param {Playback} playback
  * @param {number} id
  * @param {number} channel
- * @param {number} inst
- * @param {number} pitch
+ * @param {Cell} cell
  */
-function jamPlay(playback, id, channel, inst, pitch) {
+function jamPlay(playback, id, channel, cell) {
+    if (!cell.inst || cell.pitch < 0)
+        return;
     let note = new JamNote();
     note.gain = playback.ctx.createGain();
     note.gain.connect(playback.channels[channel].panner);
     note.gain.gain.value = masterGain;
 
-    note.source = createNoteSource(playback, inst);
+    note.source = createNoteSource(playback, cell.inst);
     note.source.connect(note.gain);
-    let sample = playback.mod.samples[inst];
-    note.source.playbackRate.value = periodToRate(pitchToPeriod(pitch, sample.finetune));
+    let sample = playback.mod.samples[cell.inst];
+    note.source.playbackRate.value = periodToRate(pitchToPeriod(cell.pitch, sample.finetune));
     note.source.start();
 
     playback.jamNotes.set(id, note);

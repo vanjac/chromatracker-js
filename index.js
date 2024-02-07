@@ -143,12 +143,11 @@ function jamDown(e) {
     if (e)
         e.preventDefault();
     if (playback) {
-        let s = Number(sampleEntry.sample.value);
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches)
-                jamPlay(playback, touch.identifier, selChannel, s, pitchEntry.jamPitch.valueAsNumber);
+                jamPlay(playback, touch.identifier, selChannel, getEntryCell());
         } else {
-            jamPlay(playback, -1, selChannel, s, pitchEntry.jamPitch.valueAsNumber);
+            jamPlay(playback, -1, selChannel, getEntryCell());
         }
     }
 }
@@ -259,19 +258,23 @@ function patternZap() {
     refreshPattern();
 }
 
-function writeCell() {
+function getEntryCell() {
     let cell = new Cell();
     cell.pitch = pitchEntry.jamPitch.valueAsNumber;
     cell.inst = Number(sampleEntry.sample.value);
     cell.effect = effectEntry.effect.selectedIndex;
     cell.param = effectEntry.param0.selectedIndex << 4;
     cell.param |= effectEntry.param1.selectedIndex;
+    return cell;
+}
+
+function writeCell() {
     let parts = CellParts.effect | CellParts.param;
     if (pitchEntry.pitchEnable.checked)
         parts |= CellParts.pitch;
     if (sampleEntry.sampleEnable.checked)
         parts |= CellParts.inst;
-    module = editPutCell(module, selPattern(), selChannel, selRow, cell, parts);
+    module = editPutCell(module, selPattern(), selChannel, selRow, getEntryCell(), parts);
     if (playback)
         playback.module = module;
     selRow++;
