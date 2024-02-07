@@ -475,6 +475,7 @@ function calcOscillator(osc, sawDir) {
  */
 function processCellNote(playback, channel, cell) {
     if (cell.sample) {
+        // TODO: support sample swapping
         let sample = playback.mod.samples[cell.sample];
         channel.sample = cell.sample;
         channel.volume = sample.volume;
