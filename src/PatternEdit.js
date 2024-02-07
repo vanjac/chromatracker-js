@@ -18,11 +18,19 @@ function immSplice(array, start, deleteCount, item) {
  * @param {number} p
  * @param {number} c
  * @param {number} r
- * @param {Readonly<Cell>} cell
+ * @param {Cell} cell
+ * @param {CellPart} parts
  * @returns {Readonly<Module>}
  */
-function editPutCell(module, p, c, r, cell) {
-    let channel = immSplice(module.patterns[p][c], r, 1, cell);
+function editPutCell(module, p, c, r, cell, parts = CellParts.all) {
+    let existing = module.patterns[p][c][r];
+    let newCell = new Cell();
+    newCell.pitch  = (parts & CellParts.pitch)  ? cell.pitch  : existing.pitch;
+    newCell.inst   = (parts & CellParts.inst)   ? cell.inst   : existing.inst;
+    newCell.effect = (parts & CellParts.effect) ? cell.effect : existing.effect;
+    newCell.param  = (parts & CellParts.param)  ? cell.param  : existing.param;
+
+    let channel = immSplice(module.patterns[p][c], r, 1, Object.freeze(newCell));
     let pattern = immSplice(module.patterns[p], c, 1, channel);
     /** @type {Module} */
     let newMod = Object.assign(new Module(), module);

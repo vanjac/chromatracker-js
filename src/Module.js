@@ -25,6 +25,16 @@ Cell.prototype = {
     param:  0,
 };
 
+/** @typedef {number} CellPart */
+/** @enum {CellPart} */
+const CellParts = {
+    pitch: 0x1,
+    inst: 0x2,
+    effect: 0x4,
+    param: 0x8,
+    all: 0xf,
+};
+
 /**
  * @typedef {Readonly<Cell>[]} Channel
  */

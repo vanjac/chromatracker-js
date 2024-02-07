@@ -261,14 +261,17 @@ function patternZap() {
 
 function writeCell() {
     let cell = new Cell();
-    if (pitchEntry.pitchEnable.checked)
-        cell.pitch = pitchEntry.jamPitch.valueAsNumber;
-    if (sampleEntry.sampleEnable.checked)
-        cell.inst = Number(sampleEntry.sample.value);
+    cell.pitch = pitchEntry.jamPitch.valueAsNumber;
+    cell.inst = Number(sampleEntry.sample.value);
     cell.effect = effectEntry.effect.selectedIndex;
     cell.param = effectEntry.param0.selectedIndex << 4;
     cell.param |= effectEntry.param1.selectedIndex;
-    module = editPutCell(module, selPattern(), selChannel, selRow, Object.freeze(cell));
+    let parts = CellParts.effect | CellParts.param;
+    if (pitchEntry.pitchEnable.checked)
+        parts |= CellParts.pitch;
+    if (sampleEntry.sampleEnable.checked)
+        parts |= CellParts.inst;
+    module = editPutCell(module, selPattern(), selChannel, selRow, cell, parts);
     if (playback)
         playback.module = module;
     selRow++;
@@ -277,7 +280,7 @@ function writeCell() {
 }
 
 function clearCell() {
-    module = editPutCell(module, selPattern(), selChannel, selRow, Object.freeze(new Cell()));
+    module = editPutCell(module, selPattern(), selChannel, selRow, new Cell());
     if (playback)
         playback.module = module;
     selRow++;
