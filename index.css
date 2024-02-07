@@ -26,9 +26,13 @@ body {
     margin:0;
     overflow: hidden;
     position: fixed;
+
     display: flex;
     flex-direction: column;
     font-family: sans-serif;
+
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 label {
