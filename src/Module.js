@@ -36,11 +36,11 @@ const CellParts = {
 };
 
 /**
- * @typedef {Readonly<Cell>[]} Channel
+ * @typedef {Readonly<Cell>[]} PatternChannel
  */
 
 /**
- * @typedef {Readonly<Channel>[]} Pattern
+ * @typedef {Readonly<PatternChannel>[]} Pattern
  */
 
 function Module() {}

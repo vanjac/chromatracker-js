@@ -56,7 +56,7 @@ function readModule(buf) {
         let pat = [];
 
         for (let c = 0; c < module.numChannels; c++) {
-            /** @type {Readonly<Cell>[]} */
+            /** @type {PatternChannel} */
             let chan = [];
             for (let row = 0; row < numRows; row++) {
                 let cellOff = patOff + (c * 4) + (row * module.numChannels * 4);
