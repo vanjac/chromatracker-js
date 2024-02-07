@@ -236,12 +236,14 @@ function processCellFirst(playback, channel, cell, row) {
         processCellNote(playback, channel, cell);
     switch (cell.effect) {
         case 0x3:
+            if (cell.param)
+                channel.memPort = cell.param;
+            // fall through!
+        case 0x5:
             if (cell.pitch >= 0 && channel.sample) {
                 let sample = playback.mod.samples[channel.sample];
                 channel.portTarget = pitchToPeriod(cell.pitch, sample.finetune);
             }
-            if (cell.param)
-                channel.memPort = cell.param;
             break;
         case 0x4:
             if (hiParam)
@@ -483,7 +485,7 @@ function processCellNote(playback, channel, cell) {
         channel.sample = cell.sample;
         channel.volume = sample.volume;
     }
-    if (cell.pitch >= 0 && cell.effect != 0x3 && channel.sample) {
+    if (cell.pitch >= 0 && cell.effect != 0x3 && cell.effect != 0x5 && channel.sample) {
         let sample = playback.mod.samples[channel.sample];
         channel.period = pitchToPeriod(cell.pitch, sample.finetune);
         let offset = (cell.effect == 0x9) ? (channel.memOff * 256 / baseRate) : 0;
