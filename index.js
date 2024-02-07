@@ -176,7 +176,7 @@ function update() {
         if (oldHilite)
             oldHilite.classList.remove('hilite-row');
         if (selPattern() == module.sequence[curLine.pos])
-            $`#pattern-table`.children[curLine.row].classList.add('hilite-row');
+            $`#patternTable`.children[curLine.row].classList.add('hilite-row');
     }
 }
 
@@ -201,7 +201,7 @@ function refreshPattern() {
     if (pattern != curPattern) {
         console.log('update pattern');
         curPattern = pattern;
-        let table = $`#pattern-table`;
+        let table = $`#patternTable`;
         table.textContent = '';
         makePatternTable(module, pattern, table, (r, c) => {
             selRow = r;
@@ -217,13 +217,13 @@ function updateSelCell() {
     if (existing)
         existing.classList.remove('sel-cell');
     if (selRow >= 0 && selChannel >= 0)
-        $`#pattern-table`.children[selRow].children[selChannel].classList.add('sel-cell');
+        $`#patternTable`.children[selRow].children[selChannel].classList.add('sel-cell');
 }
 
 function scrollToSelCell() {
-    let parent = $`#pattern-scroll`;
+    let parent = $`#patternScroll`;
     let parentRect = parent.getBoundingClientRect();
-    let childRect = $`#pattern-table`.children[selRow].getBoundingClientRect();
+    let childRect = $`#patternTable`.children[selRow].getBoundingClientRect();
     parent.scrollTop += (childRect.top - parentRect.top) - (parent.clientHeight / 2);
 }
 
