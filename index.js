@@ -146,9 +146,9 @@ function jamDown(e) {
         let s = Number(sampleEntry.sample.value);
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches)
-                jamPlay(playback, touch.identifier, s, pitchEntry.jamPitch.valueAsNumber);
+                jamPlay(playback, touch.identifier, selChannel, s, pitchEntry.jamPitch.valueAsNumber);
         } else {
-            jamPlay(playback, -1, s, pitchEntry.jamPitch.valueAsNumber);
+            jamPlay(playback, -1, selChannel, s, pitchEntry.jamPitch.valueAsNumber);
         }
     }
 }

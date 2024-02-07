@@ -18,16 +18,14 @@ function Playback() {
     this.samples = [];
     /** @type {ChannelPlayback[]} */
     this.channels = [];
-    /** @type {Map<number, AudioBufferSourceNode>} */
-    this.jamSources = new Map();
+    /** @type {Map<number, JamNote>} */
+    this.jamNotes = new Map();
 }
 Playback.prototype = {
     /** @type {AudioContext} */
     ctx: null,
     /** @type {Readonly<Module>} */
     mod: null,
-    /** @type {GainNode} */
-    jamGain: null,
     tempo: 125,
     speed: 6,
     pos: 0,
@@ -81,6 +79,14 @@ RowPlayback.prototype = {
     patLoop: false,
 };
 
+function JamNote() {}
+JamNote.prototype = {
+    /** @type {AudioBufferSourceNode} */
+    source: null,
+    /** @type {GainNode} */
+    gain: null,
+};
+
 /**
  * @param {AudioContext} context
  * @param {Readonly<Module>} mod
@@ -110,9 +116,6 @@ function initPlayback(context, mod) {
         channel.gain.connect(channel.panner);
         channel.gain.gain.value = 0;
     }
-    playback.jamGain = context.createGain();
-    playback.jamGain.connect(context.destination);
-    playback.jamGain.gain.value = masterGain;
     playback.time = context.currentTime;
 
     return playback;
@@ -526,12 +529,12 @@ function playNote(playback, channel, offset) {
 
 /**
  * @param {Playback} playback
- * @param {number} s
+ * @param {number} inst
  */
-function createNoteSource(playback, s) {
+function createNoteSource(playback, inst) {
     let source = playback.ctx.createBufferSource();
-    source.buffer = playback.samples[s];
-    let sample = playback.mod.samples[s];
+    source.buffer = playback.samples[inst];
+    let sample = playback.mod.samples[inst];
     source.loop = sample.loopEnd != sample.loopStart;
     source.loopStart = sample.loopStart / baseRate;
     source.loopEnd = sample.loopEnd / baseRate;
@@ -541,17 +544,23 @@ function createNoteSource(playback, s) {
 /**
  * @param {Playback} playback
  * @param {number} id
- * @param {number} s
+ * @param {number} channel
+ * @param {number} inst
  * @param {number} pitch
  */
-function jamPlay(playback, id, s, pitch) {
-    let source = createNoteSource(playback, s);
-    source.connect(playback.jamGain);
-    let sample = playback.mod.samples[s];
-    source.playbackRate.value = periodToRate(pitchToPeriod(pitch, sample.finetune));
-    source.start();
+function jamPlay(playback, id, channel, inst, pitch) {
+    let note = new JamNote();
+    note.gain = playback.ctx.createGain();
+    note.gain.connect(playback.channels[channel].panner);
+    note.gain.gain.value = masterGain;
 
-    playback.jamSources.set(id, source);
+    note.source = createNoteSource(playback, inst);
+    note.source.connect(note.gain);
+    let sample = playback.mod.samples[inst];
+    note.source.playbackRate.value = periodToRate(pitchToPeriod(pitch, sample.finetune));
+    note.source.start();
+
+    playback.jamNotes.set(id, note);
 }
 
 /**
@@ -559,10 +568,11 @@ function jamPlay(playback, id, s, pitch) {
  * @param {number} id
  */
 function jamRelease(playback, id) {
-    let source = playback.jamSources.get(id);
-    if (source) {
-        source.stop();
-        source.disconnect();
-        playback.jamSources.delete(id);
+    let note = playback.jamNotes.get(id);
+    if (note) {
+        note.source.stop();
+        note.source.disconnect();
+        note.gain.disconnect();
+        playback.jamNotes.delete(id);
     }
 }
