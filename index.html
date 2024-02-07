@@ -13,17 +13,17 @@
 <script src="src/PatternEdit.js"></script>
 
 <body>
-<div class="vflex">
+<form class="vflex" id="playbackControls">
   <div class="hflex">
-    <input id="file-select" type="file">
-    <button onclick="loadFile()">Load</button>
-    <button onclick="saveFile()">Save</button>
+    <input type="file" id="fileSelect">
+    <button type="button" onclick="loadFile()">Load</button>
+    <button type="button" onclick="saveFile()">Save</button>
   </div>
   <div class="hflex">
-    <button onclick="play()">Play</button>
-    <button onclick="play(true)">Play from</button>
-    <button onclick="pause()">Stop</button>
-    <button onclick="patternZap()">Pattern Zap</button>
+    <button type="button" onclick="play()">Play</button>
+    <button type="button" onclick="play(true)">Play from</button>
+    <button type="button" onclick="pause()">Stop</button>
+    <button type="button" onclick="patternZap()">Pattern Zap</button>
   </div>
   <div class="hflex">
     <label>
@@ -57,7 +57,7 @@
     <input type="checkbox" onchange="muteCheck(2, this.checked)" checked>
     <input type="checkbox" onchange="muteCheck(3, this.checked)" checked>
   </div>
-</div>
+</form>
 <div style="flex-grow:1; overflow-x:auto; overflow-y:auto;" id="pattern-scroll">
   <div style="height:50%"></div>
   <table id="pattern-table" style="font-family:monospace;"></table>
@@ -67,21 +67,24 @@
   <div id="errors">
     Errors:<br>
   </div>
-  <div class="hflex">
+  <form id="pitchEntry" class="hflex">
     <label>
-      <input type="checkbox" checked id="pitch-enable">
+      <input type="checkbox" checked id="pitchEnable">
       Pitch
     </label>
-    <input style="flex-grow:1" type="range" min="0" max="59" id="jam-pitch-range"
-      oninput="query('#jam-pitch').value=this.value;jamUp();jamDown()"
+    <input style="flex-grow:1" type="range" min="0" max="59" id="jamPitchRange"
+      oninput="pitchEntry.jamPitch.value=this.value;jamUp();jamDown()"
       onmousedown="jamDown()" onmouseup="jamUp()" ontouchstart="jamDown()" ontouchend="jamUp()">
-    <input style="width:36pt;" type="number" value="36" id="jam-pitch" oninput="query('#jam-pitch-range').value=this.value">
-  </div>
-  <div class="hflex">
+    <input style="width:36pt;" type="number" value="36" id="jamPitch"
+      oninput="pitchEntry.jamPitchRange.value=this.value">
+  </form>
+  <form id="sampleEntry" class="hflex">
     <label>
-      <input type="checkbox" checked id="sample-enable">
+      <input type="checkbox" checked id="sampleEnable">
       Sample
     </label>
+  </form>
+  <form id="effectEntry" class="hflex">
     <select id="effect">
       <option>0: Arpeggio</option>
       <option>1: Port Up</option>
@@ -136,8 +139,8 @@
       <option>E</option>
       <option>F</option>
     </select>
-    <button onclick="resetEffect()">Reset</button>
-  </div>
+    <button type="reset">Reset</button>
+  </form>
   <div class="hflex">
     <button style="flex-grow:1" onmousedown="jamDown(event)" onmouseup="jamUp(event)"
       ontouchstart="jamDown(event)" ontouchend="jamUp(event)">Jam</button>

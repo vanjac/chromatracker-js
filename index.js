@@ -8,6 +8,11 @@ window.onerror = (message, source, line) => {
         `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
 };
 
+let playbackControls = document.forms.playbackControls.elements;
+let pitchEntry = document.forms.pitchEntry.elements;
+let sampleEntry = document.forms.sampleEntry.elements;
+let effectEntry = document.forms.effectEntry.elements;
+
 let module;
 let context;
 let playback;
@@ -24,7 +29,7 @@ let selChannel = 0;
 
 function loadFile() {
     /** @type File */
-    let files = document.querySelector('#file-select').files;
+    let files = playbackControls.fileSelect.files;
     if (files.length) {
         readModuleBlob(files[0]);
     } else {
@@ -40,16 +45,16 @@ function readModuleBlob(blob) {
         module = Object.freeze(readModule(reader.result));
         console.log(module);
 
-        query('#title').value = module.name;
+        playbackControls.title.value = module.name;
 
         refreshSequence();
-        query('#sequence').selectedIndex = 0;
+        playbackControls.sequence.selectedIndex = 0;
         selRow = 0;
         selChannel = 0;
         refreshPattern();
         scrollToSelCell();
 
-        let samplesElem = query('#samples');
+        let samplesElem = playbackControls.samples;
         samplesElem.textContent = '';
         for (let [i, sample] of module.samples.entries()) {
             if (!sample) continue;
@@ -87,10 +92,10 @@ function play(resume) {
         pause();
     playback = initPlayback(context, module);
     if (resume) {
-        playback.pos = query('#sequence').selectedIndex;
+        playback.pos = playbackControls.sequence.selectedIndex;
         playback.row = selRow;
-        playback.tempo = query('#tempo').valueAsNumber;
-        playback.speed = query('#speed').valueAsNumber;
+        playback.tempo = playbackControls.tempo.valueAsNumber;
+        playback.speed = playbackControls.speed.valueAsNumber;
     }
 
     let process = () => {
@@ -128,8 +133,8 @@ function jamDown(e) {
     if (e)
         e.preventDefault();
     if (playback) {
-        let s = Number(query('#samples').value);
-        jamPlay(playback, s, query('#jam-pitch').valueAsNumber);
+        let s = Number(playbackControls.samples.value);
+        jamPlay(playback, s, pitchEntry.jamPitch.valueAsNumber);
     }
 }
 
@@ -153,14 +158,14 @@ function update() {
         queuedLines.splice(0, i);
         let curLine = queuedLines[0];
 
-        query('#tempo').value = curLine.tempo;
-        query('#speed').value = curLine.speed;
+        playbackControls.tempo.value = curLine.tempo;
+        playbackControls.speed.value = curLine.speed;
 
-        if (query('#follow').checked) {
+        if (playbackControls.follow.checked) {
             selRow = curLine.row;
             updateSelCell();
             scrollToSelCell();
-            query('#sequence').selectedIndex = curLine.pos;
+            playbackControls.sequence.selectedIndex = curLine.pos;
             refreshPattern();
         }
 
@@ -173,11 +178,11 @@ function update() {
 }
 
 function selPattern() {
-    return module.sequence[query('#sequence').selectedIndex];
+    return module.sequence[playbackControls.sequence.selectedIndex];
 }
 
 function refreshSequence() {
-    let seqElem = query('#sequence');
+    let seqElem = playbackControls.sequence;
     seqElem.textContent = '';
     for (let [i, pos] of module.sequence.entries()) {
         let option = document.createElement('option');
@@ -233,21 +238,15 @@ function patternZap() {
     refreshPattern();
 }
 
-function resetEffect() {
-    query('#effect').selectedIndex = 0;
-    query('#param0').selectedIndex = 0;
-    query('#param1').selectedIndex = 0;
-}
-
 function writeCell() {
     let cell = new Cell();
-    if (query('#pitch-enable').checked)
-        cell.pitch = query('#jam-pitch').valueAsNumber;
-    if (query('#sample-enable').checked)
-        cell.sample = Number(query('#samples').value);
-    cell.effect = query('#effect').selectedIndex;
-    cell.param = query('#param0').selectedIndex << 4;
-    cell.param |= query('#param1').selectedIndex;
+    if (pitchEntry.pitchEnable.checked)
+        cell.pitch = pitchEntry.jamPitch.valueAsNumber;
+    if (sampleEntry.sampleEnable.checked)
+        cell.sample = Number(playbackControls.samples.value);
+    cell.effect = effectEntry.effect.selectedIndex;
+    cell.param = effectEntry.param0.selectedIndex << 4;
+    cell.param |= effectEntry.param1.selectedIndex;
     module = editPutCell(module, selPattern(), selChannel, selRow, Object.freeze(cell));
     if (playback)
         playback.module = module;
@@ -267,13 +266,13 @@ function clearCell() {
 
 function liftCell() {
     let cell = module.patterns[selPattern()][selChannel][selRow];
-    query('#pitch-enable').checked = cell.pitch >= 0;
+    pitchEntry.pitchEnable.checked = cell.pitch >= 0;
     if (cell.pitch >= 0)
-        query('#jam-pitch').value = cell.pitch;
-    query('#sample-enable').checked = cell.sample;
+        pitchEntry.jamPitch.value = cell.pitch;
+    sampleEntry.sampleEnable.checked = cell.sample;
     if (cell.sample)
-        query('#samples').value = cell.sample;
-    query('#effect').selectedIndex = cell.effect;
-    query('#param0').selectedIndex = cell.param >> 4;
-    query('#param1').selectedIndex = cell.param & 0xf;
+        playbackControls.samples.value = cell.sample;
+    effectEntry.effect.selectedIndex = cell.effect;
+    effectEntry.param0.selectedIndex = cell.param >> 4;
+    effectEntry.param1.selectedIndex = cell.param & 0xf;
 }
