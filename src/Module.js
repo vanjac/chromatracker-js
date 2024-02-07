@@ -20,7 +20,7 @@ Sample.prototype = {
 function Cell() {}
 Cell.prototype = {
     pitch: -1, // -1 = no note
-    sample: 0, // 0 = no sample
+    inst: 0, // 0 = no instrument
     effect: 0,
     param:  0,
 };

@@ -66,7 +66,7 @@ function readModule(buf) {
                 let b3 = view.getUint8(cellOff + 2);
                 let period = w1 & 0xfff;
                 cell.pitch = periodToPitch.get(period) || -1;
-                cell.sample = (b3 >> 4) | (w1 >> 12 << 4);
+                cell.inst = (b3 >> 4) | (w1 >> 12 << 4);
                 cell.effect = b3 & 0xf;
                 cell.param = view.getUint8(cellOff + 3);
 

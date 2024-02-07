@@ -80,8 +80,8 @@ function writeModule(module) {
                 let cell = pat[c][row];
                 let cellOff = patOff + (c * 4) + (row * module.numChannels * 4);
                 let period = periodTable[8][cell.pitch];
-                view.setUint16(cellOff, period | (cell.sample >> 4 << 12));
-                view.setUint8(cellOff + 2, ((cell.sample & 0xf) << 4) | cell.effect);
+                view.setUint16(cellOff, period | (cell.inst >> 4 << 12));
+                view.setUint8(cellOff + 2, ((cell.inst & 0xf) << 4) | cell.effect);
                 view.setUint8(cellOff + 3, cell.param);
             }
         }

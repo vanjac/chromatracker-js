@@ -479,10 +479,10 @@ function calcOscillator(osc, sawDir) {
  * @param {Cell} cell 
  */
 function processCellNote(playback, channel, cell) {
-    if (cell.sample) {
+    if (cell.inst) {
         // TODO: support sample swapping
-        let sample = playback.mod.samples[cell.sample];
-        channel.sample = cell.sample;
+        let sample = playback.mod.samples[cell.inst];
+        channel.sample = cell.inst;
         channel.volume = sample.volume;
     }
     if (cell.pitch >= 0 && cell.effect != 0x3 && cell.effect != 0x5 && channel.sample) {

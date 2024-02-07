@@ -253,7 +253,7 @@ function writeCell() {
     if (pitchEntry.pitchEnable.checked)
         cell.pitch = pitchEntry.jamPitch.valueAsNumber;
     if (sampleEntry.sampleEnable.checked)
-        cell.sample = Number(sampleEntry.sample.value);
+        cell.inst = Number(sampleEntry.sample.value);
     cell.effect = effectEntry.effect.selectedIndex;
     cell.param = effectEntry.param0.selectedIndex << 4;
     cell.param |= effectEntry.param1.selectedIndex;
@@ -279,9 +279,9 @@ function liftCell() {
     pitchEntry.pitchEnable.checked = cell.pitch >= 0;
     if (cell.pitch >= 0)
         pitchEntry.jamPitch.value = cell.pitch;
-    sampleEntry.sampleEnable.checked = cell.sample;
-    if (cell.sample)
-        sampleEntry.sample.value = cell.sample;
+    sampleEntry.sampleEnable.checked = cell.inst;
+    if (cell.inst)
+        sampleEntry.sample.value = cell.inst;
     effectEntry.effect.selectedIndex = cell.effect;
     effectEntry.param0.selectedIndex = cell.param >> 4;
     effectEntry.param1.selectedIndex = cell.param & 0xf;
