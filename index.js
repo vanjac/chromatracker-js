@@ -53,17 +53,21 @@ function readModuleBlob(blob) {
         refreshPattern();
         scrollToSelCell();
 
-        let samplesElem = playbackControls.samples;
+        let samplesElem = $`#sampleList`;
         samplesElem.textContent = '';
         for (let [i, sample] of module.samples.entries()) {
             if (!sample) continue;
-            let option = document.createElement('option');
-            option.textContent = `${i}: ${sample.name}`;
-            option.value = i;
-            samplesElem.appendChild(option);
+            let label = samplesElem.appendChild(document.createElement('label'));
+            label.classList.add('radio-box');
+            let radio = label.appendChild(document.createElement('input'));
+            Object.assign(radio, {type: 'radio', name: 'sample', value: i});
+            let span = label.appendChild(document.createElement('span'));
+            span.textContent = i;
+
+            label.onmousedown = label.ontouchstart = () => jamDown();
+            label.onmouseup = label.ontouchend = () => jamUp();
         }
-        if (samplesElem.selectedIndex == -1)
-            samplesElem.selectedIndex = 0;
+        sampleEntry.sample.value = 1;
 
         if (intervalHandle)
             pause();
@@ -132,7 +136,7 @@ function jamDown(e) {
     if (e)
         e.preventDefault();
     if (playback) {
-        let s = Number(playbackControls.samples.value);
+        let s = Number(sampleEntry.sample.value);
         jamPlay(playback, s, pitchEntry.jamPitch.valueAsNumber);
     }
 }
@@ -242,7 +246,7 @@ function writeCell() {
     if (pitchEntry.pitchEnable.checked)
         cell.pitch = pitchEntry.jamPitch.valueAsNumber;
     if (sampleEntry.sampleEnable.checked)
-        cell.sample = Number(playbackControls.samples.value);
+        cell.sample = Number(sampleEntry.sample.value);
     cell.effect = effectEntry.effect.selectedIndex;
     cell.param = effectEntry.param0.selectedIndex << 4;
     cell.param |= effectEntry.param1.selectedIndex;
@@ -270,7 +274,7 @@ function liftCell() {
         pitchEntry.jamPitch.value = cell.pitch;
     sampleEntry.sampleEnable.checked = cell.sample;
     if (cell.sample)
-        playbackControls.samples.value = cell.sample;
+        sampleEntry.sample.value = cell.sample;
     effectEntry.effect.selectedIndex = cell.effect;
     effectEntry.param0.selectedIndex = cell.param >> 4;
     effectEntry.param1.selectedIndex = cell.param & 0xf;

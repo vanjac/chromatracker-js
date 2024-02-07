@@ -46,3 +46,18 @@ td {
 .hilite-row {
     background: lightblue;
 }
+
+.radio-box {
+    white-space: nowrap;
+}
+.radio-box input {
+    display: none;
+}
+.radio-box span {
+    display: inline-block;
+    border: 1px solid black;
+    padding: 3pt 6pt;
+}
+.radio-box :checked + span {
+    background: lightgray;
+}
