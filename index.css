@@ -44,11 +44,17 @@ td {
     border: 1px solid black;
     white-space: nowrap;
 }
+tr:nth-child(4n+1) {
+    background: #eee;
+}
+tr:nth-child(16n+1) {
+    background: lightgray;
+}
 .sel-cell {
     background: pink;
 }
 .hilite-row {
-    background: lightblue;
+    background: lightblue !important;
 }
 
 .radio-box {
