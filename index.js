@@ -387,11 +387,11 @@ addPressEvent($`#lift`, e => {
 });
 addReleaseEvent($`#lift`, e => jamUp(e));
 
-$`#jamPitch`.onmousedown = $`#jamPitch`.ontouchstart = e => jamDown(e);
-$`#jamPitch`.onmouseup = $`#jamPitch`.ontouchend = e => jamUp(e);
+$`#jamPitch`.onmousedown = $`#jamPitch`.ontouchstart = () => jamDown();
+$`#jamPitch`.onmouseup = $`#jamPitch`.ontouchend = () => jamUp();
 $`#jamPitch`.oninput = e => {
-    jamUp(e);
-    jamDown(e);
+    jamUp();
+    jamDown();
     updateEntryCell();
 };
 
