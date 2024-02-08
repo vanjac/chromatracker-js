@@ -71,11 +71,11 @@ function readModuleBlob(blob) {
         for (let [i, sample] of module.samples.entries()) {
             if (!sample) continue;
             let label = samplesElem.appendChild(makeRadioButton('sample', i, i));
-            label.onmousedown = label.ontouchstart = e => {
+            addPressEvent(label, e => {
                 sampleEntry.sample.value = i;
                 jamDown(e);
-            };
-            label.onmouseup = label.ontouchend = jamUp;
+            });
+            addReleaseEvent(label, e => jamUp(e));
         }
         sampleEntry.sample.value = 1;
 
@@ -150,11 +150,9 @@ function muteCheck(channel, checked) {
 }
 
 function jamDown(e, cell) {
-    if (e)
-        e.preventDefault();
-    if (!cell)
-        cell = entryCell();
     if (playback) {
+        if (!cell)
+            cell = entryCell();
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches)
                 jamPlay(playback, touch.identifier, selChannel, cell);
@@ -165,8 +163,6 @@ function jamDown(e, cell) {
 }
 
 function jamUp(e) {
-    if (e)
-        e.preventDefault();
     if (playback) {
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches)
@@ -237,9 +233,9 @@ function refreshPattern() {
                 selRow = r;
                 selChannel = c;
                 updateSelCell();
-                jamDown(0, selCell());
+                jamDown(e, selCell());
             };
-            td.onmouseup = td.ontouchend = () => jamUp();
+            td.onmouseup = td.ontouchend = e => jamUp(e);
         });
         updateSelCell();
     }
@@ -333,3 +329,45 @@ function liftCell() {
         effectEntry.param1.selectedIndex = cell.param & 0xf;
     }
 }
+
+
+function addPressEvent(elem, handler) {
+    elem.addEventListener('mousedown', handler);
+    elem.addEventListener('touchstart', e => {
+        e.preventDefault();
+        handler(e);
+    });
+}
+
+function addReleaseEvent(elem, handler) {
+    elem.addEventListener('mouseup', handler);
+    elem.addEventListener('touchend', e => {
+        e.preventDefault();
+        handler(e);
+    });
+}
+
+
+addPressEvent($`#write`, e => {
+    writeCell();
+    jamDown(e, selCell());
+    advance();
+});
+addReleaseEvent($`#write`, e => jamUp(e));
+
+$`#clear`.onclick = clearCell;
+
+addPressEvent($`#lift`, e => {
+    liftCell();
+    jamDown(e, selCell());
+});
+addReleaseEvent($`#lift`, e => jamUp(e));
+
+$`#jamPitchRange`.onmousedown = $`#jamPitchRange`.ontouchstart = e => jamDown(e);
+$`#jamPitchRange`.onmouseup = $`#jamPitchRange`.ontouchend = e => jamUp(e);
+$`#jamPitchRange`.oninput = e => {
+    pitchEntry.jamPitch.value = e.target.value;
+    jamUp(e);
+    jamDown(e);
+};
+$`#jamPitch`.oninput = e => pitchEntry.jamPitchRange.value = e.target.value;

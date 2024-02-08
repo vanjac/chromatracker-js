@@ -70,11 +70,8 @@
       <input type="checkbox" checked id="pitchEnable">
       Pitch
     </label>
-    <input style="flex-grow:1" type="range" min="0" max="59" id="jamPitchRange"
-      oninput="pitchEntry.jamPitch.value=this.value;jamUp();jamDown()"
-      onmousedown="jamDown()" onmouseup="jamUp()" ontouchstart="jamDown()" ontouchend="jamUp()">
-    <input style="width:36pt;" type="number" value="36" id="jamPitch"
-      oninput="pitchEntry.jamPitchRange.value=this.value">
+    <input style="flex-grow:1" type="range" min="0" max="59" id="jamPitchRange">
+    <input style="width:36pt;" type="number" value="36" id="jamPitch">
   </form>
   <form id="sampleEntry" class="hflex">
     <label>
@@ -144,11 +141,9 @@
     </select>
   </form>
   <div class="hflex">
-    <button style="flex-grow:1" onmousedown="writeCell(); jamDown(0,selCell()); advance()" onmouseup="jamUp()"
-      ontouchstart="writeCell(); jamDown(event,selCell()); advance()" ontouchend="jamUp(event)">Write</button>
-    <button style="flex-grow:1" onclick="clearCell()">Clear</button>
-    <button style="flex-grow:1" onmousedown="liftCell(); jamDown(0,selCell())" onmouseup="jamUp()"
-      ontouchstart="liftCell(); jamDown(event,selCell())" ontouchend="jamUp(event)">Lift</button>
+    <button id="write" style="flex-grow:1">Write</button>
+    <button id="clear" style="flex-grow:1">Clear</button>
+    <button id="lift" style="flex-grow:1">Lift</button>
   </div>
 </div>
 
