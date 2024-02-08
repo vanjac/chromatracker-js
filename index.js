@@ -1,6 +1,9 @@
 // @ts-nocheck
 "use strict";
 
+/**
+ * @param {string[]} strings
+ */
 function $(strings) { return document.querySelector(strings[0]); }
 
 window.onerror = (message, source, line) => {
@@ -107,6 +110,11 @@ function play(resume) {
         playback.tempo = playbackControls.tempo.valueAsNumber;
         playback.speed = playbackControls.speed.valueAsNumber;
     }
+    let muteChecks = $`#mute`.children;
+    for (let i = 0; i < muteChecks.length; i++) {
+        if (!muteChecks[i].checked)
+            setChannelMute(playback, i, true);
+    }
 
     let process = () => {
         while (queuedTime < context.currentTime + 0.5) {
@@ -206,7 +214,7 @@ function selPattern() {
 function refreshSequence() {
     let seqElem = playbackControls.sequence;
     seqElem.textContent = '';
-    for (let [i, pos] of module.sequence.entries()) {
+    for (let pos of module.sequence) {
         let option = document.createElement('option');
         option.textContent = pos;
         seqElem.appendChild(option);
