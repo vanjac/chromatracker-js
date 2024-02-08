@@ -144,10 +144,10 @@
   </form>
   <div class="hflex">
     <button style="flex-grow:1" onmousedown="writeCell(); jamDown(0,selCell()); advance()" onmouseup="jamUp()"
-      ontouchstart="jamDown(event); writeCell()" ontouchend="jamUp(event)">Write</button>
+      ontouchstart="writeCell(); jamDown(event,selCell()); advance()" ontouchend="jamUp(event)">Write</button>
     <button style="flex-grow:1" onclick="clearCell()">Clear</button>
     <button style="flex-grow:1" onmousedown="liftCell(); jamDown(0,selCell())" onmouseup="jamUp()"
-      ontouchstart="liftCell(); jamDown(event)" ontouchend="jamUp(event)">Lift</button>
+      ontouchstart="liftCell(); jamDown(event,selCell())" ontouchend="jamUp(event)">Lift</button>
   </div>
 </div>
 
