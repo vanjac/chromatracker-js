@@ -320,14 +320,11 @@ function clearCell() {
 
 function liftCell() {
     let cell = selCell();
-    pitchEntry.pitchEnable.checked = cell.pitch >= 0;
-    if (cell.pitch >= 0)
-        pitchEntry.jamPitch.value = cell.pitch;
-    sampleEntry.sampleEnable.checked = cell.inst;
-    if (cell.inst)
+    if (pitchEntry.pitchEnable.checked && cell.pitch >= 0)
+        pitchEntry.jamPitch.value = pitchEntry.jamPitchRange.value = cell.pitch;
+    if (sampleEntry.sampleEnable.checked && cell.inst)
         sampleEntry.sample.value = cell.inst;
-    effectEntry.effectEnable.checked = cell.effect || cell.param;
-    if (cell.effect || cell.param) {
+    if (effectEntry.effectEnable.checked && (cell.effect || cell.param)) {
         effectEntry.effect.selectedIndex = cell.effect;
         effectEntry.param0.selectedIndex = cell.param >> 4;
         effectEntry.param1.selectedIndex = cell.param & 0xf;
@@ -368,7 +365,7 @@ addReleaseEvent($`#clear`, e => jamUp(e));
 
 addPressEvent($`#lift`, e => {
     liftCell();
-    jamDown(e, selCell());
+    jamDown(e);
 });
 addReleaseEvent($`#lift`, e => jamUp(e));
 

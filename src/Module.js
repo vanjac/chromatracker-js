@@ -57,3 +57,18 @@ Module.prototype = {
     /** @type {readonly Readonly<Sample>[]} */
     samples: Object.freeze([]),
 };
+
+
+/**
+ * @param {Readonly<Cell>} dest
+ * @param {Readonly<Cell>} src
+ * @param {CellParts} parts
+ */
+function cellApply(dest, src, parts) {
+    let newCell = new Cell();
+    newCell.pitch  = (parts & CellParts.pitch)  ? src.pitch  : dest.pitch;
+    newCell.inst   = (parts & CellParts.inst)   ? src.inst   : dest.inst;
+    newCell.effect = (parts & CellParts.effect) ? src.effect : dest.effect;
+    newCell.param  = (parts & CellParts.param)  ? src.param  : dest.param;
+    return newCell;
+}
