@@ -98,15 +98,17 @@ function saveFile() {
     window.open(url);
 }
 
-function play(resume) {
+function play(resume, patternLoop) {
     if (!module)
         return;
     if (intervalHandle)
         pause();
     playback = initPlayback(context, module);
-    if (resume) {
+    playback.userPatternLoop = !!patternLoop;
+    if (resume || patternLoop) {
         playback.pos = playbackControls.sequence.selectedIndex;
-        playback.row = selRow;
+        if (resume)
+            playback.row = selRow;
         playback.tempo = playbackControls.tempo.valueAsNumber;
         playback.speed = playbackControls.speed.valueAsNumber;
     }

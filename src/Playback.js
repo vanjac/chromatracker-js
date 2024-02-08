@@ -33,6 +33,7 @@ Playback.prototype = {
     patLoopRow: 0,
     patLoopCount: 0,
     time: 0,
+    userPatternLoop: false,
 };
 
 function ChannelPlayback() {
@@ -197,7 +198,9 @@ function processRow(playback) {
         }
     }
 
-    if (rowPlay.posJump != -1) {
+    if (playback.userPatternLoop) {
+        // do nothing
+    } else if (rowPlay.posJump != -1) {
         playback.pos = rowPlay.posJump;
     } else if (rowPlay.patBreak != -1) {
         playback.pos++;
@@ -214,7 +217,8 @@ function processRow(playback) {
 
     if (playback.row >= numRows) {
         playback.row = 0;
-        playback.pos++;
+        if (!playback.userPatternLoop)
+            playback.pos++;
     }
     if (playback.pos >= playback.mod.sequence.length)
         playback.pos = playback.mod.restartPos;
