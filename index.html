@@ -64,25 +64,29 @@
 <div class="vflex">
   <div id="errors"></div>
   <div>
-    <span id="entryCell" class="pattern-cell"></span>
+    <span id="entryCell" class="pattern-cell">
+      <span id="entryPitch" class="cell-pitch"></span>
+      <span id="entryInst" class="cell-inst"></span>
+      <span id="entryEffect" class="cell-effect"></span>
+    </span>
   </div>
   <form id="pitchEntry" class="hflex">
     <label>
-      <input type="checkbox" checked id="pitchEnable">
+      <input type="checkbox" checked id="pitchEnable" onchange="updateEntryParts()">
       Pitch
     </label>
     <input style="flex-grow:1" type="range" min="0" max="59" value="36" id="jamPitch">
   </form>
   <form id="sampleEntry" class="hflex">
     <label>
-      <input type="checkbox" checked id="sampleEnable">
+      <input type="checkbox" checked id="sampleEnable" onchange="updateEntryParts()">
       Sample
     </label>
     <span id="sampleList" class="hflex" style="flex-wrap:wrap"></span>
   </form>
   <form id="effectEntry" class="hflex">
     <label>
-      <input type="checkbox" id="effectEnable">
+      <input type="checkbox" id="effectEnable" onchange="updateEntryParts()">
       Effect
     </label>
     <select id="effect">

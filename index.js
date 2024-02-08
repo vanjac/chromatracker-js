@@ -302,7 +302,16 @@ function entryParts() {
 }
 
 function updateEntryCell() {
-    $`#entryCell`.textContent = cellString(entryCell());
+    let cell = entryCell();
+    $`#entryPitch`.textContent = cellPitchString(cell);
+    $`#entryInst`.textContent = cellInstString(cell);
+    $`#entryEffect`.textContent = cellEffectString(cell);
+}
+
+function updateEntryParts() {
+    $`#entryCell`.classList.toggle('sel-pitch', pitchEntry.pitchEnable.checked);
+    $`#entryCell`.classList.toggle('sel-inst', sampleEntry.sampleEnable.checked);
+    $`#entryCell`.classList.toggle('sel-effect', effectEntry.effectEnable.checked);
 }
 
 function writeCell() {
@@ -391,3 +400,4 @@ $`#param0`.oninput = () => updateEntryCell();
 $`#param1`.oninput = () => updateEntryCell();
 
 updateEntryCell();
+updateEntryParts();

@@ -54,6 +54,11 @@ tr:nth-child(16n+1) {
 .sel-cell {
     background: pink;
 }
+.sel-pitch .cell-pitch,
+.sel-inst .cell-inst,
+.sel-effect .cell-effect {
+    background: greenyellow;
+}
 .hilite-row {
     background: lightblue !important;
 }

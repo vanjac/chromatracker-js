@@ -6,14 +6,33 @@ const noteNames = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', '
  * @param {Cell} cell cell
  */
 function cellString(cell) {
+    return `${cellPitchString(cell)} ${cellInstString(cell)} ${cellEffectString(cell)}`;
+}
+
+/**
+ * @param {Cell} cell cell
+ */
+function cellPitchString(cell) {
     let noteStr = (cell.pitch >= 0) ? noteNames[cell.pitch % 12] : '..';
     let octStr = (cell.pitch >= 0) ? ((cell.pitch / 12) | 0) : '.';
-    let instStr = (cell.inst > 9) ? cell.inst.toString() :
-        cell.inst ? ('0' + cell.inst.toString()) : '..';
+    return noteStr + octStr;
+}
+
+/**
+ * @param {Cell} cell cell
+ */
+function cellInstString(cell) {
+    return (cell.inst > 9) ? cell.inst.toString() : cell.inst ? ('0' + cell.inst.toString()) : '..';
+}
+
+/**
+ * @param {Cell} cell
+ */
+function cellEffectString(cell) {
     let effStr = (cell.effect || cell.param) ? cell.effect.toString(16).toUpperCase() : '.';
     let prmStr = (cell.param > 0xf) ? cell.param.toString(16).toUpperCase() :
         (cell.effect || cell.param) ? ('0' + cell.param.toString(16).toUpperCase()) : '..';
-    return `${noteStr}${octStr} ${instStr} ${effStr}${prmStr}`;
+    return effStr + prmStr;
 }
 
 /**
