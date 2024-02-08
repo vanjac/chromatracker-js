@@ -74,10 +74,12 @@ function readModuleBlob(blob) {
             addPressEvent(label, e => {
                 sampleEntry.sample.value = i;
                 jamDown(e);
+                updateEntryCell();
             });
             addReleaseEvent(label, e => jamUp(e));
         }
         sampleEntry.sample.value = 1;
+        updateEntryCell();
 
         if (intervalHandle)
             pause();
@@ -151,8 +153,11 @@ function muteCheck(channel, checked) {
 
 function jamDown(e, cell) {
     if (playback) {
-        if (!cell)
+        if (!cell) {
             cell = entryCell();
+            if (!effectEntry.effectEnable.checked)
+                cell.effect = cell.param = 0;
+        }
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches)
                 jamPlay(playback, touch.identifier, selChannel, cell);
@@ -273,12 +278,11 @@ function patternZap() {
 function entryCell() {
     let cell = new Cell();
     cell.pitch = pitchEntry.jamPitch.valueAsNumber;
-    cell.inst = Number(sampleEntry.sample.value);
-    if (effectEntry.effectEnable.checked) {
-        cell.effect = effectEntry.effect.selectedIndex;
-        cell.param = effectEntry.param0.selectedIndex << 4;
-        cell.param |= effectEntry.param1.selectedIndex;
-    }
+    if (sampleEntry.sample) // sample list exists?
+        cell.inst = Number(sampleEntry.sample.value);
+    cell.effect = effectEntry.effect.selectedIndex;
+    cell.param = effectEntry.param0.selectedIndex << 4;
+    cell.param |= effectEntry.param1.selectedIndex;
     return cell;
 }
 
@@ -295,6 +299,10 @@ function entryParts() {
     if (effectEntry.effectEnable.checked)
         parts |= CellParts.effect | CellParts.param;
     return parts;
+}
+
+function updateEntryCell() {
+    $`#entryCell`.textContent = cellString(entryCell());
 }
 
 function writeCell() {
@@ -321,7 +329,7 @@ function clearCell() {
 function liftCell() {
     let cell = selCell();
     if (pitchEntry.pitchEnable.checked && cell.pitch >= 0)
-        pitchEntry.jamPitch.value = pitchEntry.jamPitchRange.value = cell.pitch;
+        pitchEntry.jamPitch.value = cell.pitch;
     if (sampleEntry.sampleEnable.checked && cell.inst)
         sampleEntry.sample.value = cell.inst;
     if (effectEntry.effectEnable.checked && (cell.effect || cell.param)) {
@@ -329,6 +337,7 @@ function liftCell() {
         effectEntry.param0.selectedIndex = cell.param >> 4;
         effectEntry.param1.selectedIndex = cell.param & 0xf;
     }
+    updateEntryCell();
 }
 
 
@@ -369,11 +378,16 @@ addPressEvent($`#lift`, e => {
 });
 addReleaseEvent($`#lift`, e => jamUp(e));
 
-$`#jamPitchRange`.onmousedown = $`#jamPitchRange`.ontouchstart = e => jamDown(e);
-$`#jamPitchRange`.onmouseup = $`#jamPitchRange`.ontouchend = e => jamUp(e);
-$`#jamPitchRange`.oninput = e => {
-    pitchEntry.jamPitch.value = e.target.value;
+$`#jamPitch`.onmousedown = $`#jamPitch`.ontouchstart = e => jamDown(e);
+$`#jamPitch`.onmouseup = $`#jamPitch`.ontouchend = e => jamUp(e);
+$`#jamPitch`.oninput = e => {
     jamUp(e);
     jamDown(e);
+    updateEntryCell();
 };
-$`#jamPitch`.oninput = e => pitchEntry.jamPitchRange.value = e.target.value;
+
+$`#effect`.oninput = () => updateEntryCell();
+$`#param0`.oninput = () => updateEntryCell();
+$`#param1`.oninput = () => updateEntryCell();
+
+updateEntryCell();

@@ -58,20 +58,20 @@
 </form>
 <div style="flex-grow:1; overflow-x:auto; overflow-y:auto;" id="patternScroll">
   <div style="height:50%"></div>
-  <table id="patternTable" style="font-family:monospace;"></table>
+  <table id="patternTable"></table>
   <div style="height:50%"></div>
 </div>
 <div class="vflex">
-  <div id="errors">
-    Errors:<br>
+  <div id="errors"></div>
+  <div>
+    <span id="entryCell" class="pattern-cell"></span>
   </div>
   <form id="pitchEntry" class="hflex">
     <label>
       <input type="checkbox" checked id="pitchEnable">
       Pitch
     </label>
-    <input style="flex-grow:1" type="range" min="0" max="59" id="jamPitchRange">
-    <input style="width:36pt;" type="number" value="36" id="jamPitch">
+    <input style="flex-grow:1" type="range" min="0" max="59" value="36" id="jamPitch">
   </form>
   <form id="sampleEntry" class="hflex">
     <label>

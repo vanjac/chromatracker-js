@@ -40,7 +40,8 @@ label {
     align-items: center;
 }
 
-td {
+.pattern-cell {
+    font-family: monospace;
     border: 1px solid black;
     white-space: nowrap;
 }

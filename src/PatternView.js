@@ -30,6 +30,7 @@ function makePatternTable(module, pattern, table, cellCB) {
             let cell = pattern[c][row];
             let td = document.createElement('td');
             td.textContent = cellString(cell);
+            td.classList.add('pattern-cell');
             cellCB(td, row, c);
             tr.appendChild(td);
         }
