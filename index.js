@@ -286,7 +286,7 @@ function selCell() {
     return module.patterns[selPattern()][selChannel][selRow];
 }
 
-function writeCell() {
+function entryParts() {
     let parts = CellParts.none;
     if (pitchEntry.pitchEnable.checked)
         parts |= CellParts.pitch;
@@ -294,7 +294,11 @@ function writeCell() {
         parts |= CellParts.inst;
     if (effectEntry.effectEnable.checked)
         parts |= CellParts.effect | CellParts.param;
-    module = editPutCell(module, selPattern(), selChannel, selRow, entryCell(), parts);
+    return parts;
+}
+
+function writeCell() {
+    module = editPutCell(module, selPattern(), selChannel, selRow, entryCell(), entryParts());
     if (playback)
         playback.module = module;
     refreshPattern();
@@ -302,16 +306,16 @@ function writeCell() {
 
 function advance() {
     selRow++;
+    selRow %= numRows;
     updateSelCell();
     scrollToSelCell();
 }
 
 function clearCell() {
-    module = editPutCell(module, selPattern(), selChannel, selRow, new Cell());
+    module = editPutCell(module, selPattern(), selChannel, selRow, new Cell(), entryParts());
     if (playback)
         playback.module = module;
     refreshPattern();
-    advance();
 }
 
 function liftCell() {
@@ -355,7 +359,12 @@ addPressEvent($`#write`, e => {
 });
 addReleaseEvent($`#write`, e => jamUp(e));
 
-$`#clear`.onclick = clearCell;
+addPressEvent($`#clear`, e => {
+    clearCell();
+    jamDown(e, selCell());
+    advance();
+});
+addReleaseEvent($`#clear`, e => jamUp(e));
 
 addPressEvent($`#lift`, e => {
     liftCell();
