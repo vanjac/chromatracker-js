@@ -19,6 +19,12 @@ input, button, textarea, select {
     display: flex;
     flex-direction: column;
 }
+.scrollable {
+    overflow-x: auto;
+    overflow-y: auto;
+    /* fix scroll momentum on old Safari */
+    -webkit-overflow-scrolling: touch;
+}
 
 body {
     width: 100%;
@@ -33,9 +39,6 @@ body {
 
     user-select: none;
     -webkit-user-select: none;
-
-    /* fix scroll momentum on old Safari */
-    -webkit-overflow-scrolling: touch;
 }
 
 label {
