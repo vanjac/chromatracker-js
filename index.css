@@ -29,12 +29,8 @@ input, button, textarea, select {
 html, body {
     /* no pinch to zoom */
     touch-action: none;
-    pointer-events: none;
     /* no swipe to go back or refresh, this should help with tapping buttons near the edge */
     overscroll-behavior: none;
-}
-body * {
-    pointer-events: auto;
 }
 body {
     width: 100%;
