@@ -33,6 +33,9 @@ body {
 
     user-select: none;
     -webkit-user-select: none;
+
+    /* fix scroll momentum on old Safari */
+    -webkit-overflow-scrolling: touch;
 }
 
 label {
