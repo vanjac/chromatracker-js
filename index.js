@@ -244,11 +244,18 @@ function refreshPattern() {
 }
 
 function updateSelCell() {
-    let existing = $`.sel-cell`;
-    if (existing)
-        existing.classList.remove('sel-cell');
-    if (selRow >= 0 && selChannel >= 0)
-        $`#patternTable`.children[selRow].children[selChannel].classList.add('sel-cell');
+    let cell = $`.sel-cell`;
+    if (cell) {
+        cell.classList.remove('sel-cell');
+        cell.classList.remove('sel-pitch');
+        cell.classList.remove('sel-inst');
+        cell.classList.remove('sel-effect');
+    }
+    if (selRow >= 0 && selChannel >= 0) {
+        let cell = $`#patternTable`.children[selRow].children[selChannel];
+        cell.classList.add('sel-cell');
+        updateCellEntryParts(cell);
+    }
 }
 
 function scrollToSelCell() {
@@ -306,9 +313,16 @@ function updateEntryCell() {
 }
 
 function updateEntryParts() {
-    $`#entryCell`.classList.toggle('sel-pitch', pitchEntry.pitchEnable.checked);
-    $`#entryCell`.classList.toggle('sel-inst', sampleEntry.sampleEnable.checked);
-    $`#entryCell`.classList.toggle('sel-effect', effectEntry.effectEnable.checked);
+    updateCellEntryParts($`#entryCell`);
+    let selCell = $`.sel-cell`;
+    if (selCell)
+        updateCellEntryParts(selCell);
+}
+
+function updateCellEntryParts(cell) {
+    cell.classList.toggle('sel-pitch', pitchEntry.pitchEnable.checked);
+    cell.classList.toggle('sel-inst', sampleEntry.sampleEnable.checked);
+    cell.classList.toggle('sel-effect', effectEntry.effectEnable.checked);
 }
 
 function writeCell() {
