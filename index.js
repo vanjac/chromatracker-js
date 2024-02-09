@@ -31,7 +31,7 @@ let selChannel = 0;
 
 // Disable pinch to zoom on iOS
 document.addEventListener('touchmove', e => {
-    if (e.scale != 1)
+    if (e.scale && e.scale != 1)
         e.preventDefault();
 }, { passive: false });
 
