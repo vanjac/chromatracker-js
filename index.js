@@ -29,6 +29,12 @@ let curPattern = null;
 let selRow = 0;
 let selChannel = 0;
 
+// Disable pinch to zoom on iOS
+document.addEventListener('touchmove', e => {
+    if (e.scale != 1)
+        e.preventDefault();
+}, { passive: false });
+
 function makeRadioButton(group, value, text) {
     let fragment = $`#radioButtonTemplate`.content.cloneNode(true);
     Object.assign(fragment.querySelector('input'), {name: group, value});
