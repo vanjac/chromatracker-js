@@ -30,13 +30,10 @@ let selRow = 0;
 let selChannel = 0;
 
 function makeRadioButton(group, value, text) {
-    let label = document.createElement('label');
-    label.classList.add('radio-box');
-    let radio = label.appendChild(document.createElement('input'));
-    Object.assign(radio, {type: 'radio', name: group, value});
-    let span = label.appendChild(document.createElement('span'));
-    span.textContent = text;
-    return label;
+    let fragment = $`#radioButtonTemplate`.content.cloneNode(true);
+    Object.assign(fragment.querySelector('input'), {name: group, value});
+    fragment.querySelector('span').textContent = text;
+    return fragment.children[0];
 }
 
 function loadFile() {
