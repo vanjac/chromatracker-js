@@ -42,9 +42,9 @@ function cellEffectString(cell) {
  * @param {(td: HTMLTableCellElement, r: number, c: number) => void} cellCB
  */
 function makePatternTable(module, pattern, table, cellCB) {
+    let fragment = document.createDocumentFragment();
     for (let row = 0; row < numRows; row++) {
         let tr = document.createElement('tr');
-        table.appendChild(tr);
         for (let c = 0; c < module.numChannels; c++) {
             let cell = pattern[c][row];
             let td = document.createElement('td');
@@ -53,5 +53,7 @@ function makePatternTable(module, pattern, table, cellCB) {
             cellCB(td, row, c);
             tr.appendChild(td);
         }
+        fragment.appendChild(tr);
     }
+    table.appendChild(fragment);
 }
