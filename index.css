@@ -50,13 +50,41 @@ body {
     -webkit-user-select: none;
 }
 
-button {
+/* Buttons */
+
+.label-button {
+    white-space: nowrap;
+}
+.label-button input {
+    display: none;
+}
+
+button,
+.label-button span {
     display: inline-flex;
+    padding: 6pt;
+    border: 1pt solid #888;
+    background: #eee;
+    border-radius: 6pt;
+    touch-action: manipulation;
+}
+
+button:active,
+.label-button :active + span {
+    background: #ccc;
+}
+
+.label-button :checked + span {
+    background: #cdf;
+}
+
+.label-button :checked:active + span {
+    background: #abe;
 }
 
 .icon {
-    width: 24pt;
-    height: 24pt;
+    width: 20pt;
+    height: 20pt;
 }
 
 label {
@@ -85,21 +113,6 @@ tr:nth-child(16n+1) {
 }
 .hilite-row {
     background: lightblue !important;
-}
-
-.radio-box {
-    white-space: nowrap;
-}
-.radio-box input {
-    display: none;
-}
-.radio-box span {
-    display: inline-block;
-    border: 1px solid black;
-    padding: 3pt 6pt;
-}
-.radio-box :checked + span {
-    background: lightgray;
 }
 
 .hselect {

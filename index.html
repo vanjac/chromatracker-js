@@ -32,9 +32,9 @@
     <button id="pause" class="hide" type="button">
       <img class="icon" src="assets/pause.svg">
     </button>
-    <label>
+    <label class="label-button">
       <input type="checkbox" id="patternLoop">
-      Loop pattern
+      <span>Loop pattern</span>
     </label>
     <button type="button" onclick="patternZap()">Pattern Zap</button>
   </div>
@@ -56,9 +56,9 @@
       Speed:
       <input style="width:36pt;" type="number" value="6" id="speed">
     </label>
-    <label>
+    <label class="label-button">
       <input type="checkbox" checked id="follow">
-      Follow playback
+      <span>Follow</span>
     </label>
   </div>
   <div id="mute">
@@ -83,23 +83,23 @@
     </span>
   </div>
   <form id="pitchEntry" class="hflex">
-    <label>
+    <label class="label-button">
       <input type="checkbox" checked id="pitchEnable" onchange="updateEntryParts()">
-      Pitch
+      <span>Pitch</span>
     </label>
     <input style="flex:1" type="range" min="0" max="59" value="36" id="jamPitch">
   </form>
   <form id="sampleEntry" class="hflex">
-    <label>
+    <label class="label-button">
       <input type="checkbox" checked id="sampleEnable" onchange="updateEntryParts()">
-      Sample
+      <span>Sample</span>
     </label>
     <span id="sampleList" class="hflex" style="flex-wrap:wrap"></span>
   </form>
   <form id="effectEntry" class="hflex">
-    <label>
+    <label class="label-button">
       <input type="checkbox" id="effectEnable" onchange="updateEntryParts()">
-      Effect
+      <span>Effect</span>
     </label>
     <select id="effect">
       <option>0: Arpeggio</option>
@@ -166,7 +166,7 @@
 <!-- Templates -->
 
 <template id="radioButtonTemplate">
-  <label class="radio-box">
+  <label class="label-button">
     <input type="radio">
     <span></span>
   </label>
