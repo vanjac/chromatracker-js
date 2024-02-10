@@ -79,12 +79,21 @@
 </div>
 <div class="vflex">
   <div id="errors"></div>
-  <div>
+  <div class="hflex">
+    <button id="lift">
+      <img class="icon" src="assets/eyedropper.svg">
+    </button>
     <span id="entryCell" class="pattern-cell">
       <span id="entryPitch" class="cell-pitch"></span>
       <span id="entryInst" class="cell-inst"></span>
       <span id="entryEffect" class="cell-effect"></span>
     </span>
+    <button id="write">
+      <img class="icon" src="assets/pencil.svg">
+    </button>
+    <button id="clear">
+      <img class="icon" src="assets/eraser.svg">
+    </button>
   </div>
   <form id="pitchEntry" class="hflex">
     <label class="label-button">
@@ -160,11 +169,6 @@
       <option>F</option>
     </select>
   </form>
-  <div class="hflex">
-    <button id="write" style="flex:1">Write</button>
-    <button id="clear" style="flex:1">Clear</button>
-    <button id="lift" style="flex:1">Lift</button>
-  </div>
 </div>
 
 <!-- Templates -->
