@@ -19,8 +19,8 @@ function Playback() {
     this.samples = [];
     /** @type {ChannelPlayback[]} */
     this.channels = [];
-    /** @type {Map<number, JamNote>} */
-    this.jamNotes = new Map();
+    /** @type {Map<number, ChannelPlayback>} */
+    this.jamChannels = new Map();
 }
 Playback.prototype = {
     /** @type {AudioContext} */
@@ -81,14 +81,6 @@ RowPlayback.prototype = {
     patLoop: false,
 };
 
-function JamNote() {}
-JamNote.prototype = {
-    /** @type {AudioBufferSourceNode} */
-    source: null,
-    /** @type {GainNode} */
-    gain: null,
-};
-
 /**
  * @param {AudioContext} context
  * @param {Readonly<Module>} mod
@@ -104,23 +96,31 @@ function initPlayback(context, mod) {
         let channel = new ChannelPlayback();
         playback.channels.push(channel);
         channel.panning = ((c % 4) == 0 || (c % 4) == 3) ? 64 : 191;
-        let pan = channel.panning / 127.5 - 1.0;
-        if (context.createStereoPanner) {
-            channel.panner = context.createStereoPanner();
-            channel.panner.pan.value = pan;
-        } else {
-            channel.panner = context.createPanner();
-            channel.panner.panningModel = 'equalpower';
-            channel.panner.setPosition(pan, 0, 1 - Math.abs(pan));
-        }
-        channel.panner.connect(context.destination);
-        channel.gain = context.createGain();
-        channel.gain.connect(channel.panner);
-        channel.gain.gain.value = 0;
+        initChannelNodes(playback, channel);
     }
     playback.time = context.currentTime;
 
     return playback;
+}
+
+/**
+ * @param {Playback} playback
+ * @param {ChannelPlayback} channel
+ */
+function initChannelNodes(playback, channel) {
+    let pan = calcPanning(channel.panning);
+    if (playback.ctx.createStereoPanner) {
+        channel.panner = playback.ctx.createStereoPanner();
+        channel.panner.pan.value = pan;
+    } else {
+        channel.panner = playback.ctx.createPanner();
+        channel.panner.panningModel = 'equalpower';
+        channel.panner.setPosition(pan, 0, 1 - Math.abs(pan));
+    }
+    channel.panner.connect(playback.ctx.destination);
+    channel.gain = playback.ctx.createGain();
+    channel.gain.connect(channel.panner);
+    channel.gain.gain.value = 0;
 }
 
 /**
@@ -193,8 +193,6 @@ function processRow(playback) {
                     // Protracker instrument changes always take effect at the start of the row
                     // (not affected by note delays). Other trackers are different!
                     processCellInst(playback, channel, cell);
-                    if (cell.effect == 0x9 && cell.param)
-                        channel.memOff = cell.param; // store before playing note
                     if (!(cell.effect == 0xE && cell.param >> 4 == 0xD)) // no delay
                         processCellNote(playback, channel, cell);
                 }
@@ -245,7 +243,9 @@ function processCellInst(playback, channel, cell) {
         let sample = playback.mod.samples[cell.inst];
         channel.sample = cell.inst;
         channel.volume = sample.volume;
-        channel.memOff = 0; // this is how Protracker behaves, kinda (sample offsets are sticky)
+        // store sample offset before playing note
+        // this is how Protracker behaves, kinda (sample offsets are sticky)
+        channel.memOff = (cell.effect == 0x9) ? cell.param : 0;
     }
 }
 
@@ -452,7 +452,7 @@ function processCellAll(playback, channel, cell, tick) {
     channel.scheduledVolume = volume;
 
     if (channel.panning != channel.scheduledPanning) {
-        let pan = channel.panning / 127.5 - 1.0;
+        let pan = calcPanning(channel.panning);
         if (typeof StereoPannerNode !== 'undefined' && (channel.panner instanceof StereoPannerNode))
             channel.panner.pan.setTargetAtTime(pan, playback.time, rampTimeConstant);
         // TODO: what about PannerNode?
@@ -488,6 +488,13 @@ function volumeToGain(volume) {
 }
 
 /**
+ * @param {number} panning
+ */
+function calcPanning(panning) {
+    return panning / 127.5 - 1.0;
+}
+
+/**
  * @param {number} pitch
  * @param {number} finetune
  */
@@ -500,13 +507,6 @@ function pitchToPeriod(pitch, finetune) {
  */
 function periodToRate(period) {
     return basePeriod / period;
-}
-
-/**
- * @param {number} param
- */
-function calcSampleOffset(param) {
-    return param * 256 / baseRate;
 }
 
 /**
@@ -540,7 +540,7 @@ function playNote(playback, channel) {
     }
     channel.source = createNoteSource(playback, channel.sample);
     channel.source.connect(channel.gain);
-    channel.source.start(playback.time, calcSampleOffset(channel.memOff));
+    channel.source.start(playback.time, channel.memOff * 256 / baseRate);
     channel.activeSources.add(channel.source);
     channel.source.onended = e => {
         if (e.target instanceof AudioBufferSourceNode) {
@@ -575,27 +575,36 @@ function createNoteSource(playback, inst) {
 /**
  * @param {Playback} playback
  * @param {number} id
- * @param {number} channel
+ * @param {number} c
  * @param {Cell} cell
  */
-function jamPlay(playback, id, channel, cell) {
-    if (!cell.inst || cell.pitch < 0)
+function jamPlay(playback, id, c, cell) {
+    if (cell.pitch < 0)
         return;
-    let sample = playback.mod.samples[cell.inst];
+    let channel = playback.channels[c];
 
-    let note = new JamNote();
-    note.gain = playback.ctx.createGain();
-    note.gain.connect(playback.channels[channel].panner);
-    note.gain.gain.value = volumeToGain((cell.effect == 0xC) ? cell.param : sample.volume);
+    // clone channel
+    let jam = new ChannelPlayback(); Object.assign(new ChannelPlayback(), channel);
+    {
+        let {sample, period, volume, panning, portTarget, memPort, memOff} = channel;
+        Object.assign(channel, {sample, period, volume, panning, portTarget, memPort, memOff});
+    }
+    jam.vibrato = Object.assign(new OscillatorPlayback(), channel.vibrato);
+    jam.tremolo = Object.assign(new OscillatorPlayback(), channel.tremolo);
 
-    note.source = createNoteSource(playback, cell.inst);
-    note.source.connect(note.gain);
-    note.source.playbackRate.value = periodToRate(pitchToPeriod(cell.pitch, sample.finetune));
-
-    let offset = (cell.effect == 0x9) ? calcSampleOffset(cell.param) : 0;
-    note.source.start(0, offset);
-
-    playback.jamNotes.set(id, note);
+    // TODO: ugly!
+    let time = playback.time;
+    playback.time = 0;
+    try {
+        initChannelNodes(playback, jam);
+        processCellInst(playback, jam, cell);
+        processCellNote(playback, jam, cell); // ignore note delay
+        processCellFirst(playback, jam, cell, new RowPlayback());
+        processCellAll(playback, jam, cell, 0);
+        playback.jamChannels.set(id, jam);
+    } finally {
+        playback.time = time;
+    }
 }
 
 /**
@@ -603,11 +612,11 @@ function jamPlay(playback, id, channel, cell) {
  * @param {number} id
  */
 function jamRelease(playback, id) {
-    let note = playback.jamNotes.get(id);
+    let note = playback.jamChannels.get(id);
     if (note) {
         note.source.stop();
-        note.source.disconnect();
         note.gain.disconnect();
-        playback.jamNotes.delete(id);
+        note.panner.disconnect();
+        playback.jamChannels.delete(id);
     }
 }
