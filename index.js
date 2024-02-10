@@ -73,11 +73,11 @@ function readModuleBlob(blob) {
         for (let [i, sample] of module.samples.entries()) {
             if (!sample) continue;
             let label = samplesElem.appendChild(makeRadioButton('sample', i, i));
-            addPressEvent(label, e => {
+            label.onmousedown = label.ontouchstart = e => {
                 sampleEntry.sample.value = i;
                 jamDown(e);
                 updateEntryCell();
-            });
+            };
             addReleaseEvent(label, e => jamUp(e));
         }
         sampleEntry.sample.value = 1;

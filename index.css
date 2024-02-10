@@ -25,6 +25,10 @@ input, button, textarea, select {
     /* fix scroll momentum on old Safari */
     -webkit-overflow-scrolling: touch;
 }
+.hscrollable {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
 .hide {
     display: none;
 }
