@@ -516,6 +516,13 @@ function periodToRate(period) {
 }
 
 /**
+ * @param {number} param
+ */
+function calcSampleOffset(param) {
+    return param * 256 / baseRate;
+}
+
+/**
  * @param {OscillatorPlayback} osc
  * @param {number} sawDir
  */
@@ -546,7 +553,7 @@ function playNote(playback, channel) {
     }
     channel.source = createNoteSource(playback, channel.sample);
     channel.source.connect(channel.gain);
-    channel.source.start(playback.time, channel.sampleOffset * 256 / baseRate);
+    channel.source.start(playback.time, calcSampleOffset(channel.sampleOffset));
     channel.activeSources.add(channel.source);
     channel.source.onended = e => {
         if (e.target instanceof AudioBufferSourceNode) {
@@ -587,30 +594,31 @@ function createNoteSource(playback, inst) {
 function jamPlay(playback, id, c, cell) {
     if (cell.pitch < 0)
         return;
-    let channel = playback.channels[c];
 
     // clone channel
     let jam = new ChannelPlayback();
     {
+        let channel = playback.channels[c];
         let {sample, sampleOffset, period, volume, panning, portTarget, memPort, memOff} = channel;
         Object.assign(jam,
             {sample, sampleOffset, period, volume, panning, portTarget, memPort, memOff});
     }
-    jam.vibrato = Object.assign(new OscillatorPlayback(), channel.vibrato);
-    jam.tremolo = Object.assign(new OscillatorPlayback(), channel.tremolo);
+    playback.jamChannels.set(id, jam);
 
-    // TODO: ugly!
-    let time = playback.time;
-    playback.time = 0;
-    try {
-        initChannelNodes(playback, jam);
-        processCellInst(playback, jam, cell);
-        processCellNote(playback, jam, cell); // ignore note delay
+    initChannelNodes(playback, jam);
+    processCellInst(playback, jam, cell);
+    if (jam.sample) {
+        let sample = playback.mod.samples[jam.sample];
+        jam.period = pitchToPeriod(cell.pitch, sample.finetune);
         processCellFirst(playback, jam, cell, new RowPlayback());
-        processCellAll(playback, jam, cell, 0);
-        playback.jamChannels.set(id, jam);
-    } finally {
-        playback.time = time;
+
+        jam.source = createNoteSource(playback, jam.sample);
+        jam.source.connect(jam.gain);
+        jam.source.start(0, calcSampleOffset(jam.sampleOffset));
+        jam.gain.gain.value = volumeToGain(jam.volume);
+        if (typeof StereoPannerNode !== 'undefined' && (jam.panner instanceof StereoPannerNode))
+            jam.panner.pan.value = calcPanning(jam.panning);
+        jam.source.playbackRate.value = periodToRate(jam.period);
     }
 }
 
@@ -619,11 +627,14 @@ function jamPlay(playback, id, c, cell) {
  * @param {number} id
  */
 function jamRelease(playback, id) {
-    let note = playback.jamChannels.get(id);
-    if (note) {
-        note.source.stop();
-        note.gain.disconnect();
-        note.panner.disconnect();
+    let jam = playback.jamChannels.get(id);
+    if (jam) {
+        if (jam.source) {
+            jam.source.stop();
+            jam.source.disconnect();
+        }
+        jam.gain.disconnect();
+        jam.panner.disconnect();
         playback.jamChannels.delete(id);
     }
 }
