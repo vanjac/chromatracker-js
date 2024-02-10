@@ -66,7 +66,7 @@ body {
 button,
 .label-button span {
     display: inline-flex;
-    padding: 6pt;
+    padding: 6pt 8pt;
     border: 1pt solid #888;
     background: #eee;
     border-radius: 6pt;
@@ -87,8 +87,8 @@ button:active,
 }
 
 .icon {
-    width: 20pt;
-    height: 20pt;
+    width: 18pt;
+    height: 18pt;
 }
 
 label {
