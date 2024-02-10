@@ -47,6 +47,10 @@
       <input type="checkbox" id="patternLoop">
       <span><img class="icon" src="assets/repeat-variant.svg"></span>
     </label>
+    <label class="label-button">
+      <input type="checkbox" checked id="follow">
+      <span><img class="icon" src="assets/format-indent-increase.svg"></span>
+    </label>
   </div>
   <div class="hflex">
     <select class="hselect" id="sequence" size="2" oninput="refreshPattern()"></select>
@@ -59,10 +63,6 @@
     <label>
       Speed:
       <input style="width:36pt;" type="number" value="6" id="speed">
-    </label>
-    <label class="label-button">
-      <input type="checkbox" checked id="follow">
-      <span>Follow</span>
     </label>
   </div>
   <div id="mute">
