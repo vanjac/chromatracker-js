@@ -62,7 +62,7 @@ function readModuleBlob(blob) {
         playbackControls.title.value = module.name;
 
         refreshSequence();
-        playbackControls.sequence.selectedIndex = 0;
+        playbackControls.sequence.value = 0;
         selRow = 0;
         selChannel = 0;
         refreshPattern();
@@ -163,14 +163,14 @@ $`#playStart`.onclick = () => {
 $`#playPattern`.onclick = () => {
     if (resetPlayback()) {
         restorePlaybackTempo();
-        playback.pos = playbackControls.sequence.selectedIndex;
+        playback.pos = playbackControls.sequence.value;
         play();
     }
 };
 $`#playRow`.onclick = () => {
     if (resetPlayback()) {
         restorePlaybackTempo();
-        playback.pos = playbackControls.sequence.selectedIndex;
+        playback.pos = playbackControls.sequence.value;
         playback.row = selRow;
         play();
     }
@@ -233,7 +233,7 @@ function update() {
             selRow = curLine.row;
             updateSelCell();
             scrollToSelCell();
-            playbackControls.sequence.selectedIndex = curLine.pos;
+            playbackControls.sequence.value = curLine.pos;
             refreshPattern();
         }
 
@@ -246,19 +246,18 @@ function update() {
 }
 
 function selPattern() {
-    return module.sequence[playbackControls.sequence.selectedIndex];
+    return module.sequence[playbackControls.sequence.value];
 }
 
 function refreshSequence() {
-    let seqElem = playbackControls.sequence;
+    let seqElem = $`#sequenceList`;
     seqElem.textContent = '';
-    for (let pos of module.sequence) {
-        let option = document.createElement('option');
-        option.textContent = pos;
-        seqElem.appendChild(option);
+    for (let [i, pos] of module.sequence.entries()) {
+        let label = seqElem.appendChild(makeRadioButton('sequence', i, pos));
+        label.onchange = () => refreshPattern();
     }
-    if (seqElem.selectedIndex == -1)
-        seqElem.selectedIndex = 0;
+    if (!playbackControls.sequence.value && playbackControls.sequence.value !== 0)
+        playbackControls.sequence.value = 0;
 }
 
 function refreshPattern() {
