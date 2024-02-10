@@ -16,6 +16,7 @@ let sampleEntry = document.forms.sampleEntry.elements;
 let effectEntry = document.forms.effectEntry.elements;
 
 let module;
+let undoStack = [];
 let context;
 let playback;
 
@@ -55,6 +56,7 @@ function readModuleBlob(blob) {
     let reader = new FileReader();
     reader.onload = () => {
         module = Object.freeze(readModule(reader.result));
+        undoStack = [];
         console.log(module);
 
         playbackControls.title.value = module.name;
@@ -301,16 +303,35 @@ function scrollToSelCell() {
     parent.scrollTop += (childRect.top - parentRect.top) - (parent.clientHeight / 2);
 }
 
+function setModule(mod) {
+    module = mod;
+    if (playback)
+        playback.module = mod;
+}
+
+function pushUndo() {
+    undoStack.push(module);
+    if (undoStack.length > 100)
+        undoStack.shift();
+}
+
+function undo() {
+    if (undoStack.length) {
+        setModule(undoStack.pop());
+        refreshSequence();
+        refreshPattern();
+    }
+}
+
 function patternZap() {
+    pushUndo();
     let newMod = Object.assign(new Module(), module);
     newMod.patterns = Object.freeze([...Array(16)].map(() =>
         Object.freeze([...Array(module.numChannels)].map(() =>
             Object.freeze([...Array(numRows)].map(() =>
                 Object.freeze(new Cell()))))))); // lisp is so cool
     newMod.sequence = Object.freeze([...Array(16).keys()]);
-    module = newMod;
-    if (playback)
-        playback.module = module;
+    setModule(newMod);
     refreshSequence();
     refreshPattern();
 }
@@ -362,9 +383,8 @@ function updateCellEntryParts(cell) {
 }
 
 function writeCell() {
-    module = editPutCell(module, selPattern(), selChannel, selRow, entryCell(), entryParts());
-    if (playback)
-        playback.module = module;
+    pushUndo();
+    setModule(editPutCell(module, selPattern(), selChannel, selRow, entryCell(), entryParts()));
     refreshPattern();
 }
 
@@ -376,9 +396,8 @@ function advance() {
 }
 
 function clearCell() {
-    module = editPutCell(module, selPattern(), selChannel, selRow, new Cell(), entryParts());
-    if (playback)
-        playback.module = module;
+    pushUndo();
+    setModule(editPutCell(module, selPattern(), selChannel, selRow, new Cell(), entryParts()));
     refreshPattern();
 }
 
