@@ -42,17 +42,14 @@ function makeRadioButton(group, value, text) {
     return fragment.children[0];
 }
 
-function loadFile() {
-    /** @type File */
-    let files = playbackControls.fileSelect.files;
-    if (files.length) {
-        readModuleBlob(files[0]);
-    } else {
-        fetch('https://chroma.zone/share/space_debris.mod').then(
-            r => r.blob().then(
-                b => readModuleBlob(b)));
-    }
-}
+$`#fileSelect`.onchange = e => {
+    readModuleBlob(e.target.files[0]);
+};
+$`#fileDownload`.onclick = () => {
+    fetch('https://chroma.zone/share/space_debris.mod').then(
+        r => r.blob().then(
+            b => readModuleBlob(b)));
+};
 
 function readModuleBlob(blob) {
     let reader = new FileReader();
@@ -102,6 +99,8 @@ function saveFile() {
     console.log(url);
     window.open(url);
 }
+
+$`#fileSave`.onclick = () => saveFile();
 
 function resetPlayback() {
     if (!module)
