@@ -590,7 +590,7 @@ function jamPlay(playback, id, c, cell) {
     let channel = playback.channels[c];
 
     // clone channel
-    let jam = new ChannelPlayback(); Object.assign(new ChannelPlayback(), channel);
+    let jam = new ChannelPlayback();
     {
         let {sample, sampleOffset, period, volume, panning, portTarget, memPort, memOff} = channel;
         Object.assign(jam,
