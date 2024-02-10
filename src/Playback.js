@@ -2,6 +2,7 @@
 
 // https://github.com/johnnovak/nim-mod/blob/master/doc/Protracker%20effects%20(FireLight)%20(.mod).txt
 // https://wiki.openmpt.org/Development:_Test_Cases/MOD
+// https://github.com/libxmp/libxmp/blob/master/docs/tracker_notes.txt
 // https://padenot.github.io/web-audio-perf/
 
 const masterGain = 0.5;
@@ -182,17 +183,26 @@ function processRow(playback) {
     let patIdx = playback.mod.sequence[playback.pos];
     let pattern = playback.mod.patterns[patIdx];
 
-    // first tick
     let rowPlay = new RowPlayback();
     for (let repeat = 0; repeat < rowPlay.patDelay + 1; repeat++) {
         for (let tick = 0; tick < playback.speed; tick++) {
             for (let c = 0; c < playback.mod.numChannels; c++) {
                 let cell = pattern[c][playback.row];
-                if (tick == 0 && repeat == 0)
-                    processCellFirst(playback, playback.channels[c], cell, rowPlay);
+                let channel = playback.channels[c];
+                if (tick == 0 && repeat == 0) {
+                    // Protracker instrument changes always take effect at the start of the row
+                    // (not affected by note delays). Other trackers are different!
+                    processCellInst(playback, channel, cell);
+                    if (cell.effect == 0x9 && cell.param)
+                        channel.memOff = cell.param; // store before playing note
+                    if (!(cell.effect == 0xE && cell.param >> 4 == 0xD)) // no delay
+                        processCellNote(playback, channel, cell);
+                }
+                if (tick == 0)
+                    processCellFirst(playback, channel, cell, rowPlay);
                 else
-                    processCellRest(playback, playback.channels[c], cell, tick);
-                processCellAll(playback, playback.channels[c], cell, tick);
+                    processCellRest(playback, channel, cell, tick);
+                processCellAll(playback, channel, cell, tick);
             }
             playback.time += (60 / playback.tempo / 24);
         }
@@ -228,6 +238,34 @@ function processRow(playback) {
  * @param {Playback} playback 
  * @param {ChannelPlayback} channel
  * @param {Cell} cell
+ */
+function processCellInst(playback, channel, cell) {
+    if (cell.inst) {
+        // TODO: support sample swapping
+        let sample = playback.mod.samples[cell.inst];
+        channel.sample = cell.inst;
+        channel.volume = sample.volume;
+        channel.memOff = 0; // this is how Protracker behaves, kinda (sample offsets are sticky)
+    }
+}
+
+/**
+ * @param {Playback} playback 
+ * @param {ChannelPlayback} channel
+ * @param {Cell} cell 
+ */
+function processCellNote(playback, channel, cell) {
+    if (cell.pitch >= 0 && cell.effect != 0x3 && cell.effect != 0x5 && channel.sample) {
+        let sample = playback.mod.samples[channel.sample];
+        channel.period = pitchToPeriod(cell.pitch, sample.finetune);
+        playNote(playback, channel);
+    }
+}
+
+/**
+ * @param {Playback} playback 
+ * @param {ChannelPlayback} channel
+ * @param {Cell} cell
  * @param {RowPlayback} row
  */
 function processCellFirst(playback, channel, cell, row) {
@@ -235,12 +273,6 @@ function processCellFirst(playback, channel, cell, row) {
     // and some should happen every "first tick"
     let hiParam = cell.param >> 4;
     let loParam = cell.param & 0xf;
-    if (cell.effect == 0x9 && cell.param)
-        channel.memOff = cell.param; // store before playing note
-    let noteDelay = (cell.effect == 0xE && hiParam == 0xD && loParam != 0);
-    let noNote = (cell.effect == 0xE && cell.param == 0xC0);
-    if (!noteDelay && !noNote)
-        processCellNote(playback, channel, cell);
     switch (cell.effect) {
         case 0x3:
             if (cell.param)
@@ -316,7 +348,7 @@ function processCellFirst(playback, channel, cell, row) {
                 case 0x9:
                     // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PTRetrigger.mod
                     if (cell.pitch < 0 && loParam)
-                        playNote(playback, channel, 0);
+                        playNote(playback, channel);
                     break;
                 case 0xA:
                     channel.volume = Math.min(channel.volume + loParam, maxVolume);
@@ -379,15 +411,18 @@ function processCellRest(playback, channel, cell, tick) {
             switch (hiParam) {
                 case 0x9:
                     if (tick % loParam == 0)
-                        playNote(playback, channel, 0);
+                        playNote(playback, channel);
                     break;
                 case 0xC:
                     if (tick == loParam)
                         channel.volume = 0;
                     break;
                 case 0xD:
-                    if (tick == loParam)
-                        processCellNote(playback, channel, cell);
+                    if (tick == loParam && channel.sample) {
+                        let sample = playback.mod.samples[channel.sample];
+                        channel.period = pitchToPeriod(cell.pitch, sample.finetune);
+                        playNote(playback, channel);
+                    }
                     break;
             }
             break;
@@ -496,29 +531,8 @@ function calcOscillator(osc, sawDir) {
 /**
  * @param {Playback} playback 
  * @param {ChannelPlayback} channel
- * @param {Cell} cell 
  */
-function processCellNote(playback, channel, cell) {
-    if (cell.inst) {
-        // TODO: support sample swapping
-        let sample = playback.mod.samples[cell.inst];
-        channel.sample = cell.inst;
-        channel.volume = sample.volume;
-    }
-    if (cell.pitch >= 0 && cell.effect != 0x3 && cell.effect != 0x5 && channel.sample) {
-        let sample = playback.mod.samples[channel.sample];
-        channel.period = pitchToPeriod(cell.pitch, sample.finetune);
-        let offset = (cell.effect == 0x9) ? calcSampleOffset(channel.memOff) : 0;
-        playNote(playback, channel, offset);
-    }
-}
-
-/**
- * @param {Playback} playback 
- * @param {ChannelPlayback} channel
- * @param {number} offset
- */
-function playNote(playback, channel, offset) {
+function playNote(playback, channel) {
     if (!channel.sample)
         return;
     if (channel.source) {
@@ -526,7 +540,7 @@ function playNote(playback, channel, offset) {
     }
     channel.source = createNoteSource(playback, channel.sample);
     channel.source.connect(channel.gain);
-    channel.source.start(playback.time, offset);
+    channel.source.start(playback.time, calcSampleOffset(channel.memOff));
     channel.activeSources.add(channel.source);
     channel.source.onended = e => {
         if (e.target instanceof AudioBufferSourceNode) {
