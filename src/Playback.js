@@ -51,6 +51,7 @@ ChannelPlayback.prototype = {
     /** @type {StereoPannerNode|PannerNode} */
     panner: null,
     sample: 0,
+    sampleOffset: 0,
     period: 0,
     scheduledPeriod: -1,
     scheduledDetune: 0,
@@ -244,8 +245,10 @@ function processCellInst(playback, channel, cell) {
         channel.sample = cell.inst;
         channel.volume = sample.volume;
         // store sample offset before playing note
+        if (cell.effect == 0x9 && cell.param)
+            channel.memOff = cell.param;
         // this is how Protracker behaves, kinda (sample offsets are sticky)
-        channel.memOff = (cell.effect == 0x9) ? cell.param : 0;
+        channel.sampleOffset = (cell.effect == 0x9) ? channel.memOff : 0;
     }
 }
 
@@ -540,7 +543,7 @@ function playNote(playback, channel) {
     }
     channel.source = createNoteSource(playback, channel.sample);
     channel.source.connect(channel.gain);
-    channel.source.start(playback.time, channel.memOff * 256 / baseRate);
+    channel.source.start(playback.time, channel.sampleOffset * 256 / baseRate);
     channel.activeSources.add(channel.source);
     channel.source.onended = e => {
         if (e.target instanceof AudioBufferSourceNode) {
@@ -586,8 +589,9 @@ function jamPlay(playback, id, c, cell) {
     // clone channel
     let jam = new ChannelPlayback(); Object.assign(new ChannelPlayback(), channel);
     {
-        let {sample, period, volume, panning, portTarget, memPort, memOff} = channel;
-        Object.assign(channel, {sample, period, volume, panning, portTarget, memPort, memOff});
+        let {sample, sampleOffset, period, volume, panning, portTarget, memPort, memOff} = channel;
+        Object.assign(channel,
+            {sample, sampleOffset, period, volume, panning, portTarget, memPort, memOff});
     }
     jam.vibrato = Object.assign(new OscillatorPlayback(), channel.vibrato);
     jam.tremolo = Object.assign(new OscillatorPlayback(), channel.tremolo);
