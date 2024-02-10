@@ -244,11 +244,14 @@ function processCellInst(playback, channel, cell) {
         let sample = playback.mod.samples[cell.inst];
         channel.sample = cell.inst;
         channel.volume = sample.volume;
-        // store sample offset before playing note
-        if (cell.effect == 0x9 && cell.param)
-            channel.memOff = cell.param;
         // this is how Protracker behaves, kinda (sample offsets are sticky)
-        channel.sampleOffset = (cell.effect == 0x9) ? channel.memOff : 0;
+        channel.sampleOffset = 0;
+    }
+    // store sample offset before playing note
+    if (cell.effect == 0x9) {
+        if (cell.param)
+            channel.memOff = cell.param;
+        channel.sampleOffset = channel.memOff;
     }
 }
 
