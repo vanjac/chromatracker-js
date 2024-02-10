@@ -25,6 +25,9 @@ input, button, textarea, select {
     /* fix scroll momentum on old Safari */
     -webkit-overflow-scrolling: touch;
 }
+.hide {
+    display: none;
+}
 
 html, body {
     /* no pinch to zoom */
@@ -45,6 +48,15 @@ body {
 
     user-select: none;
     -webkit-user-select: none;
+}
+
+button {
+    display: inline-flex;
+}
+
+.icon {
+    width: 24pt;
+    height: 24pt;
 }
 
 label {

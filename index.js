@@ -103,26 +103,29 @@ function saveFile() {
     window.open(url);
 }
 
-function play(resume, patternLoop) {
+function resetPlayback() {
     if (!module)
-        return;
+        return false;
     if (intervalHandle)
         pause();
     playback = initPlayback(context, module);
-    playback.userPatternLoop = !!patternLoop;
-    if (resume || patternLoop) {
-        playback.pos = playbackControls.sequence.selectedIndex;
-        if (resume)
-            playback.row = selRow;
-        playback.tempo = playbackControls.tempo.valueAsNumber;
-        playback.speed = playbackControls.speed.valueAsNumber;
-    }
+
     let muteChecks = $`#mute`.children;
     for (let i = 0; i < muteChecks.length; i++) {
         if (!muteChecks[i].checked)
             setChannelMute(playback, i, true);
     }
 
+    playback.userPatternLoop = playbackControls.patternLoop.checked;
+    return true;
+}
+
+function restorePlaybackTempo() {
+    playback.tempo = playbackControls.tempo.valueAsNumber;
+    playback.speed = playbackControls.speed.valueAsNumber;
+}
+
+function play() {
     let process = () => {
         while (queuedTime < context.currentTime + 0.5) {
             queuedTime = playback.time;
@@ -134,8 +137,9 @@ function play(resume, patternLoop) {
     };
     process();
     intervalHandle = setInterval(process, 200);
-
     animHandle = requestAnimationFrame(update);
+    $`#playRow`.classList.add('hide');
+    $`#pause`.classList.remove('hide');
 }
 
 function pause() {
@@ -146,8 +150,35 @@ function pause() {
         queuedLines = [];
         queuedTime = 0;
         intervalHandle = null;
+        $`#playRow`.classList.remove('hide');
+        $`#pause`.classList.add('hide');
     }
 }
+
+$`#playStart`.onclick = () => {
+    if (resetPlayback())
+        play();
+};
+$`#playPattern`.onclick = () => {
+    if (resetPlayback()) {
+        restorePlaybackTempo();
+        playback.pos = playbackControls.sequence.selectedIndex;
+        play();
+    }
+};
+$`#playRow`.onclick = () => {
+    if (resetPlayback()) {
+        restorePlaybackTempo();
+        playback.pos = playbackControls.sequence.selectedIndex;
+        playback.row = selRow;
+        play();
+    }
+};
+$`#pause`.onclick = () => pause();
+$`#patternLoop`.onclick = e => {
+    if (playback)
+        playback.userPatternLoop = e.target.checked;
+};
 
 function muteCheck(channel, checked) {
     if (playback)

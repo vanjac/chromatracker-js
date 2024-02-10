@@ -20,10 +20,22 @@
     <button type="button" onclick="saveFile()">Save</button>
   </div>
   <div class="hflex">
-    <button type="button" onclick="play()">Play</button>
-    <button type="button" onclick="play(false, true)">Pattern</button>
-    <button type="button" onclick="play(true)">Play from</button>
-    <button type="button" onclick="pause()">Stop</button>
+    <button id="playStart" type="button">
+      <img class="icon" src="assets/step-forward.svg">
+    </button>
+    <button id="playPattern" type="button">
+      <img class="icon" src="assets/playlist-play.svg">
+    </button>
+    <button id="playRow" type="button">
+      <img class="icon" src="assets/play.svg">
+    </button>
+    <button id="pause" class="hide" type="button">
+      <img class="icon" src="assets/pause.svg">
+    </button>
+    <label>
+      <input type="checkbox" id="patternLoop">
+      Loop pattern
+    </label>
     <button type="button" onclick="patternZap()">Pattern Zap</button>
   </div>
   <div class="hflex">
