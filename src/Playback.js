@@ -233,7 +233,7 @@ function processRow(playback) {
 }
 
 /**
- * @param {Playback} playback 
+ * @param {Playback} playback
  * @param {ChannelPlayback} channel
  * @param {Cell} cell
  */
@@ -250,9 +250,9 @@ function processCellInst(playback, channel, cell) {
 }
 
 /**
- * @param {Playback} playback 
+ * @param {Playback} playback
  * @param {ChannelPlayback} channel
- * @param {Cell} cell 
+ * @param {Cell} cell
  */
 function processCellNote(playback, channel, cell) {
     if (cell.pitch >= 0 && cell.effect != 0x3 && cell.effect != 0x5 && channel.sample) {
@@ -263,7 +263,7 @@ function processCellNote(playback, channel, cell) {
 }
 
 /**
- * @param {Playback} playback 
+ * @param {Playback} playback
  * @param {ChannelPlayback} channel
  * @param {Cell} cell
  * @param {RowPlayback} row
@@ -322,7 +322,7 @@ function processCellFirst(playback, channel, cell, row) {
                     channel.vibrato.waveform = loParam & 0x3;
                     channel.vibrato.continue = (loParam & 0x4) != 0;
                     break;
-                case 0x5: 
+                case 0x5:
                     if (cell.pitch >= 0) {
                         let finetune = (loParam >= 8) ? (loParam - 16) : loParam;
                         channel.period = pitchToPeriod(cell.pitch, finetune);
@@ -371,9 +371,9 @@ function processCellFirst(playback, channel, cell, row) {
 }
 
 /**
- * @param {Playback} playback 
+ * @param {Playback} playback
  * @param {ChannelPlayback} channel
- * @param {Cell} cell 
+ * @param {Cell} cell
  * @param {number} tick
  */
 function processCellRest(playback, channel, cell, tick) {
@@ -529,7 +529,7 @@ function calcOscillator(osc, sawDir) {
 }
 
 /**
- * @param {Playback} playback 
+ * @param {Playback} playback
  * @param {ChannelPlayback} channel
  */
 function playNote(playback, channel) {

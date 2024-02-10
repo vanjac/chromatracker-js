@@ -2,10 +2,10 @@
 
 /**
  * @template T
- * @param {readonly T[]} array 
- * @param {number} start 
- * @param {number} deleteCount 
- * @param {T} item 
+ * @param {readonly T[]} array
+ * @param {number} start
+ * @param {number} deleteCount
+ * @param {T} item
  */
 function immSplice(array, start, deleteCount, item) {
     let mutArr = [...array];
