@@ -593,7 +593,7 @@ function jamPlay(playback, id, c, cell) {
     let jam = new ChannelPlayback(); Object.assign(new ChannelPlayback(), channel);
     {
         let {sample, sampleOffset, period, volume, panning, portTarget, memPort, memOff} = channel;
-        Object.assign(channel,
+        Object.assign(jam,
             {sample, sampleOffset, period, volume, panning, portTarget, memPort, memOff});
     }
     jam.vibrato = Object.assign(new OscillatorPlayback(), channel.vibrato);
