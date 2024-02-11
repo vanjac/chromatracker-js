@@ -521,3 +521,17 @@ $`#param1`.oninput = () => updateEntryCell();
 
 updateEntryCell();
 updateEntryParts();
+
+$`#setSampleVolume`.onclick = () => {
+    let idx = Number(sampleEntry.sample.value);
+    let sample = module.samples[idx];
+    let result = prompt(`Sample ${idx} volume\n${sample.name}`, sample.volume);
+    if (result !== null) {
+        pushUndo();
+        let newSample = Object.assign(new Sample(), sample);
+        newSample.volume = Number(result);
+        let newMod = Object.assign(new Module(), module);
+        newMod.samples = immSplice(module.samples, idx, 1, Object.freeze(newSample));
+        setModule(Object.freeze(newMod));
+    }
+};
