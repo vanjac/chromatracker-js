@@ -318,7 +318,7 @@ function scrollToSelCell() {
 function setModule(mod) {
     module = mod;
     if (playback)
-        playback.module = mod;
+        playback.mod = mod;
 }
 
 function pushUndo() {
@@ -342,7 +342,7 @@ function patternZap() {
     let newMod = Object.assign(new Module(), module);
     newMod.patterns = Object.freeze([createPattern(module)]);
     newMod.sequence = Object.freeze([0]);
-    setModule(newMod);
+    setModule(Object.freeze(newMod));
     refreshSequence();
     refreshPattern();
 }
