@@ -448,7 +448,7 @@ function liftCell() {
         pitchEntry.jamPitch.value = cell.pitch;
     if (sampleEntry.sampleEnable.checked && cell.inst)
         sampleEntry.sample.value = cell.inst;
-    if (effectEntry.effectEnable.checked && (cell.effect || cell.param)) {
+    if (effectEntry.effectEnable.checked) {
         effectEntry.effect.selectedIndex = cell.effect;
         effectEntry.param0.selectedIndex = cell.param >> 4;
         effectEntry.param1.selectedIndex = cell.param & 0xf;
