@@ -40,6 +40,46 @@ const CellParts = {
     all: 0xf,
 };
 
+/** @enum {number} */
+const Effects = {
+    Arpeggio:       0x0,
+    SlideUp:        0x1,
+    SlideDown:      0x2,
+    Portamento:     0x3,
+    Vibrato:        0x4,
+    VolSlidePort:   0x5,
+    VolSlideVib:    0x6,
+    Tremolo:        0x7,
+    Panning:        0x8,
+    SampleOffset:   0x9,
+    VolumeSlide:    0xA,
+    PositionJump:   0xB,
+    Volume:         0xC,
+    PatternBreak:   0xD,
+    Extended:       0xE,
+    Speed:          0xF,
+};
+
+/** @enum {number} */
+const ExtEffects = {
+    // Filter:      0x0, (not supported in XM)
+    FineSlideUp:    0x1,
+    FineSlideDown:  0x2,
+    // Glissando:   0x3,
+    VibratoWave:    0x4,
+    Finetune:       0x5,
+    PatternLoop:    0x6,
+    TremoloWave:    0x7,
+    Panning:        0x8,
+    Retrigger:      0x9,
+    FineVolumeUp:   0xA,
+    FineVolumeDown: 0xB,
+    NoteCut:        0xC,
+    NoteDelay:      0xD,
+    PatternDelay:   0xE,
+    // InvertLoop:  0xF, (not supported in XM)
+};
+
 /**
  * @typedef {Readonly<Cell>[]} PatternChannel
  */

@@ -194,8 +194,10 @@ function processRow(playback) {
                     // Protracker instrument changes always take effect at the start of the row
                     // (not affected by note delays). Other trackers are different!
                     processCellInst(playback, channel, cell);
-                    if (!(cell.effect == 0xE && cell.hiParam() == 0xD && cell.loParam()))
+                    if (! (cell.effect == Effects.Extended && cell.hiParam() == ExtEffects.NoteDelay
+                            && cell.loParam())) {
                         processCellNote(playback, channel, cell);
+                    }
                 }
                 if (tick == 0)
                     processCellFirst(playback, channel, cell, rowPlay);
@@ -248,7 +250,7 @@ function processCellInst(playback, channel, cell) {
         channel.sampleOffset = 0;
     }
     // store sample offset before playing note
-    if (cell.effect == 0x9) {
+    if (cell.effect == Effects.SampleOffset) {
         if (cell.param)
             channel.memOff = cell.param;
         channel.sampleOffset = channel.memOff;
@@ -261,7 +263,8 @@ function processCellInst(playback, channel, cell) {
  * @param {Cell} cell
  */
 function processCellNote(playback, channel, cell) {
-    if (cell.pitch >= 0 && cell.effect != 0x3 && cell.effect != 0x5 && channel.sample) {
+    if (cell.pitch >= 0 && cell.effect != Effects.Portamento && cell.effect != Effects.VolSlidePort
+            && channel.sample) {
         let sample = playback.mod.samples[channel.sample];
         channel.period = pitchToPeriod(cell.pitch, sample.finetune);
         playNote(playback, channel);
@@ -276,62 +279,62 @@ function processCellNote(playback, channel, cell) {
  */
 function processCellFirst(playback, channel, cell, row) {
     switch (cell.effect) {
-        case 0x3:
+        case Effects.Portamento:
             if (cell.param)
                 channel.memPort = cell.param;
             // fall through!
-        case 0x5:
+        case Effects.VolSlidePort:
             if (cell.pitch >= 0 && channel.sample) {
                 let sample = playback.mod.samples[channel.sample];
                 channel.portTarget = pitchToPeriod(cell.pitch, sample.finetune);
             }
             break;
-        case 0x4:
+        case Effects.Vibrato:
             if (cell.hiParam())
                 channel.vibrato.speed = cell.hiParam();
             if (cell.loParam())
                 channel.vibrato.depth = cell.loParam();
             break;
-        case 0x7:
+        case Effects.Tremolo:
             if (cell.hiParam())
                 channel.tremolo.speed = cell.hiParam();
             if (cell.loParam())
                 channel.tremolo.depth = cell.loParam();
             break;
-        case 0x8:
+        case Effects.Panning:
             channel.panning = cell.param;
             break;
-        case 0xB:
+        case Effects.PositionJump:
             row.posJump = cell.param;
             // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PatternJump.mod
             row.patBreak = -1;
             break;
-        case 0xC:
+        case Effects.Volume:
             channel.volume = Math.min(cell.param, maxVolume);
             break;
-        case 0xD:
+        case Effects.PatternBreak:
             row.patBreak = cell.param;
             break;
-        case 0xE:
+        case Effects.Extended:
             switch (cell.hiParam()) {
-                case 0x1:
+                case ExtEffects.FineSlideUp:
                     channel.period = Math.max(channel.period - cell.loParam(), minPeriod);
                     break;
-                case 0x2:
+                case ExtEffects.FineSlideDown:
                     channel.period += cell.loParam();
                     break;
-                case 0x4:
+                case ExtEffects.VibratoWave:
                     channel.vibrato.waveform = cell.loParam() & 0x3;
                     channel.vibrato.continue = (cell.loParam() & 0x4) != 0;
                     break;
-                case 0x5:
+                case ExtEffects.Finetune:
                     if (cell.pitch >= 0) {
                         let finetune = cell.loParam();
                         finetune = (finetune >= 8) ? (finetune - 16) : finetune;
                         channel.period = pitchToPeriod(cell.pitch, finetune);
                     }
                     break;
-                case 0x6:
+                case ExtEffects.PatternLoop:
                     if (cell.loParam() == 0) {
                         playback.patLoopRow = playback.row;
                     } else if (playback.patLoopCount < cell.loParam()) {
@@ -341,30 +344,30 @@ function processCellFirst(playback, channel, cell, row) {
                         playback.patLoopCount = 0;
                     }
                     break;
-                case 0x7:
+                case ExtEffects.TremoloWave:
                     channel.tremolo.waveform = cell.loParam() & 0x3;
                     channel.tremolo.continue = (cell.loParam() & 0x4) != 0;
                     break;
-                case 0x8:
+                case ExtEffects.Panning:
                     channel.panning = cell.loParam() * 0x11;
                     break;
-                case 0x9:
+                case ExtEffects.Retrigger:
                     // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PTRetrigger.mod
                     if (cell.pitch < 0 && cell.loParam())
                         playNote(playback, channel);
                     break;
-                case 0xA:
+                case ExtEffects.FineVolumeUp:
                     channel.volume = Math.min(channel.volume + cell.loParam(), maxVolume);
                     break;
-                case 0xB:
+                case ExtEffects.FineVolumeDown:
                     channel.volume = Math.max(channel.volume - cell.loParam(), 0);
                     break;
-                case 0xE:
+                case ExtEffects.PatternDelay:
                     row.patDelay = cell.loParam();
                     break;
             }
             break;
-        case 0xF:
+        case Effects.Speed:
             if (cell.param < 0x20)
                 playback.speed = cell.param;
             else
@@ -381,14 +384,14 @@ function processCellFirst(playback, channel, cell, row) {
  */
 function processCellRest(playback, channel, cell, tick) {
     switch (cell.effect) {
-        case 0x1:
+        case Effects.SlideUp:
             channel.period = Math.max(channel.period - cell.param, minPeriod);
             break;
-        case 0x2:
+        case Effects.SlideDown:
             channel.period += cell.param;
             break;
-        case 0x3:
-        case 0x5: {
+        case Effects.Portamento:
+        case Effects.VolSlidePort: {
             if (channel.portTarget) {
                 if (channel.portTarget > channel.period) {
                     channel.period = Math.min(channel.period + channel.memPort, channel.portTarget);
@@ -401,24 +404,24 @@ function processCellRest(playback, channel, cell, tick) {
             }
         }
             break;
-        case 0x4:
-        case 0x6:
+        case Effects.Vibrato:
+        case Effects.VolSlideVib:
             channel.vibrato.tick += channel.vibrato.speed;
             break;
-        case 0x7:
+        case Effects.Tremolo:
             channel.tremolo.tick += channel.tremolo.speed;
             break;
-        case 0xE:
+        case Effects.Extended:
             switch (cell.hiParam()) {
-                case 0x9:
+                case ExtEffects.Retrigger:
                     if (tick % cell.loParam() == 0)
                         playNote(playback, channel);
                     break;
-                case 0xC:
+                case ExtEffects.NoteCut:
                     if (tick == cell.loParam())
                         channel.volume = 0;
                     break;
-                case 0xD:
+                case ExtEffects.NoteDelay:
                     if (tick == cell.loParam() && channel.sample) {
                         let sample = playback.mod.samples[channel.sample];
                         channel.period = pitchToPeriod(cell.pitch, sample.finetune);
@@ -428,7 +431,8 @@ function processCellRest(playback, channel, cell, tick) {
             }
             break;
     }
-    if (cell.effect == 0xA || cell.effect == 0x5 || cell.effect == 0x6) {
+    if (cell.effect == Effects.VolumeSlide
+            || cell.effect == Effects.VolSlidePort || cell.effect == Effects.VolSlideVib) {
         channel.volume += cell.hiParam();
         channel.volume -= cell.loParam();
         channel.volume = Math.min(Math.max(channel.volume, 0), maxVolume);
@@ -443,7 +447,7 @@ function processCellRest(playback, channel, cell, tick) {
  */
 function processCellAll(playback, channel, cell, tick) {
     let volume = channel.volume;
-    if (cell.effect == 0x7) { // tremolo
+    if (cell.effect == Effects.Tremolo) {
         volume += calcOscillator(channel.tremolo, -1) * 4;
         volume = Math.max(Math.min(volume, maxVolume), 0);
     }
@@ -465,12 +469,12 @@ function processCellAll(playback, channel, cell, tick) {
     if (channel.source) {
         let period = channel.period;
         let detune = 0;
-        if (cell.effect == 0x0 && cell.param) {
+        if (cell.effect == Effects.Arpeggio && cell.param) {
             detune = (tick % 3 == 1) ? cell.hiParam() :
                 (tick % 3 == 2) ? cell.loParam() : 0;
         }
 
-        if (cell.effect == 0x4 || cell.effect == 0x6) // vibrato
+        if (cell.effect == Effects.Vibrato || cell.effect == Effects.VolSlideVib)
             period += calcOscillator(channel.vibrato, 1) * 2;
         if (period != channel.scheduledPeriod)
             channel.source.playbackRate.setValueAtTime(periodToRate(period), playback.time);
