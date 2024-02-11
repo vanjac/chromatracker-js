@@ -108,14 +108,14 @@
   <form id="pitchEntry" class="hflex">
     <label class="label-button">
       <input type="checkbox" checked id="pitchEnable" onchange="updateEntryParts()">
-      <span>Pitch</span>
+      <span>Pit</span>
     </label>
     <input class="flex-grow" type="range" min="0" max="59" value="36" id="jamPitch">
   </form>
   <form id="sampleEntry" class="hflex">
     <label class="label-button">
       <input type="checkbox" checked id="sampleEnable" onchange="updateEntryParts()">
-      <span>Sample</span>
+      <span>Ins</span>
     </label>
     <span id="sampleList" class="hflex flex-grow hscrollable"></span>
     <button id="setSampleVolume" type="button">V</button>
@@ -123,7 +123,7 @@
   <form id="effectEntry" class="hflex">
     <label class="label-button">
       <input type="checkbox" id="effectEnable" onchange="updateEntryParts()">
-      <span>Effect</span>
+      <span>Eff</span>
     </label>
     <select id="effect">
       <option>0: Arpeggio</option>
