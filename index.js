@@ -502,7 +502,10 @@ $`#jamPitch`.oninput = e => {
     updateEntryCell();
 };
 
-$`#effect`.oninput = () => updateEntryCell();
+$`#effect`.oninput = () => {
+    effectEntry.param0.selectedIndex = effectEntry.param1.selectedIndex = 0;
+    updateEntryCell();
+};
 $`#param0`.oninput = () => updateEntryCell();
 $`#param1`.oninput = () => updateEntryCell();
 
