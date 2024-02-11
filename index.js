@@ -484,6 +484,9 @@ function addReleaseEvent(elem, handler) {
 }
 
 
+addPressEvent($`#entryCell`, () => jamDown());
+addReleaseEvent($`#entryCell`, () => jamUp());
+
 addPressEvent($`#write`, e => {
     writeCell();
     jamDown(e, selCell());
