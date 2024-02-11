@@ -1,19 +1,6 @@
 "use strict";
 
 /**
- * @template T
- * @param {readonly T[]} array
- * @param {number} start
- * @param {number} deleteCount
- * @param {T} item
- */
-function immSplice(array, start, deleteCount, item) {
-    let mutArr = [...array];
-    mutArr.splice(start, deleteCount, item);
-    return Object.freeze(mutArr);
-}
-
-/**
  * @param {Readonly<Module>} module
  * @param {number} p
  * @param {number} c

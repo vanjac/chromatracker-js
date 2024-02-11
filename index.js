@@ -163,14 +163,14 @@ $`#playStart`.onclick = () => {
 $`#playPattern`.onclick = () => {
     if (resetPlayback()) {
         restorePlaybackTempo();
-        playback.pos = playbackControls.sequence.value;
+        playback.pos = selPos();
         play();
     }
 };
 $`#playRow`.onclick = () => {
     if (resetPlayback()) {
         restorePlaybackTempo();
-        playback.pos = playbackControls.sequence.value;
+        playback.pos = selPos();
         playback.row = selRow;
         play();
     }
@@ -245,14 +245,16 @@ function update() {
     }
 }
 
+function selPos() {
+    return playbackControls.sequence ? Number(playbackControls.sequence.value || 0) : 0;
+}
+
 function selPattern() {
-    return module.sequence[playbackControls.sequence.value];
+    return module.sequence[selPos()];
 }
 
 function refreshSequence() {
-    let prevSelection = 0;
-    if (playbackControls.sequence)
-        prevSelection = playbackControls.sequence.value || 0;
+    let prevSelection = selPos();
 
     let seqElem = $`#sequenceList`;
     seqElem.textContent = '';
@@ -260,7 +262,7 @@ function refreshSequence() {
         let label = seqElem.appendChild(makeRadioButton('sequence', i, pos));
         label.onchange = () => refreshPattern();
     }
-    playbackControls.sequence.value = prevSelection;
+    playbackControls.sequence.value = Math.min(prevSelection, module.sequence.length - 1);
 }
 
 function refreshPattern() {
@@ -328,12 +330,49 @@ function undo() {
 function patternZap() {
     pushUndo();
     let newMod = Object.assign(new Module(), module);
-    newMod.patterns = Object.freeze([...Array(16)].map(() =>
-        Object.freeze([...Array(module.numChannels)].map(() =>
-            Object.freeze([...Array(numRows)].map(() =>
-                Object.freeze(new Cell()))))))); // lisp is so cool
-    newMod.sequence = Object.freeze([...Array(16).keys()]);
+    newMod.patterns = Object.freeze([createPattern(module)]);
+    newMod.sequence = Object.freeze([0]);
     setModule(newMod);
+    refreshSequence();
+    refreshPattern();
+}
+
+function seqUp() {
+    pushUndo();
+    setModule(editSetPos(module, selPos(), selPattern() + 1));
+    refreshSequence();
+    refreshPattern();
+}
+
+function seqDown() {
+    pushUndo();
+    setModule(editSetPos(module, selPos(), selPattern() - 1));
+    refreshSequence();
+    refreshPattern();
+}
+
+function seqInsSame() {
+    pushUndo();
+    let next = selPos() + 1;
+    setModule(editInsPos(module, next, selPattern()));
+    refreshSequence();
+    playbackControls.sequence.value = next;
+    refreshPattern();
+}
+
+function seqInsClone() {
+    pushUndo();
+    let newMod = editClonePattern(module, selPattern());
+    let next = selPos() + 1;
+    setModule(editInsPos(newMod, next, newMod.patterns.length - 1));
+    refreshSequence();
+    playbackControls.sequence.value = next;
+    refreshPattern();
+}
+
+function seqDel() {
+    pushUndo();
+    setModule(editDelPos(module, selPos()));
     refreshSequence();
     refreshPattern();
 }

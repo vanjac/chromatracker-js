@@ -19,6 +19,9 @@ input, button, textarea, select {
     display: flex;
     flex-direction: column;
 }
+.flex-grow {
+    flex: 1 0 0;
+}
 .scrollable {
     overflow-x: auto;
     overflow-y: auto;

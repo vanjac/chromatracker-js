@@ -10,7 +10,9 @@
 <script src="src/ModWriter.js"></script>
 <script src="src/Playback.js"></script>
 <script src="src/PatternView.js"></script>
+<script src="src/Edit.js"></script>
 <script src="src/PatternEdit.js"></script>
+<script src="src/SequenceEdit.js"></script>
 
 <body>
 <form class="vflex" id="playbackControls">
@@ -53,7 +55,12 @@
     </label>
   </div>
   <div class="hflex">
-    <span id="sequenceList" class="hflex hscrollable"></span>
+    <span id="sequenceList" class="hflex flex-grow hscrollable"></span>
+    <button type="button" onclick="seqInsSame()">=</button>
+    <button type="button" onclick="seqInsClone()">*</button>
+    <button type="button" onclick="seqDel()">X</button>
+    <button type="button" onclick="seqUp()">^</button>
+    <button type="button" onclick="seqDown()">v</button>
   </div>
   <div class="hflex">
     <label>
@@ -72,7 +79,7 @@
     <input type="checkbox" onchange="muteCheck(3, this.checked)" checked>
   </div>
 </form>
-<div class="scrollable" style="flex:1 0 0" id="patternScroll">
+<div class="scrollable flex-grow" id="patternScroll">
   <div style="height:50%"></div>
   <table id="patternTable"></table>
   <div style="height:50%"></div>
@@ -103,7 +110,7 @@
       <input type="checkbox" checked id="pitchEnable" onchange="updateEntryParts()">
       <span>Pitch</span>
     </label>
-    <input style="flex:1" type="range" min="0" max="59" value="36" id="jamPitch">
+    <input class="flex-grow" type="range" min="0" max="59" value="36" id="jamPitch">
   </form>
   <form id="sampleEntry" class="hflex">
     <label class="label-button">
