@@ -21,6 +21,7 @@ function Cell() {}
 Cell.prototype = {
     pitch: -1, // -1 = no note
     inst: 0, // 0 = no instrument
+    /** @type {Effect} */
     effect: 0,
     param:  0,
 
@@ -40,7 +41,8 @@ const CellParts = {
     all: 0xf,
 };
 
-/** @enum {number} */
+/** @typedef {number} Effect */
+/** @enum {Effect} */
 const Effects = {
     Arpeggio:       0x0,
     SlideUp:        0x1,
