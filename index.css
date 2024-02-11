@@ -57,6 +57,11 @@ body {
     -webkit-user-select: none;
 }
 
+img {
+    /* no drag-and-drop, long tap... */
+    pointer-events: none;
+}
+
 /* Buttons */
 
 .label-button {
