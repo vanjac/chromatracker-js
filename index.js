@@ -460,8 +460,8 @@ function liftCell() {
         sampleEntry.sample.value = cell.inst;
     if (effectEntry.effectEnable.checked) {
         effectEntry.effect.selectedIndex = cell.effect;
-        effectEntry.param0.selectedIndex = cell.param >> 4;
-        effectEntry.param1.selectedIndex = cell.param & 0xf;
+        effectEntry.param0.selectedIndex = cell.hiParam();
+        effectEntry.param1.selectedIndex = cell.loParam();
     }
     updateEntryCell();
 }

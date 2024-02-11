@@ -23,6 +23,9 @@ Cell.prototype = {
     inst: 0, // 0 = no instrument
     effect: 0,
     param:  0,
+
+    hiParam() { return this.param >> 4; },
+    loParam() { return this.param & 0xf; },
 };
 
 /** @typedef {number} CellPart */
