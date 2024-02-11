@@ -17,6 +17,7 @@ let effectEntry = document.forms.effectEntry.elements;
 
 let module;
 let undoStack = [];
+let unsavedChangeCount = 0;
 let context;
 let playback;
 
@@ -56,8 +57,9 @@ function readModuleBlob(blob) {
     let reader = new FileReader();
     reader.onload = () => {
         module = Object.freeze(readModule(reader.result));
-        undoStack = [];
         console.log(module);
+        undoStack = [];
+        unsavedChangeCount = 0;
 
         playbackControls.title.value = module.name;
 
@@ -100,9 +102,15 @@ function saveFile() {
     let url = URL.createObjectURL(blob);
     console.log(url);
     window.open(url);
+    unsavedChangeCount = 0;
 }
 
 $`#fileSave`.onclick = () => saveFile();
+
+window.onbeforeunload = () => {
+    if (unsavedChangeCount)
+        return 'You have unsaved changes';
+};
 
 function resetPlayback() {
     if (!module)
@@ -317,6 +325,7 @@ function pushUndo() {
     undoStack.push(module);
     if (undoStack.length > 100)
         undoStack.shift();
+    unsavedChangeCount++;
 }
 
 function undo() {
@@ -324,6 +333,7 @@ function undo() {
         setModule(undoStack.pop());
         refreshSequence();
         refreshPattern();
+        unsavedChangeCount--;
     }
 }
 
