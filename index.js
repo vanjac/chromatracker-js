@@ -35,7 +35,7 @@ let selChannel = 0;
 document.addEventListener('touchmove', e => {
     if (e.scale && e.scale != 1)
         e.preventDefault();
-}, { passive: false });
+}, {passive: false});
 
 function makeRadioButton(group, value, text) {
     let fragment = $`#radioButtonTemplate`.content.cloneNode(true);
