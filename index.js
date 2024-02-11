@@ -250,14 +250,17 @@ function selPattern() {
 }
 
 function refreshSequence() {
+    let prevSelection = 0;
+    if (playbackControls.sequence)
+        prevSelection = playbackControls.sequence.value || 0;
+
     let seqElem = $`#sequenceList`;
     seqElem.textContent = '';
     for (let [i, pos] of module.sequence.entries()) {
         let label = seqElem.appendChild(makeRadioButton('sequence', i, pos));
         label.onchange = () => refreshPattern();
     }
-    if (!playbackControls.sequence.value && playbackControls.sequence.value !== 0)
-        playbackControls.sequence.value = 0;
+    playbackControls.sequence.value = prevSelection;
 }
 
 function refreshPattern() {
