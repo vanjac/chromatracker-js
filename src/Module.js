@@ -26,7 +26,8 @@ Cell.prototype = {
     param0: 0,
     param1: 0,
 
-    paramByte() { return (this.param0 << 4) | this.param1; }
+    paramByte() { return (this.param0 << 4) | this.param1; },
+    paramDecimal() { return this.param0 * 10 + this.param1; },
 };
 
 /** @typedef {number} CellPart */

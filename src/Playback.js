@@ -1,5 +1,6 @@
 "use strict";
 
+// https://milkytracker.org/docs/MilkyTracker.html#effects
 // https://github.com/johnnovak/nim-mod/blob/master/doc/Protracker%20effects%20(FireLight)%20(.mod).txt
 // https://wiki.openmpt.org/Development:_Test_Cases/MOD
 // https://github.com/libxmp/libxmp/blob/master/docs/tracker_notes.txt
@@ -313,8 +314,8 @@ function processCellFirst(playback, channel, cell, row) {
             channel.volume = Math.min(cell.paramByte(), maxVolume);
             break;
         case Effects.PatternBreak:
-            // TODO: all documentation says this is decimal not hex, but OpenMPT uses hex??
-            row.patBreak = cell.paramByte();
+            // note: OpenMPT displays this value in hex, but writes to the file in BCD
+            row.patBreak = cell.paramDecimal();
             break;
         case Effects.Extended:
             switch (cell.param0) {
