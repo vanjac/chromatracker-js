@@ -35,10 +35,10 @@ function cellInstString(cell) {
  * @param {Cell} cell
  */
 function cellEffectString(cell) {
-    let effStr = (cell.effect || cell.param) ? cell.effect.toString(16).toUpperCase() : '.';
-    let prmStr = (cell.param > 0xf) ? cell.param.toString(16).toUpperCase() :
-        (cell.effect || cell.param) ? ('0' + cell.param.toString(16).toUpperCase()) : '..';
-    return effStr + prmStr;
+    if (! (cell.effect || cell.param0 || cell.param1))
+        return '...';
+    return ( (cell.effect.toString(16) + cell.param0.toString(16) + cell.param1.toString(16))
+        .toUpperCase() );
 }
 
 /**

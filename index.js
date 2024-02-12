@@ -199,7 +199,7 @@ function jamDown(e, cell) {
         if (!cell) {
             cell = entryCell();
             if (!effectEntry.effectEnable.checked)
-                cell.effect = cell.param = 0;
+                cell.effect = cell.param0 = cell.param1 = 0;
         }
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches)
@@ -393,8 +393,8 @@ function entryCell() {
     if (sampleEntry.sample) // sample list exists?
         cell.inst = Number(sampleEntry.sample.value);
     cell.effect = effectEntry.effect.selectedIndex;
-    cell.param = effectEntry.param0.selectedIndex << 4;
-    cell.param |= effectEntry.param1.selectedIndex;
+    cell.param0 = effectEntry.param0.selectedIndex;
+    cell.param1 = effectEntry.param1.selectedIndex;
     return cell;
 }
 
@@ -460,8 +460,8 @@ function liftCell() {
         sampleEntry.sample.value = cell.inst;
     if (effectEntry.effectEnable.checked) {
         effectEntry.effect.selectedIndex = cell.effect;
-        effectEntry.param0.selectedIndex = cell.hiParam();
-        effectEntry.param1.selectedIndex = cell.loParam();
+        effectEntry.param0.selectedIndex = cell.param0;
+        effectEntry.param1.selectedIndex = cell.param1;
     }
     updateEntryCell();
 }

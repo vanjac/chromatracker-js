@@ -23,10 +23,10 @@ Cell.prototype = {
     inst: 0, // 0 = no instrument
     /** @type {Effect} */
     effect: 0,
-    param:  0,
+    param0: 0,
+    param1: 0,
 
-    hiParam() { return this.param >> 4; },
-    loParam() { return this.param & 0xf; },
+    paramByte() { return (this.param0 << 4) | this.param1; }
 };
 
 /** @typedef {number} CellPart */
@@ -72,7 +72,7 @@ const ExtEffects = {
     Finetune:       0x5,
     PatternLoop:    0x6,
     TremoloWave:    0x7,
-    Panning:        0x8,
+    Panning:        0x8, // effect 8xx is preferred
     Retrigger:      0x9,
     FineVolumeUp:   0xA,
     FineVolumeDown: 0xB,
@@ -114,6 +114,7 @@ function cellApply(dest, src, parts) {
     newCell.pitch  = (parts & CellParts.pitch)  ? src.pitch  : dest.pitch;
     newCell.inst   = (parts & CellParts.inst)   ? src.inst   : dest.inst;
     newCell.effect = (parts & CellParts.effect) ? src.effect : dest.effect;
-    newCell.param  = (parts & CellParts.param)  ? src.param  : dest.param;
+    newCell.param0 = (parts & CellParts.param)  ? src.param0 : dest.param0;
+    newCell.param1 = (parts & CellParts.param)  ? src.param1 : dest.param1;
     return newCell;
 }

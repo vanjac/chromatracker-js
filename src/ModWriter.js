@@ -82,7 +82,7 @@ function writeModule(module) {
                 let period = periodTable[8][cell.pitch];
                 view.setUint16(cellOff, period | (cell.inst >> 4 << 12));
                 view.setUint8(cellOff + 2, ((cell.inst & 0xf) << 4) | cell.effect);
-                view.setUint8(cellOff + 3, cell.param);
+                view.setUint8(cellOff + 3, cell.paramByte());
             }
         }
     }
