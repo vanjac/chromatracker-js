@@ -11,6 +11,7 @@ window.onerror = (message, source, line) => {
 };
 
 let playbackControls = document.forms.playbackControls.elements;
+let sequenceEdit = document.forms.sequenceEdit.elements;
 let pitchEntry = document.forms.pitchEntry.elements;
 let sampleEntry = document.forms.sampleEntry.elements;
 let effectEntry = document.forms.effectEntry.elements;
@@ -61,10 +62,10 @@ function readModuleBlob(blob) {
         undoStack = [];
         unsavedChangeCount = 0;
 
-        playbackControls.title.value = module.name;
+        $`#title`.value = module.name;
 
         refreshSequence();
-        playbackControls.sequence.value = 0;
+        sequenceEdit.sequence.value = 0;
         selRow = 0;
         selChannel = 0;
         refreshPattern();
@@ -241,7 +242,7 @@ function update() {
             selRow = curLine.row;
             updateSelCell();
             scrollToSelCell();
-            playbackControls.sequence.value = curLine.pos;
+            sequenceEdit.sequence.value = curLine.pos;
             refreshPattern();
         }
 
@@ -254,7 +255,7 @@ function update() {
 }
 
 function selPos() {
-    return playbackControls.sequence ? Number(playbackControls.sequence.value || 0) : 0;
+    return sequenceEdit.sequence ? Number(sequenceEdit.sequence.value || 0) : 0;
 }
 
 function selPattern() {
@@ -270,7 +271,7 @@ function refreshSequence() {
         let label = seqElem.appendChild(makeRadioButton('sequence', i, pos));
         label.onchange = () => refreshPattern();
     }
-    playbackControls.sequence.value = Math.min(prevSelection, module.sequence.length - 1);
+    sequenceEdit.sequence.value = Math.min(prevSelection, module.sequence.length - 1);
 }
 
 function refreshPattern() {
@@ -368,7 +369,7 @@ function seqInsSame() {
     let next = selPos() + 1;
     setModule(editInsPos(module, next, selPattern()));
     refreshSequence();
-    playbackControls.sequence.value = next;
+    sequenceEdit.sequence.value = next;
     refreshPattern();
 }
 
@@ -378,7 +379,7 @@ function seqInsClone() {
     let next = selPos() + 1;
     setModule(editInsPos(newMod, next, newMod.patterns.length - 1));
     refreshSequence();
-    playbackControls.sequence.value = next;
+    sequenceEdit.sequence.value = next;
     refreshPattern();
 }
 

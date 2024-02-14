@@ -1,0 +1,19 @@
+<div id="mute">
+  <input type="checkbox" onchange="muteCheck(0, this.checked)" checked>
+  <input type="checkbox" onchange="muteCheck(1, this.checked)" checked>
+  <input type="checkbox" onchange="muteCheck(2, this.checked)" checked>
+  <input type="checkbox" onchange="muteCheck(3, this.checked)" checked>
+</div>
+<div class="scrollable flex-grow" id="patternScroll">
+  <div class="pattern-table-space"></div>
+  <table id="patternTable"></table>
+  <div class="pattern-table-space"></div>
+</div>
+
+<template id="cellTemplate">
+  <td class="pattern-cell">
+    <span id="pitch" class="cell-pitch"></span>
+    <span id="inst" class="cell-inst"></span>
+    <span id="effect" class="cell-effect"></span>
+  </td>
+</template>

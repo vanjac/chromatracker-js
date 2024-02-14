@@ -4,7 +4,10 @@
         {
             "label": "Build index.html",
             "type": "shell",
-            "command": "npx liquidjs --template @_includes/Main.liquid --output build.html",
+            "command": "npx liquidjs --jekyll-include --template '@Main.html' --output ../build.html",
+            "options": {
+                "cwd": "${workspaceFolder}/_includes"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true,
