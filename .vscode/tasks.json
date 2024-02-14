@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build index.html",
+            "type": "shell",
+            "command": "npx liquidjs --template @_includes/Main.liquid --output build.html",
+            "group": {
+                "kind": "build",
+                "isDefault": true,
+            },
+        },
+    ]
+}

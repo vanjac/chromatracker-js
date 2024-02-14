@@ -6,7 +6,7 @@
             "type": "firefox",
             "request": "launch",
             "reAttach": true,
-            "file": "${workspaceFolder}/index.html",
+            "file": "${workspaceFolder}/build.html",
         },
         {
             "name": "Attach Firefox",
