@@ -1,4 +1,5 @@
 /* utility */
+
 .hflex {
     display: flex;
     flex-direction: row;
@@ -25,10 +26,16 @@
     display: none;
 }
 
+/* common */
+
 body {
     display: flex;
     flex-direction: column;
     font-family: sans-serif;
+}
+
+.small-input {
+    width: 48pt;
 }
 
 /* Buttons */
@@ -73,6 +80,8 @@ label {
     align-items: center;
 }
 
+/* pattern table */
+
 .pattern-cell {
     font-family: monospace;
     border: 1px solid black;
@@ -102,4 +111,8 @@ tr:nth-child(16n+1) {
 
 .hselect option {
     display: table-cell;
+}
+
+.pattern-table-space {
+    height: 50%;
 }

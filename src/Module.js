@@ -68,7 +68,7 @@ const ExtEffects = {
     // Filter:      0x0, (not supported in XM)
     FineSlideUp:    0x1,
     FineSlideDown:  0x2,
-    // Glissando:   0x3,
+    // Glissando:   0x3, (not widely supported)
     VibratoWave:    0x4,
     Finetune:       0x5,
     PatternLoop:    0x6,

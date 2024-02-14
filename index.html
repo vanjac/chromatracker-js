@@ -1,19 +1,21 @@
 <!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <link href="src/WebApp.css" rel="stylesheet">
+  <link href="index.css" rel="stylesheet">
 
-<link href="src/WebApp.css" rel="stylesheet">
-<link href="index.css" rel="stylesheet">
-
-<script src="src/Module.js"></script>
-<script src="src/PeriodTable.js"></script>
-<script src="src/ModLoader.js"></script>
-<script src="src/ModWriter.js"></script>
-<script src="src/Playback.js"></script>
-<script src="src/PatternView.js"></script>
-<script src="src/Edit.js"></script>
-<script src="src/PatternEdit.js"></script>
-<script src="src/SequenceEdit.js"></script>
+  <script src="src/Module.js"></script>
+  <script src="src/PeriodTable.js"></script>
+  <script src="src/ModLoader.js"></script>
+  <script src="src/ModWriter.js"></script>
+  <script src="src/Playback.js"></script>
+  <script src="src/PatternView.js"></script>
+  <script src="src/Edit.js"></script>
+  <script src="src/PatternEdit.js"></script>
+  <script src="src/SequenceEdit.js"></script>
+</head>
 
 <body>
 <form class="vflex" id="playbackControls">
@@ -66,11 +68,11 @@
   <div class="hflex">
     <label>
       Tempo:
-      <input style="width:36pt;" type="number" value="125" id="tempo">
+      <input class="small-input" type="number" value="125" id="tempo">
     </label>
     <label>
       Speed:
-      <input style="width:36pt;" type="number" value="6" id="speed">
+      <input class="small-input" type="number" value="6" id="speed">
     </label>
   </div>
   <div id="mute">
@@ -81,9 +83,9 @@
   </div>
 </form>
 <div class="scrollable flex-grow" id="patternScroll">
-  <div style="height:50%"></div>
+  <div class="pattern-table-space"></div>
   <table id="patternTable"></table>
-  <div style="height:50%"></div>
+  <div class="pattern-table-space"></div>
 </div>
 <div class="vflex">
   <div id="errors"></div>
@@ -201,3 +203,4 @@
 
 <script src="index.js"></script>
 </body>
+</html>
