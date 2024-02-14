@@ -347,6 +347,8 @@ function patternZap() {
     refreshPattern();
 }
 
+$`#patternZap`.onclick = () => patternZap();
+
 function seqUp() {
     pushUndo();
     setModule(editSetPos(module, selPos(), selPattern() + 1));
@@ -386,6 +388,12 @@ function seqDel() {
     refreshSequence();
     refreshPattern();
 }
+
+$`#seqInsSame`.onclick = () => seqInsSame();
+$`#seqInsClone`.onclick = () => seqInsClone();
+$`#seqDel`.onclick = () => seqDel();
+$`#seqUp`.onclick = () => seqUp();
+$`#seqDown`.onclick = () => seqDown();
 
 function entryCell() {
     let cell = new Cell();
@@ -484,6 +492,9 @@ function addReleaseEvent(elem, handler) {
 }
 
 
+
+$`#undo`.onclick = () => undo();
+
 addPressEvent($`#entryCell`, () => jamDown());
 addReleaseEvent($`#entryCell`, () => jamUp());
 
@@ -506,6 +517,10 @@ addPressEvent($`#lift`, e => {
     jamDown(e);
 });
 addReleaseEvent($`#lift`, e => jamUp(e));
+
+$`#pitchEnable`.onchange = () => updateEntryParts();
+$`#sampleEnable`.onchange = () => updateEntryParts();
+$`#effectEnable`.onchange = () => updateEntryParts();
 
 $`#jamPitch`.onmousedown = $`#jamPitch`.ontouchstart = () => jamDown();
 $`#jamPitch`.onmouseup = $`#jamPitch`.ontouchend = () => jamUp();

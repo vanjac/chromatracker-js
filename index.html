@@ -30,7 +30,7 @@
     <button type="button" id="fileSave">
       <img class="icon" src="assets/download.svg">
     </button>
-    <button type="button" onclick="patternZap()">
+    <button type="button" id="patternZap">
       <img class="icon" src="assets/playlist-remove.svg">
     </button>
     <output id="title"></output>
@@ -59,11 +59,11 @@
   </div>
   <div class="hflex">
     <span id="sequenceList" class="hflex flex-grow hscrollable"></span>
-    <button type="button" onclick="seqInsSame()">=</button>
-    <button type="button" onclick="seqInsClone()">*</button>
-    <button type="button" onclick="seqDel()">X</button>
-    <button type="button" onclick="seqUp()">^</button>
-    <button type="button" onclick="seqDown()">v</button>
+    <button type="button" id="seqInsSame">=</button>
+    <button type="button" id="seqInsClone">*</button>
+    <button type="button" id="seqDel">X</button>
+    <button type="button" id="seqUp">^</button>
+    <button type="button" id="seqDown">v</button>
   </div>
   <div class="hflex">
     <label>
@@ -104,20 +104,20 @@
     <button id="clear">
       <img class="icon" src="assets/eraser.svg">
     </button>
-    <button onclick="undo()">
+    <button id="undo">
       <img class="icon" src="assets/undo.svg">
     </button>
   </div>
   <form id="pitchEntry" class="hflex">
     <label class="label-button">
-      <input type="checkbox" checked id="pitchEnable" onchange="updateEntryParts()">
+      <input type="checkbox" checked id="pitchEnable">
       <span>Pit</span>
     </label>
     <input class="flex-grow" type="range" min="0" max="59" value="36" id="jamPitch">
   </form>
   <form id="sampleEntry" class="hflex">
     <label class="label-button">
-      <input type="checkbox" checked id="sampleEnable" onchange="updateEntryParts()">
+      <input type="checkbox" checked id="sampleEnable">
       <span>Ins</span>
     </label>
     <span id="sampleList" class="hflex flex-grow hscrollable"></span>
@@ -125,7 +125,7 @@
   </form>
   <form id="effectEntry" class="hflex">
     <label class="label-button">
-      <input type="checkbox" id="effectEnable" onchange="updateEntryParts()">
+      <input type="checkbox" id="effectEnable">
       <span>Eff</span>
     </label>
     <select id="effect">
