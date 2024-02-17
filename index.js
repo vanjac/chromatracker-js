@@ -28,7 +28,9 @@ let intervalHandle;
 let queuedTime = 0;
 let queuedLines = [];
 
+let curSequence = null;
 let curPattern = null;
+let selPos = 0;
 let selRow = 0;
 let selChannel = 0;
 
@@ -58,11 +60,10 @@ function readModuleBlob(blob) {
 
         $`#title`.value = module.name;
 
-        refreshSequence();
-        sequenceEdit.sequence.value = 0;
+        selPos = 0;
         selRow = 0;
         selChannel = 0;
-        refreshPattern();
+        refreshModule();
         scrollToSelCell();
 
         let samplesElem = $`#sampleList`;
@@ -166,14 +167,14 @@ $`#playStart`.onclick = () => {
 $`#playPattern`.onclick = () => {
     if (resetPlayback()) {
         restorePlaybackTempo();
-        playback.pos = selPos();
+        playback.pos = selPos;
         play();
     }
 };
 $`#playRow`.onclick = () => {
     if (resetPlayback()) {
         restorePlaybackTempo();
-        playback.pos = selPos();
+        playback.pos = selPos;
         playback.row = selRow;
         play();
     }
@@ -233,11 +234,11 @@ function update() {
         playbackControls.speed.value = curLine.speed;
 
         if (playbackControls.follow.checked) {
+            selPos = curLine.pos;
             selRow = curLine.row;
+            refreshModule();
             updateSelCell();
             scrollToSelCell();
-            sequenceEdit.sequence.value = curLine.pos;
-            refreshPattern();
         }
 
         let oldHilite = $`.hilite-row`;
@@ -248,24 +249,33 @@ function update() {
     }
 }
 
-function selPos() {
-    return sequenceEdit.sequence ? Number(sequenceEdit.sequence.value || 0) : 0;
+function selPattern() {
+    return module.sequence[selPos];
 }
 
-function selPattern() {
-    return module.sequence[selPos()];
+function refreshModule() {
+    refreshSequence();
+    refreshPattern();
 }
 
 function refreshSequence() {
-    let prevSelection = selPos();
+    if (module.sequence != curSequence) {
+        console.log('update sequence');
+        curSequence = module.sequence;
 
-    let seqElem = $`#sequenceList`;
-    seqElem.textContent = '';
-    for (let [i, pos] of module.sequence.entries()) {
-        let label = seqElem.appendChild(makeRadioButton('sequence', i, pos));
-        label.onchange = () => refreshPattern();
+        let seqElem = $`#sequenceList`;
+        seqElem.textContent = '';
+        for (let [i, pos] of module.sequence.entries()) {
+            let label = seqElem.appendChild(makeRadioButton('sequence', i, pos));
+            label.onchange = e => {
+                selPos = e.target.value;
+                refreshModule();
+            };
+        }
+        sequenceEdit.sequence.value = selPos;
+    } else if (sequenceEdit.sequence.value != selPos) {
+        sequenceEdit.sequence.value = selPos;
     }
-    sequenceEdit.sequence.value = Math.min(prevSelection, module.sequence.length - 1);
 }
 
 function refreshPattern() {
@@ -326,8 +336,7 @@ function pushUndo() {
 function undo() {
     if (undoStack.length) {
         setModule(undoStack.pop());
-        refreshSequence();
-        refreshPattern();
+        refreshModule();
         unsavedChangeCount--;
     }
 }
@@ -338,50 +347,44 @@ function patternZap() {
     newMod.patterns = Object.freeze([createPattern(module)]);
     newMod.sequence = Object.freeze([0]);
     setModule(Object.freeze(newMod));
-    refreshSequence();
-    refreshPattern();
+    refreshModule();
 }
 
 $`#patternZap`.onclick = () => patternZap();
 
 function seqUp() {
     pushUndo();
-    setModule(editSetPos(module, selPos(), selPattern() + 1));
-    refreshSequence();
-    refreshPattern();
+    setModule(editSetPos(module, selPos, selPattern() + 1));
+    refreshModule();
 }
 
 function seqDown() {
     pushUndo();
-    setModule(editSetPos(module, selPos(), selPattern() - 1));
-    refreshSequence();
-    refreshPattern();
+    setModule(editSetPos(module, selPos, selPattern() - 1));
+    refreshModule();
 }
 
 function seqInsSame() {
     pushUndo();
-    let next = selPos() + 1;
-    setModule(editInsPos(module, next, selPattern()));
-    refreshSequence();
-    sequenceEdit.sequence.value = next;
-    refreshPattern();
+    setModule(editInsPos(module, selPos + 1, selPattern()));
+    selPos++;
+    refreshModule();
 }
 
 function seqInsClone() {
     pushUndo();
     let newMod = editClonePattern(module, selPattern());
-    let next = selPos() + 1;
-    setModule(editInsPos(newMod, next, newMod.patterns.length - 1));
-    refreshSequence();
-    sequenceEdit.sequence.value = next;
-    refreshPattern();
+    setModule(editInsPos(newMod, selPos + 1, newMod.patterns.length - 1));
+    selPos++;
+    refreshModule();
 }
 
 function seqDel() {
     pushUndo();
-    setModule(editDelPos(module, selPos()));
-    refreshSequence();
-    refreshPattern();
+    setModule(editDelPos(module, selPos));
+    if (selPos >= module.sequence.length)
+        selPos--;
+    refreshModule();
 }
 
 $`#seqInsSame`.onclick = () => seqInsSame();
@@ -439,7 +442,7 @@ function updateCellEntryParts(cell) {
 function writeCell() {
     pushUndo();
     setModule(editPutCell(module, selPattern(), selChannel, selRow, entryCell(), entryParts()));
-    refreshPattern();
+    refreshModule();
 }
 
 function advance() {
@@ -452,7 +455,7 @@ function advance() {
 function clearCell() {
     pushUndo();
     setModule(editPutCell(module, selPattern(), selChannel, selRow, new Cell(), entryParts()));
-    refreshPattern();
+    refreshModule();
 }
 
 function liftCell() {
