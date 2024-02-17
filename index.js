@@ -34,13 +34,6 @@ let selPos = 0;
 let selRow = 0;
 let selChannel = 0;
 
-function makeRadioButton(group, value, text) {
-    let fragment = $`#radioButtonTemplate`.content.cloneNode(true);
-    Object.assign(fragment.querySelector('input'), {name: group, value});
-    fragment.querySelector('span').textContent = text;
-    return fragment.children[0];
-}
-
 $`#fileSelect`.onchange = e => {
     readModuleBlob(e.target.files[0]);
 };

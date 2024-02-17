@@ -2,12 +2,6 @@
 
 const noteNames = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-'];
 
-/** @type {HTMLTemplateElement} */
-let cellTemplate;
-document.addEventListener('DOMContentLoaded', () => {
-    cellTemplate = document.querySelector('#cellTemplate');
-});
-
 /**
  * @param {Cell} cell cell
  */
@@ -53,7 +47,7 @@ function makePatternTable(module, pattern, table, cellCB) {
         let tr = document.createElement('tr');
         for (let c = 0; c < module.numChannels; c++) {
             let cell = pattern[c][row];
-            let cellFrag = /** @type {DocumentFragment} */(cellTemplate.content.cloneNode(true));
+            let cellFrag = instantiate(templates.cellTemplate);
             cellFrag.querySelector('#pitch').textContent = cellPitchString(cell);
             cellFrag.querySelector('#inst').textContent = cellInstString(cell);
             cellFrag.querySelector('#effect').textContent = cellEffectString(cell);
