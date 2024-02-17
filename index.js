@@ -16,6 +16,7 @@ let pitchEntry = document.forms.pitchEntry.elements;
 let sampleEntry = document.forms.sampleEntry.elements;
 let effectEntry = document.forms.effectEntry.elements;
 
+/** @type {Module} */
 let module;
 let undoStack = [];
 let unsavedChangeCount = 0;
@@ -34,72 +35,42 @@ let selPos = 0;
 let selRow = 0;
 let selChannel = 0;
 
-$`#fileSelect`.onchange = e => {
-    readModuleBlob(e.target.files[0]);
-};
-$`#fileDownload`.onclick = () => {
-    fetch('https://chroma.zone/share/space_debris.mod').then(
-        r => r.blob().then(
-            b => readModuleBlob(b)));
-};
-
-function readModuleBlob(blob) {
-    let reader = new FileReader();
-    reader.onload = () => {
-        module = Object.freeze(readModule(reader.result));
-        console.log(module);
-        undoStack = [];
-        unsavedChangeCount = 0;
-
-        $`#title`.value = module.name;
-
-        selPos = 0;
-        selRow = 0;
-        selChannel = 0;
-        refreshModule();
-        scrollToSelCell();
-
-        let samplesElem = $`#sampleList`;
-        samplesElem.textContent = '';
-        for (let [i, sample] of module.samples.entries()) {
-            if (!sample) continue;
-            let label = samplesElem.appendChild(makeRadioButton('sample', i, i));
-            label.onmousedown = label.ontouchstart = e => {
-                sampleEntry.sample.value = i;
-                jamDown(e);
-                updateEntryCell();
-            };
-            addReleaseEvent(label, e => jamUp(e));
-        }
-        sampleEntry.sample.value = 1;
-        updateEntryCell();
-
-        if (intervalHandle)
-            pause();
-        if (!context) {
-            let AudioContext = window.AudioContext || window.webkitAudioContext;
-            context = new AudioContext({latencyHint: 'interactive'});
-        }
-        playback = initPlayback(context, module);
-        context.resume();
-    };
-    reader.readAsArrayBuffer(blob);
-}
-
-function saveFile() {
-    let blob = new Blob([writeModule(module)], {type: 'application/octet-stream'});
-    let url = URL.createObjectURL(blob);
-    console.log(url);
-    window.open(url);
+function onModuleLoaded() {
+    undoStack = [];
     unsavedChangeCount = 0;
+
+    $`#title`.value = module.name;
+
+    selPos = 0;
+    selRow = 0;
+    selChannel = 0;
+    refreshModule();
+    scrollToSelCell();
+
+    let samplesElem = $`#sampleList`;
+    samplesElem.textContent = '';
+    for (let [i, sample] of module.samples.entries()) {
+        if (!sample) continue;
+        let label = samplesElem.appendChild(makeRadioButton('sample', i, i));
+        label.onmousedown = label.ontouchstart = e => {
+            sampleEntry.sample.value = i;
+            jamDown(e);
+            updateEntryCell();
+        };
+        addReleaseEvent(label, e => jamUp(e));
+    }
+    sampleEntry.sample.value = 1;
+    updateEntryCell();
+
+    if (intervalHandle)
+        pause();
+    if (!context) {
+        let AudioContext = window.AudioContext || window.webkitAudioContext;
+        context = new AudioContext({latencyHint: 'interactive'});
+    }
+    playback = initPlayback(context, module);
+    context.resume();
 }
-
-$`#fileSave`.onclick = () => saveFile();
-
-window.onbeforeunload = () => {
-    if (unsavedChangeCount)
-        return 'You have unsaved changes';
-};
 
 function resetPlayback() {
     if (!module)
@@ -333,17 +304,6 @@ function undo() {
         unsavedChangeCount--;
     }
 }
-
-function patternZap() {
-    pushUndo();
-    let newMod = Object.assign(new Module(), module);
-    newMod.patterns = Object.freeze([createPattern(module)]);
-    newMod.sequence = Object.freeze([0]);
-    setModule(Object.freeze(newMod));
-    refreshModule();
-}
-
-$`#patternZap`.onclick = () => patternZap();
 
 function seqUp() {
     pushUndo();
