@@ -10,7 +10,6 @@ window.onerror = (message, source, line) => {
     $`#errors`.insertAdjacentHTML('beforeend', `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
 };
 
-let sequenceEdit = document.forms.sequenceEdit.elements;
 let pitchEntry = document.forms.pitchEntry.elements;
 let sampleEntry = document.forms.sampleEntry.elements;
 let effectEntry = document.forms.effectEntry.elements;
@@ -29,9 +28,7 @@ let intervalHandle;
 let queuedTime = 0;
 let queuedLines = [];
 
-let curSequence = null;
 let curPattern = null;
-let selPos = 0;
 let selRow = 0;
 let selChannel = 0;
 
@@ -46,7 +43,7 @@ function onModuleLoaded() {
 
     $`file-toolbar`.titleOutput.value = module.name;
 
-    selPos = 0;
+    $`sequence-edit`.setSelPos(0);
     selRow = 0;
     selChannel = 0;
     refreshModule();
@@ -172,7 +169,7 @@ function update() {
         playbackControls.speedInput.value = curLine.speed;
 
         if (playbackControls.followInput.checked) {
-            selPos = curLine.pos;
+            $`sequence-edit`.setSelPos(curLine.pos);
             selRow = curLine.row;
             refreshModule();
             updateSelCell();
@@ -187,33 +184,17 @@ function update() {
     }
 }
 
+function selPos() {
+    return $`sequence-edit`.selPos;
+}
+
 function selPattern() {
-    return module.sequence[selPos];
+    return module.sequence[selPos()];
 }
 
 function refreshModule() {
-    refreshSequence();
+    $`sequence-edit`.updateModule(module);
     refreshPattern();
-}
-
-function refreshSequence() {
-    if (module.sequence != curSequence) {
-        console.log('update sequence');
-        curSequence = module.sequence;
-
-        let seqElem = $`#sequenceList`;
-        seqElem.textContent = '';
-        for (let [i, pos] of module.sequence.entries()) {
-            let label = seqElem.appendChild(makeRadioButton('sequence', i, pos));
-            label.onchange = e => {
-                selPos = e.target.value;
-                refreshModule();
-            };
-        }
-        sequenceEdit.sequence.value = selPos;
-    } else if (sequenceEdit.sequence.value != selPos) {
-        sequenceEdit.sequence.value = selPos;
-    }
 }
 
 function refreshPattern() {
@@ -278,47 +259,6 @@ function undo() {
         unsavedChangeCount--;
     }
 }
-
-function seqUp() {
-    pushUndo();
-    setModule(editSetPos(module, selPos, selPattern() + 1));
-    refreshModule();
-}
-
-function seqDown() {
-    pushUndo();
-    setModule(editSetPos(module, selPos, selPattern() - 1));
-    refreshModule();
-}
-
-function seqInsSame() {
-    pushUndo();
-    setModule(editInsPos(module, selPos + 1, selPattern()));
-    selPos++;
-    refreshModule();
-}
-
-function seqInsClone() {
-    pushUndo();
-    let newMod = editClonePattern(module, selPattern());
-    setModule(editInsPos(newMod, selPos + 1, newMod.patterns.length - 1));
-    selPos++;
-    refreshModule();
-}
-
-function seqDel() {
-    pushUndo();
-    setModule(editDelPos(module, selPos));
-    if (selPos >= module.sequence.length)
-        selPos--;
-    refreshModule();
-}
-
-$`#seqInsSame`.onclick = () => seqInsSame();
-$`#seqInsClone`.onclick = () => seqInsClone();
-$`#seqDel`.onclick = () => seqDel();
-$`#seqUp`.onclick = () => seqUp();
-$`#seqDown`.onclick = () => seqDown();
 
 function entryCell() {
     let cell = new Cell();

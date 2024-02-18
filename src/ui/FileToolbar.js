@@ -1,10 +1,6 @@
 "use strict";
 
 class FileToolbarElement extends HTMLElement {
-    constructor() {
-        super();
-    }
-
     connectedCallback() {
         let fragment = instantiate(templates.fileToolbar);
 

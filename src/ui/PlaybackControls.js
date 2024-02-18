@@ -1,10 +1,6 @@
 "use strict";
 
 class PlaybackControlsElement extends HTMLElement {
-    constructor() {
-        super();
-    }
-
     connectedCallback() {
         let fragment = instantiate(templates.playbackControls);
 
@@ -26,14 +22,14 @@ class PlaybackControlsElement extends HTMLElement {
         fragment.querySelector('#playPattern').addEventListener('click', () => {
             if (resetPlayback()) {
                 this.restorePlaybackTempo();
-                playback.pos = selPos;
+                playback.pos = selPos();
                 play();
             }
         });
         this.playRowButton.addEventListener('click', () => {
             if (resetPlayback()) {
                 this.restorePlaybackTempo();
-                playback.pos = selPos;
+                playback.pos = selPos();
                 playback.row = selRow;
                 play();
             }
