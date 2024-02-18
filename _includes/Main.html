@@ -18,16 +18,18 @@
     <script src="src/ui/UtilTemplates.js"></script>
     <script src="src/ui/PatternView.js"></script>
     <script src="src/ui/FileToolbar.js"></script>
+    <script src="src/ui/PlaybackControls.js"></script>
   </head>
   <body>
     <!-- template definitions -->
 {% include UtilTemplates.html %}
 {% include FileToolbar.html %}
+{% include PlaybackControls.html %}
 {% include Cell.html %}
     <script src="src/ui/DOMUtil.js"></script>
 
     <file-toolbar></file-toolbar>
-{% include PlaybackControls.html %}
+    <playback-controls></playback-controls>
 {% include SequenceList.html %}
 {% include PatternTable.html %}
     <div id="errors"></div>

@@ -10,7 +10,6 @@ window.onerror = (message, source, line) => {
     $`#errors`.insertAdjacentHTML('beforeend', `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
 };
 
-let playbackControls = document.forms.playbackControls.elements;
 let sequenceEdit = document.forms.sequenceEdit.elements;
 let pitchEntry = document.forms.pitchEntry.elements;
 let sampleEntry = document.forms.sampleEntry.elements;
@@ -21,6 +20,7 @@ let module;
 let undoStack = [];
 let unsavedChangeCount = 0;
 let context;
+/** @type {Playback} */
 let playback;
 
 let animHandle;
@@ -34,6 +34,11 @@ let curPattern = null;
 let selPos = 0;
 let selRow = 0;
 let selChannel = 0;
+
+window.onbeforeunload = () => {
+    if (unsavedChangeCount)
+        return 'You have unsaved changes';
+};
 
 function onModuleLoaded() {
     undoStack = [];
@@ -85,13 +90,8 @@ function resetPlayback() {
             setChannelMute(playback, i, true);
     }
 
-    playback.userPatternLoop = playbackControls.patternLoop.checked;
+    playback.userPatternLoop = $`playback-controls`.patternLoopInput.checked;
     return true;
-}
-
-function restorePlaybackTempo() {
-    playback.tempo = playbackControls.tempo.valueAsNumber;
-    playback.speed = playbackControls.speed.valueAsNumber;
 }
 
 function play() {
@@ -107,8 +107,7 @@ function play() {
     process();
     intervalHandle = setInterval(process, 200);
     animHandle = requestAnimationFrame(update);
-    $`#playRow`.classList.add('hide');
-    $`#pause`.classList.remove('hide');
+    $`playback-controls`.setPlayState(true);
 }
 
 function pause() {
@@ -119,35 +118,9 @@ function pause() {
         queuedLines = [];
         queuedTime = 0;
         intervalHandle = null;
-        $`#playRow`.classList.remove('hide');
-        $`#pause`.classList.add('hide');
+        $`playback-controls`.setPlayState(false);
     }
 }
-
-$`#playStart`.onclick = () => {
-    if (resetPlayback())
-        play();
-};
-$`#playPattern`.onclick = () => {
-    if (resetPlayback()) {
-        restorePlaybackTempo();
-        playback.pos = selPos;
-        play();
-    }
-};
-$`#playRow`.onclick = () => {
-    if (resetPlayback()) {
-        restorePlaybackTempo();
-        playback.pos = selPos;
-        playback.row = selRow;
-        play();
-    }
-};
-$`#pause`.onclick = () => pause();
-$`#patternLoop`.onclick = e => {
-    if (playback)
-        playback.userPatternLoop = e.target.checked;
-};
 
 function muteCheck(channel, checked) {
     if (playback)
@@ -194,10 +167,11 @@ function update() {
         queuedLines.splice(0, i);
         let curLine = queuedLines[0];
 
-        playbackControls.tempo.value = curLine.tempo;
-        playbackControls.speed.value = curLine.speed;
+        let playbackControls = $`playback-controls`;
+        playbackControls.tempoInput.value = curLine.tempo;
+        playbackControls.speedInput.value = curLine.speed;
 
-        if (playbackControls.follow.checked) {
+        if (playbackControls.followInput.checked) {
             selPos = curLine.pos;
             selRow = curLine.row;
             refreshModule();

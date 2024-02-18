@@ -7,8 +7,10 @@ class FileToolbarElement extends HTMLElement {
 
     connectedCallback() {
         let fragment = instantiate(templates.fileToolbar);
+
         /** @type {HTMLOutputElement} */
         this.titleOutput = fragment.querySelector('#title');
+
         fragment.querySelector('#fileSelect').addEventListener('change', e => {
             if (e.target instanceof HTMLInputElement)
                 this.readModuleBlob(e.target.files[0]);
@@ -20,6 +22,7 @@ class FileToolbarElement extends HTMLElement {
         });
         fragment.querySelector('#fileSave').addEventListener('click', () => this.saveFile());
         fragment.querySelector('#patternZap').addEventListener('click', () => this.patternZap());
+
         this.appendChild(fragment);
     }
 
@@ -55,10 +58,4 @@ class FileToolbarElement extends HTMLElement {
         refreshModule();
     }
 }
-
 customElements.define('file-toolbar', FileToolbarElement);
-
-window.onbeforeunload = () => {
-    if (unsavedChangeCount)
-        return 'You have unsaved changes';
-};
