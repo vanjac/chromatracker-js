@@ -7,6 +7,8 @@ class FileToolbarElement extends HTMLElement {
 
     connectedCallback() {
         let fragment = instantiate(templates.fileToolbar);
+        /** @type {HTMLOutputElement} */
+        this.titleOutput = fragment.querySelector('#title');
         fragment.querySelector('#fileSelect').addEventListener('change', e => {
             if (e.target instanceof HTMLInputElement)
                 this.readModuleBlob(e.target.files[0]);

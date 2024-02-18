@@ -39,7 +39,7 @@ function onModuleLoaded() {
     undoStack = [];
     unsavedChangeCount = 0;
 
-    $`#title`.value = module.name;
+    $`file-toolbar`.titleOutput.value = module.name;
 
     selPos = 0;
     selRow = 0;
