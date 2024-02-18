@@ -28,10 +28,6 @@ let intervalHandle;
 let queuedTime = 0;
 let queuedLines = [];
 
-let curPattern = null;
-let selRow = 0;
-let selChannel = 0;
-
 window.onbeforeunload = () => {
     if (unsavedChangeCount)
         return 'You have unsaved changes';
@@ -44,10 +40,11 @@ function onModuleLoaded() {
     $`file-toolbar`.titleOutput.value = module.name;
 
     $`sequence-edit`.setSelPos(0);
-    selRow = 0;
-    selChannel = 0;
+    let patternTable = $`pattern-table`;
+    patternTable.selRow = 0;
+    patternTable.selChannel = 0;
     refreshModule();
-    scrollToSelCell();
+    patternTable.scrollToSelCell();
 
     let samplesElem = $`#sampleList`;
     samplesElem.textContent = '';
@@ -81,10 +78,10 @@ function resetPlayback() {
         pause();
     playback = initPlayback(context, module);
 
-    let muteChecks = $`#mute`.children;
-    for (let i = 0; i < muteChecks.length; i++) {
-        if (!muteChecks[i].checked)
-            setChannelMute(playback, i, true);
+    let patternTable = $`pattern-table`;
+    for (let c = 0; c < module.numChannels; c++) {
+        if (patternTable.isChannelMuted(c))
+            setChannelMute(playback, c, true);
     }
 
     playback.userPatternLoop = $`playback-controls`.patternLoopInput.checked;
@@ -119,11 +116,6 @@ function pause() {
     }
 }
 
-function muteCheck(channel, checked) {
-    if (playback)
-        setChannelMute(playback, channel, !checked);
-}
-
 function jamDown(e, cell) {
     if (playback) {
         if (!cell) {
@@ -133,9 +125,9 @@ function jamDown(e, cell) {
         }
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches)
-                jamPlay(playback, touch.identifier, selChannel, cell);
+                jamPlay(playback, touch.identifier, selChannel(), cell);
         } else {
-            jamPlay(playback, -1, selChannel, cell);
+            jamPlay(playback, -1, selChannel(), cell);
         }
     }
 }
@@ -168,19 +160,20 @@ function update() {
         playbackControls.tempoInput.value = curLine.tempo;
         playbackControls.speedInput.value = curLine.speed;
 
+        let patternTable = $`pattern-table`;
+
         if (playbackControls.followInput.checked) {
             $`sequence-edit`.setSelPos(curLine.pos);
-            selRow = curLine.row;
+            patternTable.selRow = curLine.row;
             refreshModule();
-            updateSelCell();
-            scrollToSelCell();
+            patternTable.updateSelCell();
+            patternTable.scrollToSelCell();
         }
-
-        let oldHilite = $`.hilite-row`;
-        if (oldHilite)
-            oldHilite.classList.remove('hilite-row');
-        if (selPattern() == module.sequence[curLine.pos])
-            $`#patternTable`.children[curLine.row].classList.add('hilite-row');
+        if (selPattern() == module.sequence[curLine.pos]) {
+            patternTable.setPlaybackRow(curLine.row);
+        } else {
+            patternTable.setPlaybackRow(-1);
+        }
     }
 }
 
@@ -188,55 +181,21 @@ function selPos() {
     return $`sequence-edit`.selPos;
 }
 
+function selRow() {
+    return $`pattern-table`.selRow;
+}
+
+function selChannel() {
+    return $`pattern-table`.selChannel;
+}
+
 function selPattern() {
     return module.sequence[selPos()];
 }
 
 function refreshModule() {
-    $`sequence-edit`.updateModule(module);
-    refreshPattern();
-}
-
-function refreshPattern() {
-    let pattern = module.patterns[selPattern()];
-    if (pattern != curPattern) {
-        console.log('update pattern');
-        curPattern = pattern;
-        let table = $`#patternTable`;
-        table.textContent = '';
-        makePatternTable(module, pattern, table, (td, r, c) => {
-            td.onmousedown = td.ontouchstart = e => {
-                selRow = r;
-                selChannel = c;
-                updateSelCell();
-                jamDown(e, selCell());
-            };
-            td.onmouseup = td.ontouchend = e => jamUp(e);
-        });
-        updateSelCell();
-    }
-}
-
-function updateSelCell() {
-    let cell = $`.sel-cell`;
-    if (cell) {
-        cell.classList.remove('sel-cell');
-        cell.classList.remove('sel-pitch');
-        cell.classList.remove('sel-inst');
-        cell.classList.remove('sel-effect');
-    }
-    if (selRow >= 0 && selChannel >= 0) {
-        let cell = $`#patternTable`.children[selRow].children[selChannel];
-        cell.classList.add('sel-cell');
-        updateCellEntryParts(cell);
-    }
-}
-
-function scrollToSelCell() {
-    let parent = $`#patternScroll`;
-    let parentRect = parent.getBoundingClientRect();
-    let childRect = $`#patternTable`.children[selRow].getBoundingClientRect();
-    parent.scrollTop += (childRect.top - parentRect.top) - (parent.clientHeight / 2);
+    $`sequence-edit`.setSequence(module.sequence);
+    $`pattern-table`.setPattern(module.patterns[selPattern()]);
 }
 
 function setModule(mod) {
@@ -272,7 +231,7 @@ function entryCell() {
 }
 
 function selCell() {
-    return module.patterns[selPattern()][selChannel][selRow];
+    return module.patterns[selPattern()][selChannel()][selRow()];
 }
 
 function entryParts() {
@@ -295,9 +254,7 @@ function updateEntryCell() {
 
 function updateEntryParts() {
     updateCellEntryParts($`#entryCell`);
-    let selCell = $`.sel-cell`;
-    if (selCell)
-        updateCellEntryParts(selCell);
+    $`pattern-table`.updateSelCellEntryParts();
 }
 
 function updateCellEntryParts(cell) {
@@ -308,20 +265,13 @@ function updateCellEntryParts(cell) {
 
 function writeCell() {
     pushUndo();
-    setModule(editPutCell(module, selPattern(), selChannel, selRow, entryCell(), entryParts()));
+    setModule(editPutCell(module, selPattern(), selChannel(), selRow(), entryCell(), entryParts()));
     refreshModule();
-}
-
-function advance() {
-    selRow++;
-    selRow %= numRows;
-    updateSelCell();
-    scrollToSelCell();
 }
 
 function clearCell() {
     pushUndo();
-    setModule(editPutCell(module, selPattern(), selChannel, selRow, new Cell(), entryParts()));
+    setModule(editPutCell(module, selPattern(), selChannel(), selRow(), new Cell(), entryParts()));
     refreshModule();
 }
 
@@ -366,14 +316,14 @@ addReleaseEvent($`#entryCell`, () => jamUp());
 addPressEvent($`#write`, e => {
     writeCell();
     jamDown(e, selCell());
-    advance();
+    $`pattern-table`.advance();
 });
 addReleaseEvent($`#write`, e => jamUp(e));
 
 addPressEvent($`#clear`, e => {
     clearCell();
     jamDown(e, selCell());
-    advance();
+    $`pattern-table`.advance();
 });
 addReleaseEvent($`#clear`, e => jamUp(e));
 

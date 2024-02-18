@@ -36,8 +36,8 @@ function cellEffectString(cell) {
 }
 
 /**
- * @param {Module} module
- * @param {Pattern} pattern
+ * @param {Readonly<Module>} module
+ * @param {Readonly<Pattern>} pattern
  * @param {Element} table
  * @param {(td: HTMLTableCellElement, r: number, c: number) => void} cellCB
  */

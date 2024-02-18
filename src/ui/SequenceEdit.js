@@ -7,11 +7,11 @@ class SequenceEditElement extends HTMLElement {
         /** @type {readonly number[]} */
         this.viewSequence = null;
     }
+
     connectedCallback() {
         let fragment = instantiate(templates.sequenceEdit);
 
-        /** @type {HTMLFormElement} */
-        this.sequenceList = fragment.querySelector('#sequenceList');
+        this.sequenceList = fragment.querySelector('form');
         /** @type {RadioNodeList} */
         this.sequenceInput = null;
 
@@ -25,29 +25,29 @@ class SequenceEditElement extends HTMLElement {
     }
 
     /**
-     * @param {Module} module
+     * @param {readonly number[]} sequence
      */
-    updateModule(module) {
-        if (module.sequence != this.viewSequence) {
-            console.log('update sequence');
-            this.viewSequence = module.sequence;
+    setSequence(sequence) {
+        if (sequence == this.viewSequence)
+            return;
+        console.log('update sequence');
+        this.viewSequence = sequence;
 
-            if (this.selPos >= module.sequence.length)
-                this.selPos = module.sequence.length - 1;
+        if (this.selPos >= sequence.length)
+            this.selPos = sequence.length - 1;
 
-            this.sequenceList.textContent = '';
-            for (let [i, pos] of module.sequence.entries()) {
-                let label = makeRadioButton('sequence', i.toString(), pos.toString());
-                this.sequenceList.appendChild(label);
-                label.addEventListener('change', () => {
-                    this.selPos = Number(this.sequenceInput.value);
-                    refreshModule();
-                });
-            }
-            this.sequenceInput = /** @type {RadioNodeList} */ (
-                this.sequenceList.elements.namedItem('sequence'));
-            this.sequenceInput.value = this.selPos.toString();
+        this.sequenceList.textContent = '';
+        for (let [i, pos] of sequence.entries()) {
+            let label = makeRadioButton('sequence', i.toString(), pos.toString());
+            this.sequenceList.appendChild(label);
+            label.addEventListener('change', () => {
+                this.selPos = Number(this.sequenceInput.value);
+                refreshModule();
+            });
         }
+        this.sequenceInput = /** @type {RadioNodeList} */ (
+            this.sequenceList.elements.namedItem('sequence'));
+        this.sequenceInput.value = this.selPos.toString();
     }
 
     /**

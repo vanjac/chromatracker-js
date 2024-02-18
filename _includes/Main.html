@@ -20,6 +20,7 @@
     <script src="src/ui/FileToolbar.js"></script>
     <script src="src/ui/PlaybackControls.js"></script>
     <script src="src/ui/SequenceEdit.js"></script>
+    <script src="src/ui/PatternTable.js"></script>
   </head>
   <body>
     <!-- template definitions -->
@@ -27,13 +28,14 @@
 {% include FileToolbar.html %}
 {% include PlaybackControls.html %}
 {% include SequenceEdit.html %}
+{% include PatternTable.html %}
 {% include Cell.html %}
     <script src="src/ui/DOMUtil.js"></script>
 
     <file-toolbar></file-toolbar>
     <playback-controls></playback-controls>
     <sequence-edit></sequence-edit>
-{% include PatternTable.html %}
+    <pattern-table></pattern-table>
     <div id="errors"></div>
 {% include CellEntry.html %}
 

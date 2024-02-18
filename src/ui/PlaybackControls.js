@@ -30,7 +30,7 @@ class PlaybackControlsElement extends HTMLElement {
             if (resetPlayback()) {
                 this.restorePlaybackTempo();
                 playback.pos = selPos();
-                playback.row = selRow;
+                playback.row = selRow();
                 play();
             }
         });

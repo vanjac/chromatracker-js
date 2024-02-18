@@ -1,11 +1,13 @@
-<div id="mute">
-  <input type="checkbox" onchange="muteCheck(0, this.checked)" checked>
-  <input type="checkbox" onchange="muteCheck(1, this.checked)" checked>
-  <input type="checkbox" onchange="muteCheck(2, this.checked)" checked>
-  <input type="checkbox" onchange="muteCheck(3, this.checked)" checked>
-</div>
-<div class="scrollable flex-grow" id="patternScroll">
-  <div class="pattern-table-space"></div>
-  <table id="patternTable"></table>
-  <div class="pattern-table-space"></div>
-</div>
+<template id="patternTable">
+  <div id="mute">
+    <input type="checkbox" checked>
+    <input type="checkbox" checked>
+    <input type="checkbox" checked>
+    <input type="checkbox" checked>
+  </div>
+  <div class="scrollable flex-grow" id="patternScroll">
+    <div class="pattern-table-space"></div>
+    <table></table>
+    <div class="pattern-table-space"></div>
+  </div>
+</template>
