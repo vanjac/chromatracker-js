@@ -1,16 +1,18 @@
-<div class="hflex">
-  <label class="label-button">
-    <input type="file" id="fileSelect" autocomplete="off">
-    <span><img class="icon" src="assets/folder-open.svg"></span>
-  </label>
-  <button type="button" id="fileDownload">
-    <img class="icon" src="assets/web.svg">
-  </button>
-  <button type="button" id="fileSave">
-    <img class="icon" src="assets/download.svg">
-  </button>
-  <button type="button" id="patternZap">
-    <img class="icon" src="assets/playlist-remove.svg">
-  </button>
-  <output id="title"></output>
-</div>
+<template id="fileToolbar">
+  <div class="hflex">
+    <label class="label-button">
+      <input type="file" id="fileSelect" autocomplete="off">
+      <span><img class="icon" src="assets/folder-open.svg"></span>
+    </label>
+    <button type="button" id="fileDownload">
+      <img class="icon" src="assets/web.svg">
+    </button>
+    <button type="button" id="fileSave">
+      <img class="icon" src="assets/download.svg">
+    </button>
+    <button type="button" id="patternZap">
+      <img class="icon" src="assets/playlist-remove.svg">
+    </button>
+    <output id="title"></output>
+  </div>
+</template>

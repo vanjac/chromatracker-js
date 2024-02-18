@@ -14,21 +14,24 @@
     <script src="src/Edit.js"></script>
     <script src="src/PatternEdit.js"></script>
     <script src="src/SequenceEdit.js"></script>
-    <script src="src/ui/DOMUtil.js"></script>
     <script src="src/ui/WebApp.js"></script>
     <script src="src/ui/UtilTemplates.js"></script>
     <script src="src/ui/PatternView.js"></script>
     <script src="src/ui/FileToolbar.js"></script>
   </head>
   <body>
+    <!-- template definitions -->
+{% include UtilTemplates.html %}
 {% include FileToolbar.html %}
+{% include Cell.html %}
+    <script src="src/ui/DOMUtil.js"></script>
+
+    <file-toolbar></file-toolbar>
 {% include PlaybackControls.html %}
 {% include SequenceList.html %}
 {% include PatternTable.html %}
     <div id="errors"></div>
 {% include CellEntry.html %}
-
-{% include UtilTemplates.html %}
 
     <script src="index.js"></script>
   </body>
