@@ -38,21 +38,38 @@ class PatternTableElement extends HTMLElement {
         this.viewPattern = pattern;
 
         this.table.textContent = '';
-        makePatternTable(module, pattern, this.table, (td, r, c) => {
-            /**
-             * @param {Event} e
-             */
-            let pressEvent = e => {
-                this.selRow = r;
-                this.selChannel = c;
-                this.updateSelCell();
-                jamDown(e, selCell());
-            };
-            td.addEventListener('mousedown', pressEvent);
-            td.addEventListener('touchstart', pressEvent);
-            td.addEventListener('mouseup', e => jamUp(e));
-            td.addEventListener('touchend', e => jamUp(e));
-        });
+        let tableFrag = document.createDocumentFragment();
+        for (let row = 0; row < numRows; row++) {
+            let tr = document.createElement('tr');
+            for (let c = 0; c < module.numChannels; c++) {
+                let cell = pattern[c][row];
+                let cellFrag = instantiate(templates.cellTemplate);
+                cellFrag.querySelector('#pitch').textContent = cellPitchString(cell);
+                cellFrag.querySelector('#inst').textContent = cellInstString(cell);
+                cellFrag.querySelector('#effect').textContent = cellEffectString(cell);
+
+                let td = cellFrag.querySelector('td');
+                const c_row = row;
+                const c_c = c;
+                /**
+                 * @param {Event} e
+                 */
+                let pressEvent = e => {
+                    this.selRow = c_row;
+                    this.selChannel = c_c;
+                    this.updateSelCell();
+                    jamDown(e, selCell());
+                };
+                td.addEventListener('mousedown', pressEvent);
+                td.addEventListener('touchstart', pressEvent);
+                td.addEventListener('mouseup', e => jamUp(e));
+                td.addEventListener('touchend', e => jamUp(e));
+
+                tr.appendChild(cellFrag);
+            }
+            tableFrag.appendChild(tr);
+        }
+        this.table.appendChild(tableFrag);
         this.updateSelCell();
     }
 

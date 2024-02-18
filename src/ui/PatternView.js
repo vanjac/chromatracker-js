@@ -34,27 +34,3 @@ function cellEffectString(cell) {
     return ( (cell.effect.toString(16) + cell.param0.toString(16) + cell.param1.toString(16))
         .toUpperCase() );
 }
-
-/**
- * @param {Readonly<Module>} module
- * @param {Readonly<Pattern>} pattern
- * @param {Element} table
- * @param {(td: HTMLTableCellElement, r: number, c: number) => void} cellCB
- */
-function makePatternTable(module, pattern, table, cellCB) {
-    let fragment = document.createDocumentFragment();
-    for (let row = 0; row < numRows; row++) {
-        let tr = document.createElement('tr');
-        for (let c = 0; c < module.numChannels; c++) {
-            let cell = pattern[c][row];
-            let cellFrag = instantiate(templates.cellTemplate);
-            cellFrag.querySelector('#pitch').textContent = cellPitchString(cell);
-            cellFrag.querySelector('#inst').textContent = cellInstString(cell);
-            cellFrag.querySelector('#effect').textContent = cellEffectString(cell);
-            cellCB(cellFrag.querySelector('td'), row, c);
-            tr.appendChild(cellFrag);
-        }
-        fragment.appendChild(tr);
-    }
-    table.appendChild(fragment);
-}
