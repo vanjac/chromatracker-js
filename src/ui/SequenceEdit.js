@@ -22,6 +22,7 @@ class SequenceEditElement extends HTMLElement {
         fragment.querySelector('#seqDown').addEventListener('click', () => this.seqDown());
 
         this.appendChild(fragment);
+        this.style.display = 'contents';
     }
 
     /**
@@ -94,4 +95,4 @@ class SequenceEditElement extends HTMLElement {
         refreshModule();
     }
 }
-customElements.define('sequence-edit', SequenceEditElement);
+window.customElements.define('sequence-edit', SequenceEditElement);

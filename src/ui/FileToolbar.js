@@ -20,6 +20,7 @@ class FileToolbarElement extends HTMLElement {
         fragment.querySelector('#patternZap').addEventListener('click', () => this.patternZap());
 
         this.appendChild(fragment);
+        this.style.display = 'contents';
     }
 
     /**
@@ -54,4 +55,4 @@ class FileToolbarElement extends HTMLElement {
         refreshModule();
     }
 }
-customElements.define('file-toolbar', FileToolbarElement);
+window.customElements.define('file-toolbar', FileToolbarElement);

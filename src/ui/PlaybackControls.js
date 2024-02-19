@@ -41,6 +41,7 @@ class PlaybackControlsElement extends HTMLElement {
         });
 
         this.appendChild(fragment);
+        this.style.display = 'contents';
     }
 
     restorePlaybackTempo() {
@@ -56,4 +57,4 @@ class PlaybackControlsElement extends HTMLElement {
         this.pauseButton.classList.toggle('hide', !playing);
     }
 }
-customElements.define('playback-controls', PlaybackControlsElement);
+window.customElements.define('playback-controls', PlaybackControlsElement);

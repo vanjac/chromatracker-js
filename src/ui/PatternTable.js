@@ -84,14 +84,17 @@ class PatternTableElement extends HTMLElement {
         if (this.selRow >= 0 && this.selChannel >= 0) {
             let cell = this.table.children[this.selRow].children[this.selChannel];
             cell.classList.add('sel-cell');
-            updateCellEntryParts(cell);
+            toggleCellParts(cell, entryParts());
         }
     }
 
-    updateSelCellEntryParts() {
+    /**
+     * @param {CellParts} parts
+     */
+    toggleSelCellParts(parts) {
         let selCell = this.table.querySelector('.sel-cell');
         if (selCell)
-            updateCellEntryParts(selCell);
+            toggleCellParts(selCell, parts);
     }
 
     /**
@@ -128,4 +131,4 @@ class PatternTableElement extends HTMLElement {
         return ! this.muteInputs[channel].checked;
     }
 }
-customElements.define('pattern-table', PatternTableElement);
+window.customElements.define('pattern-table', PatternTableElement);

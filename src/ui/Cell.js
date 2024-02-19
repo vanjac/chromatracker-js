@@ -34,3 +34,13 @@ function cellEffectString(cell) {
     return ( (cell.effect.toString(16) + cell.param0.toString(16) + cell.param1.toString(16))
         .toUpperCase() );
 }
+
+/**
+ * @param {Element} cell
+ * @param {CellParts} parts
+ */
+function toggleCellParts(cell, parts) {
+    cell.classList.toggle('sel-pitch', !!(parts & CellParts.pitch));
+    cell.classList.toggle('sel-inst', !!(parts & CellParts.inst));
+    cell.classList.toggle('sel-effect', !!(parts & CellParts.effect));
+}

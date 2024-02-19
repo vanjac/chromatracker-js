@@ -10,10 +10,6 @@ window.onerror = (message, source, line) => {
     $`#errors`.insertAdjacentHTML('beforeend', `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
 };
 
-let pitchEntry = document.forms.pitchEntry.elements;
-let sampleEntry = document.forms.sampleEntry.elements;
-let effectEntry = document.forms.effectEntry.elements;
-
 /** @type {Module} */
 let module;
 let undoStack = [];
@@ -46,20 +42,7 @@ function onModuleLoaded() {
     refreshModule();
     patternTable.scrollToSelCell();
 
-    let samplesElem = $`#sampleList`;
-    samplesElem.textContent = '';
-    for (let [i, sample] of module.samples.entries()) {
-        if (!sample) continue;
-        let label = samplesElem.appendChild(makeRadioButton('sample', i, i));
-        label.onmousedown = label.ontouchstart = e => {
-            sampleEntry.sample.value = i;
-            jamDown(e);
-            updateEntryCell();
-        };
-        addReleaseEvent(label, e => jamUp(e));
-    }
-    sampleEntry.sample.value = 1;
-    updateEntryCell();
+    $`cell-entry`.setSelSample(1);
 
     if (intervalHandle)
         pause();
@@ -119,9 +102,7 @@ function pause() {
 function jamDown(e, cell) {
     if (playback) {
         if (!cell) {
-            cell = entryCell();
-            if (!effectEntry.effectEnable.checked)
-                cell.effect = cell.param0 = cell.param1 = 0;
+            cell = $`cell-entry`.getJamCell();
         }
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches)
@@ -196,6 +177,7 @@ function selPattern() {
 function refreshModule() {
     $`sequence-edit`.setSequence(module.sequence);
     $`pattern-table`.setPattern(module.patterns[selPattern()]);
+    $`cell-entry`.setSamples(module.samples);
 }
 
 function setModule(mod) {
@@ -219,154 +201,24 @@ function undo() {
     }
 }
 
-function entryCell() {
-    let cell = new Cell();
-    cell.pitch = pitchEntry.jamPitch.valueAsNumber;
-    if (sampleEntry.sample) // sample list exists?
-        cell.inst = Number(sampleEntry.sample.value);
-    cell.effect = effectEntry.effect.selectedIndex;
-    cell.param0 = effectEntry.param0.selectedIndex;
-    cell.param1 = effectEntry.param1.selectedIndex;
-    return cell;
-}
-
 function selCell() {
     return module.patterns[selPattern()][selChannel()][selRow()];
 }
 
 function entryParts() {
-    let parts = CellParts.none;
-    if (pitchEntry.pitchEnable.checked)
-        parts |= CellParts.pitch;
-    if (sampleEntry.sampleEnable.checked)
-        parts |= CellParts.inst;
-    if (effectEntry.effectEnable.checked)
-        parts |= CellParts.effect | CellParts.param;
-    return parts;
-}
-
-function updateEntryCell() {
-    let cell = entryCell();
-    $`#entryPitch`.textContent = cellPitchString(cell);
-    $`#entryInst`.textContent = cellInstString(cell);
-    $`#entryEffect`.textContent = cellEffectString(cell);
+    return $`cell-entry`.getCellParts();
 }
 
 function updateEntryParts() {
-    updateCellEntryParts($`#entryCell`);
-    $`pattern-table`.updateSelCellEntryParts();
+    let parts = entryParts();
+    $`cell-entry`.toggleEntryCellParts(parts);
+    $`pattern-table`.toggleSelCellParts(parts);
 }
 
-function updateCellEntryParts(cell) {
-    cell.classList.toggle('sel-pitch', pitchEntry.pitchEnable.checked);
-    cell.classList.toggle('sel-inst', sampleEntry.sampleEnable.checked);
-    cell.classList.toggle('sel-effect', effectEntry.effectEnable.checked);
-}
-
-function writeCell() {
-    pushUndo();
-    setModule(editPutCell(module, selPattern(), selChannel(), selRow(), entryCell(), entryParts()));
-    refreshModule();
-}
-
-function clearCell() {
-    pushUndo();
-    setModule(editPutCell(module, selPattern(), selChannel(), selRow(), new Cell(), entryParts()));
-    refreshModule();
-}
-
-function liftCell() {
-    let cell = selCell();
-    if (pitchEntry.pitchEnable.checked && cell.pitch >= 0)
-        pitchEntry.jamPitch.value = cell.pitch;
-    if (sampleEntry.sampleEnable.checked && cell.inst)
-        sampleEntry.sample.value = cell.inst;
-    if (effectEntry.effectEnable.checked) {
-        effectEntry.effect.selectedIndex = cell.effect;
-        effectEntry.param0.selectedIndex = cell.param0;
-        effectEntry.param1.selectedIndex = cell.param1;
-    }
-    updateEntryCell();
-}
-
-
-function addPressEvent(elem, handler) {
-    elem.addEventListener('mousedown', handler);
-    elem.addEventListener('touchstart', e => {
-        e.preventDefault();
-        handler(e);
-    });
-}
-
-function addReleaseEvent(elem, handler) {
-    elem.addEventListener('mouseup', handler);
-    elem.addEventListener('touchend', e => {
-        e.preventDefault();
-        handler(e);
-    });
-}
-
-
-
-$`#undo`.onclick = () => undo();
-
-addPressEvent($`#entryCell`, () => jamDown());
-addReleaseEvent($`#entryCell`, () => jamUp());
-
-addPressEvent($`#write`, e => {
-    writeCell();
-    jamDown(e, selCell());
+function advance() {
     $`pattern-table`.advance();
-});
-addReleaseEvent($`#write`, e => jamUp(e));
-
-addPressEvent($`#clear`, e => {
-    clearCell();
-    jamDown(e, selCell());
-    $`pattern-table`.advance();
-});
-addReleaseEvent($`#clear`, e => jamUp(e));
-
-addPressEvent($`#lift`, e => {
-    liftCell();
-    jamDown(e);
-});
-addReleaseEvent($`#lift`, e => jamUp(e));
-
-$`#pitchEnable`.onchange = () => updateEntryParts();
-$`#sampleEnable`.onchange = () => updateEntryParts();
-$`#effectEnable`.onchange = () => updateEntryParts();
-
-$`#jamPitch`.onmousedown = $`#jamPitch`.ontouchstart = () => jamDown();
-$`#jamPitch`.onmouseup = $`#jamPitch`.ontouchend = () => jamUp();
-$`#jamPitch`.oninput = e => {
-    jamUp();
-    jamDown();
-    updateEntryCell();
-};
-
-$`#effect`.oninput = () => {
-    effectEntry.param0.selectedIndex = effectEntry.param1.selectedIndex = 0;
-    updateEntryCell();
-};
-$`#param0`.oninput = () => updateEntryCell();
-$`#param1`.oninput = () => updateEntryCell();
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    updateEntryCell();
     updateEntryParts();
 });
-
-$`#setSampleVolume`.onclick = () => {
-    let idx = Number(sampleEntry.sample.value);
-    let sample = module.samples[idx];
-    let result = prompt(`Sample ${idx} volume\n${sample.name}`, sample.volume);
-    if (result !== null) {
-        pushUndo();
-        let newSample = Object.assign(new Sample(), sample);
-        newSample.volume = Number(result);
-        let newMod = Object.assign(new Module(), module);
-        newMod.samples = immSplice(module.samples, idx, 1, Object.freeze(newSample));
-        setModule(Object.freeze(newMod));
-    }
-};
