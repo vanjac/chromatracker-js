@@ -12,3 +12,8 @@ ChromaTracker is targeting the following browsers:
 - Firefox Android latest
     - Currently has audio issues
 - Chrome Android latest
+
+## Building
+
+You must have Node.js installed. Run `node build.mjs` to build `index.html`.
+(Or, with VSCode press Ctrl+Shift+B.)
