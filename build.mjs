@@ -3,7 +3,6 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import util from 'node:util';
 
 function main() {
     let templates = '';
@@ -14,7 +13,7 @@ function main() {
     }
 
     let html = fs.readFileSync('_main.html', {encoding: 'utf8'});
-    html = util.format(html, templates);
+    html = html.replace('{{templates}}', templates);
 
     fs.writeFileSync('index.html', html);
 }
