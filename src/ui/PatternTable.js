@@ -19,8 +19,8 @@ class PatternTableElement extends HTMLElement {
 
         for (let [c, input] of this.muteInputs.entries()) {
             input.addEventListener('change', () => {
-                if (playback)
-                    setChannelMute(playback, c, !input.checked);
+                if (main.playback)
+                    setChannelMute(main.playback, c, !input.checked);
             });
         }
 
@@ -41,7 +41,7 @@ class PatternTableElement extends HTMLElement {
         let tableFrag = document.createDocumentFragment();
         for (let row = 0; row < numRows; row++) {
             let tr = document.createElement('tr');
-            for (let c = 0; c < module.numChannels; c++) {
+            for (let c = 0; c < main.module.numChannels; c++) {
                 let cellFrag = instantiate(templates.cellTemplate);
                 setCellContents(cellFrag, pattern[c][row]);
 
@@ -55,12 +55,12 @@ class PatternTableElement extends HTMLElement {
                     this.selRow = c_row;
                     this.selChannel = c_c;
                     this.updateSelCell();
-                    jamDown(e, selCell());
+                    main.jamDown(e, main.selCell());
                 };
                 td.addEventListener('mousedown', pressEvent);
                 td.addEventListener('touchstart', pressEvent);
-                td.addEventListener('mouseup', e => jamUp(e));
-                td.addEventListener('touchend', e => jamUp(e));
+                td.addEventListener('mouseup', e => main.jamUp(e));
+                td.addEventListener('touchend', e => main.jamUp(e));
 
                 tr.appendChild(cellFrag);
             }
@@ -81,7 +81,7 @@ class PatternTableElement extends HTMLElement {
         if (this.selRow >= 0 && this.selChannel >= 0) {
             let cell = this.table.children[this.selRow].children[this.selChannel];
             cell.classList.add('sel-cell');
-            toggleCellParts(cell, entryParts());
+            toggleCellParts(cell, main.cellEntry.getCellParts());
         }
     }
 

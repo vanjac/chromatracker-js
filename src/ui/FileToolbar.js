@@ -30,29 +30,29 @@ class FileToolbarElement extends HTMLElement {
         let reader = new FileReader();
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                module = Object.freeze(readModule(reader.result));
-                console.log(module);
-                onModuleLoaded();
+                main.module = Object.freeze(readModule(reader.result));
+                console.log(main.module);
+                main.onModuleLoaded();
             }
         };
         reader.readAsArrayBuffer(blob);
     }
 
     saveFile() {
-        let blob = new Blob([writeModule(module)], {type: 'application/octet-stream'});
+        let blob = new Blob([writeModule(main.module)], {type: 'application/octet-stream'});
         let url = URL.createObjectURL(blob);
         console.log(url);
         window.open(url);
-        unsavedChangeCount = 0;
+        main.unsavedChangeCount = 0;
     }
 
     patternZap() {
-        pushUndo();
-        let newMod = Object.assign(new Module(), module);
-        newMod.patterns = Object.freeze([createPattern(module)]);
+        main.pushUndo();
+        let newMod = Object.assign(new Module(), main.module);
+        newMod.patterns = Object.freeze([createPattern(main.module)]);
         newMod.sequence = Object.freeze([0]);
-        setModule(Object.freeze(newMod));
-        refreshModule();
+        main.setModule(Object.freeze(newMod));
+        main.refreshModule();
     }
 }
 window.customElements.define('file-toolbar', FileToolbarElement);

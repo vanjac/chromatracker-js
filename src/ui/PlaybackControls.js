@@ -16,28 +16,28 @@ class PlaybackControlsElement extends HTMLElement {
         this.speedInput = fragment.querySelector('#speed');
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
-            if (resetPlayback())
-                play();
+            if (main.resetPlayback())
+                main.play();
         });
         fragment.querySelector('#playPattern').addEventListener('click', () => {
-            if (resetPlayback()) {
+            if (main.resetPlayback()) {
                 this.restorePlaybackTempo();
-                playback.pos = selPos();
-                play();
+                main.playback.pos = main.sequenceEdit.selPos;
+                main.play();
             }
         });
         this.playRowButton.addEventListener('click', () => {
-            if (resetPlayback()) {
+            if (main.resetPlayback()) {
                 this.restorePlaybackTempo();
-                playback.pos = selPos();
-                playback.row = selRow();
-                play();
+                main.playback.pos = main.sequenceEdit.selPos;
+                main.playback.row = main.selRow();
+                main.play();
             }
         });
-        this.pauseButton.addEventListener('click', () => pause());
+        this.pauseButton.addEventListener('click', () => main.pause());
         fragment.querySelector('#patternLoop').addEventListener('click', () => {
-            if (playback)
-                playback.userPatternLoop = this.patternLoopInput.checked;
+            if (main.playback)
+                main.playback.userPatternLoop = this.patternLoopInput.checked;
         });
 
         this.appendChild(fragment);
@@ -45,8 +45,8 @@ class PlaybackControlsElement extends HTMLElement {
     }
 
     restorePlaybackTempo() {
-        playback.tempo = this.tempoInput.valueAsNumber;
-        playback.speed = this.speedInput.valueAsNumber;
+        main.playback.tempo = this.tempoInput.valueAsNumber;
+        main.playback.speed = this.speedInput.valueAsNumber;
     }
 
     /**

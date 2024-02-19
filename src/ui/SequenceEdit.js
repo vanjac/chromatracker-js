@@ -43,7 +43,7 @@ class SequenceEditElement extends HTMLElement {
             this.sequenceList.appendChild(label);
             label.addEventListener('change', () => {
                 this.selPos = Number(this.sequenceInput.value);
-                refreshModule();
+                main.refreshModule();
             });
         }
         this.sequenceInput = /** @type {RadioNodeList} */ (
@@ -61,38 +61,38 @@ class SequenceEditElement extends HTMLElement {
     }
 
     seqUp() {
-        pushUndo();
-        setModule(editSetPos(module, this.selPos, selPattern() + 1));
-        refreshModule();
+        main.pushUndo();
+        main.setModule(editSetPos(main.module, this.selPos, main.selPattern() + 1));
+        main.refreshModule();
     }
     
     seqDown() {
-        pushUndo();
-        setModule(editSetPos(module, this.selPos, selPattern() - 1));
-        refreshModule();
+        main.pushUndo();
+        main.setModule(editSetPos(main.module, this.selPos, main.selPattern() - 1));
+        main.refreshModule();
     }
     
     seqInsSame() {
-        pushUndo();
-        setModule(editInsPos(module, this.selPos + 1, selPattern()));
+        main.pushUndo();
+        main.setModule(editInsPos(main.module, this.selPos + 1, main.selPattern()));
         this.selPos++;
-        refreshModule();
+        main.refreshModule();
     }
     
     seqInsClone() {
-        pushUndo();
-        let newMod = editClonePattern(module, selPattern());
-        setModule(editInsPos(newMod, this.selPos + 1, newMod.patterns.length - 1));
+        main.pushUndo();
+        let newMod = editClonePattern(main.module, main.selPattern());
+        main.setModule(editInsPos(newMod, this.selPos + 1, newMod.patterns.length - 1));
         this.selPos++;
-        refreshModule();
+        main.refreshModule();
     }
     
     seqDel() {
-        pushUndo();
-        setModule(editDelPos(module, this.selPos));
-        if (this.selPos >= module.sequence.length)
+        main.pushUndo();
+        main.setModule(editDelPos(main.module, this.selPos));
+        if (this.selPos >= main.module.sequence.length)
             this.selPos--;
-        refreshModule();
+        main.refreshModule();
     }
 }
 window.customElements.define('sequence-edit', SequenceEditElement);

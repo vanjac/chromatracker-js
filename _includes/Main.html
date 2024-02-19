@@ -15,6 +15,7 @@
     <script src="src/PatternEdit.js"></script>
     <script src="src/SequenceEdit.js"></script>
     <script src="src/ui/WebApp.js"></script>
+    <script src="src/ui/AppMain.js"></script>
     <script src="src/ui/UtilTemplates.js"></script>
     <script src="src/ui/FileToolbar.js"></script>
     <script src="src/ui/PlaybackControls.js"></script>
@@ -25,6 +26,7 @@
   </head>
   <body>
     <!-- template definitions -->
+{% include AppMain.html %}
 {% include UtilTemplates.html %}
 {% include FileToolbar.html %}
 {% include PlaybackControls.html %}
@@ -32,15 +34,8 @@
 {% include PatternTable.html %}
 {% include CellEntry.html %}
 {% include Cell.html %}
+<!-- end template definitions -->
     <script src="src/ui/DOMUtil.js"></script>
-
-    <file-toolbar></file-toolbar>
-    <playback-controls></playback-controls>
-    <sequence-edit></sequence-edit>
-    <pattern-table></pattern-table>
-    <div id="errors"></div>
-    <cell-entry></cell-entry>
-
-    <script src="index.js"></script>
+    <app-main></app-main>
   </body>
 </html>
