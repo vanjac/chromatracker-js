@@ -22,21 +22,22 @@ async function main() {
 
   <script src="src/Module.js"></script>
   <script src="src/PeriodTable.js"></script>
-  <script src="src/ModLoader.js"></script>
-  <script src="src/ModWriter.js"></script>
   <script src="src/Playback.js"></script>
-  <script src="src/Edit.js"></script>
-  <script src="src/PatternEdit.js"></script>
-  <script src="src/SequenceEdit.js"></script>
-  <script src="src/ui/WebApp.js"></script>
+  <script src="src/edit/Pattern.js"></script>
+  <script src="src/edit/Sequence.js"></script>
+  <script src="src/edit/Util.js"></script>
+  <script src="src/file/ModLoader.js"></script>
+  <script src="src/file/ModWriter.js"></script>
   <script src="src/ui/AppMain.js"></script>
-  <script src="src/ui/UtilTemplates.js"></script>
+  <script src="src/ui/Cell.js"></script>
+  <script src="src/ui/CellEntry.js"></script>
+  <!-- DOMUtil.js is loaded later -->
   <script src="src/ui/FileToolbar.js"></script>
+  <script src="src/ui/PatternTable.js"></script>
   <script src="src/ui/PlaybackControls.js"></script>
   <script src="src/ui/SequenceEdit.js"></script>
-  <script src="src/ui/PatternTable.js"></script>
-  <script src="src/ui/CellEntry.js"></script>
-  <script src="src/ui/Cell.js"></script>
+  <script src="src/ui/UtilTemplates.js"></script>
+  <script src="src/ui/WebApp.js"></script>
 </head>
 <body>
 
