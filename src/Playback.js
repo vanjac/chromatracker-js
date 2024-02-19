@@ -77,6 +77,7 @@ OscillatorPlayback.prototype = {
 
 function RowPlayback() {}
 RowPlayback.prototype = {
+    // TODO: some of these are actually per-channel
     patDelay: 0,
     posJump: -1,
     patBreak: -1,
