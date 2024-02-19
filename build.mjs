@@ -20,24 +20,24 @@ async function main() {
   <link href="src/ui/WebApp.css" rel="stylesheet">
   <link href="src/ui/Style.css" rel="stylesheet">
 
-  <script src="src/Module.js"></script>
-  <script src="src/PeriodTable.js"></script>
-  <script src="src/Playback.js"></script>
-  <script src="src/edit/Pattern.js"></script>
-  <script src="src/edit/Sequence.js"></script>
-  <script src="src/edit/Util.js"></script>
-  <script src="src/file/ModLoader.js"></script>
-  <script src="src/file/ModWriter.js"></script>
-  <script src="src/ui/AppMain.js"></script>
-  <script src="src/ui/Cell.js"></script>
-  <script src="src/ui/CellEntry.js"></script>
+  <script src="src/Module.js" defer></script>
+  <script src="src/PeriodTable.js" defer></script>
+  <script src="src/Playback.js" defer></script>
+  <script src="src/edit/Pattern.js" defer></script>
+  <script src="src/edit/Sequence.js" defer></script>
+  <script src="src/edit/Util.js" defer></script>
+  <script src="src/file/ModLoader.js" defer></script>
+  <script src="src/file/ModWriter.js" defer></script>
+  <script src="src/ui/AppMain.js" defer></script>
+  <script src="src/ui/Cell.js" defer></script>
+  <script src="src/ui/CellEntry.js" defer></script>
   <!-- DOMUtil.js is loaded later -->
-  <script src="src/ui/FileToolbar.js"></script>
-  <script src="src/ui/PatternTable.js"></script>
-  <script src="src/ui/PlaybackControls.js"></script>
-  <script src="src/ui/SequenceEdit.js"></script>
-  <script src="src/ui/UtilTemplates.js"></script>
-  <script src="src/ui/WebApp.js"></script>
+  <script src="src/ui/FileToolbar.js" defer></script>
+  <script src="src/ui/PatternTable.js" defer></script>
+  <script src="src/ui/PlaybackControls.js" defer></script>
+  <script src="src/ui/SequenceEdit.js" defer></script>
+  <script src="src/ui/UtilTemplates.js" defer></script>
+  <script src="src/ui/WebApp.js" defer></script>
 </head>
 <body>
 
