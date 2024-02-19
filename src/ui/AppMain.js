@@ -58,7 +58,8 @@ class AppMainElement extends HTMLElement {
                 return 'You have unsaved changes';
         };
         window.onerror = (message, source, line) => {
-            this.errors.append(`${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
+            this.errors.insertAdjacentHTML('beforeend',
+                `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
         };
 
         this.appendChild(fragment);
