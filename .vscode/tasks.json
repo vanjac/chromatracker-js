@@ -4,9 +4,9 @@
         {
             "label": "Build index.html",
             "type": "shell",
-            "command": "npx liquidjs -t '@Main.html' -o ../build.html --jekyll-include --no-dynamic-partials",
+            "command": "node build.mjs",
             "options": {
-                "cwd": "${workspaceFolder}/_includes"
+                "cwd": "${workspaceFolder}"
             },
             "group": {
                 "kind": "build",

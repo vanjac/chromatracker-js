@@ -13,5 +13,14 @@
         "no-var": "error",
         "semi": "error",
         "strict": ["error", "global"]
-    }
+    },
+    "overrides": [
+        {
+            "files": ["build.mjs"],
+            "parserOptions": {
+                "sourceType": "module",
+                "ecmaVersion": "latest"
+            }
+        }
+    ]
 }
