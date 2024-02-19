@@ -155,11 +155,7 @@ class CellEntryElement extends HTMLElement {
     }
 
     updateCell() {
-        let cell = this.getCell();
-        // TODO: move to Cell element
-        this.entryCell.querySelector('#pitch').textContent = cellPitchString(cell);
-        this.entryCell.querySelector('#inst').textContent = cellInstString(cell);
-        this.entryCell.querySelector('#effect').textContent = cellEffectString(cell);
+        setCellContents(this.entryCell, this.getCell());
     }
 
     /**

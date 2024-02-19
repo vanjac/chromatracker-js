@@ -42,11 +42,8 @@ class PatternTableElement extends HTMLElement {
         for (let row = 0; row < numRows; row++) {
             let tr = document.createElement('tr');
             for (let c = 0; c < module.numChannels; c++) {
-                let cell = pattern[c][row];
                 let cellFrag = instantiate(templates.cellTemplate);
-                cellFrag.querySelector('#pitch').textContent = cellPitchString(cell);
-                cellFrag.querySelector('#inst').textContent = cellInstString(cell);
-                cellFrag.querySelector('#effect').textContent = cellEffectString(cell);
+                setCellContents(cellFrag, pattern[c][row]);
 
                 let td = cellFrag.querySelector('td');
                 const c_row = row;

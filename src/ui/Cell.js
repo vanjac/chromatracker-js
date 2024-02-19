@@ -1,13 +1,8 @@
 "use strict";
 
-const noteNames = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-'];
+// TODO: make this a custom element?
 
-/**
- * @param {Cell} cell cell
- */
-function cellString(cell) {
-    return `${cellPitchString(cell)} ${cellInstString(cell)} ${cellEffectString(cell)}`;
-}
+const noteNames = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-'];
 
 /**
  * @param {Cell} cell cell
@@ -36,11 +31,21 @@ function cellEffectString(cell) {
 }
 
 /**
- * @param {Element} cell
+ * @param {Element|DocumentFragment} elem
+ * @param {Cell} cell
+ */
+function setCellContents(elem, cell) {
+    elem.querySelector('#pitch').textContent = cellPitchString(cell);
+    elem.querySelector('#inst').textContent = cellInstString(cell);
+    elem.querySelector('#effect').textContent = cellEffectString(cell);
+}
+
+/**
+ * @param {Element} elem
  * @param {CellParts} parts
  */
-function toggleCellParts(cell, parts) {
-    cell.classList.toggle('sel-pitch', !!(parts & CellParts.pitch));
-    cell.classList.toggle('sel-inst', !!(parts & CellParts.inst));
-    cell.classList.toggle('sel-effect', !!(parts & CellParts.effect));
+function toggleCellParts(elem, parts) {
+    elem.classList.toggle('sel-pitch', !!(parts & CellParts.pitch));
+    elem.classList.toggle('sel-inst', !!(parts & CellParts.inst));
+    elem.classList.toggle('sel-effect', !!(parts & CellParts.effect));
 }
