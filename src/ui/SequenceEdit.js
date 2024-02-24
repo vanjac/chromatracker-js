@@ -3,6 +3,8 @@
 class SequenceEditElement extends HTMLElement {
     constructor() {
         super();
+        /** @type {AppMainElement} */
+        this._app = null;
         this._selPos = 0;
         /** @type {readonly number[]} */
         this._viewSequence = null;
@@ -43,7 +45,7 @@ class SequenceEditElement extends HTMLElement {
             this._sequenceList.appendChild(label);
             label.addEventListener('change', () => {
                 this._selPos = Number(this._sequenceInput.value);
-                main._refreshModule();
+                this._app._refreshModule();
             });
         }
         this._sequenceInput = /** @type {RadioNodeList} */ (
@@ -61,38 +63,43 @@ class SequenceEditElement extends HTMLElement {
     }
 
     _seqUp() {
-        main._pushUndo();
-        main._setModule(editSetPos(main._module, this._selPos, main._selPattern() + 1));
-        main._refreshModule();
+        let newMod = editSetPos(this._app._module, this._selPos, this._app._selPattern() + 1);
+        this._app._pushUndo();
+        this._app._setModule(newMod);
+        this._app._refreshModule();
     }
     
     _seqDown() {
-        main._pushUndo();
-        main._setModule(editSetPos(main._module, this._selPos, main._selPattern() - 1));
-        main._refreshModule();
+        let newMod = editSetPos(this._app._module, this._selPos, this._app._selPattern() - 1);
+        this._app._pushUndo();
+        this._app._setModule(newMod);
+        this._app._refreshModule();
     }
     
     _seqInsSame() {
-        main._pushUndo();
-        main._setModule(editInsPos(main._module, this._selPos + 1, main._selPattern()));
+        let newMod = editInsPos(this._app._module, this._selPos + 1, this._app._selPattern());
+        this._app._pushUndo();
+        this._app._setModule(newMod);
         this._selPos++;
-        main._refreshModule();
+        this._app._refreshModule();
     }
     
     _seqInsClone() {
-        main._pushUndo();
-        let newMod = editClonePattern(main._module, main._selPattern());
-        main._setModule(editInsPos(newMod, this._selPos + 1, newMod.patterns.length - 1));
+        let newMod = editClonePattern(this._app._module, this._app._selPattern());
+        newMod = editInsPos(newMod, this._selPos + 1, newMod.patterns.length - 1);
+        this._app._pushUndo();
+        this._app._setModule(newMod);
         this._selPos++;
-        main._refreshModule();
+        this._app._refreshModule();
     }
     
     _seqDel() {
-        main._pushUndo();
-        main._setModule(editDelPos(main._module, this._selPos));
-        if (this._selPos >= main._module.sequence.length)
+        let newMod = editDelPos(this._app._module, this._selPos);
+        this._app._pushUndo();
+        this._app._setModule(newMod);
+        if (this._selPos >= this._app._module.sequence.length)
             this._selPos--;
-        main._refreshModule();
+        this._app._refreshModule();
     }
 }
 window.customElements.define('sequence-edit', SequenceEditElement);

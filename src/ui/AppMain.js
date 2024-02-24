@@ -59,6 +59,7 @@ class AppMainElement extends HTMLElement {
 
         this._fileToolbar._app = this;
         this._playbackControls._app = this;
+        this._sequenceEdit._app = this;
 
         window.onbeforeunload = () => {
             if (this._unsavedChangeCount)
