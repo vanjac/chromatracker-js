@@ -1,6 +1,12 @@
 "use strict";
 
 class PlaybackControlsElement extends HTMLElement {
+    constructor() {
+        super();
+        /** @type {AppMainElement} */
+        this._app = null;
+    }
+
     connectedCallback() {
         let fragment = instantiate(templates.playbackControls);
 
@@ -16,37 +22,59 @@ class PlaybackControlsElement extends HTMLElement {
         this._speedInput = fragment.querySelector('#speed');
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
-            if (main._resetPlayback())
-                main._play();
+            if (this._app._resetPlayback())
+                this._app._play();
         });
         fragment.querySelector('#playPattern').addEventListener('click', () => {
-            if (main._resetPlayback()) {
-                this._restorePlaybackTempo();
-                main._playback.pos = main._sequenceEdit._selPos;
-                main._play();
+            let playback = this._app._resetPlayback();
+            if (playback) {
+                this._restorePlaybackTempo(playback);
+                playback.pos = this._app._selPos();
+                this._app._play();
             }
         });
         this._playRowButton.addEventListener('click', () => {
-            if (main._resetPlayback()) {
-                this._restorePlaybackTempo();
-                main._playback.pos = main._sequenceEdit._selPos;
-                main._playback.row = main._selRow();
-                main._play();
+            let playback = this._app._resetPlayback();
+            if (playback) {
+                this._restorePlaybackTempo(playback);
+                playback.pos = this._app._selPos();
+                playback.row = this._app._selRow();
+                this._app._play();
             }
         });
-        this._pauseButton.addEventListener('click', () => main._pause());
+        this._pauseButton.addEventListener('click', () => this._app._pause());
         fragment.querySelector('#patternLoop').addEventListener('click', () => {
-            if (main._playback)
-                main._playback.userPatternLoop = this._patternLoopInput.checked;
+            if (this._app._playback)
+                this._app._playback.userPatternLoop = this._getPatternLoop();
         });
 
         this.appendChild(fragment);
         this.style.display = 'contents';
     }
 
-    _restorePlaybackTempo() {
-        main._playback.tempo = this._tempoInput.valueAsNumber;
-        main._playback.speed = this._speedInput.valueAsNumber;
+    _getPatternLoop() {
+        return this._patternLoopInput.checked;
+    }
+
+    _getFollow() {
+        return this._followInput.checked;
+    }
+
+    /**
+     * @param {number} tempo
+     * @param {number} speed
+     */
+    _setTempoSpeed(tempo, speed) {
+        this._tempoInput.valueAsNumber = tempo;
+        this._speedInput.valueAsNumber = speed;
+    }
+
+    /**
+     * @param {Playback} playback
+     */
+    _restorePlaybackTempo(playback) {
+        playback.tempo = this._tempoInput.valueAsNumber;
+        playback.speed = this._speedInput.valueAsNumber;
     }
 
     /**

@@ -57,6 +57,7 @@ class AppMainElement extends HTMLElement {
         this.style.display = 'contents';
 
         this._fileToolbar._app = this;
+        this._playbackControls._app = this;
 
         window.onbeforeunload = () => {
             if (this._unsavedChangeCount)
@@ -101,7 +102,7 @@ class AppMainElement extends HTMLElement {
 
     _resetPlayback() {
         if (!this._module)
-            return false;
+            return null;
         if (this._intervalHandle)
             this._pause();
         this._playback = initPlayback(this._context, this._module);
@@ -111,8 +112,8 @@ class AppMainElement extends HTMLElement {
                 setChannelMute(this._playback, c, true);
         }
 
-        this._playback.userPatternLoop = this._playbackControls._patternLoopInput.checked;
-        return true;
+        this._playback.userPatternLoop = this._playbackControls._getPatternLoop();
+        return this._playback;
     }
 
     _play() {
@@ -187,10 +188,9 @@ class AppMainElement extends HTMLElement {
                 this._queuedLines.splice(0, i);
             let curLine = this._queuedLines[0];
 
-            this._playbackControls._tempoInput.value = curLine.tempo.toString();
-            this._playbackControls._speedInput.value = curLine.speed.toString();
+            this._playbackControls._setTempoSpeed(curLine.tempo, curLine.speed);
 
-            if (this._playbackControls._followInput.checked) {
+            if (this._playbackControls._getFollow()) {
                 this._sequenceEdit._setSelPos(curLine.pos);
                 this._patternTable._selRow = curLine.row;
                 this._refreshModule();
@@ -205,6 +205,10 @@ class AppMainElement extends HTMLElement {
         }
     }
 
+    _selPos() {
+        return this._sequenceEdit._selPos;
+    }
+
     _selRow() {
         return this._patternTable._selRow;
     }
@@ -214,7 +218,7 @@ class AppMainElement extends HTMLElement {
     }
 
     _selPattern() {
-        return this._module.sequence[this._sequenceEdit._selPos];
+        return this._module.sequence[this._selPos()];
     }
 
     _refreshModule() {
