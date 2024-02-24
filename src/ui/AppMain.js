@@ -60,6 +60,7 @@ class AppMainElement extends HTMLElement {
         this._fileToolbar._app = this;
         this._playbackControls._app = this;
         this._sequenceEdit._app = this;
+        this._patternTable._app = this;
 
         window.onbeforeunload = () => {
             if (this._unsavedChangeCount)
@@ -253,8 +254,12 @@ class AppMainElement extends HTMLElement {
         return this._module.patterns[this._selPattern()][this._selChannel()][this._selRow()];
     }
 
+    _entryParts() {
+        return this._cellEntry._getCellParts();
+    }
+
     _updateEntryParts() {
-        let parts = this._cellEntry._getCellParts();
+        let parts = this._entryParts();
         this._cellEntry._toggleEntryCellParts(parts);
         this._patternTable._toggleSelCellParts(parts);
     }
