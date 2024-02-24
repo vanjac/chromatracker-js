@@ -53,6 +53,11 @@ class AppMainElement extends HTMLElement {
         this._cellEntry = fragment.querySelector('cell-entry');
         this._errors = fragment.querySelector('#errors');
 
+        this.appendChild(fragment);
+        this.style.display = 'contents';
+
+        this._fileToolbar._app = this;
+
         window.onbeforeunload = () => {
             if (this._unsavedChangeCount)
                 return 'You have unsaved changes';
@@ -61,16 +66,15 @@ class AppMainElement extends HTMLElement {
             this._errors.insertAdjacentHTML('beforeend',
                 `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
         };
-
-        this.appendChild(fragment);
-        this.style.display = 'contents';
     }
 
-    _onModuleLoaded() {
+    /**
+     * @param {Module} mod
+     */
+    _moduleLoaded(mod) {
+        this._module = mod;
         this._undoStack = [];
         this._unsavedChangeCount = 0;
-
-        this._fileToolbar._titleOutput.value = this._module.name;
 
         this._sequenceEdit._setSelPos(0);
         this._patternTable._selRow = 0;
@@ -89,6 +93,10 @@ class AppMainElement extends HTMLElement {
         }
         this._playback = initPlayback(this._context, this._module);
         this._context.resume();
+    }
+
+    _moduleSaved() {
+        this._unsavedChangeCount = 0;
     }
 
     _resetPlayback() {
@@ -210,6 +218,7 @@ class AppMainElement extends HTMLElement {
     }
 
     _refreshModule() {
+        this._fileToolbar._setTitle(this._module.name);
         this._sequenceEdit._setSequence(this._module.sequence);
         this._patternTable._setPattern(this._module.patterns[this._selPattern()]);
         this._cellEntry._setSamples(this._module.samples);

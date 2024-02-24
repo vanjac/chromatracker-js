@@ -1,6 +1,12 @@
 "use strict";
 
 class FileToolbarElement extends HTMLElement {
+    constructor() {
+        super();
+        /** @type {AppMainElement} */
+        this._app = null;
+    }
+
     connectedCallback() {
         let fragment = instantiate(templates.fileToolbar);
 
@@ -24,35 +30,42 @@ class FileToolbarElement extends HTMLElement {
     }
 
     /**
+     * @param {string} title
+     */
+    _setTitle(title) {
+        this._titleOutput.value = title;
+    }
+
+    /**
      * @param {Blob} blob
      */
     _readModuleBlob(blob) {
         let reader = new FileReader();
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                main._module = Object.freeze(readModule(reader.result));
-                console.log(main._module);
-                main._onModuleLoaded();
+                let mod = Object.freeze(readModule(reader.result));
+                console.log(mod);
+                this._app._moduleLoaded(mod);
             }
         };
         reader.readAsArrayBuffer(blob);
     }
 
     _saveFile() {
-        let blob = new Blob([writeModule(main._module)], {type: 'application/octet-stream'});
+        let blob = new Blob([writeModule(this._app._module)], {type: 'application/octet-stream'});
         let url = URL.createObjectURL(blob);
         console.log(url);
         window.open(url);
-        main._unsavedChangeCount = 0;
+        this._app._moduleSaved();
     }
 
     _patternZap() {
-        main._pushUndo();
-        let newMod = Object.assign(new Module(), main._module);
-        newMod.patterns = Object.freeze([createPattern(main._module)]);
+        this._app._pushUndo();
+        let newMod = Object.assign(new Module(), this._app._module);
+        newMod.patterns = Object.freeze([createPattern(this._app._module)]);
         newMod.sequence = Object.freeze([0]);
-        main._setModule(Object.freeze(newMod));
-        main._refreshModule();
+        this._app._setModule(Object.freeze(newMod));
+        this._app._refreshModule();
     }
 }
 window.customElements.define('file-toolbar', FileToolbarElement);
