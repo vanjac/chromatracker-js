@@ -28,41 +28,41 @@ class CellEntryElement extends HTMLElement {
     constructor() {
         super();
         /** @type {readonly Readonly<Sample>[]} */
-        this.viewSamples = null;
+        this._viewSamples = null;
     }
     connectedCallback() {
         let fragment = instantiate(templates.cellEntry);
 
-        this.entryCell = fragment.querySelector('#entryCell');
+        this._entryCell = fragment.querySelector('#entryCell');
         /** @type {HTMLInputElement} */
-        this.pitchEnable = fragment.querySelector('#pitchEnable');
+        this._pitchEnable = fragment.querySelector('#pitchEnable');
         /** @type {HTMLInputElement} */
-        this.sampleEnable = fragment.querySelector('#sampleEnable');
+        this._sampleEnable = fragment.querySelector('#sampleEnable');
         /** @type {HTMLInputElement} */
-        this.effectEnable = fragment.querySelector('#effectEnable');
+        this._effectEnable = fragment.querySelector('#effectEnable');
         /** @type {HTMLInputElement} */
-        this.pitchInput = fragment.querySelector('#pitchInput');
+        this._pitchInput = fragment.querySelector('#pitchInput');
         /** @type {HTMLFormElement} */
-        this.sampleList = fragment.querySelector('#sampleList');
+        this._sampleList = fragment.querySelector('#sampleList');
         /** @type {RadioNodeList} */
-        this.sampleInput = null;
+        this._sampleInput = null;
         /** @type {HTMLSelectElement} */
-        this.effectSelect = fragment.querySelector('#effectSelect');
+        this._effectSelect = fragment.querySelector('#effectSelect');
         /** @type {HTMLSelectElement} */
-        this.param0Select = fragment.querySelector('#param0Select');
+        this._param0Select = fragment.querySelector('#param0Select');
         /** @type {HTMLSelectElement} */
-        this.param1Select = fragment.querySelector('#param1Select');
+        this._param1Select = fragment.querySelector('#param1Select');
 
         fragment.querySelector('#undo').addEventListener('click', () => main.undo());
 
-        addPressEvent(this.entryCell, () => main.jamDown());
-        addReleaseEvent(this.entryCell, () => main.jamUp());
+        addPressEvent(this._entryCell, () => main.jamDown());
+        addReleaseEvent(this._entryCell, () => main.jamUp());
 
         let writeButton = fragment.querySelector('#write');
         addPressEvent(writeButton, e => {
             this.writeCell();
             main.jamDown(e, main.selCell());
-            main.patternTable.advance();
+            main._patternTable.advance();
         });
         addReleaseEvent(writeButton, e => main.jamUp(e));
 
@@ -70,7 +70,7 @@ class CellEntryElement extends HTMLElement {
         addPressEvent(clearButton, e => {
             this.clearCell();
             main.jamDown(e, main.selCell());
-            main.patternTable.advance();
+            main._patternTable.advance();
         });
         addReleaseEvent(clearButton, e => main.jamUp(e));
 
@@ -81,32 +81,32 @@ class CellEntryElement extends HTMLElement {
         });
         addReleaseEvent(liftButton, e => main.jamUp(e));
 
-        this.pitchEnable.addEventListener('change', () => main.updateEntryParts());
-        this.sampleEnable.addEventListener('change', () => main.updateEntryParts());
-        this.effectEnable.addEventListener('change', () => main.updateEntryParts());
+        this._pitchEnable.addEventListener('change', () => main.updateEntryParts());
+        this._sampleEnable.addEventListener('change', () => main.updateEntryParts());
+        this._effectEnable.addEventListener('change', () => main.updateEntryParts());
 
-        this.pitchInput.addEventListener('mousedown', () => main.jamDown());
-        this.pitchInput.addEventListener('touchstart', () => main.jamDown());
-        this.pitchInput.addEventListener('mouseup', () => main.jamUp());
-        this.pitchInput.addEventListener('touchend', () => main.jamUp());
-        this.pitchInput.addEventListener('input', () => {
+        this._pitchInput.addEventListener('mousedown', () => main.jamDown());
+        this._pitchInput.addEventListener('touchstart', () => main.jamDown());
+        this._pitchInput.addEventListener('mouseup', () => main.jamUp());
+        this._pitchInput.addEventListener('touchend', () => main.jamUp());
+        this._pitchInput.addEventListener('input', () => {
             main.jamUp();
             main.jamDown();
             this.updateCell();
         });
 
-        this.effectSelect.addEventListener('input', () => {
-            this.param0Select.selectedIndex = this.param1Select.selectedIndex = 0;
+        this._effectSelect.addEventListener('input', () => {
+            this._param0Select.selectedIndex = this._param1Select.selectedIndex = 0;
             this.updateCell();
         });
-        this.param0Select.addEventListener('input', () => this.updateCell());
-        this.param1Select.addEventListener('input', () => this.updateCell());
+        this._param0Select.addEventListener('input', () => this.updateCell());
+        this._param1Select.addEventListener('input', () => this.updateCell());
 
         fragment.querySelector('#setSampleVolume').addEventListener('click', () => {
-            if (!this.sampleInput)
+            if (!this._sampleInput)
                 return;
             let idx = this.getSelSample();
-            let sample = main.module.samples[idx];
+            let sample = main._module.samples[idx];
             let result = prompt(`Sample ${idx} volume\n${sample.name}`, sample.volume.toString());
             if (result !== null)
                 this.setSampleVolume(idx, Number(result));
@@ -121,29 +121,29 @@ class CellEntryElement extends HTMLElement {
 
     getCell() {
         let cell = new Cell();
-        cell.pitch = this.pitchInput.valueAsNumber;
-        if (this.sampleInput)
+        cell.pitch = this._pitchInput.valueAsNumber;
+        if (this._sampleInput)
             cell.inst = this.getSelSample();
-        cell.effect = this.effectSelect.selectedIndex;
-        cell.param0 = this.param0Select.selectedIndex;
-        cell.param1 = this.param1Select.selectedIndex;
+        cell.effect = this._effectSelect.selectedIndex;
+        cell.param0 = this._param0Select.selectedIndex;
+        cell.param1 = this._param1Select.selectedIndex;
         return cell;
     }
 
     getJamCell() {
         let cell = this.getCell();
-        if (!this.effectEnable.checked)
+        if (!this._effectEnable.checked)
             cell.effect = cell.param0 = cell.param1 = 0;
         return cell;
     }
 
     getCellParts() {
         let parts = CellParts.none;
-        if (this.pitchEnable.checked)
+        if (this._pitchEnable.checked)
             parts |= CellParts.pitch;
-        if (this.sampleEnable.checked)
+        if (this._sampleEnable.checked)
             parts |= CellParts.inst;
-        if (this.effectEnable.checked)
+        if (this._effectEnable.checked)
             parts |= CellParts.effect | CellParts.param;
         return parts;
     }
@@ -152,30 +152,30 @@ class CellEntryElement extends HTMLElement {
      * @param {CellParts} parts
      */
     toggleEntryCellParts(parts) {
-        toggleCellParts(this.entryCell, parts);
+        toggleCellParts(this._entryCell, parts);
     }
 
     updateCell() {
-        setCellContents(this.entryCell, this.getCell());
+        setCellContents(this._entryCell, this.getCell());
     }
 
     /**
      * @param {readonly Readonly<Sample>[]} samples 
      */
     setSamples(samples) {
-        if (samples == this.viewSamples)
+        if (samples == this._viewSamples)
             return;
         console.log('update samples');
-        this.viewSamples = samples;
+        this._viewSamples = samples;
 
         let selSample = this.getSelSample();
 
-        this.sampleList.textContent = '';
-        for (let [i, sample] of main.module.samples.entries()) {
+        this._sampleList.textContent = '';
+        for (let [i, sample] of main._module.samples.entries()) {
             if (!sample)
                 continue;
             let label = makeRadioButton('sample', i.toString(), i.toString());
-            this.sampleList.appendChild(label);
+            this._sampleList.appendChild(label);
             /**
              * @param {Event} e
              */
@@ -187,14 +187,14 @@ class CellEntryElement extends HTMLElement {
             label.addEventListener('touchstart', pressEvent);
             addReleaseEvent(label, e => main.jamUp(e));
         }
-        this.sampleInput = /** @type {RadioNodeList} */ (
-            this.sampleList.elements.namedItem('sample'));
+        this._sampleInput = /** @type {RadioNodeList} */ (
+            this._sampleList.elements.namedItem('sample'));
         this.setSelSample(selSample);
     }
 
     getSelSample() {
-        if (this.sampleInput)
-            return Number(this.sampleInput.value);
+        if (this._sampleInput)
+            return Number(this._sampleInput.value);
         return 1;
     }
 
@@ -202,34 +202,34 @@ class CellEntryElement extends HTMLElement {
      * @param {number} s
      */
     setSelSample(s) {
-        this.sampleInput.value = s.toString();
+        this._sampleInput.value = s.toString();
         this.updateCell();
     }
 
     writeCell() {
         main.pushUndo();
-        main.setModule(editPutCell(main.module, main.selPattern(), main.selChannel(), main.selRow(),
-            this.getCell(), this.getCellParts()));
-            main.refreshModule();
+        main.setModule(editPutCell(main._module, main.selPattern(),
+            main.selChannel(), main.selRow(), this.getCell(), this.getCellParts()));
+        main.refreshModule();
     }
     
     clearCell() {
         main.pushUndo();
-        main.setModule(editPutCell(main.module, main.selPattern(), main.selChannel(), main.selRow(),
-            new Cell(), this.getCellParts()));
+        main.setModule(editPutCell(main._module, main.selPattern(),
+            main.selChannel(), main.selRow(), new Cell(), this.getCellParts()));
         main.refreshModule();
     }
     
     liftCell() {
         let cell = main.selCell();
-        if (this.pitchEnable.checked && cell.pitch >= 0)
-            this.pitchInput.valueAsNumber = cell.pitch;
-        if (this.sampleEnable.checked && cell.inst && this.sampleInput)
-            this.sampleInput.value = cell.inst.toString();
-        if (this.effectEnable.checked) {
-            this.effectSelect.selectedIndex = cell.effect;
-            this.param0Select.selectedIndex = cell.param0;
-            this.param1Select.selectedIndex = cell.param1;
+        if (this._pitchEnable.checked && cell.pitch >= 0)
+            this._pitchInput.valueAsNumber = cell.pitch;
+        if (this._sampleEnable.checked && cell.inst && this._sampleInput)
+            this._sampleInput.value = cell.inst.toString();
+        if (this._effectEnable.checked) {
+            this._effectSelect.selectedIndex = cell.effect;
+            this._param0Select.selectedIndex = cell.param0;
+            this._param1Select.selectedIndex = cell.param1;
         }
         this.updateCell();
     }
@@ -240,10 +240,10 @@ class CellEntryElement extends HTMLElement {
      */
     setSampleVolume(idx, volume) {
         main.pushUndo();
-        let newSample = Object.assign(new Sample(), main.module.samples[idx]);
+        let newSample = Object.assign(new Sample(), main._module.samples[idx]);
         newSample.volume = volume;
-        let newMod = Object.assign(new Module(), main.module);
-        newMod.samples = immSplice(main.module.samples, idx, 1, Object.freeze(newSample));
+        let newMod = Object.assign(new Module(), main._module);
+        newMod.samples = immSplice(main._module.samples, idx, 1, Object.freeze(newSample));
         main.setModule(Object.freeze(newMod));
         main.refreshModule();
     }

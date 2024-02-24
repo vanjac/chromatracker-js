@@ -5,7 +5,7 @@ class FileToolbarElement extends HTMLElement {
         let fragment = instantiate(templates.fileToolbar);
 
         /** @type {HTMLOutputElement} */
-        this.titleOutput = fragment.querySelector('#title');
+        this._titleOutput = fragment.querySelector('#title');
 
         fragment.querySelector('#fileSelect').addEventListener('change', e => {
             if (e.target instanceof HTMLInputElement)
@@ -30,8 +30,8 @@ class FileToolbarElement extends HTMLElement {
         let reader = new FileReader();
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                main.module = Object.freeze(readModule(reader.result));
-                console.log(main.module);
+                main._module = Object.freeze(readModule(reader.result));
+                console.log(main._module);
                 main.onModuleLoaded();
             }
         };
@@ -39,17 +39,17 @@ class FileToolbarElement extends HTMLElement {
     }
 
     saveFile() {
-        let blob = new Blob([writeModule(main.module)], {type: 'application/octet-stream'});
+        let blob = new Blob([writeModule(main._module)], {type: 'application/octet-stream'});
         let url = URL.createObjectURL(blob);
         console.log(url);
         window.open(url);
-        main.unsavedChangeCount = 0;
+        main._unsavedChangeCount = 0;
     }
 
     patternZap() {
         main.pushUndo();
-        let newMod = Object.assign(new Module(), main.module);
-        newMod.patterns = Object.freeze([createPattern(main.module)]);
+        let newMod = Object.assign(new Module(), main._module);
+        newMod.patterns = Object.freeze([createPattern(main._module)]);
         newMod.sequence = Object.freeze([0]);
         main.setModule(Object.freeze(newMod));
         main.refreshModule();
