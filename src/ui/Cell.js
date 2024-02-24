@@ -17,7 +17,7 @@ function cellPitchString(cell) {
  * @param {Cell} cell cell
  */
 function cellInstString(cell) {
-    return (cell.inst > 9) ? cell.inst.toString() : cell.inst ? ('0' + cell.inst.toString()) : '..'
+    return cell.inst ? cell.inst.toString().padStart(2, '0') : '..'
 }
 
 /**
