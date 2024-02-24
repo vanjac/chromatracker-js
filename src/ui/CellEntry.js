@@ -27,6 +27,8 @@ function addReleaseEvent(elem, handler) {
 class CellEntryElement extends HTMLElement {
     constructor() {
         super();
+        /** @type {AppMainElement} */
+        this._app = null;
         /** @type {readonly Readonly<Sample>[]} */
         this._viewSamples = null;
     }
@@ -53,45 +55,45 @@ class CellEntryElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._param1Select = fragment.querySelector('#param1Select');
 
-        fragment.querySelector('#undo').addEventListener('click', () => main._undo());
+        fragment.querySelector('#undo').addEventListener('click', () => this._app._undo());
 
-        addPressEvent(this._entryCell, () => main._jamDown());
-        addReleaseEvent(this._entryCell, () => main._jamUp());
+        addPressEvent(this._entryCell, () => this._app._jamDown());
+        addReleaseEvent(this._entryCell, () => this._app._jamUp());
 
         let writeButton = fragment.querySelector('#write');
         addPressEvent(writeButton, e => {
             this._writeCell();
-            main._jamDown(e, main._selCell());
-            main._patternTable._advance();
+            this._app._jamDown(e, this._app._selCell());
+            this._app._patternTable._advance();
         });
-        addReleaseEvent(writeButton, e => main._jamUp(e));
+        addReleaseEvent(writeButton, e => this._app._jamUp(e));
 
         let clearButton = fragment.querySelector('#clear');
         addPressEvent(clearButton, e => {
             this._clearCell();
-            main._jamDown(e, main._selCell());
-            main._patternTable._advance();
+            this._app._jamDown(e, this._app._selCell());
+            this._app._patternTable._advance();
         });
-        addReleaseEvent(clearButton, e => main._jamUp(e));
+        addReleaseEvent(clearButton, e => this._app._jamUp(e));
 
         let liftButton = fragment.querySelector('#lift');
         addPressEvent(liftButton, e => {
             this._liftCell();
-            main._jamDown(e);
+            this._app._jamDown(e);
         });
-        addReleaseEvent(liftButton, e => main._jamUp(e));
+        addReleaseEvent(liftButton, e => this._app._jamUp(e));
 
-        this._pitchEnable.addEventListener('change', () => main._updateEntryParts());
-        this._sampleEnable.addEventListener('change', () => main._updateEntryParts());
-        this._effectEnable.addEventListener('change', () => main._updateEntryParts());
+        this._pitchEnable.addEventListener('change', () => this._app._updateEntryParts());
+        this._sampleEnable.addEventListener('change', () => this._app._updateEntryParts());
+        this._effectEnable.addEventListener('change', () => this._app._updateEntryParts());
 
-        this._pitchInput.addEventListener('mousedown', () => main._jamDown());
-        this._pitchInput.addEventListener('touchstart', () => main._jamDown());
-        this._pitchInput.addEventListener('mouseup', () => main._jamUp());
-        this._pitchInput.addEventListener('touchend', () => main._jamUp());
+        this._pitchInput.addEventListener('mousedown', () => this._app._jamDown());
+        this._pitchInput.addEventListener('touchstart', () => this._app._jamDown());
+        this._pitchInput.addEventListener('mouseup', () => this._app._jamUp());
+        this._pitchInput.addEventListener('touchend', () => this._app._jamUp());
         this._pitchInput.addEventListener('input', () => {
-            main._jamUp();
-            main._jamDown();
+            this._app._jamUp();
+            this._app._jamDown();
             this._updateCell();
         });
 
@@ -106,7 +108,7 @@ class CellEntryElement extends HTMLElement {
             if (!this._sampleInput)
                 return;
             let idx = this._getSelSample();
-            let sample = main._module.samples[idx];
+            let sample = this._app._module.samples[idx];
             let result = prompt(`Sample ${idx} volume\n${sample.name}`, sample.volume.toString());
             if (result !== null)
                 this._setSampleVolume(idx, Number(result));
@@ -171,7 +173,7 @@ class CellEntryElement extends HTMLElement {
         let selSample = this._getSelSample();
 
         this._sampleList.textContent = '';
-        for (let [i, sample] of main._module.samples.entries()) {
+        for (let [i, sample] of samples.entries()) {
             if (!sample)
                 continue;
             let label = makeRadioButton('sample', i.toString(), i.toString());
@@ -181,11 +183,11 @@ class CellEntryElement extends HTMLElement {
              */
             let pressEvent = e => {
                 this._setSelSample(i);
-                main._jamDown(e);
+                this._app._jamDown(e);
             };
             label.addEventListener('mousedown', pressEvent);
             label.addEventListener('touchstart', pressEvent);
-            addReleaseEvent(label, e => main._jamUp(e));
+            addReleaseEvent(label, e => this._app._jamUp(e));
         }
         this._sampleInput = /** @type {RadioNodeList} */ (
             this._sampleList.elements.namedItem('sample'));
@@ -208,21 +210,23 @@ class CellEntryElement extends HTMLElement {
     }
 
     _writeCell() {
-        main._pushUndo();
-        main._setModule(editPutCell(main._module, main._selPattern(),
-            main._selChannel(), main._selRow(), this._getCell(), this._getCellParts()));
-        main._refreshModule();
+        let newMod = editPutCell(this._app._module, this._app._selPattern(),
+            this._app._selChannel(), this._app._selRow(), this._getCell(), this._getCellParts());
+        this._app._pushUndo();
+        this._app._setModule(newMod);
+        this._app._refreshModule();
     }
     
     _clearCell() {
-        main._pushUndo();
-        main._setModule(editPutCell(main._module, main._selPattern(),
-            main._selChannel(), main._selRow(), new Cell(), this._getCellParts()));
-        main._refreshModule();
+        let newMod = editPutCell(this._app._module, this._app._selPattern(),
+            this._app._selChannel(), this._app._selRow(), new Cell(), this._getCellParts());
+        this._app._pushUndo();
+        this._app._setModule(newMod);
+        this._app._refreshModule();
     }
     
     _liftCell() {
-        let cell = main._selCell();
+        let cell = this._app._selCell();
         if (this._pitchEnable.checked && cell.pitch >= 0)
             this._pitchInput.valueAsNumber = cell.pitch;
         if (this._sampleEnable.checked && cell.inst && this._sampleInput)
@@ -240,13 +244,13 @@ class CellEntryElement extends HTMLElement {
      * @param {number} volume
      */
     _setSampleVolume(idx, volume) {
-        main._pushUndo();
-        let newSample = Object.assign(new Sample(), main._module.samples[idx]);
+        let newMod = Object.assign(new Module(), this._app._module);
+        let newSample = Object.assign(new Sample(), newMod.samples[idx]);
         newSample.volume = volume;
-        let newMod = Object.assign(new Module(), main._module);
-        newMod.samples = immSplice(main._module.samples, idx, 1, Object.freeze(newSample));
-        main._setModule(Object.freeze(newMod));
-        main._refreshModule();
+        newMod.samples = immSplice(newMod.samples, idx, 1, Object.freeze(newSample));
+        this._app._pushUndo();
+        this._app._setModule(Object.freeze(newMod));
+        this._app._refreshModule();
     }
 }
 window.customElements.define('cell-entry', CellEntryElement);

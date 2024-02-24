@@ -1,8 +1,5 @@
 "use strict";
 
-/** @type {AppMainElement} */
-let main; // TODO: find a better way to share app object
-
 /**
  * @typedef {object} QueuedLine
  * @property {number} time
@@ -15,8 +12,6 @@ let main; // TODO: find a better way to share app object
 class AppMainElement extends HTMLElement {
     constructor() {
         super();
-
-        main = this;
 
         /** @type {Readonly<Module>} */
         this._module = createEmptyModule();
@@ -61,6 +56,7 @@ class AppMainElement extends HTMLElement {
         this._playbackControls._app = this;
         this._sequenceEdit._app = this;
         this._patternTable._app = this;
+        this._cellEntry._app = this;
 
         window.onbeforeunload = () => {
             if (this._unsavedChangeCount)
