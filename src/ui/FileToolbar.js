@@ -46,6 +46,7 @@ class FileToolbarElement extends HTMLElement {
                 let mod = Object.freeze(readModule(reader.result));
                 console.log(mod);
                 this._app._moduleLoaded(mod);
+                this._app._resetPlayback();
             }
         };
         reader.readAsArrayBuffer(blob);

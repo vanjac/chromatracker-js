@@ -19,7 +19,8 @@ class AppMainElement extends HTMLElement {
         main = this;
 
         /** @type {Readonly<Module>} */
-        this._module;
+        this._module = createEmptyModule();
+
         /** @type {Readonly<Module>[]} */
         this._undoStack = [];
         this._unsavedChangeCount = 0;
@@ -67,6 +68,8 @@ class AppMainElement extends HTMLElement {
             this._errors.insertAdjacentHTML('beforeend',
                 `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`);
         };
+
+        this._moduleLoaded(this._module);
     }
 
     /**
@@ -84,16 +87,6 @@ class AppMainElement extends HTMLElement {
         this._patternTable._scrollToSelCell();
 
         this._cellEntry._setSelSample(1);
-
-        if (this._intervalHandle)
-            this._pause();
-        if (!this._context) {
-            // @ts-ignore
-            let AudioContext = window.AudioContext || window.webkitAudioContext;
-            this._context = new AudioContext({latencyHint: 'interactive'});
-        }
-        this._playback = initPlayback(this._context, this._module);
-        this._context.resume();
     }
 
     _moduleSaved() {
@@ -101,10 +94,13 @@ class AppMainElement extends HTMLElement {
     }
 
     _resetPlayback() {
-        if (!this._module)
-            return null;
         if (this._intervalHandle)
             this._pause();
+        if (!this._context) {
+            // @ts-ignore
+            let AudioContext = window.AudioContext || window.webkitAudioContext;
+            this._context = new AudioContext({latencyHint: 'interactive'});
+        }
         this._playback = initPlayback(this._context, this._module);
 
         for (let c = 0; c < this._module.numChannels; c++) {

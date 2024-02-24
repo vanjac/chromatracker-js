@@ -202,7 +202,8 @@ class CellEntryElement extends HTMLElement {
      * @param {number} s
      */
     _setSelSample(s) {
-        this._sampleInput.value = s.toString();
+        if (this._sampleInput)
+            this._sampleInput.value = s.toString();
         this._updateCell();
     }
 

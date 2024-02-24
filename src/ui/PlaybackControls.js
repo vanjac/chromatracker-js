@@ -22,25 +22,21 @@ class PlaybackControlsElement extends HTMLElement {
         this._speedInput = fragment.querySelector('#speed');
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
-            if (this._app._resetPlayback())
-                this._app._play();
+            this._app._resetPlayback();
+            this._app._play();
         });
         fragment.querySelector('#playPattern').addEventListener('click', () => {
             let playback = this._app._resetPlayback();
-            if (playback) {
-                this._restorePlaybackTempo(playback);
-                playback.pos = this._app._selPos();
-                this._app._play();
-            }
+            this._restorePlaybackTempo(playback);
+            playback.pos = this._app._selPos();
+            this._app._play();
         });
         this._playRowButton.addEventListener('click', () => {
             let playback = this._app._resetPlayback();
-            if (playback) {
-                this._restorePlaybackTempo(playback);
-                playback.pos = this._app._selPos();
-                playback.row = this._app._selRow();
-                this._app._play();
-            }
+            this._restorePlaybackTempo(playback);
+            playback.pos = this._app._selPos();
+            playback.row = this._app._selRow();
+            this._app._play();
         });
         this._pauseButton.addEventListener('click', () => this._app._pause());
         fragment.querySelector('#patternLoop').addEventListener('click', () => {
