@@ -97,7 +97,7 @@ class SequenceEditElement extends HTMLElement {
         let newMod = editDelPos(this._app._module, this._selPos);
         this._app._pushUndo();
         this._app._setModule(newMod);
-        if (this._selPos >= this._app._module.sequence.length)
+        if (this._selPos >= newMod.sequence.length)
             this._selPos--;
         this._app._refreshModule();
     }
