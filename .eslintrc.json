@@ -10,7 +10,8 @@
         "no-var": "error",
         "semi": ["error", "never"],
         "curly": "error",
-        "strict": ["error", "global"]
+        "strict": ["error", "global"],
+        "no-trailing-spaces": "error"
     },
     "overrides": [
         {
