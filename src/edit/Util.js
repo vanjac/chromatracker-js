@@ -1,4 +1,4 @@
-"use strict";
+"use strict"
 
 /**
  * @template T
@@ -8,7 +8,7 @@
  * @param {T[]} items
  */
 function immSplice(array, start, deleteCount, ...items) {
-    let mutArr = [...array];
-    mutArr.splice(start, deleteCount, ...items);
-    return Object.freeze(mutArr);
+    let mutArr = [...array]
+    mutArr.splice(start, deleteCount, ...items)
+    return Object.freeze(mutArr)
 }

@@ -1,9 +1,9 @@
-"use strict";
+"use strict"
 
-const numSamples = 32; // 0th sample is empty!
-const numSongPositions = 128;
-const numRows = 64;
-const maxVolume = 64;
+const numSamples = 32 // 0th sample is empty!
+const numSongPositions = 128
+const numRows = 64
+const maxVolume = 64
 
 function Sample() {}
 Sample.prototype = {
@@ -15,7 +15,7 @@ Sample.prototype = {
     loopEnd: 0,
     finetune: 0, // -8 to 7
     volume: 64,
-};
+}
 
 function Cell() {}
 Cell.prototype = {
@@ -26,9 +26,9 @@ Cell.prototype = {
     param0: 0,
     param1: 0,
 
-    paramByte() { return (this.param0 << 4) | this.param1; },
-    paramDecimal() { return this.param0 * 10 + this.param1; },
-};
+    paramByte() { return (this.param0 << 4) | this.param1 },
+    paramDecimal() { return this.param0 * 10 + this.param1 },
+}
 
 /** @typedef {number} CellPart */
 /** @enum {CellPart} */
@@ -40,7 +40,7 @@ const CellParts = {
 
     none: 0x0,
     all: 0xf,
-};
+}
 
 /** @typedef {number} Effect */
 /** @enum {Effect} */
@@ -61,7 +61,7 @@ const Effects = {
     PatternBreak:   0xD,
     Extended:       0xE,
     Speed:          0xF,
-};
+}
 
 /** @enum {number} */
 const ExtEffects = {
@@ -81,7 +81,7 @@ const ExtEffects = {
     NoteDelay:      0xD,
     PatternDelay:   0xE,
     // InvertLoop:  0xF, (not supported in XM)
-};
+}
 
 /**
  * @typedef {Readonly<Cell>[]} PatternChannel
@@ -102,7 +102,7 @@ Module.prototype = {
     patterns: Object.freeze([]),
     /** @type {readonly Readonly<Sample>[]} */
     samples: Object.freeze([]),
-};
+}
 
 
 /**
@@ -111,11 +111,11 @@ Module.prototype = {
  * @param {CellParts} parts
  */
 function cellApply(dest, src, parts) {
-    let newCell = new Cell();
-    newCell.pitch  = (parts & CellParts.pitch)  ? src.pitch  : dest.pitch;
-    newCell.inst   = (parts & CellParts.inst)   ? src.inst   : dest.inst;
-    newCell.effect = (parts & CellParts.effect) ? src.effect : dest.effect;
-    newCell.param0 = (parts & CellParts.param)  ? src.param0 : dest.param0;
-    newCell.param1 = (parts & CellParts.param)  ? src.param1 : dest.param1;
-    return newCell;
+    let newCell = new Cell()
+    newCell.pitch  = (parts & CellParts.pitch)  ? src.pitch  : dest.pitch
+    newCell.inst   = (parts & CellParts.inst)   ? src.inst   : dest.inst
+    newCell.effect = (parts & CellParts.effect) ? src.effect : dest.effect
+    newCell.param0 = (parts & CellParts.param)  ? src.param0 : dest.param0
+    newCell.param1 = (parts & CellParts.param)  ? src.param1 : dest.param1
+    return newCell
 }

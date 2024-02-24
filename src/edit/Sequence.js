@@ -1,4 +1,4 @@
-"use strict";
+"use strict"
 
 /**
  * @param {Readonly<Module>} module
@@ -7,7 +7,7 @@
 function createPattern(module) {
     return Object.freeze([...Array(module.numChannels)].map(() =>
         Object.freeze([...Array(numRows)].map(() =>
-            Object.freeze(new Cell()))))); // lisp is so cool
+            Object.freeze(new Cell()))))) // lisp is so cool
 }
 
 /**
@@ -17,13 +17,13 @@ function createPattern(module) {
  */
 function expandPatterns(module, idx) {
     if (idx < module.patterns.length)
-        return module.patterns;
-    let newPatterns = [...module.patterns];
+        return module.patterns
+    let newPatterns = [...module.patterns]
     while (idx >= newPatterns.length) {
-        console.log('Make new pattern');
-        newPatterns.push(createPattern(module));
+        console.log('Make new pattern')
+        newPatterns.push(createPattern(module))
     }
-    return Object.freeze(newPatterns);
+    return Object.freeze(newPatterns)
 }
 
 /**
@@ -32,9 +32,9 @@ function expandPatterns(module, idx) {
  */
 function editClonePattern(module, pat) {
     /** @type {Module} */
-    let newMod = Object.assign(new Module(), module);
-    newMod.patterns = Object.freeze([...module.patterns, module.patterns[pat]]);
-    return Object.freeze(newMod);
+    let newMod = Object.assign(new Module(), module)
+    newMod.patterns = Object.freeze([...module.patterns, module.patterns[pat]])
+    return Object.freeze(newMod)
 }
 
 /**
@@ -44,12 +44,12 @@ function editClonePattern(module, pat) {
  */
 function editSetPos(module, pos, pat) {
     if (pat < 0)
-        return module;
+        return module
     /** @type {Module} */
-    let newMod = Object.assign(new Module(), module);
-    newMod.sequence = immSplice(module.sequence, pos, 1, pat);
-    newMod.patterns = expandPatterns(module, pat);
-    return Object.freeze(newMod);
+    let newMod = Object.assign(new Module(), module)
+    newMod.sequence = immSplice(module.sequence, pos, 1, pat)
+    newMod.patterns = expandPatterns(module, pat)
+    return Object.freeze(newMod)
 }
 
 /**
@@ -59,12 +59,12 @@ function editSetPos(module, pos, pat) {
  */
 function editInsPos(module, pos, pat) {
     if (pat < 0)
-        return module;
+        return module
     /** @type {Module} */
-    let newMod = Object.assign(new Module(), module);
-    newMod.sequence = immSplice(module.sequence, pos, 0, pat);
-    newMod.patterns = expandPatterns(module, pat);
-    return Object.freeze(newMod);
+    let newMod = Object.assign(new Module(), module)
+    newMod.sequence = immSplice(module.sequence, pos, 0, pat)
+    newMod.patterns = expandPatterns(module, pat)
+    return Object.freeze(newMod)
 }
 
 /**
@@ -73,7 +73,7 @@ function editInsPos(module, pos, pat) {
  */
 function editDelPos(module, pos) {
     /** @type {Module} */
-    let newMod = Object.assign(new Module(), module);
-    newMod.sequence = immSplice(module.sequence, pos, 1);
-    return Object.freeze(newMod);
+    let newMod = Object.assign(new Module(), module)
+    newMod.sequence = immSplice(module.sequence, pos, 1)
+    return Object.freeze(newMod)
 }
