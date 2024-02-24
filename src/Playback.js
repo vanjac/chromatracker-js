@@ -154,10 +154,11 @@ function stopPlayback(playback) {
  */
 function setChannelMute(playback, c, mute) {
     let channel = playback.channels[c]
-    if (mute && !channel.userMute)
+    if (mute && !channel.userMute) {
         channel.gain.disconnect()
-    else if (!mute && channel.userMute)
+    } else if (!mute && channel.userMute) {
         channel.gain.connect(channel.panner)
+    }
     channel.userMute = mute
 }
 
@@ -166,15 +167,17 @@ function setChannelMute(playback, c, mute) {
  * @param {Sample} sample
  */
 function createSampleAudioBuffer(ctx, sample) {
-    if (sample.length == 0)
+    if (sample.length == 0) {
         return
+    }
     // TODO: support protracker one-shot loops
     let buf = ctx.createBuffer(1, sample.length * resampleFactor, baseRate * resampleFactor)
     let data = buf.getChannelData(0)
     for (let i = 0; i < sample.length; i++) {
         let s = sample.wave[i] / 128.0
-        for (let j = 0; j < resampleFactor; j++)
+        for (let j = 0; j < resampleFactor; j++) {
             data[i * resampleFactor + j] = s
+        }
     }
     return buf
 }
@@ -201,10 +204,11 @@ function processRow(playback) {
                         processCellNote(playback, channel, cell)
                     }
                 }
-                if (tick == 0)
+                if (tick == 0) {
                     processCellFirst(playback, channel, cell, rowPlay)
-                else
+                } else {
                     processCellRest(playback, channel, cell, tick)
+                }
                 processCellAll(playback, channel, cell, tick)
             }
             playback.time += (60 / playback.tempo / 24)
@@ -230,11 +234,13 @@ function processRow(playback) {
 
     if (playback.row >= pattern[0].length) {
         playback.row = 0
-        if (!playback.userPatternLoop)
+        if (!playback.userPatternLoop) {
             playback.pos++
+        }
     }
-    if (playback.pos >= playback.mod.sequence.length)
+    if (playback.pos >= playback.mod.sequence.length) {
         playback.pos = playback.mod.restartPos
+    }
 }
 
 /**
@@ -253,8 +259,9 @@ function processCellInst(playback, channel, cell) {
     }
     // store sample offset before playing note
     if (cell.effect == Effects.SampleOffset) {
-        if (cell.paramByte())
+        if (cell.paramByte()) {
             channel.memOff = cell.paramByte()
+        }
         channel.sampleOffset = channel.memOff
     }
 }
@@ -282,8 +289,9 @@ function processCellNote(playback, channel, cell) {
 function processCellFirst(playback, channel, cell, row) {
     switch (cell.effect) {
         case Effects.Portamento:
-            if (cell.paramByte())
+            if (cell.paramByte()) {
                 channel.memPort = cell.paramByte()
+            }
             // fall through!
         case Effects.VolSlidePort:
             if (cell.pitch >= 0 && channel.sample) {
@@ -292,16 +300,20 @@ function processCellFirst(playback, channel, cell, row) {
             }
             break
         case Effects.Vibrato:
-            if (cell.param0)
+            if (cell.param0) {
                 channel.vibrato.speed = cell.param0
-            if (cell.param1)
+            }
+            if (cell.param1) {
                 channel.vibrato.depth = cell.param1
+            }
             break
         case Effects.Tremolo:
-            if (cell.param0)
+            if (cell.param0) {
                 channel.tremolo.speed = cell.param0
-            if (cell.param1)
+            }
+            if (cell.param1) {
                 channel.tremolo.depth = cell.param1
+            }
             break
         case Effects.Panning:
             channel.panning = cell.paramByte()
@@ -356,8 +368,9 @@ function processCellFirst(playback, channel, cell, row) {
                     break
                 case ExtEffects.Retrigger:
                     // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PTRetrigger.mod
-                    if (cell.pitch < 0 && cell.param1)
+                    if (cell.pitch < 0 && cell.param1) {
                         playNote(playback, channel)
+                    }
                     break
                 case ExtEffects.FineVolumeUp:
                     channel.volume = Math.min(channel.volume + cell.param1, maxVolume)
@@ -372,10 +385,11 @@ function processCellFirst(playback, channel, cell, row) {
             break
         case Effects.Speed: {
             let speed = cell.paramByte()
-            if (speed < 0x20)
+            if (speed < 0x20) {
                 playback.speed = speed
-            else
+            } else {
                 playback.tempo = speed
+            }
             break
         }
     }
@@ -404,8 +418,9 @@ function processCellRest(playback, channel, cell, tick) {
                     channel.period = Math.max(channel.period - channel.memPort, channel.portTarget)
                 }
                 // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PortaTarget.mod
-                if (channel.portTarget == channel.period)
+                if (channel.portTarget == channel.period) {
                     channel.portTarget = 0
+                }
             }
             break
         case Effects.Vibrato:
@@ -418,12 +433,14 @@ function processCellRest(playback, channel, cell, tick) {
         case Effects.Extended:
             switch (cell.param0) {
                 case ExtEffects.Retrigger:
-                    if (tick % cell.param1 == 0)
+                    if (tick % cell.param1 == 0) {
                         playNote(playback, channel)
+                    }
                     break
                 case ExtEffects.NoteCut:
-                    if (tick == cell.param1)
+                    if (tick == cell.param1) {
                         channel.volume = 0
+                    }
                     break
                 case ExtEffects.NoteDelay:
                     if (tick == cell.param1 && channel.sample) {
@@ -462,8 +479,10 @@ function processCellAll(playback, channel, cell, tick) {
 
     if (channel.panning != channel.scheduledPanning) {
         let pan = calcPanning(channel.panning)
-        if (typeof StereoPannerNode !== 'undefined' && (channel.panner instanceof StereoPannerNode))
+        if (typeof StereoPannerNode !== 'undefined'
+                && (channel.panner instanceof StereoPannerNode)) {
             channel.panner.pan.setTargetAtTime(pan, playback.time, rampTimeConstant)
+        }
         // TODO: what about PannerNode?
         // setPosition doesn't have time argument, but iOS doesn't support positionX/Y/Z until 14.1,
         // so....???
@@ -478,13 +497,16 @@ function processCellAll(playback, channel, cell, tick) {
                 (tick % 3 == 2) ? cell.param1 : 0
         }
 
-        if (cell.effect == Effects.Vibrato || cell.effect == Effects.VolSlideVib)
+        if (cell.effect == Effects.Vibrato || cell.effect == Effects.VolSlideVib) {
             period += calcOscillator(channel.vibrato, 1) * 2
-        if (period != channel.scheduledPeriod)
+        }
+        if (period != channel.scheduledPeriod) {
             channel.source.playbackRate.setValueAtTime(periodToRate(period), playback.time)
+        }
         channel.scheduledPeriod = period
-        if (detune != channel.scheduledDetune)
+        if (detune != channel.scheduledDetune) {
             channel.source.detune.setValueAtTime(detune * 100, playback.time)
+        }
         channel.scheduledDetune = detune
     }
 }
@@ -549,8 +571,9 @@ function calcOscillator(osc, sawDir) {
  * @param {ChannelPlayback} channel
  */
 function playNote(playback, channel) {
-    if (!channel.sample)
+    if (!channel.sample) {
         return
+    }
     if (channel.source) {
         channel.source.stop(playback.time)
     }
@@ -570,8 +593,8 @@ function playNote(playback, channel) {
 
     channel.scheduledPeriod = -1
     channel.scheduledDetune = 0
-    if (!channel.vibrato.continue) channel.vibrato.tick = 0
-    if (!channel.tremolo.continue) channel.tremolo.tick = 0
+    if (!channel.vibrato.continue) { channel.vibrato.tick = 0 }
+    if (!channel.tremolo.continue) { channel.tremolo.tick = 0 }
 }
 
 /**
@@ -595,9 +618,9 @@ function createNoteSource(playback, inst) {
  * @param {Cell} cell
  */
 function jamPlay(playback, id, c, cell) {
-    if (cell.pitch < 0)
+    if (cell.pitch < 0) {
         return
-
+    }
     // clone channel
     let jam = new ChannelPlayback()
     {
@@ -619,8 +642,9 @@ function jamPlay(playback, id, c, cell) {
         jam.source.connect(jam.gain)
         jam.source.start(0, calcSampleOffset(jam.sampleOffset))
         jam.gain.gain.value = volumeToGain(jam.volume)
-        if (typeof StereoPannerNode !== 'undefined' && (jam.panner instanceof StereoPannerNode))
+        if (typeof StereoPannerNode !== 'undefined' && (jam.panner instanceof StereoPannerNode)) {
             jam.panner.pan.value = calcPanning(jam.panning)
+        }
         jam.source.playbackRate.value = periodToRate(jam.period)
     }
 }

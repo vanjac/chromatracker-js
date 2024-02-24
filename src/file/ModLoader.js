@@ -5,8 +5,9 @@
 
 /** @type {Map<number, number>} */
 const periodToPitch = new Map()
-for (let p = 0; p < periodTable[8].length; p++)
+for (let p = 0; p < periodTable[8].length; p++) {
     periodToPitch.set(periodTable[8][p], p)
+}
 
 const textDecode = new TextDecoder()
 
@@ -19,8 +20,9 @@ const textDecode = new TextDecoder()
 function readStringZ(buf, start, length) {
     let u8 = new Uint8Array(buf, start, length)
     let strlen = 0
-    while (strlen < length && u8[strlen] != 0)
+    while (strlen < length && u8[strlen] != 0) {
         strlen++
+    }
     return textDecode.decode(new DataView(buf, start, strlen))
 }
 
@@ -35,8 +37,9 @@ function readModule(buf) {
 
     let songLen = Math.min(view.getUint8(950), numSongPositions)
     module.restartPos = view.getUint8(951)
-    if (module.restartPos >= songLen)
+    if (module.restartPos >= songLen) {
         module.restartPos = 0
+    }
     let seq = Array.from(new Uint8Array(buf, 952, numSongPositions))
     let numPatterns = Math.max(...seq) + 1
     module.sequence = Object.freeze(seq.slice(0, songLen))
@@ -44,8 +47,9 @@ function readModule(buf) {
     let initials = textDecode.decode(new DataView(buf, 1080, 4))
     // TODO: support old 15-sample formats?
     let chanStr = initials.replace(/\D/g, '') // remove non-digits
-    if (chanStr)
+    if (chanStr) {
         module.numChannels = parseInt(chanStr)
+    }
 
     let patternSize = module.numChannels * numRows * 4
     /** @type {Readonly<Pattern>[]} */
@@ -95,13 +99,15 @@ function readModule(buf) {
         }
         sample.name = readStringZ(buf, offset, 22)
         sample.finetune = view.getUint8(offset + 24) & 0xf
-        if (sample.finetune >= 8)
+        if (sample.finetune >= 8) {
             sample.finetune -= 16 // sign-extend nibble
+        }
         sample.volume = Math.min(view.getUint8(offset + 25), maxVolume)
         sample.loopStart = view.getUint16(offset + 26) * 2
         let repLen = view.getUint16(offset + 28)
-        if (repLen == 1)
+        if (repLen == 1) {
             repLen = 0 // no loop
+        }
         sample.loopEnd = sample.loopStart + repLen * 2
 
         // The first two bytes will "always" (usually) be zeros but they should still be included

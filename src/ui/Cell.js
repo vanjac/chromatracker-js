@@ -24,8 +24,9 @@ function cellInstString(cell) {
  * @param {Cell} cell
  */
 function cellEffectString(cell) {
-    if (! (cell.effect || cell.param0 || cell.param1))
+    if (! (cell.effect || cell.param0 || cell.param1)) {
         return '...'
+    }
     return ( (cell.effect.toString(16) + cell.param0.toString(16) + cell.param1.toString(16))
         .toUpperCase() )
 }

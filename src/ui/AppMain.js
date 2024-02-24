@@ -59,8 +59,9 @@ class AppMainElement extends HTMLElement {
         this._cellEntry._app = this
 
         window.onbeforeunload = () => {
-            if (this._unsavedChangeCount)
+            if (this._unsavedChangeCount) {
                 return 'You have unsaved changes'
+            }
         }
         window.onerror = (message, source, line) => {
             this._errors.insertAdjacentHTML('beforeend',
@@ -92,8 +93,9 @@ class AppMainElement extends HTMLElement {
     }
 
     _resetPlayback() {
-        if (this._intervalHandle)
+        if (this._intervalHandle) {
             this._pause()
+        }
         if (!this._context) {
             // @ts-ignore
             let AudioContext = window.AudioContext || window.webkitAudioContext
@@ -102,8 +104,9 @@ class AppMainElement extends HTMLElement {
         this._playback = initPlayback(this._context, this._module)
 
         for (let c = 0; c < this._module.numChannels; c++) {
-            if (this._patternTable._isChannelMuted(c))
+            if (this._patternTable._isChannelMuted(c)) {
                 setChannelMute(this._playback, c, true)
+            }
         }
 
         this._playback.userPatternLoop = this._playbackControls._getPatternLoop()
@@ -144,11 +147,13 @@ class AppMainElement extends HTMLElement {
      */
     _jamDown(e = null, cell = null) {
         if (this._playback) {
-            if (!cell)
+            if (!cell) {
                 cell = this._cellEntry._getJamCell()
+            }
             if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
-                for (let touch of e.changedTouches)
+                for (let touch of e.changedTouches) {
                     jamPlay(this._playback, touch.identifier, this._selChannel(), cell)
+                }
             } else {
                 jamPlay(this._playback, -1, this._selChannel(), cell)
             }
@@ -161,8 +166,9 @@ class AppMainElement extends HTMLElement {
     _jamUp(e = null) {
         if (this._playback) {
             if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
-                for (let touch of e.changedTouches)
+                for (let touch of e.changedTouches) {
                     jamRelease(this._playback, touch.identifier)
+                }
             } else {
                 jamRelease(this._playback, -1)
             }
@@ -173,13 +179,15 @@ class AppMainElement extends HTMLElement {
         this._animHandle = window.requestAnimationFrame(() => this._frameUpdate())
 
         let curTime = this._context.currentTime
-        if (this._context.outputLatency) // if supported
+        if (this._context.outputLatency) { // if supported
             curTime -= this._context.outputLatency
+        }
         if (this._queuedLines.length) {
             let i = 0
-            while (i < (this._queuedLines.length - 1) && this._queuedLines[i + 1].time <= curTime)
+            while (i < (this._queuedLines.length - 1) && this._queuedLines[i + 1].time <= curTime) {
                 i++
-                this._queuedLines.splice(0, i)
+            }
+            this._queuedLines.splice(0, i)
             let curLine = this._queuedLines[0]
 
             this._playbackControls._setTempoSpeed(curLine.tempo, curLine.speed)
@@ -227,14 +235,16 @@ class AppMainElement extends HTMLElement {
      */
     _setModule(mod) {
         this._module = mod
-        if (this._playback)
+        if (this._playback) {
             this._playback.mod = mod
+        }
     }
 
     _pushUndo() {
         this._undoStack.push(this._module)
-        if (this._undoStack.length > 100)
+        if (this._undoStack.length > 100) {
             this._undoStack.shift()
+        }
         this._unsavedChangeCount++
     }
 

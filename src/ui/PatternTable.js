@@ -21,8 +21,9 @@ class PatternTableElement extends HTMLElement {
 
         for (let [c, input] of this._muteInputs.entries()) {
             input.addEventListener('change', () => {
-                if (this._app._playback)
+                if (this._app._playback) {
                     setChannelMute(this._app._playback, c, !input.checked)
+                }
             })
         }
 
@@ -34,8 +35,9 @@ class PatternTableElement extends HTMLElement {
      * @param {Readonly<Pattern>} pattern
      */
     _setPattern(pattern) {
-        if (pattern == this._viewPattern)
+        if (pattern == this._viewPattern) {
             return
+        }
         console.log('update pattern')
         this._viewPattern = pattern
 
@@ -90,8 +92,9 @@ class PatternTableElement extends HTMLElement {
      */
     _toggleSelCellParts(parts) {
         let selCell = this._table.querySelector('.sel-cell')
-        if (selCell)
+        if (selCell) {
             toggleCellParts(selCell, parts)
+        }
     }
 
     /**
@@ -99,10 +102,12 @@ class PatternTableElement extends HTMLElement {
      */
     _setPlaybackRow(row) {
         let oldHilite = this._table.querySelector('.hilite-row')
-        if (oldHilite)
+        if (oldHilite) {
             oldHilite.classList.remove('hilite-row')
-        if (row >= 0)
+        }
+        if (row >= 0) {
             this._table.children[row].classList.add('hilite-row')
+        }
     }
 
     _scrollToSelCell() {
@@ -124,8 +129,9 @@ class PatternTableElement extends HTMLElement {
      * @param {number} channel
      */
     _isChannelMuted(channel) {
-        if (channel >= this._muteInputs.length)
+        if (channel >= this._muteInputs.length) {
             return false
+        }
         return ! this._muteInputs[channel].checked
     }
 }

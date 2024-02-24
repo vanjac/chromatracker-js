@@ -14,8 +14,9 @@ class FileToolbarElement extends HTMLElement {
         this._titleOutput = fragment.querySelector('#title')
 
         fragment.querySelector('#fileSelect').addEventListener('change', e => {
-            if (e.target instanceof HTMLInputElement)
+            if (e.target instanceof HTMLInputElement) {
                 this._readModuleBlob(e.target.files[0])
+            }
         })
         fragment.querySelector('#fileDownload').addEventListener('click', () => {
             fetch('https://chroma.zone/share/space_debris.mod').then(

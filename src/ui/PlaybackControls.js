@@ -40,8 +40,9 @@ class PlaybackControlsElement extends HTMLElement {
         })
         this._pauseButton.addEventListener('click', () => this._app._pause())
         fragment.querySelector('#patternLoop').addEventListener('click', () => {
-            if (this._app._playback)
+            if (this._app._playback) {
                 this._app._playback.userPatternLoop = this._getPatternLoop()
+            }
         })
 
         this.appendChild(fragment)

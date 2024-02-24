@@ -14,8 +14,9 @@ const textEncode = new TextEncoder()
 function writeString(buf, start, length, string) {
     let src = textEncode.encode(string)
     let dest = new Uint8Array(buf, start, length)
-    if (src.length > length)
+    if (src.length > length) {
         src = src.slice(0, length)
+    }
     dest.set(src)
 }
 
@@ -109,8 +110,9 @@ function calcModuleSize(module) {
     let numPatterns = Math.max(...module.sequence) + 1
     let size = 1084 + patternSize * numPatterns
     for (let sample of module.samples) {
-        if (sample)
+        if (sample) {
             size += sample.length & ~1
+        }
     }
     return size + 32
 }

@@ -105,13 +105,15 @@ class CellEntryElement extends HTMLElement {
         this._param1Select.addEventListener('input', () => this._updateCell())
 
         fragment.querySelector('#setSampleVolume').addEventListener('click', () => {
-            if (!this._sampleInput)
+            if (!this._sampleInput) {
                 return
+            }
             let idx = this._getSelSample()
             let sample = this._app._module.samples[idx]
             let result = prompt(`Sample ${idx} volume\n${sample.name}`, sample.volume.toString())
-            if (result !== null)
+            if (result !== null) {
                 this._setSampleVolume(idx, Number(result))
+            }
         })
 
         this._updateCell()
@@ -124,8 +126,9 @@ class CellEntryElement extends HTMLElement {
     _getCell() {
         let cell = new Cell()
         cell.pitch = this._pitchInput.valueAsNumber
-        if (this._sampleInput)
+        if (this._sampleInput) {
             cell.inst = this._getSelSample()
+        }
         cell.effect = this._effectSelect.selectedIndex
         cell.param0 = this._param0Select.selectedIndex
         cell.param1 = this._param1Select.selectedIndex
@@ -134,19 +137,23 @@ class CellEntryElement extends HTMLElement {
 
     _getJamCell() {
         let cell = this._getCell()
-        if (!this._effectEnable.checked)
+        if (!this._effectEnable.checked) {
             cell.effect = cell.param0 = cell.param1 = 0
+        }
         return cell
     }
 
     _getCellParts() {
         let parts = CellParts.none
-        if (this._pitchEnable.checked)
+        if (this._pitchEnable.checked) {
             parts |= CellParts.pitch
-        if (this._sampleEnable.checked)
+        }
+        if (this._sampleEnable.checked) {
             parts |= CellParts.inst
-        if (this._effectEnable.checked)
+        }
+        if (this._effectEnable.checked) {
             parts |= CellParts.effect | CellParts.param
+        }
         return parts
     }
 
@@ -165,8 +172,9 @@ class CellEntryElement extends HTMLElement {
      * @param {readonly Readonly<Sample>[]} samples 
      */
     _setSamples(samples) {
-        if (samples == this._viewSamples)
+        if (samples == this._viewSamples) {
             return
+        }
         console.log('update samples')
         this._viewSamples = samples
 
@@ -174,8 +182,9 @@ class CellEntryElement extends HTMLElement {
 
         this._sampleList.textContent = ''
         for (let [i, sample] of samples.entries()) {
-            if (!sample)
+            if (!sample) {
                 continue
+            }
             let label = makeRadioButton('sample', i.toString(), i.toString())
             this._sampleList.appendChild(label)
             /**
@@ -195,8 +204,9 @@ class CellEntryElement extends HTMLElement {
     }
 
     _getSelSample() {
-        if (this._sampleInput)
+        if (this._sampleInput) {
             return Number(this._sampleInput.value)
+        }
         return 1
     }
 
@@ -204,8 +214,9 @@ class CellEntryElement extends HTMLElement {
      * @param {number} s
      */
     _setSelSample(s) {
-        if (this._sampleInput)
+        if (this._sampleInput) {
             this._sampleInput.value = s.toString()
+        }
         this._updateCell()
     }
 
@@ -227,10 +238,12 @@ class CellEntryElement extends HTMLElement {
     
     _liftCell() {
         let cell = this._app._selCell()
-        if (this._pitchEnable.checked && cell.pitch >= 0)
+        if (this._pitchEnable.checked && cell.pitch >= 0) {
             this._pitchInput.valueAsNumber = cell.pitch
-        if (this._sampleEnable.checked && cell.inst && this._sampleInput)
+        }
+        if (this._sampleEnable.checked && cell.inst && this._sampleInput) {
             this._sampleInput.value = cell.inst.toString()
+        }
         if (this._effectEnable.checked) {
             this._effectSelect.selectedIndex = cell.effect
             this._param0Select.selectedIndex = cell.param0

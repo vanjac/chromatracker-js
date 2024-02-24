@@ -9,6 +9,7 @@
         "no-unused-vars": "off",
         "no-var": "error",
         "semi": ["error", "never"],
+        "curly": "error",
         "strict": ["error", "global"]
     },
     "overrides": [

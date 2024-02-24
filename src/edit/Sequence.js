@@ -16,8 +16,9 @@ function createPattern(module) {
  * @returns {readonly Readonly<Pattern>[]}
  */
 function expandPatterns(module, idx) {
-    if (idx < module.patterns.length)
+    if (idx < module.patterns.length) {
         return module.patterns
+    }
     let newPatterns = [...module.patterns]
     while (idx >= newPatterns.length) {
         console.log('Make new pattern')
@@ -43,8 +44,9 @@ function editClonePattern(module, pat) {
  * @param {number} pat
  */
 function editSetPos(module, pos, pat) {
-    if (pat < 0)
+    if (pat < 0) {
         return module
+    }
     /** @type {Module} */
     let newMod = Object.assign(new Module(), module)
     newMod.sequence = immSplice(module.sequence, pos, 1, pat)
@@ -58,8 +60,9 @@ function editSetPos(module, pos, pat) {
  * @param {number} pat
  */
 function editInsPos(module, pos, pat) {
-    if (pat < 0)
+    if (pat < 0) {
         return module
+    }
     /** @type {Module} */
     let newMod = Object.assign(new Module(), module)
     newMod.sequence = immSplice(module.sequence, pos, 0, pat)

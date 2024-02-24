@@ -31,13 +31,15 @@ class SequenceEditElement extends HTMLElement {
      * @param {readonly number[]} sequence
      */
     _setSequence(sequence) {
-        if (sequence == this._viewSequence)
+        if (sequence == this._viewSequence) {
             return
+        }
         console.log('update sequence')
         this._viewSequence = sequence
 
-        if (this._selPos >= sequence.length)
+        if (this._selPos >= sequence.length) {
             this._selPos = sequence.length - 1
+        }
 
         this._sequenceList.textContent = ''
         for (let [i, pos] of sequence.entries()) {
@@ -58,8 +60,9 @@ class SequenceEditElement extends HTMLElement {
      */
     _setSelPos(pos) {
         this._selPos = pos
-        if (this._sequenceInput)
+        if (this._sequenceInput) {
             this._sequenceInput.value = pos.toString()
+        }
     }
 
     _seqUp() {
@@ -97,8 +100,9 @@ class SequenceEditElement extends HTMLElement {
         let newMod = editDelPos(this._app._module, this._selPos)
         this._app._pushUndo()
         this._app._setModule(newMod)
-        if (this._selPos >= newMod.sequence.length)
+        if (this._selPos >= newMod.sequence.length) {
             this._selPos--
+        }
         this._app._refreshModule()
     }
 }
