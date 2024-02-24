@@ -41,7 +41,7 @@ class PatternTableElement extends HTMLElement {
 
         this._table.textContent = '';
         let tableFrag = document.createDocumentFragment();
-        for (let row = 0; row < numRows; row++) {
+        for (let row = 0; row < pattern[0].length; row++) {
             let tr = document.createElement('tr');
             for (let c = 0; c < pattern.length; c++) {
                 let cellFrag = instantiate(templates.cellTemplate);
@@ -115,7 +115,7 @@ class PatternTableElement extends HTMLElement {
 
     _advance() {
         this._selRow++;
-        this._selRow %= numRows;
+        this._selRow %= this._viewPattern[0].length;
         this._updateSelCell();
         this._scrollToSelCell();
     }

@@ -228,7 +228,7 @@ function processRow(playback) {
         playback.row++;
     }
 
-    if (playback.row >= numRows) {
+    if (playback.row >= pattern[0].length) {
         playback.row = 0;
         if (!playback.userPatternLoop)
             playback.pos++;
