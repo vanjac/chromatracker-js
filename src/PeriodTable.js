@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 // http://lclevy.free.fr/mo3/mod.txt
 const periodTable = [

@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 // Disable pinch to zoom on iOS
 document.addEventListener('touchmove', e => {

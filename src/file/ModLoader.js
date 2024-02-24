@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 // https://eblong.com/zarf/blorb/mod-spec.txt
 // http://lclevy.free.fr/mo3/mod.txt

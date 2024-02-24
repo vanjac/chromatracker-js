@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 const numSamples = 32 // 0th sample is empty!
 const numSongPositions = 128
@@ -7,7 +7,7 @@ const maxVolume = 64
 
 function Sample() {}
 Sample.prototype = {
-    name: "",
+    name: '',
     /** @type {Int8Array} */
     wave: null,
     length: 0,
@@ -93,7 +93,7 @@ const ExtEffects = {
 
 function Module() {}
 Module.prototype = {
-    name: "",
+    name: '',
     numChannels: 4,
     /** @type {readonly number[]} */
     sequence: Object.freeze([]),

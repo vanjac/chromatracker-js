@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 // https://milkytracker.org/docs/MilkyTracker.html#effects
 // https://github.com/johnnovak/nim-mod/blob/master/doc/Protracker%20effects%20(FireLight)%20(.mod).txt

@@ -1,5 +1,5 @@
 // Must be loaded after template definitions in <body> and *not* deferred!
-"use strict"
+'use strict'
 
 /** @type {Record<string, HTMLTemplateElement>} */
 let templates = {}

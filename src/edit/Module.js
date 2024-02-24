@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 function createEmptyModule() {
     let mod = new Module()

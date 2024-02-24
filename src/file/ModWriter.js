@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 const version = '0.0.1'
 

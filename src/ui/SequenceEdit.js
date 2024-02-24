@@ -1,4 +1,4 @@
-"use strict"
+'use strict'
 
 class SequenceEditElement extends HTMLElement {
     constructor() {
