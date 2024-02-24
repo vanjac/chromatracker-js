@@ -9,15 +9,15 @@ class FileToolbarElement extends HTMLElement {
 
         fragment.querySelector('#fileSelect').addEventListener('change', e => {
             if (e.target instanceof HTMLInputElement)
-                this.readModuleBlob(e.target.files[0]);
+                this._readModuleBlob(e.target.files[0]);
         });
         fragment.querySelector('#fileDownload').addEventListener('click', () => {
             fetch('https://chroma.zone/share/space_debris.mod').then(
                 r => r.blob().then(
-                    b => this.readModuleBlob(b)));
+                    b => this._readModuleBlob(b)));
         });
-        fragment.querySelector('#fileSave').addEventListener('click', () => this.saveFile());
-        fragment.querySelector('#patternZap').addEventListener('click', () => this.patternZap());
+        fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile());
+        fragment.querySelector('#patternZap').addEventListener('click', () => this._patternZap());
 
         this.appendChild(fragment);
         this.style.display = 'contents';
@@ -26,19 +26,19 @@ class FileToolbarElement extends HTMLElement {
     /**
      * @param {Blob} blob
      */
-    readModuleBlob(blob) {
+    _readModuleBlob(blob) {
         let reader = new FileReader();
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
                 main._module = Object.freeze(readModule(reader.result));
                 console.log(main._module);
-                main.onModuleLoaded();
+                main._onModuleLoaded();
             }
         };
         reader.readAsArrayBuffer(blob);
     }
 
-    saveFile() {
+    _saveFile() {
         let blob = new Blob([writeModule(main._module)], {type: 'application/octet-stream'});
         let url = URL.createObjectURL(blob);
         console.log(url);
@@ -46,13 +46,13 @@ class FileToolbarElement extends HTMLElement {
         main._unsavedChangeCount = 0;
     }
 
-    patternZap() {
-        main.pushUndo();
+    _patternZap() {
+        main._pushUndo();
         let newMod = Object.assign(new Module(), main._module);
         newMod.patterns = Object.freeze([createPattern(main._module)]);
         newMod.sequence = Object.freeze([0]);
-        main.setModule(Object.freeze(newMod));
-        main.refreshModule();
+        main._setModule(Object.freeze(newMod));
+        main._refreshModule();
     }
 }
 window.customElements.define('file-toolbar', FileToolbarElement);

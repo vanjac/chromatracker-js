@@ -16,25 +16,25 @@ class PlaybackControlsElement extends HTMLElement {
         this._speedInput = fragment.querySelector('#speed');
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
-            if (main.resetPlayback())
-                main.play();
+            if (main._resetPlayback())
+                main._play();
         });
         fragment.querySelector('#playPattern').addEventListener('click', () => {
-            if (main.resetPlayback()) {
-                this.restorePlaybackTempo();
+            if (main._resetPlayback()) {
+                this._restorePlaybackTempo();
                 main._playback.pos = main._sequenceEdit._selPos;
-                main.play();
+                main._play();
             }
         });
         this._playRowButton.addEventListener('click', () => {
-            if (main.resetPlayback()) {
-                this.restorePlaybackTempo();
+            if (main._resetPlayback()) {
+                this._restorePlaybackTempo();
                 main._playback.pos = main._sequenceEdit._selPos;
-                main._playback.row = main.selRow();
-                main.play();
+                main._playback.row = main._selRow();
+                main._play();
             }
         });
-        this._pauseButton.addEventListener('click', () => main.pause());
+        this._pauseButton.addEventListener('click', () => main._pause());
         fragment.querySelector('#patternLoop').addEventListener('click', () => {
             if (main._playback)
                 main._playback.userPatternLoop = this._patternLoopInput.checked;
@@ -44,7 +44,7 @@ class PlaybackControlsElement extends HTMLElement {
         this.style.display = 'contents';
     }
 
-    restorePlaybackTempo() {
+    _restorePlaybackTempo() {
         main._playback.tempo = this._tempoInput.valueAsNumber;
         main._playback.speed = this._speedInput.valueAsNumber;
     }
@@ -52,7 +52,7 @@ class PlaybackControlsElement extends HTMLElement {
     /**
      * @param {boolean} playing
      */
-    setPlayState(playing) {
+    _setPlayState(playing) {
         this._playRowButton.classList.toggle('hide', playing);
         this._pauseButton.classList.toggle('hide', !playing);
     }

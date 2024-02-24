@@ -66,22 +66,22 @@ class AppMainElement extends HTMLElement {
         this.style.display = 'contents';
     }
 
-    onModuleLoaded() {
+    _onModuleLoaded() {
         this._undoStack = [];
         this._unsavedChangeCount = 0;
 
         this._fileToolbar._titleOutput.value = this._module.name;
 
-        this._sequenceEdit.setSelPos(0);
+        this._sequenceEdit._setSelPos(0);
         this._patternTable._selRow = 0;
         this._patternTable._selChannel = 0;
-        this.refreshModule();
-        this._patternTable.scrollToSelCell();
+        this._refreshModule();
+        this._patternTable._scrollToSelCell();
 
-        this._cellEntry.setSelSample(1);
+        this._cellEntry._setSelSample(1);
 
         if (this._intervalHandle)
-            this.pause();
+            this._pause();
         if (!this._context) {
             // @ts-ignore
             let AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -91,15 +91,15 @@ class AppMainElement extends HTMLElement {
         this._context.resume();
     }
 
-    resetPlayback() {
+    _resetPlayback() {
         if (!this._module)
             return false;
         if (this._intervalHandle)
-            this.pause();
+            this._pause();
         this._playback = initPlayback(this._context, this._module);
 
         for (let c = 0; c < this._module.numChannels; c++) {
-            if (this._patternTable.isChannelMuted(c))
+            if (this._patternTable._isChannelMuted(c))
                 setChannelMute(this._playback, c, true);
         }
 
@@ -107,7 +107,7 @@ class AppMainElement extends HTMLElement {
         return true;
     }
 
-    play() {
+    _play() {
         let process = () => {
             while (this._queuedTime < this._context.currentTime + 0.5) {
                 this._queuedTime = this._playback.time;
@@ -119,11 +119,11 @@ class AppMainElement extends HTMLElement {
         };
         process();
         this._intervalHandle = setInterval(process, 200);
-        this._animHandle = window.requestAnimationFrame(() => this.frameUpdate());
-        this._playbackControls.setPlayState(true);
+        this._animHandle = window.requestAnimationFrame(() => this._frameUpdate());
+        this._playbackControls._setPlayState(true);
     }
 
-    pause() {
+    _pause() {
         if (this._intervalHandle) {
             stopPlayback(this._playback);
             clearInterval(this._intervalHandle);
@@ -131,7 +131,7 @@ class AppMainElement extends HTMLElement {
             this._queuedLines = [];
             this._queuedTime = 0;
             this._intervalHandle = null;
-            this._playbackControls.setPlayState(false);
+            this._playbackControls._setPlayState(false);
         }
     }
 
@@ -139,15 +139,15 @@ class AppMainElement extends HTMLElement {
      * @param {Event} e
      * @param {Cell} cell
      */
-    jamDown(e = null, cell = null) {
+    _jamDown(e = null, cell = null) {
         if (this._playback) {
             if (!cell)
-                cell = this._cellEntry.getJamCell();
+                cell = this._cellEntry._getJamCell();
             if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
                 for (let touch of e.changedTouches)
-                    jamPlay(this._playback, touch.identifier, this.selChannel(), cell);
+                    jamPlay(this._playback, touch.identifier, this._selChannel(), cell);
             } else {
-                jamPlay(this._playback, -1, this.selChannel(), cell);
+                jamPlay(this._playback, -1, this._selChannel(), cell);
             }
         }
     }
@@ -155,7 +155,7 @@ class AppMainElement extends HTMLElement {
     /**
      * @param {Event} e
      */
-    jamUp(e = null) {
+    _jamUp(e = null) {
         if (this._playback) {
             if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
                 for (let touch of e.changedTouches)
@@ -166,8 +166,8 @@ class AppMainElement extends HTMLElement {
         }
     }
 
-    frameUpdate() {
-        this._animHandle = window.requestAnimationFrame(() => this.frameUpdate());
+    _frameUpdate() {
+        this._animHandle = window.requestAnimationFrame(() => this._frameUpdate());
 
         let curTime = this._context.currentTime;
         if (this._context.outputLatency) // if supported
@@ -183,70 +183,70 @@ class AppMainElement extends HTMLElement {
             this._playbackControls._speedInput.value = curLine.speed.toString();
 
             if (this._playbackControls._followInput.checked) {
-                this._sequenceEdit.setSelPos(curLine.pos);
+                this._sequenceEdit._setSelPos(curLine.pos);
                 this._patternTable._selRow = curLine.row;
-                this.refreshModule();
-                this._patternTable.updateSelCell();
-                this._patternTable.scrollToSelCell();
+                this._refreshModule();
+                this._patternTable._updateSelCell();
+                this._patternTable._scrollToSelCell();
             }
-            if (this.selPattern() == this._module.sequence[curLine.pos]) {
-                this._patternTable.setPlaybackRow(curLine.row);
+            if (this._selPattern() == this._module.sequence[curLine.pos]) {
+                this._patternTable._setPlaybackRow(curLine.row);
             } else {
-                this._patternTable.setPlaybackRow(-1);
+                this._patternTable._setPlaybackRow(-1);
             }
         }
     }
 
-    selRow() {
+    _selRow() {
         return this._patternTable._selRow;
     }
 
-    selChannel() {
+    _selChannel() {
         return this._patternTable._selChannel;
     }
 
-    selPattern() {
+    _selPattern() {
         return this._module.sequence[this._sequenceEdit._selPos];
     }
 
-    refreshModule() {
-        this._sequenceEdit.setSequence(this._module.sequence);
-        this._patternTable.setPattern(this._module.patterns[this.selPattern()]);
-        this._cellEntry.setSamples(this._module.samples);
+    _refreshModule() {
+        this._sequenceEdit._setSequence(this._module.sequence);
+        this._patternTable._setPattern(this._module.patterns[this._selPattern()]);
+        this._cellEntry._setSamples(this._module.samples);
     }
 
     /**
      * @param {Module} mod
      */
-    setModule(mod) {
+    _setModule(mod) {
         this._module = mod;
         if (this._playback)
             this._playback.mod = mod;
     }
 
-    pushUndo() {
+    _pushUndo() {
         this._undoStack.push(this._module);
         if (this._undoStack.length > 100)
             this._undoStack.shift();
         this._unsavedChangeCount++;
     }
 
-    undo() {
+    _undo() {
         if (this._undoStack.length) {
-            this.setModule(this._undoStack.pop());
-            this.refreshModule();
+            this._setModule(this._undoStack.pop());
+            this._refreshModule();
             this._unsavedChangeCount--;
         }
     }
 
-    selCell() {
-        return this._module.patterns[this.selPattern()][this.selChannel()][this.selRow()];
+    _selCell() {
+        return this._module.patterns[this._selPattern()][this._selChannel()][this._selRow()];
     }
 
-    updateEntryParts() {
-        let parts = this._cellEntry.getCellParts();
-        this._cellEntry.toggleEntryCellParts(parts);
-        this._patternTable.toggleSelCellParts(parts);
+    _updateEntryParts() {
+        let parts = this._cellEntry._getCellParts();
+        this._cellEntry._toggleEntryCellParts(parts);
+        this._patternTable._toggleSelCellParts(parts);
     }
 }
 window.customElements.define('app-main', AppMainElement);

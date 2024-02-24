@@ -31,7 +31,7 @@ class PatternTableElement extends HTMLElement {
     /**
      * @param {Readonly<Pattern>} pattern
      */
-    setPattern(pattern) {
+    _setPattern(pattern) {
         if (pattern == this._viewPattern)
             return;
         console.log('update pattern');
@@ -54,23 +54,23 @@ class PatternTableElement extends HTMLElement {
                 let pressEvent = e => {
                     this._selRow = c_row;
                     this._selChannel = c_c;
-                    this.updateSelCell();
-                    main.jamDown(e, main.selCell());
+                    this._updateSelCell();
+                    main._jamDown(e, main._selCell());
                 };
                 td.addEventListener('mousedown', pressEvent);
                 td.addEventListener('touchstart', pressEvent);
-                td.addEventListener('mouseup', e => main.jamUp(e));
-                td.addEventListener('touchend', e => main.jamUp(e));
+                td.addEventListener('mouseup', e => main._jamUp(e));
+                td.addEventListener('touchend', e => main._jamUp(e));
 
                 tr.appendChild(cellFrag);
             }
             tableFrag.appendChild(tr);
         }
         this._table.appendChild(tableFrag);
-        this.updateSelCell();
+        this._updateSelCell();
     }
 
-    updateSelCell() {
+    _updateSelCell() {
         let cell = this._table.querySelector('.sel-cell');
         if (cell) {
             cell.classList.remove('sel-cell');
@@ -81,14 +81,14 @@ class PatternTableElement extends HTMLElement {
         if (this._selRow >= 0 && this._selChannel >= 0) {
             let cell = this._table.children[this._selRow].children[this._selChannel];
             cell.classList.add('sel-cell');
-            toggleCellParts(cell, main._cellEntry.getCellParts());
+            toggleCellParts(cell, main._cellEntry._getCellParts());
         }
     }
 
     /**
      * @param {CellParts} parts
      */
-    toggleSelCellParts(parts) {
+    _toggleSelCellParts(parts) {
         let selCell = this._table.querySelector('.sel-cell');
         if (selCell)
             toggleCellParts(selCell, parts);
@@ -97,7 +97,7 @@ class PatternTableElement extends HTMLElement {
     /**
      * @param {number} row
      */
-    setPlaybackRow(row) {
+    _setPlaybackRow(row) {
         let oldHilite = this._table.querySelector('.hilite-row');
         if (oldHilite)
             oldHilite.classList.remove('hilite-row');
@@ -105,7 +105,7 @@ class PatternTableElement extends HTMLElement {
             this._table.children[row].classList.add('hilite-row');
     }
 
-    scrollToSelCell() {
+    _scrollToSelCell() {
         let parentRect = this._patternScroll.getBoundingClientRect();
         let childRect = this._table.children[this._selRow].getBoundingClientRect();
         let scrollAmount = ((childRect.top - parentRect.top)
@@ -113,17 +113,17 @@ class PatternTableElement extends HTMLElement {
         this._patternScroll.scrollTop += scrollAmount;
     }
 
-    advance() {
+    _advance() {
         this._selRow++;
         this._selRow %= numRows;
-        this.updateSelCell();
-        this.scrollToSelCell();
+        this._updateSelCell();
+        this._scrollToSelCell();
     }
 
     /**
      * @param {number} channel
      */
-    isChannelMuted(channel) {
+    _isChannelMuted(channel) {
         if (channel >= this._muteInputs.length)
             return false;
         return ! this._muteInputs[channel].checked;
