@@ -169,7 +169,7 @@ class CellEntryElement extends HTMLElement {
     }
 
     /**
-     * @param {readonly Readonly<Sample>[]} samples 
+     * @param {readonly Readonly<Sample>[]} samples
      */
     _setSamples(samples) {
         if (samples == this._viewSamples) {
@@ -227,7 +227,7 @@ class CellEntryElement extends HTMLElement {
         this._app._setModule(newMod)
         this._app._refreshModule()
     }
-    
+
     _clearCell() {
         let newMod = editPutCell(this._app._module, this._app._selPattern(),
             this._app._selChannel(), this._app._selRow(), new Cell(), this._getCellParts())
@@ -235,7 +235,7 @@ class CellEntryElement extends HTMLElement {
         this._app._setModule(newMod)
         this._app._refreshModule()
     }
-    
+
     _liftCell() {
         let cell = this._app._selCell()
         if (this._pitchEnable.checked && cell.pitch >= 0) {

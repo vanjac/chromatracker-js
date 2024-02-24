@@ -71,14 +71,14 @@ class SequenceEditElement extends HTMLElement {
         this._app._setModule(newMod)
         this._app._refreshModule()
     }
-    
+
     _seqDown() {
         let newMod = editSetPos(this._app._module, this._selPos, this._app._selPattern() - 1)
         this._app._pushUndo()
         this._app._setModule(newMod)
         this._app._refreshModule()
     }
-    
+
     _seqInsSame() {
         let newMod = editInsPos(this._app._module, this._selPos + 1, this._app._selPattern())
         this._app._pushUndo()
@@ -86,7 +86,7 @@ class SequenceEditElement extends HTMLElement {
         this._selPos++
         this._app._refreshModule()
     }
-    
+
     _seqInsClone() {
         let newMod = editClonePattern(this._app._module, this._app._selPattern())
         newMod = editInsPos(newMod, this._selPos + 1, newMod.patterns.length - 1)
@@ -95,7 +95,7 @@ class SequenceEditElement extends HTMLElement {
         this._selPos++
         this._app._refreshModule()
     }
-    
+
     _seqDel() {
         let newMod = editDelPos(this._app._module, this._selPos)
         this._app._pushUndo()
