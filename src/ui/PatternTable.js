@@ -1,14 +1,20 @@
 'use strict'
 
+/**
+ * @typedef PatternTableTarget
+ * @property {(c: number, mute: boolean) => void} _setMute
+ */
+
 class PatternTableElement extends HTMLElement {
     constructor() {
         super()
-        /** @type {AppMainElement} */
-        this._app = null
+        /** @type {PatternTableTarget & JamTarget} */
+        this._target = null
         this._selRow = 0
         this._selChannel = 0
         /** @type {Readonly<Pattern>} */
         this._viewPattern = null
+        this._cellParts = CellParts.all
     }
 
     connectedCallback() {
@@ -21,9 +27,7 @@ class PatternTableElement extends HTMLElement {
 
         for (let [c, input] of this._muteInputs.entries()) {
             input.addEventListener('change', () => {
-                if (this._app._playback) {
-                    setChannelMute(this._app._playback, c, !input.checked)
-                }
+                this._target._setMute(c, !input.checked)
             })
         }
 
@@ -46,8 +50,9 @@ class PatternTableElement extends HTMLElement {
         for (let row = 0; row < pattern[0].length; row++) {
             let tr = document.createElement('tr')
             for (let c = 0; c < pattern.length; c++) {
+                let cell = pattern[c][row]
                 let cellFrag = instantiate(templates.cellTemplate)
-                setCellContents(cellFrag, pattern[c][row])
+                setCellContents(cellFrag, cell)
 
                 let td = cellFrag.querySelector('td')
                 /**
@@ -57,12 +62,12 @@ class PatternTableElement extends HTMLElement {
                     this._selRow = row
                     this._selChannel = c
                     this._updateSelCell()
-                    this._app._jamDown(e, this._app._selCell())
+                    this._target._jamDown(e, cell)
                 }
                 td.addEventListener('mousedown', pressEvent)
                 td.addEventListener('touchstart', pressEvent)
-                td.addEventListener('mouseup', e => this._app._jamUp(e))
-                td.addEventListener('touchend', e => this._app._jamUp(e))
+                td.addEventListener('mouseup', e => this._target._jamUp(e))
+                td.addEventListener('touchend', e => this._target._jamUp(e))
 
                 tr.appendChild(cellFrag)
             }
@@ -83,14 +88,15 @@ class PatternTableElement extends HTMLElement {
         if (this._selRow >= 0 && this._selChannel >= 0) {
             let cell = this._table.children[this._selRow].children[this._selChannel]
             cell.classList.add('sel-cell')
-            toggleCellParts(cell, this._app._entryParts())
+            toggleCellParts(cell, this._cellParts)
         }
     }
 
     /**
      * @param {CellParts} parts
      */
-    _toggleSelCellParts(parts) {
+    _setCellParts(parts) {
+        this._cellParts = parts
         let selCell = this._table.querySelector('.sel-cell')
         if (selCell) {
             toggleCellParts(selCell, parts)

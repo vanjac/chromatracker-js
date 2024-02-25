@@ -9,6 +9,12 @@
  * @property {number} speed
  */
 
+/**
+ * @typedef JamTarget
+ * @property {(e?: Event, cell?: Cell) => void} _jamDown
+ * @property {(e?: Event) => void} _jamUp
+ */
+
 class AppMainElement extends HTMLElement {
     constructor() {
         super()
@@ -55,8 +61,10 @@ class AppMainElement extends HTMLElement {
         this._fileToolbar._app = this
         this._playbackControls._app = this
         this._sequenceEdit._app = this
-        this._patternTable._app = this
+        this._patternTable._target = this
         this._cellEntry._app = this
+
+        this._patternTable._setCellParts(this._entryParts())
 
         window.onbeforeunload = () => {
             if (this._unsavedChangeCount) {
@@ -138,6 +146,16 @@ class AppMainElement extends HTMLElement {
             this._queuedTime = 0
             this._intervalHandle = null
             this._playbackControls._setPlayState(false)
+        }
+    }
+
+    /**
+     * @param {number} c
+     * @param {boolean} mute
+     */
+    _setMute(c, mute) {
+        if (this._playback) {
+            setChannelMute(this._playback, c, mute)
         }
     }
 
@@ -267,7 +285,7 @@ class AppMainElement extends HTMLElement {
     _updateEntryParts() {
         let parts = this._entryParts()
         this._cellEntry._toggleEntryCellParts(parts)
-        this._patternTable._toggleSelCellParts(parts)
+        this._patternTable._setCellParts(parts)
     }
 }
 window.customElements.define('app-main', AppMainElement)
