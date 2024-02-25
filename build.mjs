@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 // @ts-nocheck
 
-import fs from 'node:fs';
-import path from 'node:path';
+import fs from 'node:fs'
+import path from 'node:path'
 
 function main() {
-    let templates = '';
+    let templates = ''
 
-    let templateFiles = fs.readdirSync('templates');
+    let templateFiles = fs.readdirSync('templates')
     for (let file of templateFiles) {
-        templates += fs.readFileSync(path.join('templates', file), {encoding: 'utf8'});
+        templates += fs.readFileSync(path.join('templates', file), {encoding: 'utf8'})
     }
 
-    let html = fs.readFileSync('_main.html', {encoding: 'utf8'});
-    html = html.replace('{{templates}}', templates);
+    let html = fs.readFileSync('_main.html', {encoding: 'utf8'})
+    html = html.replace('{{templates}}', templates)
 
-    fs.writeFileSync('index.html', html);
+    fs.writeFileSync('index.html', html)
 }
 
-main();
+main()
