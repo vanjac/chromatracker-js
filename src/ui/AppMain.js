@@ -301,5 +301,18 @@ class AppMainElement extends HTMLElement {
         this._cellEntry._toggleEntryCellParts(parts)
         this._patternTable._setCellParts(parts)
     }
+
+    /**
+     * @param {Readonly<Cell>} cell
+     * @param {CellParts} parts
+     */
+    _putCell(cell, parts) {
+        let p = this._selPattern(), c = this._selChannel(), r = this._selRow()
+        this._changeModule(module => editPutCell(module, p, c, r, cell, parts))
+    }
+
+    _advance() {
+        this._patternTable._advance()
+    }
 }
 window.customElements.define('app-main', AppMainElement)

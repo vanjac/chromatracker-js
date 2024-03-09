@@ -62,17 +62,17 @@ class CellEntryElement extends HTMLElement {
 
         let writeButton = fragment.querySelector('#write')
         addPressEvent(writeButton, e => {
-            this._writeCell()
+            this._app._putCell(this._getCell(), this._getCellParts())
             this._app._jamDown(e, this._app._selCell())
-            this._app._patternTable._advance()
+            this._app._advance()
         })
         addReleaseEvent(writeButton, e => this._app._jamUp(e))
 
         let clearButton = fragment.querySelector('#clear')
         addPressEvent(clearButton, e => {
-            this._clearCell()
+            this._app._putCell(new Cell(), this._getCellParts())
             this._app._jamDown(e, this._app._selCell())
-            this._app._patternTable._advance()
+            this._app._advance()
         })
         addReleaseEvent(clearButton, e => this._app._jamUp(e))
 
@@ -218,18 +218,6 @@ class CellEntryElement extends HTMLElement {
             this._sampleInput.value = s.toString()
         }
         this._updateCell()
-    }
-
-    _writeCell() {
-        let p = this._app._selPattern(), c = this._app._selChannel(), r = this._app._selRow()
-        this._app._changeModule(module =>
-            editPutCell(module, p, c, r, this._getCell(), this._getCellParts()))
-    }
-
-    _clearCell() {
-        let p = this._app._selPattern(), c = this._app._selChannel(), r = this._app._selRow()
-        this._app._changeModule(module =>
-            editPutCell(module, p, c, r, new Cell(), this._getCellParts()))
     }
 
     _liftCell() {
