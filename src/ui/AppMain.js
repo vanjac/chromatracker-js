@@ -258,6 +258,20 @@ class AppMainElement extends HTMLElement {
         }
     }
 
+    /**
+     * @param {(mod: Readonly<Module>) => Readonly<Module>} reducer
+     */
+    _changeModule(reducer, {pushUndo = true, refresh = true} = {}) {
+        let newMod = reducer(this._module)
+        if (pushUndo) {
+            this._pushUndo()
+        }
+        this._setModule(newMod)
+        if (refresh) {
+            this._refreshModule()
+        }
+    }
+
     _pushUndo() {
         this._undoStack.push(this._module)
         if (this._undoStack.length > 100) {

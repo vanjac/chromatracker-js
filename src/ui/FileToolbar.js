@@ -62,12 +62,7 @@ class FileToolbarElement extends HTMLElement {
     }
 
     _patternZap() {
-        this._app._pushUndo()
-        let newMod = Object.assign(new Module(), this._app._module)
-        newMod.patterns = Object.freeze([createPattern(this._app._module)])
-        newMod.sequence = Object.freeze([0])
-        this._app._setModule(Object.freeze(newMod))
-        this._app._refreshModule()
+        this._app._changeModule(module => editPatternZap(module))
     }
 }
 window.customElements.define('file-toolbar', FileToolbarElement)

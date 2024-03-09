@@ -112,7 +112,7 @@ class CellEntryElement extends HTMLElement {
             let sample = this._app._module.samples[idx]
             let result = prompt(`Sample ${idx} volume\n${sample.name}`, sample.volume.toString())
             if (result !== null) {
-                this._setSampleVolume(idx, Number(result))
+                this._app._changeModule(module => editSetSampleVolume(module, idx, Number(result)))
             }
         })
 
@@ -221,19 +221,15 @@ class CellEntryElement extends HTMLElement {
     }
 
     _writeCell() {
-        let newMod = editPutCell(this._app._module, this._app._selPattern(),
-            this._app._selChannel(), this._app._selRow(), this._getCell(), this._getCellParts())
-        this._app._pushUndo()
-        this._app._setModule(newMod)
-        this._app._refreshModule()
+        let p = this._app._selPattern(), c = this._app._selChannel(), r = this._app._selRow()
+        this._app._changeModule(module =>
+            editPutCell(module, p, c, r, this._getCell(), this._getCellParts()))
     }
 
     _clearCell() {
-        let newMod = editPutCell(this._app._module, this._app._selPattern(),
-            this._app._selChannel(), this._app._selRow(), new Cell(), this._getCellParts())
-        this._app._pushUndo()
-        this._app._setModule(newMod)
-        this._app._refreshModule()
+        let p = this._app._selPattern(), c = this._app._selChannel(), r = this._app._selRow()
+        this._app._changeModule(module =>
+            editPutCell(module, p, c, r, new Cell(), this._getCellParts()))
     }
 
     _liftCell() {
@@ -250,20 +246,6 @@ class CellEntryElement extends HTMLElement {
             this._param1Select.selectedIndex = cell.param1
         }
         this._updateCell()
-    }
-
-    /**
-     * @param {number} idx
-     * @param {number} volume
-     */
-    _setSampleVolume(idx, volume) {
-        let newMod = Object.assign(new Module(), this._app._module)
-        let newSample = Object.assign(new Sample(), newMod.samples[idx])
-        newSample.volume = volume
-        newMod.samples = immSplice(newMod.samples, idx, 1, Object.freeze(newSample))
-        this._app._pushUndo()
-        this._app._setModule(Object.freeze(newMod))
-        this._app._refreshModule()
     }
 }
 window.customElements.define('cell-entry', CellEntryElement)

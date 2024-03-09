@@ -66,44 +66,38 @@ class SequenceEditElement extends HTMLElement {
     }
 
     _seqUp() {
-        let newMod = editSetPos(this._app._module, this._selPos, this._app._selPattern() + 1)
-        this._app._pushUndo()
-        this._app._setModule(newMod)
-        this._app._refreshModule()
+        this._app._changeModule(module =>
+            editSetPos(module, this._selPos, this._app._selPattern() + 1))
     }
 
     _seqDown() {
-        let newMod = editSetPos(this._app._module, this._selPos, this._app._selPattern() - 1)
-        this._app._pushUndo()
-        this._app._setModule(newMod)
-        this._app._refreshModule()
+        this._app._changeModule(module =>
+            editSetPos(module, this._selPos, this._app._selPattern() - 1))
     }
 
     _seqInsSame() {
-        let newMod = editInsPos(this._app._module, this._selPos + 1, this._app._selPattern())
-        this._app._pushUndo()
-        this._app._setModule(newMod)
         this._selPos++
-        this._app._refreshModule()
+        this._app._changeModule(module =>
+            editInsPos(module, this._selPos, this._app._selPattern()))
     }
 
     _seqInsClone() {
-        let newMod = editClonePattern(this._app._module, this._app._selPattern())
-        newMod = editInsPos(newMod, this._selPos + 1, newMod.patterns.length - 1)
-        this._app._pushUndo()
-        this._app._setModule(newMod)
         this._selPos++
-        this._app._refreshModule()
+        this._app._changeModule(module => {
+            module = editClonePattern(module, this._app._selPattern())
+            return editInsPos(module, this._selPos, module.patterns.length - 1)
+        })
     }
 
     _seqDel() {
-        let newMod = editDelPos(this._app._module, this._selPos)
-        this._app._pushUndo()
-        this._app._setModule(newMod)
-        if (this._selPos >= newMod.sequence.length) {
+        if (this._viewSequence.length == 1) {
+            return
+        }
+        let pos = this._selPos
+        if (this._selPos >= this._viewSequence.length - 1) {
             this._selPos--
         }
-        this._app._refreshModule()
+        this._app._changeModule(module => editDelPos(module, pos))
     }
 }
 window.customElements.define('sequence-edit', SequenceEditElement)

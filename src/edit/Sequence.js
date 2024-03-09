@@ -29,6 +29,16 @@ function expandPatterns(module, idx) {
 
 /**
  * @param {Readonly<Module>} module
+ */
+function editPatternZap(module) {
+    let newMod = Object.assign(new Module(), module)
+    newMod.patterns = Object.freeze([createPattern(newMod)])
+    newMod.sequence = Object.freeze([0])
+    return Object.freeze(newMod)
+}
+
+/**
+ * @param {Readonly<Module>} module
  * @param {number} pat
  */
 function editClonePattern(module, pat) {
