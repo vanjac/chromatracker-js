@@ -3,8 +3,8 @@
 class SequenceEditElement extends HTMLElement {
     constructor() {
         super()
-        /** @type {AppMainElement} */
-        this._app = null
+        /** @type {ModuleEditTarget} */
+        this._target = null
         this._selPos = 0
         /** @type {readonly number[]} */
         this._viewSequence = null
@@ -47,7 +47,7 @@ class SequenceEditElement extends HTMLElement {
             this._sequenceList.appendChild(label)
             label.addEventListener('change', () => {
                 this._selPos = Number(this._sequenceInput.value)
-                this._app._refreshModule()
+                this._target._refreshModule()
             })
         }
         this._sequenceInput = /** @type {RadioNodeList} */ (
@@ -66,25 +66,25 @@ class SequenceEditElement extends HTMLElement {
     }
 
     _seqUp() {
-        this._app._changeModule(module =>
-            editSetPos(module, this._selPos, this._app._selPattern() + 1))
+        this._target._changeModule(module =>
+            editSetPos(module, this._selPos, module.sequence[this._selPos] + 1))
     }
 
     _seqDown() {
-        this._app._changeModule(module =>
-            editSetPos(module, this._selPos, this._app._selPattern() - 1))
+        this._target._changeModule(module =>
+            editSetPos(module, this._selPos, module.sequence[this._selPos] - 1))
     }
 
     _seqInsSame() {
         this._selPos++
-        this._app._changeModule(module =>
-            editInsPos(module, this._selPos, this._app._selPattern()))
+        this._target._changeModule(module =>
+            editInsPos(module, this._selPos, module.sequence[this._selPos]))
     }
 
     _seqInsClone() {
         this._selPos++
-        this._app._changeModule(module => {
-            module = editClonePattern(module, this._app._selPattern())
+        this._target._changeModule(module => {
+            module = editClonePattern(module, module.sequence[this._selPos])
             return editInsPos(module, this._selPos, module.patterns.length - 1)
         })
     }
@@ -97,7 +97,7 @@ class SequenceEditElement extends HTMLElement {
         if (this._selPos >= this._viewSequence.length - 1) {
             this._selPos--
         }
-        this._app._changeModule(module => editDelPos(module, pos))
+        this._target._changeModule(module => editDelPos(module, pos))
     }
 }
 window.customElements.define('sequence-edit', SequenceEditElement)

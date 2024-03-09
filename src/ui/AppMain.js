@@ -15,6 +15,13 @@
  * @property {(e?: Event) => void} _jamUp
  */
 
+/**
+ * @typedef ModuleEditTarget
+ * @property {(reducer: (mod: Readonly<Module>) => Readonly<Module>,
+ *      options?: {pushUndo?: boolean; refresh?: boolean}) => void} _changeModule
+ * @property {() => void} _refreshModule
+ */
+
 class AppMainElement extends HTMLElement {
     constructor() {
         super()
@@ -60,7 +67,7 @@ class AppMainElement extends HTMLElement {
 
         this._fileToolbar._app = this
         this._playbackControls._app = this
-        this._sequenceEdit._app = this
+        this._sequenceEdit._target = this
         this._patternTable._target = this
         this._cellEntry._app = this
 
