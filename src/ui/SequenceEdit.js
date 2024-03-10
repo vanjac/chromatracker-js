@@ -50,8 +50,7 @@ class SequenceEditElement extends HTMLElement {
                 this._target._refreshModule()
             })
         }
-        this._sequenceInput = /** @type {RadioNodeList} */ (
-            this._sequenceList.elements.namedItem('sequence'))
+        this._sequenceInput = getRadioNodeList(this._sequenceList, 'sequence')
         this._sequenceInput.value = this._selPos.toString()
     }
 

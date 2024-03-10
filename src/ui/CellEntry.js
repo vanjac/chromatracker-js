@@ -198,16 +198,12 @@ class CellEntryElement extends HTMLElement {
             label.addEventListener('touchstart', pressEvent)
             addReleaseEvent(label, e => this._app._jamUp(e))
         }
-        this._sampleInput = /** @type {RadioNodeList} */ (
-            this._sampleList.elements.namedItem('sample'))
+        this._sampleInput = getRadioNodeList(this._sampleList, 'sample')
         this._setSelSample(selSample)
     }
 
     _getSelSample() {
-        if (this._sampleInput) {
-            return Number(this._sampleInput.value)
-        }
-        return 1
+        return this._sampleInput ? Number(this._sampleInput.value) : 1
     }
 
     /**

@@ -11,3 +11,11 @@ function makeRadioButton(group, value, text) {
     fragment.querySelector('span').textContent = text
     return fragment.children[0]
 }
+
+/**
+ * @param {HTMLFormElement} form
+ * @param {string} name
+ */
+function getRadioNodeList(form, name) {
+    return /** @type {RadioNodeList} */(form.elements.namedItem(name))
+}
