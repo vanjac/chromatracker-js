@@ -44,6 +44,7 @@ class PlaybackControlsElement extends HTMLElement {
                 this._app._playback.userPatternLoop = this._getPatternLoop()
             }
         })
+        fragment.querySelector('#undo').addEventListener('click', () => this._app._undo())
 
         this.appendChild(fragment)
         this.style.display = 'contents'

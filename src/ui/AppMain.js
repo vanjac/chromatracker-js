@@ -14,6 +14,7 @@
  * @implements {ModuleEditTarget}
  * @implements {PatternTableTarget}
  * @implements {CellEntryTarget}
+ * @implements {FileToolbarTarget}
  */
 class AppMainElement extends HTMLElement {
     constructor() {
@@ -72,7 +73,7 @@ class AppMainElement extends HTMLElement {
         this.appendChild(fragment)
         this.style.display = 'contents'
 
-        this._fileToolbar._app = this
+        this._fileToolbar._target = this
         this._playbackControls._app = this
         this._sequenceEdit._target = this
         this._patternTable._target = this
@@ -87,14 +88,10 @@ class AppMainElement extends HTMLElement {
                 `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`)
         }
 
-        this._moduleLoaded(this._module)
+        this._resetEditorState()
     }
 
-    /**
-     * @param {Readonly<Module>} mod
-     */
-    _moduleLoaded(mod) {
-        this._module = mod
+    _resetEditorState() {
         this._undoStack = []
         this._undoCombineTag = ''
         this._unsavedChangeCount = 0
@@ -106,6 +103,15 @@ class AppMainElement extends HTMLElement {
         this._patternTable._scrollToSelCell()
 
         this._cellEntry._setSelSample(1)
+    }
+
+    /**
+     * @param {Readonly<Module>} mod
+     */
+    _moduleLoaded(mod) {
+        this._module = mod
+        this._resetEditorState()
+        this._resetPlayback()
     }
 
     _moduleSaved() {

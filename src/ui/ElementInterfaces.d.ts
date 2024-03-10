@@ -22,3 +22,9 @@ interface CellEntryTarget {
     _advance(): void
     _updateEntryParts(): void
 }
+
+interface FileToolbarTarget {
+    readonly _module: Readonly<Module>
+    _moduleLoaded(mod: Readonly<Module>): void
+    _moduleSaved(): void
+}

@@ -3,8 +3,8 @@
 class FileToolbarElement extends HTMLElement {
     constructor() {
         super()
-        /** @type {AppMainElement} */
-        this._app = null
+        /** @type {FileToolbarTarget & ModuleEditTarget} */
+        this._target = null
     }
 
     connectedCallback() {
@@ -28,12 +28,11 @@ class FileToolbarElement extends HTMLElement {
         fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile())
 
         this._titleInput.addEventListener('input', () =>
-            this._app._changeModule(module => editSetModuleName(module, this._titleInput.value),
+            this._target._changeModule(module => editSetModuleName(module, this._titleInput.value),
                 {refresh: false, combineTag: 'title'}))
-        this._titleInput.addEventListener('change', () => this._app._clearUndoCombine('title'))
+        this._titleInput.addEventListener('change', () => this._target._clearUndoCombine('title'))
 
         fragment.querySelector('#patternZap').addEventListener('click', () => this._patternZap())
-        fragment.querySelector('#undo').addEventListener('click', () => this._app._undo())
 
         this.appendChild(fragment)
         this.style.display = 'contents'
@@ -55,23 +54,22 @@ class FileToolbarElement extends HTMLElement {
             if (reader.result instanceof ArrayBuffer) {
                 let mod = Object.freeze(readModule(reader.result))
                 console.log(mod)
-                this._app._moduleLoaded(mod)
-                this._app._resetPlayback()
+                this._target._moduleLoaded(mod)
             }
         }
         reader.readAsArrayBuffer(blob)
     }
 
     _saveFile() {
-        let blob = new Blob([writeModule(this._app._module)], {type: 'application/octet-stream'})
+        let blob = new Blob([writeModule(this._target._module)], {type: 'application/octet-stream'})
         let url = URL.createObjectURL(blob)
         console.log(url)
         window.open(url)
-        this._app._moduleSaved()
+        this._target._moduleSaved()
     }
 
     _patternZap() {
-        this._app._changeModule(module => editPatternZap(module))
+        this._target._changeModule(module => editPatternZap(module))
     }
 }
 window.customElements.define('file-toolbar', FileToolbarElement)
