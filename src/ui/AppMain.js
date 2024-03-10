@@ -191,17 +191,18 @@ class AppMainElement extends HTMLElement {
      * @param {Cell} cell
      */
     _jamDown(e = null, cell = null) {
-        if (this._playback) {
-            if (!cell) {
-                cell = this._cellEntry._getJamCell()
+        if (!this._playback) {
+            this._resetPlayback()
+        }
+        if (!cell) {
+            cell = this._cellEntry._getJamCell()
+        }
+        if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
+            for (let touch of e.changedTouches) {
+                jamPlay(this._playback, touch.identifier, this._selChannel(), cell)
             }
-            if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
-                for (let touch of e.changedTouches) {
-                    jamPlay(this._playback, touch.identifier, this._selChannel(), cell)
-                }
-            } else {
-                jamPlay(this._playback, -1, this._selChannel(), cell)
-            }
+        } else {
+            jamPlay(this._playback, -1, this._selChannel(), cell)
         }
     }
 

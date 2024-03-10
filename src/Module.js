@@ -8,8 +8,7 @@ const maxVolume = 64
 function Sample() {}
 Sample.prototype = {
     name: '',
-    /** @type {Int8Array} */
-    wave: null,
+    wave: Object.freeze(new Int8Array()),
     loopStart: 0,
     loopEnd: 0,
     finetune: 0, // -8 to 7

@@ -12,11 +12,22 @@ class SamplesListElement extends HTMLElement {
     connectedCallback() {
         let fragment = instantiate(templates.samplesList)
 
-        this._list = fragment.querySelector('form')
+        /** @type {HTMLFormElement} */
+        this._list = fragment.querySelector('#sampleList')
         /** @type {RadioNodeList} */
         this._input = null
         /** @type {SampleEditElement} */
         this._sampleEdit = fragment.querySelector('sample-edit')
+
+        fragment.querySelector('#addSample').addEventListener('click', () => {
+            let selSample = this._getSelSample()
+            this._target._changeModule(module => {
+                let [newMod, idx] = editAddSample(module)
+                selSample = idx
+                return newMod
+            })
+            this._selectSample(selSample)
+        })
 
         this.appendChild(fragment)
         this.style.display = 'contents'
@@ -59,14 +70,21 @@ class SamplesListElement extends HTMLElement {
             })
         }
         this._input = getRadioNodeList(this._list, 'sample')
-        if (this._input) {
-            this._input.value = selSample.toString()
-            this._sampleEdit._setSample(samples[selSample], selSample)
-        }
+        this._selectSample(selSample)
     }
 
     _getSelSample() {
         return this._input ? Number(this._input.value) : 1
+    }
+
+    /**
+     * @param {number} s
+     */
+    _selectSample(s) {
+        if (this._input && this._viewSamples[s]) {
+            this._input.value = s.toString()
+            this._sampleEdit._setSample(this._viewSamples[s], s)
+        }
     }
 }
 window.customElements.define('samples-list', SamplesListElement)

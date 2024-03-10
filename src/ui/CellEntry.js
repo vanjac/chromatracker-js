@@ -196,7 +196,7 @@ class CellEntryElement extends HTMLElement {
      * @param {number} s
      */
     _setSelSample(s) {
-        if (this._sampleInput) {
+        if (this._sampleInput && this._viewSamples[s]) {
             this._sampleInput.value = s.toString()
         }
         this._updateCell()
