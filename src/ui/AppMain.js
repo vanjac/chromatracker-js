@@ -18,8 +18,9 @@
 /**
  * @typedef ModuleEditTarget
  * @property {(reducer: (mod: Readonly<Module>) => Readonly<Module>,
- *      options?: {pushUndo?: boolean; refresh?: boolean}) => void} _changeModule
+ *      options?: {refresh?: boolean, combineTag?: string}) => void} _changeModule
  * @property {() => void} _refreshModule
+ * @property {(tag: string) => void} _clearUndoCombine
  */
 
 class AppMainElement extends HTMLElement {
@@ -31,6 +32,7 @@ class AppMainElement extends HTMLElement {
 
         /** @type {Readonly<Module>[]} */
         this._undoStack = []
+        this._undoCombineTag = ''
         this._unsavedChangeCount = 0
         /** @type {AudioContext} */
         this._context
@@ -92,6 +94,7 @@ class AppMainElement extends HTMLElement {
     _moduleLoaded(mod) {
         this._module = mod
         this._undoStack = []
+        this._undoCombineTag = ''
         this._unsavedChangeCount = 0
 
         this._sequenceEdit._setSelPos(0)
@@ -268,23 +271,36 @@ class AppMainElement extends HTMLElement {
     /**
      * @param {(mod: Readonly<Module>) => Readonly<Module>} reducer
      */
-    _changeModule(reducer, {pushUndo = true, refresh = true} = {}) {
+    _changeModule(reducer, {refresh = true, combineTag = ''} = {}) {
         let newMod = reducer(this._module)
-        if (pushUndo) {
-            this._pushUndo()
-        }
+        this._pushUndo(combineTag)
         this._setModule(newMod)
         if (refresh) {
             this._refreshModule()
         }
     }
 
-    _pushUndo() {
-        this._undoStack.push(this._module)
-        if (this._undoStack.length > 100) {
-            this._undoStack.shift()
+    /**
+     * @param {string} combineTag
+     */
+    _pushUndo(combineTag) {
+        if (!combineTag || combineTag != this._undoCombineTag) {
+            this._undoStack.push(this._module)
+            if (this._undoStack.length > 100) {
+                this._undoStack.shift()
+            }
+            this._unsavedChangeCount++
         }
-        this._unsavedChangeCount++
+        this._undoCombineTag = combineTag
+    }
+
+    /**
+     * @param {string} tag
+     */
+    _clearUndoCombine(tag) {
+        if (this._undoCombineTag == tag) {
+            this._undoCombineTag = ''
+        }
     }
 
     _undo() {
@@ -292,6 +308,7 @@ class AppMainElement extends HTMLElement {
             this._setModule(this._undoStack.pop())
             this._refreshModule()
             this._unsavedChangeCount--
+            this._undoCombineTag = ''
         }
     }
 

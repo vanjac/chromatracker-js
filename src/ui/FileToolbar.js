@@ -10,8 +10,8 @@ class FileToolbarElement extends HTMLElement {
     connectedCallback() {
         let fragment = instantiate(templates.fileToolbar)
 
-        /** @type {HTMLOutputElement} */
-        this._titleOutput = fragment.querySelector('#title')
+        /** @type {HTMLInputElement} */
+        this._titleInput = fragment.querySelector('#title')
 
         fragment.querySelector('#fileSelect').addEventListener('change', e => {
             if (e.target instanceof HTMLInputElement) {
@@ -24,6 +24,10 @@ class FileToolbarElement extends HTMLElement {
                     b => this._readModuleBlob(b)))
         })
         fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile())
+        this._titleInput.addEventListener('input', () =>
+            this._app._changeModule(module => editSetModuleName(module, this._titleInput.value),
+                {refresh: false, combineTag: 'title'}))
+        this._titleInput.addEventListener('change', () => this._app._clearUndoCombine('title'))
         fragment.querySelector('#patternZap').addEventListener('click', () => this._patternZap())
 
         this.appendChild(fragment)
@@ -34,7 +38,7 @@ class FileToolbarElement extends HTMLElement {
      * @param {string} title
      */
     _setTitle(title) {
-        this._titleOutput.value = title
+        this._titleInput.value = title
     }
 
     /**
