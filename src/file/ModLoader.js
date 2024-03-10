@@ -9,7 +9,7 @@ for (let p = 0; p < periodTable[8].length; p++) {
     periodToPitch.set(periodTable[8][p], p)
 }
 
-const textDecode = new TextDecoder()
+const textDecode = new TextDecoder() // TODO: determine encoding from file
 
 /**
  * Read a null-terminated UTF-8 string
