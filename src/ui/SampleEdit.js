@@ -27,15 +27,25 @@ class SampleEditElement extends HTMLElement {
 
         /** @type {HTMLInputElement} */
         this._volumeInput = fragment.querySelector('#volume')
-        this._volumeInput.addEventListener('input', () => this._changeSample(
-            sample => {sample.volume = this._volumeInput.valueAsNumber}, 'sample volume'))
+        /** @type {HTMLOutputElement} */
+        this._volumeOutput = fragment.querySelector('#volumeOut')
+        this._volumeInput.addEventListener('input', () => {
+            this._changeSample(sample => {sample.volume = this._volumeInput.valueAsNumber},
+                'sample volume')
+            this._volumeOutput.value = this._volumeInput.value
+        })
         this._volumeInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample volume'))
 
         /** @type {HTMLInputElement} */
         this._finetuneInput = fragment.querySelector('#finetune')
-        this._finetuneInput.addEventListener('input', () => this._changeSample(
-            sample => {sample.finetune = this._finetuneInput.valueAsNumber}, 'sample finetune'))
+        /** @type {HTMLOutputElement} */
+        this._finetuneOutput = fragment.querySelector('#finetuneOut')
+        this._finetuneInput.addEventListener('input', () => {
+            this._changeSample(sample => {sample.finetune = this._finetuneInput.valueAsNumber},
+                'sample finetune')
+            this._finetuneOutput.value = this._finetuneInput.value
+        })
         this._finetuneInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample finetune'))
 
@@ -79,7 +89,9 @@ class SampleEditElement extends HTMLElement {
 
             this._nameInput.value = sample.name
             this._volumeInput.valueAsNumber = sample.volume
+            this._volumeOutput.value = sample.volume.toString()
             this._finetuneInput.valueAsNumber = sample.finetune
+            this._finetuneOutput.value = sample.finetune.toString()
             this._fileInput.value = ''
         }
     }
