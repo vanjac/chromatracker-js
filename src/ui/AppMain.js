@@ -11,7 +11,7 @@
 
 /**
  * @typedef JamTarget
- * @property {(e?: Event, cell?: Cell) => void} _jamDown
+ * @property {(e?: Event, cell?: Readonly<Cell>) => void} _jamDown
  * @property {(e?: Event) => void} _jamUp
  */
 
@@ -103,7 +103,7 @@ class AppMainElement extends HTMLElement {
     }
 
     /**
-     * @param {Module} mod
+     * @param {Readonly<Module>} mod
      */
     _moduleLoaded(mod) {
         this._module = mod
@@ -185,7 +185,7 @@ class AppMainElement extends HTMLElement {
 
     /**
      * @param {Event} e
-     * @param {Cell} cell
+     * @param {Readonly<Cell>} cell
      */
     _jamDown(e = null, cell = null) {
         if (!this._playback) {
@@ -275,7 +275,7 @@ class AppMainElement extends HTMLElement {
     }
 
     /**
-     * @param {Module} mod
+     * @param {Readonly<Module>} mod
      */
     _setModule(mod) {
         this._module = mod

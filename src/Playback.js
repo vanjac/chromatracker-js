@@ -114,7 +114,7 @@ function initPlayback(context, mod) {
 
 /**
  * @param {Playback} playback
- * @param {Module} mod
+ * @param {Readonly<Module>} mod
  */
 function setPlaybackModule(playback, mod) {
     playback.mod = mod
@@ -195,7 +195,7 @@ function setChannelMute(playback, c, mute) {
 
 /**
  * @param {AudioContext} ctx
- * @param {Sample} sample
+ * @param {Readonly<Sample>} sample
  */
 function createSamplePlayback(ctx, sample) {
     if (sample.wave.length == 0) {
@@ -279,7 +279,7 @@ function processRow(playback) {
 /**
  * @param {Playback} playback
  * @param {ChannelPlayback} channel
- * @param {Cell} cell
+ * @param {Readonly<Cell>} cell
  */
 function processCellInst(playback, channel, cell) {
     if (cell.inst) {
@@ -302,7 +302,7 @@ function processCellInst(playback, channel, cell) {
 /**
  * @param {Playback} playback
  * @param {ChannelPlayback} channel
- * @param {Cell} cell
+ * @param {Readonly<Cell>} cell
  */
 function processCellNote(playback, channel, cell) {
     if (cell.pitch >= 0 && cell.effect != Effects.Portamento && cell.effect != Effects.VolSlidePort
@@ -316,7 +316,7 @@ function processCellNote(playback, channel, cell) {
 /**
  * @param {Playback} playback
  * @param {ChannelPlayback} channel
- * @param {Cell} cell
+ * @param {Readonly<Cell>} cell
  * @param {RowPlayback} row
  */
 function processCellFirst(playback, channel, cell, row) {
@@ -431,7 +431,7 @@ function processCellFirst(playback, channel, cell, row) {
 /**
  * @param {Playback} playback
  * @param {ChannelPlayback} channel
- * @param {Cell} cell
+ * @param {Readonly<Cell>} cell
  * @param {number} tick
  */
 function processCellRest(playback, channel, cell, tick) {
@@ -496,7 +496,7 @@ function processCellRest(playback, channel, cell, tick) {
 /**
  * @param {Playback} playback
  * @param {ChannelPlayback} channel
- * @param {Cell} cell
+ * @param {Readonly<Cell>} cell
  * @param {number} tick
  */
 function processCellAll(playback, channel, cell, tick) {
@@ -648,7 +648,7 @@ function createNoteSource(playback, inst) {
  * @param {Playback} playback
  * @param {number} id
  * @param {number} c
- * @param {Cell} cell
+ * @param {Readonly<Cell>} cell
  */
 function jamPlay(playback, id, c, cell) {
     if (cell.pitch < 0) {

@@ -5,7 +5,7 @@
 const noteNames = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-']
 
 /**
- * @param {Cell} cell cell
+ * @param {Readonly<Cell>} cell cell
  */
 function cellPitchString(cell) {
     let noteStr = (cell.pitch >= 0) ? noteNames[cell.pitch % 12] : '..'
@@ -14,14 +14,14 @@ function cellPitchString(cell) {
 }
 
 /**
- * @param {Cell} cell cell
+ * @param {Readonly<Cell>} cell cell
  */
 function cellInstString(cell) {
     return cell.inst ? cell.inst.toString().padStart(2, '0') : '..'
 }
 
 /**
- * @param {Cell} cell
+ * @param {Readonly<Cell>} cell
  */
 function cellEffectString(cell) {
     if (! (cell.effect || cell.param0 || cell.param1)) {
@@ -33,7 +33,7 @@ function cellEffectString(cell) {
 
 /**
  * @param {Element|DocumentFragment} elem
- * @param {Cell} cell
+ * @param {Readonly<Cell>} cell
  */
 function setCellContents(elem, cell) {
     elem.querySelector('#pitch').textContent = cellPitchString(cell)
