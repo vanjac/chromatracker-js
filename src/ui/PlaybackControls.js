@@ -8,7 +8,7 @@ class PlaybackControlsElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = instantiate(templates.playbackControls)
+        let fragment = templates.playbackControls.cloneNode(true)
 
         this._playRowButton = fragment.querySelector('#playRow')
         this._pauseButton = fragment.querySelector('#pause')

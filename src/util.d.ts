@@ -5,7 +5,10 @@ interface ObjectConstructor {
 
 // These are the only types we care about
 type NamedFormItem = HTMLInputElement | RadioNodeList | null
-
 interface HTMLFormControlsCollection {
     namedItem(name: string): NamedFormItem
+}
+
+interface DocumentFragment {
+    cloneNode(deep?: boolean): DocumentFragment
 }

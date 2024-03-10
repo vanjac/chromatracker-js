@@ -18,7 +18,7 @@ class PatternTableElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = instantiate(templates.patternTable)
+        let fragment = templates.patternTable.cloneNode(true)
 
         this._patternScroll = fragment.querySelector('#patternScroll')
         this._table = fragment.querySelector('table')
@@ -51,7 +51,7 @@ class PatternTableElement extends HTMLElement {
             let tr = document.createElement('tr')
             for (let c = 0; c < pattern.length; c++) {
                 let cell = pattern[c][row]
-                let cellFrag = instantiate(templates.cellTemplate)
+                let cellFrag = templates.cellTemplate.cloneNode(true)
                 setCellContents(cellFrag, cell)
 
                 let td = cellFrag.querySelector('td')

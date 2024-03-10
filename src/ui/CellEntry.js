@@ -33,7 +33,7 @@ class CellEntryElement extends HTMLElement {
         this._viewSamples = null
     }
     connectedCallback() {
-        let fragment = instantiate(templates.cellEntry)
+        let fragment = templates.cellEntry.cloneNode(true)
 
         this._entryCell = fragment.querySelector('#entryCell')
         /** @type {HTMLInputElement} */

@@ -13,7 +13,7 @@ class SampleEditElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = instantiate(templates.sampleEdit)
+        let fragment = templates.sampleEdit.cloneNode(true)
 
         /** @type {HTMLOutputElement} */
         this._sampleNumberOutput = fragment.querySelector('#number')

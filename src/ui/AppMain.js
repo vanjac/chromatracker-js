@@ -47,7 +47,7 @@ class AppMainElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = instantiate(templates.appMain)
+        let fragment = templates.appMain.cloneNode(true)
 
         /** @type {FileToolbarElement} */
         this._fileToolbar = fragment.querySelector('file-toolbar')

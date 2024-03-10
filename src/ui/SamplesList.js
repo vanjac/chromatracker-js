@@ -10,7 +10,7 @@ class SamplesListElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = instantiate(templates.samplesList)
+        let fragment = templates.samplesList.cloneNode(true)
 
         /** @type {HTMLFormElement} */
         this._list = fragment.querySelector('#sampleList')

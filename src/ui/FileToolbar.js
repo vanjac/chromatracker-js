@@ -8,7 +8,7 @@ class FileToolbarElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = instantiate(templates.fileToolbar)
+        let fragment = templates.fileToolbar.cloneNode(true)
 
         /** @type {HTMLInputElement} */
         this._titleInput = fragment.querySelector('#title')

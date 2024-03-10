@@ -11,7 +11,7 @@ class SequenceEditElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = instantiate(templates.sequenceEdit)
+        let fragment = templates.sequenceEdit.cloneNode(true)
 
         this._sequenceList = fragment.querySelector('form')
         /** @type {NamedFormItem} */
