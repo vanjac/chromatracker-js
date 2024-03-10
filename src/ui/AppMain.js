@@ -62,6 +62,8 @@ class AppMainElement extends HTMLElement {
         this._patternTable = fragment.querySelector('pattern-table')
         /** @type {CellEntryElement} */
         this._cellEntry = fragment.querySelector('cell-entry')
+        /** @type {SamplesListElement} */
+        this._samplesList = fragment.querySelector('samples-list')
         this._errors = fragment.querySelector('#errors')
 
         /** @type {HTMLFormElement} */
@@ -270,6 +272,7 @@ class AppMainElement extends HTMLElement {
         this._sequenceEdit._setSequence(this._module.sequence)
         this._patternTable._setPattern(this._module.patterns[this._selPattern()])
         this._cellEntry._setSamples(this._module.samples)
+        this._samplesList._setSamples(this._module.samples)
     }
 
     /**
