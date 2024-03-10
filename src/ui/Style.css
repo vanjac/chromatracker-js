@@ -58,6 +58,10 @@ button,
     touch-action: manipulation;
 }
 
+.label-button span {
+    flex: 1 0 0;
+}
+
 button:active,
 .label-button :active + span {
     background: #ccc;
