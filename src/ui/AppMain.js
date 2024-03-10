@@ -27,7 +27,6 @@ class AppMainElement extends HTMLElement {
     constructor() {
         super()
 
-        /** @type {Readonly<Module>} */
         this._module = createEmptyModule()
 
         /** @type {Readonly<Module>[]} */
@@ -35,14 +34,12 @@ class AppMainElement extends HTMLElement {
         this._undoCombineTag = ''
         this._unsavedChangeCount = 0
         /** @type {AudioContext} */
-        this._context
+        this._context = null
         /** @type {Playback} */
-        this._playback
+        this._playback = null
 
-        /** @type {number} */
-        this._animHandle
-        /** @type {number} */
-        this._intervalHandle
+        this._animHandle = 0
+        this._intervalHandle = 0
 
         this._queuedTime = 0
         /** @type {QueuedLine[]} */

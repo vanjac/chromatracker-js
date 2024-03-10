@@ -29,7 +29,7 @@ Playback.prototype = {
     /** @type {Readonly<Module>} */
     mod: null,
     /** @type {readonly Readonly<Sample>[]} */
-    modSamples: null,
+    modSamples: Object.freeze([]),
     tempo: 125,
     speed: 6,
     pos: 0,
@@ -42,8 +42,7 @@ Playback.prototype = {
 
 function SamplePlayback() {}
 SamplePlayback.prototype = {
-    /** @type {Int8Array} */
-    wave: null,
+    wave: Object.freeze(new Int8Array()),
     /** @type {AudioBuffer} */
     buffer: null,
 }
