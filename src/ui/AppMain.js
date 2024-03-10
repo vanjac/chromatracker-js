@@ -10,19 +10,10 @@
  */
 
 /**
- * @typedef JamTarget
- * @property {(e?: Event, cell?: Readonly<Cell>) => void} _jamDown
- * @property {(e?: Event) => void} _jamUp
+ * @implements {JamTarget}
+ * @implements {ModuleEditTarget}
+ * @implements {PatternTableTarget}
  */
-
-/**
- * @typedef ModuleEditTarget
- * @property {(callback: (mod: Readonly<Module>) => Readonly<Module>,
- *      options?: {refresh?: boolean, combineTag?: string}) => void} _changeModule
- * @property {() => void} _refreshModule
- * @property {(tag: string) => void} _clearUndoCombine
- */
-
 class AppMainElement extends HTMLElement {
     constructor() {
         super()

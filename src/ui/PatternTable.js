@@ -1,10 +1,5 @@
 'use strict'
 
-/**
- * @typedef PatternTableTarget
- * @property {(c: number, mute: boolean) => void} _setMute
- */
-
 class PatternTableElement extends HTMLElement {
     constructor() {
         super()
