@@ -19,15 +19,8 @@ class SamplesListElement extends HTMLElement {
         /** @type {SampleEditElement} */
         this._sampleEdit = fragment.querySelector('sample-edit')
 
-        fragment.querySelector('#addSample').addEventListener('click', () => {
-            let selSample = this._getSelSample()
-            this._target._changeModule(module => {
-                let [newMod, idx] = editAddSample(module)
-                selSample = idx
-                return newMod
-            })
-            this._selectSample(selSample)
-        })
+        fragment.querySelector('#addSample').addEventListener('click', () => this._addSample())
+        fragment.querySelector('#delSample').addEventListener('click', () => this._deleteSample())
 
         this.appendChild(fragment)
         this.style.display = 'contents'
@@ -85,6 +78,32 @@ class SamplesListElement extends HTMLElement {
             this._input.value = s.toString()
             this._sampleEdit._setSample(this._viewSamples[s], s)
         }
+    }
+
+    _addSample() {
+        let selSample = this._getSelSample()
+        this._target._changeModule(module => {
+            let [newMod, idx] = editAddSample(module)
+            selSample = idx
+            return newMod
+        })
+        this._selectSample(selSample)
+    }
+
+    _deleteSample() {
+        let idx = this._getSelSample()
+        let selIdx = this._viewSamples.findIndex((sample, i) => i > idx && sample)
+        if (selIdx != -1) {
+            this._selectSample(selIdx)
+        } else {
+            for (let i = idx - 1; i >= 0; i--) {
+                if (this._viewSamples[i]) {
+                    this._selectSample(i)
+                    break
+                }
+            }
+        }
+        this._target._changeModule(module => editSetSample(module, idx, null))
     }
 }
 window.customElements.define('samples-list', SamplesListElement)
