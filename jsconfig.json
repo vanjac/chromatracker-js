@@ -2,6 +2,9 @@
     "compilerOptions": {
         "target": "ES2017",
         "checkJs": true,
+        "skipLibCheck": false,
+        "noEmit": true,
+
         "strict": true,
         "strictNullChecks": false,
         "noImplicitReturns": true,
