@@ -35,6 +35,17 @@ class SampleEditElement extends HTMLElement {
         this._finetuneInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample finetune'))
 
+        /** @type {HTMLInputElement} */
+        this._fileInput = fragment.querySelector('#file')
+        this._fileInput.addEventListener('change', () => {
+            if (this._fileInput.files.length == 1) {
+                this._readAudioFile(this._fileInput.files[0])
+            }
+        })
+
+        /** @type {HTMLInputElement} */
+        this._sampleRateInput = fragment.querySelector('#sampleRate')
+
         this.appendChild(fragment)
         this.style.display = 'contents'
     }
@@ -52,6 +63,7 @@ class SampleEditElement extends HTMLElement {
         this._nameInput.value = sample.name
         this._volumeInput.valueAsNumber = sample.volume
         this._finetuneInput.valueAsNumber = sample.finetune
+        this._fileInput.value = ''
     }
 
     /**
@@ -64,6 +76,34 @@ class SampleEditElement extends HTMLElement {
         mutator(newSample)
         this._viewSample = Object.freeze(newSample) // avoid unnecessary refresh
         this._onSampleChange(this._viewSample, combineTag)
+    }
+
+    /**
+     * @param {Blob} blob
+     */
+    _readAudioFile(blob) {
+        // @ts-ignore
+        let OfflineAudioContext = window.OfflineAudioContext || window.webkitOfflineAudioContext
+        /** @type {OfflineAudioContext} */
+        let context = new OfflineAudioContext(1, 1, this._sampleRateInput.value)
+
+        let reader = new FileReader()
+        reader.onload = () => {
+            if (reader.result instanceof ArrayBuffer) {
+                context.decodeAudioData(reader.result, audioBuffer => {
+                    let data = audioBuffer.getChannelData(0)
+                    let newWave = new Int8Array(data.length)
+                    for (let i = 0; i < data.length; i++) {
+                        newWave[i] = Math.min(Math.max(data[i] * 128.0, -128), 127)
+                    }
+                    this._changeSample(sample => {
+                        sample.wave = newWave
+                        sample.loopStart = sample.loopEnd = 0
+                    }, '')
+                })
+            }
+        }
+        reader.readAsArrayBuffer(blob)
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)
