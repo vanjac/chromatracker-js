@@ -13,7 +13,6 @@ function createEmptyModule() {
  * @param {string} name
  */
 function editSetModuleName(module, name) {
-    /** @type {Module} */
     let newMod = Object.assign(new Module(), module)
     newMod.name = name
     return Object.freeze(newMod)

@@ -32,7 +32,6 @@ function expandPatterns(module, idx) {
  * @param {number} pat
  */
 function editClonePattern(module, pat) {
-    /** @type {Module} */
     let newMod = Object.assign(new Module(), module)
     newMod.patterns = Object.freeze([...module.patterns, module.patterns[pat]])
     return Object.freeze(newMod)
@@ -51,7 +50,6 @@ function editPutCell(module, p, c, r, cell, parts = CellParts.all) {
     let newCell = cellApply(module.patterns[p][c][r], cell, parts)
     let channel = immSplice(module.patterns[p][c], r, 1, Object.freeze(newCell))
     let pattern = immSplice(module.patterns[p], c, 1, channel)
-    /** @type {Module} */
     let newMod = Object.assign(new Module(), module)
     newMod.patterns = immSplice(module.patterns, p, 1, pattern)
     return Object.freeze(newMod)

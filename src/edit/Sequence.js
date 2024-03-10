@@ -19,7 +19,6 @@ function editSetPos(module, pos, pat) {
     if (pat < 0) {
         return module
     }
-    /** @type {Module} */
     let newMod = Object.assign(new Module(), module)
     newMod.sequence = immSplice(module.sequence, pos, 1, pat)
     newMod.patterns = expandPatterns(module, pat)
@@ -35,7 +34,6 @@ function editInsPos(module, pos, pat) {
     if (pat < 0) {
         return module
     }
-    /** @type {Module} */
     let newMod = Object.assign(new Module(), module)
     newMod.sequence = immSplice(module.sequence, pos, 0, pat)
     newMod.patterns = expandPatterns(module, pat)
@@ -47,7 +45,6 @@ function editInsPos(module, pos, pat) {
  * @param {number} pos
  */
 function editDelPos(module, pos) {
-    /** @type {Module} */
     let newMod = Object.assign(new Module(), module)
     newMod.sequence = immSplice(module.sequence, pos, 1)
     return Object.freeze(newMod)

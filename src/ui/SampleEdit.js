@@ -89,7 +89,6 @@ class SampleEditElement extends HTMLElement {
      * @param {string} combineTag
      */
     _changeSample(mutator, combineTag, dirty=false) {
-        /** @type {Sample} */
         let newSample = Object.assign(new Sample(), this._viewSample)
         mutator(newSample)
         let immSample = Object.freeze(newSample)
