@@ -3,6 +3,8 @@
 class SamplesListElement extends HTMLElement {
     constructor() {
         super()
+        /** @type {ModuleEditTarget} */
+        this._target = null
         /** @type {readonly Readonly<Sample>[]} */
         this._viewSamples = null
     }
@@ -13,9 +15,23 @@ class SamplesListElement extends HTMLElement {
         this._list = fragment.querySelector('form')
         /** @type {RadioNodeList} */
         this._input = null
+        /** @type {SampleEditElement} */
+        this._sampleEdit = fragment.querySelector('sample-edit')
 
         this.appendChild(fragment)
         this.style.display = 'contents'
+
+        this._sampleEdit._onSampleChange = (sample, combineTag) => (
+            this._target._changeModule(
+                module => editSetSample(module, this._getSelSample(), sample), {combineTag}))
+    }
+
+    /**
+     * @param {ModuleEditTarget} target
+     */
+    _setTarget(target) {
+        this._target = target
+        this._sampleEdit._target = this._target
     }
 
     /**
@@ -38,12 +54,15 @@ class SamplesListElement extends HTMLElement {
             let label = makeRadioButton('sample', i.toString(), `${i}: ${sample.name}`)
             label.classList.add('flex-grow')
             this._list.appendChild(label)
+            label.addEventListener('change', () => {
+                this._sampleEdit._setSample(sample)
+            })
         }
         this._input = getRadioNodeList(this._list, 'sample')
         if (this._input) {
             this._input.value = selSample.toString()
+            this._sampleEdit._setSample(samples[selSample])
         }
-        // TODO: update sample
     }
 
     _getSelSample() {

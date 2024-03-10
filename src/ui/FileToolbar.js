@@ -24,11 +24,14 @@ class FileToolbarElement extends HTMLElement {
                     b => this._readModuleBlob(b)))
         })
         fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile())
+
         this._titleInput.addEventListener('input', () =>
             this._app._changeModule(module => editSetModuleName(module, this._titleInput.value),
                 {refresh: false, combineTag: 'title'}))
         this._titleInput.addEventListener('change', () => this._app._clearUndoCombine('title'))
+
         fragment.querySelector('#patternZap').addEventListener('click', () => this._patternZap())
+        fragment.querySelector('#undo').addEventListener('click', () => this._app._undo())
 
         this.appendChild(fragment)
         this.style.display = 'contents'

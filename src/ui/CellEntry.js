@@ -55,8 +55,6 @@ class CellEntryElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._param1Select = fragment.querySelector('#param1Select')
 
-        fragment.querySelector('#undo').addEventListener('click', () => this._app._undo())
-
         addPressEvent(this._entryCell, () => this._app._jamDown())
         addReleaseEvent(this._entryCell, () => this._app._jamUp())
 
@@ -103,18 +101,6 @@ class CellEntryElement extends HTMLElement {
         })
         this._param0Select.addEventListener('input', () => this._updateCell())
         this._param1Select.addEventListener('input', () => this._updateCell())
-
-        fragment.querySelector('#setSampleVolume').addEventListener('click', () => {
-            if (!this._sampleInput) {
-                return
-            }
-            let idx = this._getSelSample()
-            let sample = this._app._module.samples[idx]
-            let result = prompt(`Sample ${idx} volume\n${sample.name}`, sample.volume.toString())
-            if (result !== null) {
-                this._app._changeModule(module => editSetSampleVolume(module, idx, Number(result)))
-            }
-        })
 
         this._updateCell()
         this._toggleEntryCellParts(this._getCellParts())
@@ -175,7 +161,7 @@ class CellEntryElement extends HTMLElement {
         if (samples == this._viewSamples) {
             return
         }
-        console.log('update samples')
+        console.log('update entry samples')
         this._viewSamples = samples
 
         let selSample = this._getSelSample()

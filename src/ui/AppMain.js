@@ -17,7 +17,7 @@
 
 /**
  * @typedef ModuleEditTarget
- * @property {(reducer: (mod: Readonly<Module>) => Readonly<Module>,
+ * @property {(callback: (mod: Readonly<Module>) => Readonly<Module>,
  *      options?: {refresh?: boolean, combineTag?: string}) => void} _changeModule
  * @property {() => void} _refreshModule
  * @property {(tag: string) => void} _clearUndoCombine
@@ -88,6 +88,7 @@ class AppMainElement extends HTMLElement {
         this._sequenceEdit._target = this
         this._patternTable._target = this
         this._cellEntry._app = this
+        this._samplesList._setTarget(this)
 
         this._patternTable._setCellParts(this._entryParts())
 
@@ -286,10 +287,10 @@ class AppMainElement extends HTMLElement {
     }
 
     /**
-     * @param {(mod: Readonly<Module>) => Readonly<Module>} reducer
+     * @param {(mod: Readonly<Module>) => Readonly<Module>} callback
      */
-    _changeModule(reducer, {refresh = true, combineTag = ''} = {}) {
-        let newMod = reducer(this._module)
+    _changeModule(callback, {refresh = true, combineTag = ''} = {}) {
+        let newMod = callback(this._module)
         this._pushUndo(combineTag)
         this._setModule(newMod)
         if (refresh) {

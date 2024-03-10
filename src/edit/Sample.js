@@ -3,13 +3,11 @@
 /**
  * @param {Readonly<Module>} module
  * @param {number} idx
- * @param {number} volume
+ * @param {Readonly<Sample>} sample
  */
-function editSetSampleVolume(module, idx, volume) {
+function editSetSample(module, idx, sample) {
     /** @type {Module} */
     let newMod = Object.assign(new Module(), module)
-    let newSample = Object.assign(new Sample(), newMod.samples[idx])
-    newSample.volume = volume
-    newMod.samples = immSplice(newMod.samples, idx, 1, Object.freeze(newSample))
+    newMod.samples = immSplice(newMod.samples, idx, 1, sample)
     return Object.freeze(newMod)
 }
