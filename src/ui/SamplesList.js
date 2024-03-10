@@ -25,7 +25,7 @@ class SamplesListElement extends HTMLElement {
         this.appendChild(fragment)
         this.style.display = 'contents'
 
-        this._sampleEdit._onSampleChange = (sample, combineTag) => (
+        this._sampleEdit._onChange = (sample, combineTag) => (
             this._target._changeModule(
                 module => editSetSample(module, this._getSelSample(), sample), {combineTag}))
     }

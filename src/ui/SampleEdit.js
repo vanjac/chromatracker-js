@@ -6,7 +6,7 @@ class SampleEditElement extends HTMLElement {
         /** @type {ModuleEditTarget & JamTarget} */
         this._target = null
         /** @type {(sample: Readonly<Sample>, combineTag: string) => void} */
-        this._onSampleChange = null
+        this._onChange = null
         /** @type {Readonly<Sample>} */
         this._viewSample = null
         this._index = 0
@@ -96,7 +96,7 @@ class SampleEditElement extends HTMLElement {
         if (!dirty) {
             this._viewSample = immSample // avoid unnecessary refresh
         }
-        this._onSampleChange(immSample, combineTag)
+        this._onChange(immSample, combineTag)
     }
 
     /**
