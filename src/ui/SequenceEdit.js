@@ -77,13 +77,13 @@ class SequenceEditElement extends HTMLElement {
     _seqInsSame() {
         this._selPos++
         this._target._changeModule(module =>
-            editInsPos(module, this._selPos, module.sequence[this._selPos]))
+            editInsPos(module, this._selPos, module.sequence[this._selPos - 1]))
     }
 
     _seqInsClone() {
         this._selPos++
         this._target._changeModule(module => {
-            module = editClonePattern(module, module.sequence[this._selPos])
+            module = editClonePattern(module, module.sequence[this._selPos - 1])
             return editInsPos(module, this._selPos, module.patterns.length - 1)
         })
     }
