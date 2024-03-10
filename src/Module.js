@@ -10,7 +10,6 @@ Sample.prototype = {
     name: '',
     /** @type {Int8Array} */
     wave: null,
-    length: 0,
     loopStart: 0,
     loopEnd: 0,
     finetune: 0, // -8 to 7

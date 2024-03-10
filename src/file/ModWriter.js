@@ -39,7 +39,7 @@ function writeModule(module) {
         }
         let sample = module.samples[s]
         writeString(buf, offset, 22, sample.name)
-        view.setUint16(offset + 22, (sample.length / 2) | 0)
+        view.setUint16(offset + 22, (sample.wave.length / 2) | 0)
         view.setUint8(offset + 24, sample.finetune & 0xf)
         view.setUint8(offset + 25, sample.volume)
         if (sample.loopStart == sample.loopEnd) {
@@ -91,9 +91,9 @@ function writeModule(module) {
     let wavePos = 1084 + patternSize * numPatterns
     for (let sample of module.samples) {
         if (sample) {
-            let waveArr = new Int8Array(buf, wavePos, sample.length & ~1)
+            let waveArr = new Int8Array(buf, wavePos, sample.wave.length & ~1)
             waveArr.set(sample.wave)
-            wavePos += sample.length & ~1
+            wavePos += sample.wave.length & ~1
         }
     }
 
@@ -111,7 +111,7 @@ function calcModuleSize(module) {
     let size = 1084 + patternSize * numPatterns
     for (let sample of module.samples) {
         if (sample) {
-            size += sample.length & ~1
+            size += sample.wave.length & ~1
         }
     }
     return size + 32

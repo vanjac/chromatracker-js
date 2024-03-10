@@ -92,8 +92,8 @@ function readModule(buf) {
         let offset = s * 30 - 10
         let sample = new Sample()
 
-        sample.length = view.getUint16(offset + 22) * 2
-        if (sample.length <= 2) {
+        let sampleLength = view.getUint16(offset + 22) * 2
+        if (sampleLength <= 2) {
             samples.push(null)
             continue
         }
@@ -112,8 +112,8 @@ function readModule(buf) {
 
         // The first two bytes will "always" (usually) be zeros but they should still be included
         // TODO: is that correct?
-        sample.wave = new Int8Array(buf, wavePos, sample.length).slice()
-        wavePos += sample.length
+        sample.wave = new Int8Array(buf, wavePos, sampleLength).slice()
+        wavePos += sampleLength
 
         samples.push(Object.freeze(sample))
     }

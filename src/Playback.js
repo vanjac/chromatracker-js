@@ -167,13 +167,13 @@ function setChannelMute(playback, c, mute) {
  * @param {Sample} sample
  */
 function createSampleAudioBuffer(ctx, sample) {
-    if (sample.length == 0) {
+    if (sample.wave.length == 0) {
         return
     }
     // TODO: support protracker one-shot loops
-    let buf = ctx.createBuffer(1, sample.length * resampleFactor, baseRate * resampleFactor)
+    let buf = ctx.createBuffer(1, sample.wave.length * resampleFactor, baseRate * resampleFactor)
     let data = buf.getChannelData(0)
-    for (let i = 0; i < sample.length; i++) {
+    for (let i = 0; i < sample.wave.length; i++) {
         let s = sample.wave[i] / 128.0
         for (let j = 0; j < resampleFactor; j++) {
             data[i * resampleFactor + j] = s
