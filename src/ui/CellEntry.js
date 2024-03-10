@@ -46,7 +46,7 @@ class CellEntryElement extends HTMLElement {
         this._pitchInput = fragment.querySelector('#pitchInput')
         /** @type {HTMLFormElement} */
         this._sampleList = fragment.querySelector('#sampleList')
-        /** @type {RadioNodeList} */
+        /** @type {NamedFormItem} */
         this._sampleInput = null
         /** @type {HTMLSelectElement} */
         this._effectSelect = fragment.querySelector('#effectSelect')
@@ -184,7 +184,7 @@ class CellEntryElement extends HTMLElement {
             label.addEventListener('touchstart', pressEvent)
             addReleaseEvent(label, e => this._app._jamUp(e))
         }
-        this._sampleInput = getRadioNodeList(this._sampleList, 'sample')
+        this._sampleInput = this._sampleList.elements.namedItem('sample')
         this._setSelSample(selSample)
     }
 
@@ -196,8 +196,8 @@ class CellEntryElement extends HTMLElement {
      * @param {number} s
      */
     _setSelSample(s) {
-        if (this._sampleInput && this._viewSamples[s]) {
-            this._sampleInput.value = s.toString()
+        if (this._viewSamples[s]) {
+            selectRadioButton(this._sampleInput, s.toString())
         }
         this._updateCell()
     }
@@ -207,8 +207,8 @@ class CellEntryElement extends HTMLElement {
         if (this._pitchEnable.checked && cell.pitch >= 0) {
             this._pitchInput.valueAsNumber = cell.pitch
         }
-        if (this._sampleEnable.checked && cell.inst && this._sampleInput) {
-            this._sampleInput.value = cell.inst.toString()
+        if (this._sampleEnable.checked && cell.inst) {
+            selectRadioButton(this._sampleInput, cell.inst.toString())
         }
         if (this._effectEnable.checked) {
             this._effectSelect.selectedIndex = cell.effect

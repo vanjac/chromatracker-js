@@ -14,7 +14,7 @@ class SamplesListElement extends HTMLElement {
 
         /** @type {HTMLFormElement} */
         this._list = fragment.querySelector('#sampleList')
-        /** @type {RadioNodeList} */
+        /** @type {NamedFormItem} */
         this._input = null
         /** @type {SampleEditElement} */
         this._sampleEdit = fragment.querySelector('sample-edit')
@@ -62,7 +62,7 @@ class SamplesListElement extends HTMLElement {
                 this._sampleEdit._setSample(sample, i)
             })
         }
-        this._input = getRadioNodeList(this._list, 'sample')
+        this._input = this._list.elements.namedItem('sample')
         this._selectSample(selSample)
     }
 
@@ -74,8 +74,8 @@ class SamplesListElement extends HTMLElement {
      * @param {number} s
      */
     _selectSample(s) {
-        if (this._input && this._viewSamples[s]) {
-            this._input.value = s.toString()
+        if (this._viewSamples[s]) {
+            selectRadioButton(this._input, s.toString())
             this._sampleEdit._setSample(this._viewSamples[s], s)
         }
     }

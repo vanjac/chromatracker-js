@@ -14,7 +14,7 @@ class SequenceEditElement extends HTMLElement {
         let fragment = instantiate(templates.sequenceEdit)
 
         this._sequenceList = fragment.querySelector('form')
-        /** @type {RadioNodeList} */
+        /** @type {NamedFormItem} */
         this._sequenceInput = null
 
         fragment.querySelector('#seqInsSame').addEventListener('click', () => this._seqInsSame())
@@ -50,8 +50,8 @@ class SequenceEditElement extends HTMLElement {
                 this._target._refreshModule()
             })
         }
-        this._sequenceInput = getRadioNodeList(this._sequenceList, 'sequence')
-        this._sequenceInput.value = this._selPos.toString()
+        this._sequenceInput = this._sequenceList.elements.namedItem('sequence')
+        selectRadioButton(this._sequenceInput, this._selPos.toString())
     }
 
     /**
@@ -59,9 +59,7 @@ class SequenceEditElement extends HTMLElement {
      */
     _setSelPos(pos) {
         this._selPos = pos
-        if (this._sequenceInput) {
-            this._sequenceInput.value = pos.toString()
-        }
+        selectRadioButton(this._sequenceInput, pos.toString())
     }
 
     _seqUp() {
