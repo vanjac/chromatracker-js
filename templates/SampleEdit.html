@@ -6,11 +6,11 @@
     </span>
     <span class="hflex">
       Volume:
-      <input id="volume" type="number">
+      <input id="volume" type="number" min="0" max="64">
     </span>
     <span class="hflex">
       Finetune:
-      <input id="finetune" type="number">
+      <input id="finetune" type="number" min="-8" max="7">
     </span>
     <span class="hflex">
       Wave file:
@@ -22,5 +22,6 @@
         </span>
       </div>
     </span>
+    <button id="jam">Listen</button>
   </div>
 </template>

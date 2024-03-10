@@ -3,12 +3,13 @@
 class SampleEditElement extends HTMLElement {
     constructor() {
         super()
-        /** @type {ModuleEditTarget} */
+        /** @type {ModuleEditTarget & JamTarget} */
         this._target = null
         /** @type {(sample: Readonly<Sample>, combineTag: string) => void} */
         this._onSampleChange = null
         /** @type {Readonly<Sample>} */
         this._viewSample = null
+        this._index = 0
     }
 
     connectedCallback() {
@@ -46,14 +47,25 @@ class SampleEditElement extends HTMLElement {
         /** @type {HTMLInputElement} */
         this._sampleRateInput = fragment.querySelector('#sampleRate')
 
+        let jamButton = fragment.querySelector('#jam')
+        addPressEvent(jamButton, e => {
+            let cell = new Cell()
+            cell.pitch = 36
+            cell.inst = this._index
+            this._target._jamDown(e, cell)
+        })
+        addReleaseEvent(jamButton, e => this._target._jamUp(e))
+
         this.appendChild(fragment)
         this.style.display = 'contents'
     }
 
     /**
      * @param {Readonly<Sample>} sample
+     * @param {number} index
      */
-    _setSample(sample) {
+    _setSample(sample, index) {
+        this._index = index
         if (sample == this._viewSample) {
             return
         }

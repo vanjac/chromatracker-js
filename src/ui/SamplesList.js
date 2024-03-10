@@ -3,7 +3,7 @@
 class SamplesListElement extends HTMLElement {
     constructor() {
         super()
-        /** @type {ModuleEditTarget} */
+        /** @type {ModuleEditTarget & JamTarget} */
         this._target = null
         /** @type {readonly Readonly<Sample>[]} */
         this._viewSamples = null
@@ -27,7 +27,7 @@ class SamplesListElement extends HTMLElement {
     }
 
     /**
-     * @param {ModuleEditTarget} target
+     * @param {ModuleEditTarget & JamTarget} target
      */
     _setTarget(target) {
         this._target = target
@@ -55,13 +55,13 @@ class SamplesListElement extends HTMLElement {
             label.classList.add('flex-grow')
             this._list.appendChild(label)
             label.addEventListener('change', () => {
-                this._sampleEdit._setSample(sample)
+                this._sampleEdit._setSample(sample, i)
             })
         }
         this._input = getRadioNodeList(this._list, 'sample')
         if (this._input) {
             this._input.value = selSample.toString()
-            this._sampleEdit._setSample(samples[selSample])
+            this._sampleEdit._setSample(samples[selSample], selSample)
         }
     }
 

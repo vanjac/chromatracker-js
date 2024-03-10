@@ -55,8 +55,8 @@ class CellEntryElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._param1Select = fragment.querySelector('#param1Select')
 
-        addPressEvent(this._entryCell, () => this._app._jamDown())
-        addReleaseEvent(this._entryCell, () => this._app._jamUp())
+        addPressEvent(this._entryCell, e => this._app._jamDown(e))
+        addReleaseEvent(this._entryCell, e => this._app._jamUp(e))
 
         let writeButton = fragment.querySelector('#write')
         addPressEvent(writeButton, e => {
