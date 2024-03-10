@@ -12,14 +12,13 @@
 .flex-grow {
     flex: 1 0 0;
 }
-.scrollable {
+.hscrollable {
     overflow-x: auto;
-    overflow-y: auto;
     /* fix scroll momentum on old Safari */
     -webkit-overflow-scrolling: touch;
 }
-.hscrollable {
-    overflow-x: auto;
+.vscrollable {
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
 .hide {
