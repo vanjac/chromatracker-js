@@ -15,6 +15,9 @@ class SampleEditElement extends HTMLElement {
     connectedCallback() {
         let fragment = instantiate(templates.sampleEdit)
 
+        /** @type {HTMLOutputElement} */
+        this._sampleNumberOutput = fragment.querySelector('#number')
+
         /** @type {HTMLInputElement} */
         this._nameInput = fragment.querySelector('#name')
         this._nameInput.addEventListener('input', () => this._changeSample(
@@ -65,17 +68,20 @@ class SampleEditElement extends HTMLElement {
      * @param {number} index
      */
     _setSample(sample, index) {
-        this._index = index
-        if (sample == this._viewSample) {
-            return
+        if (this._index != index) {
+            this._index = index
+            this._sampleNumberOutput.value = index.toString()
         }
-        console.log('update sample')
-        this._viewSample = sample
 
-        this._nameInput.value = sample.name
-        this._volumeInput.valueAsNumber = sample.volume
-        this._finetuneInput.valueAsNumber = sample.finetune
-        this._fileInput.value = ''
+        if (sample != this._viewSample) {
+            console.log('update sample')
+            this._viewSample = sample
+
+            this._nameInput.value = sample.name
+            this._volumeInput.valueAsNumber = sample.volume
+            this._finetuneInput.valueAsNumber = sample.finetune
+            this._fileInput.value = ''
+        }
     }
 
     /**
