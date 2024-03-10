@@ -159,7 +159,7 @@ class AppMainElement extends HTMLElement {
             }
         }
         process()
-        this._intervalHandle = setInterval(process, 200)
+        this._intervalHandle = window.setInterval(process, 200)
         this._animHandle = window.requestAnimationFrame(() => this._frameUpdate())
         this._playbackControls._setPlayState(true)
     }
