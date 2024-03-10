@@ -82,18 +82,21 @@ class SampleEditElement extends HTMLElement {
      * @param {(sample: Sample) => void} mutator
      * @param {string} combineTag
      */
-    _changeSample(mutator, combineTag) {
+    _changeSample(mutator, combineTag, dirty=false) {
         /** @type {Sample} */
         let newSample = Object.assign(new Sample(), this._viewSample)
         mutator(newSample)
-        this._viewSample = Object.freeze(newSample) // avoid unnecessary refresh
-        this._onSampleChange(this._viewSample, combineTag)
+        let immSample = Object.freeze(newSample)
+        if (!dirty) {
+            this._viewSample = immSample // avoid unnecessary refresh
+        }
+        this._onSampleChange(immSample, combineTag)
     }
 
     /**
-     * @param {Blob} blob
+     * @param {File} file
      */
-    _readAudioFile(blob) {
+    _readAudioFile(file) {
         // @ts-ignore
         let OfflineAudioContext = window.OfflineAudioContext || window.webkitOfflineAudioContext
         /** @type {OfflineAudioContext} */
@@ -111,13 +114,14 @@ class SampleEditElement extends HTMLElement {
                     this._changeSample(sample => {
                         sample.wave = newWave
                         sample.loopStart = sample.loopEnd = 0
-                    }, '')
+                        sample.name = file.name.replace(/\.[^/.]+$/, '') // remove extension
+                    }, '', true)
                 }, error => {
                     window.alert(`Error reading audio file.\n${error.message}`)
                 })
             }
         }
-        reader.readAsArrayBuffer(blob)
+        reader.readAsArrayBuffer(file)
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)
