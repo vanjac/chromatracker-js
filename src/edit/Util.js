@@ -12,3 +12,12 @@ function immSplice(array, start, deleteCount, ...items) {
     mutArr.splice(start, deleteCount, ...items)
     return Object.freeze(mutArr)
 }
+
+/**
+ * @template {{}} T
+ * @param {T} target
+ * @param {Partial<T>[]} sources
+ */
+function freezeAssign(target, ...sources) {
+    return Object.freeze(Object.assign(target, ...sources))
+}

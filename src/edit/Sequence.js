@@ -4,10 +4,9 @@
  * @param {Readonly<Module>} module
  */
 function editPatternZap(module) {
-    let newMod = Object.assign(new Module(), module)
-    newMod.patterns = Object.freeze([createPattern(newMod)])
-    newMod.sequence = Object.freeze([0])
-    return Object.freeze(newMod)
+    let sequence = Object.freeze([0])
+    let patterns = Object.freeze([createPattern(module)])
+    return freezeAssign(new Module(), module, {sequence, patterns})
 }
 
 /**
@@ -19,10 +18,9 @@ function editSetPos(module, pos, pat) {
     if (pat < 0) {
         return module
     }
-    let newMod = Object.assign(new Module(), module)
-    newMod.sequence = immSplice(module.sequence, pos, 1, pat)
-    newMod.patterns = expandPatterns(module, pat)
-    return Object.freeze(newMod)
+    let sequence = immSplice(module.sequence, pos, 1, pat)
+    let patterns = expandPatterns(module, pat)
+    return freezeAssign(new Module(), module, {sequence, patterns})
 }
 
 /**
@@ -34,10 +32,9 @@ function editInsPos(module, pos, pat) {
     if (pat < 0) {
         return module
     }
-    let newMod = Object.assign(new Module(), module)
-    newMod.sequence = immSplice(module.sequence, pos, 0, pat)
-    newMod.patterns = expandPatterns(module, pat)
-    return Object.freeze(newMod)
+    let sequence = immSplice(module.sequence, pos, 0, pat)
+    let patterns = expandPatterns(module, pat)
+    return freezeAssign(new Module(), module, {sequence, patterns})
 }
 
 /**
@@ -45,7 +42,5 @@ function editInsPos(module, pos, pat) {
  * @param {number} pos
  */
 function editDelPos(module, pos) {
-    let newMod = Object.assign(new Module(), module)
-    newMod.sequence = immSplice(module.sequence, pos, 1)
-    return Object.freeze(newMod)
+    return freezeAssign(new Module(), module, {sequence: immSplice(module.sequence, pos, 1)})
 }

@@ -7,10 +7,8 @@
 function editAddSample(module) {
     let emptyIndex = module.samples.findIndex((sample, i) => i != 0 && !sample)
     if (emptyIndex == -1) { emptyIndex = module.samples.length }
-    /** @type {Module} */
-    let newMod = Object.assign(new Module(), module)
-    newMod.samples = immSplice(newMod.samples, emptyIndex, 1, new Sample())
-    return [Object.freeze(newMod), emptyIndex]
+    let samples = immSplice(module.samples, emptyIndex, 1, new Sample())
+    return [freezeAssign(new Module(), module, {samples}), emptyIndex]
 }
 
 /**
@@ -19,7 +17,5 @@ function editAddSample(module) {
  * @param {Readonly<Sample>} sample
  */
 function editSetSample(module, idx, sample) {
-    let newMod = Object.assign(new Module(), module)
-    newMod.samples = immSplice(newMod.samples, idx, 1, sample)
-    return Object.freeze(newMod)
+    return freezeAssign(new Module(), module, {samples: immSplice(module.samples, idx, 1, sample)})
 }
