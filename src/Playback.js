@@ -282,9 +282,9 @@ function processRow(playback) {
  * @param {Readonly<Cell>} cell
  */
 function processCellInst(playback, channel, cell) {
-    if (cell.inst) {
+    let sample = playback.mod.samples[cell.inst]
+    if (sample) {
         // TODO: support sample swapping
-        let sample = playback.mod.samples[cell.inst]
         channel.sample = cell.inst
         channel.volume = sample.volume
         // this is how Protracker behaves, kinda (sample offsets are sticky)
@@ -305,9 +305,9 @@ function processCellInst(playback, channel, cell) {
  * @param {Readonly<Cell>} cell
  */
 function processCellNote(playback, channel, cell) {
-    if (cell.pitch >= 0 && cell.effect != Effects.Portamento && cell.effect != Effects.VolSlidePort
-            && channel.sample) {
-        let sample = playback.mod.samples[channel.sample]
+    let sample = playback.mod.samples[channel.sample]
+    if (cell.pitch >= 0 && sample
+            && cell.effect != Effects.Portamento && cell.effect != Effects.VolSlidePort) {
         channel.period = pitchToPeriod(cell.pitch, sample.finetune)
         playNote(playback, channel)
     }
@@ -326,12 +326,13 @@ function processCellFirst(playback, channel, cell, row) {
                 channel.memPort = cell.paramByte()
             }
             // fall through!
-        case Effects.VolSlidePort:
-            if (cell.pitch >= 0 && channel.sample) {
-                let sample = playback.mod.samples[channel.sample]
+        case Effects.VolSlidePort: {
+            let sample = playback.mod.samples[channel.sample]
+            if (cell.pitch >= 0 && sample) {
                 channel.portTarget = pitchToPeriod(cell.pitch, sample.finetune)
             }
             break
+        }
         case Effects.Vibrato:
             if (cell.param0) {
                 channel.vibrato.speed = cell.param0
@@ -475,13 +476,14 @@ function processCellRest(playback, channel, cell, tick) {
                         channel.volume = 0
                     }
                     break
-                case ExtEffects.NoteDelay:
-                    if (tick == cell.param1 && channel.sample) {
-                        let sample = playback.mod.samples[channel.sample]
+                case ExtEffects.NoteDelay: {
+                    let sample = playback.mod.samples[channel.sample]
+                    if (tick == cell.param1 && sample) {
                         channel.period = pitchToPeriod(cell.pitch, sample.finetune)
                         playNote(playback, channel)
                     }
                     break
+                }
             }
             break
     }
@@ -635,9 +637,10 @@ function playNote(playback, channel) {
  * @param {number} inst
  */
 function createNoteSource(playback, inst) {
+    let sample = playback.mod.samples[inst]
+    if (!sample) { return }
     let source = playback.ctx.createBufferSource()
     source.buffer = playback.samples[inst].buffer
-    let sample = playback.mod.samples[inst]
     source.loop = sample.loopEnd != sample.loopStart
     source.loopStart = sample.loopStart / baseRate
     source.loopEnd = sample.loopEnd / baseRate
@@ -666,8 +669,8 @@ function jamPlay(playback, id, c, cell) {
 
     initChannelNodes(playback, jam)
     processCellInst(playback, jam, cell)
-    if (jam.sample) {
-        let sample = playback.mod.samples[jam.sample]
+    let sample = playback.mod.samples[jam.sample]
+    if (sample) {
         jam.period = pitchToPeriod(cell.pitch, sample.finetune)
         processCellFirst(playback, jam, cell, new RowPlayback())
 
