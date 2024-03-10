@@ -50,6 +50,7 @@ body {
 button,
 .label-button span {
     display: inline-flex;
+    justify-content: center;
     padding: 6pt 8pt;
     border: 1pt solid #888;
     background: #eee;

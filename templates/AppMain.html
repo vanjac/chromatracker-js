@@ -1,8 +1,25 @@
 <template id="appMain">
+  <div id="errors"></div>
   <file-toolbar></file-toolbar>
   <playback-controls></playback-controls>
-  <sequence-edit></sequence-edit>
-  <pattern-table></pattern-table>
-  <div id="errors"></div>
-  <cell-entry></cell-entry>
+
+  <form id="appTabs" class="hflex">
+    <label class="label-button flex-grow">
+      <input type="radio" name="app-tab" value="patterns" checked>
+      <span class="flex-grow">Patterns</span>
+    </label>
+    <label class="label-button flex-grow">
+      <input type="radio" name="app-tab" value="samples">
+      <span class="flex-grow">Samples</span>
+    </label>
+  </form>
+  <div id="appTabBody" class="vflex flex-grow">
+    <div id="patterns" class="vflex flex-grow">
+      <sequence-edit></sequence-edit>
+      <pattern-table></pattern-table>
+      <cell-entry></cell-entry>
+    </div>
+    <div id="samples" class="vflex flex-grow hide">
+    </div>
+  </div>
 </template>

@@ -64,6 +64,20 @@ class AppMainElement extends HTMLElement {
         this._cellEntry = fragment.querySelector('cell-entry')
         this._errors = fragment.querySelector('#errors')
 
+        /** @type {HTMLFormElement} */
+        let tabForm = fragment.querySelector('#appTabs')
+        let tabBody = fragment.querySelector('#appTabBody')
+        for (let tabButton of tabForm.elements) {
+            if (tabButton instanceof HTMLInputElement) {
+                let tabName = tabButton.value
+                tabButton.addEventListener('change', () => {
+                    for (let element of tabBody.children) {
+                        element.classList.toggle('hide', element.id != tabName)
+                    }
+                })
+            }
+        }
+
         this.appendChild(fragment)
         this.style.display = 'contents'
 
