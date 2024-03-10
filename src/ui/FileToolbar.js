@@ -15,7 +15,7 @@ class FileToolbarElement extends HTMLElement {
 
         /** @type {HTMLInputElement} */
         let fileSelect = fragment.querySelector('#fileSelect')
-        fileSelect.addEventListener('change', e => {
+        fileSelect.addEventListener('change', () => {
             if (fileSelect.files.length == 1) {
                 this._readModuleBlob(fileSelect.files[0])
             }

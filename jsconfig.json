@@ -4,5 +4,7 @@
         "checkJs": true,
         "strict": true,
         "strictNullChecks": false,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
     },
 }

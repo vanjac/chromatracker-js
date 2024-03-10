@@ -638,7 +638,7 @@ function playNote(playback, channel) {
  */
 function createNoteSource(playback, inst) {
     let sample = playback.mod.samples[inst]
-    if (!sample) { return }
+    if (!sample) { return null }
     let source = playback.ctx.createBufferSource()
     source.buffer = playback.samples[inst].buffer
     source.loop = sample.loopEnd != sample.loopStart

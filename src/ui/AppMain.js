@@ -89,11 +89,7 @@ class AppMainElement extends HTMLElement {
 
         this._patternTable._setCellParts(this._entryParts())
 
-        window.onbeforeunload = () => {
-            if (this._unsavedChangeCount) {
-                return 'You have unsaved changes'
-            }
-        }
+        window.onbeforeunload = () => (this._unsavedChangeCount ? 'You have unsaved changes' : null)
         window.onerror = (message, source, line) => {
             this._errors.insertAdjacentHTML('beforeend',
                 `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`)
