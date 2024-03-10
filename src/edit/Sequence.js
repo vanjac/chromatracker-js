@@ -2,49 +2,11 @@
 
 /**
  * @param {Readonly<Module>} module
- * @returns {Readonly<Pattern>}
- */
-function createPattern(module) {
-    return Object.freeze([...Array(module.numChannels)].map(() =>
-        Object.freeze([...Array(numRows)].map(() =>
-            Object.freeze(new Cell()))))) // lisp is so cool
-}
-
-/**
- * @param {Readonly<Module>} module
- * @param {number} idx
- * @returns {readonly Readonly<Pattern>[]}
- */
-function expandPatterns(module, idx) {
-    if (idx < module.patterns.length) {
-        return module.patterns
-    }
-    let newPatterns = [...module.patterns]
-    while (idx >= newPatterns.length) {
-        console.log('Make new pattern')
-        newPatterns.push(createPattern(module))
-    }
-    return Object.freeze(newPatterns)
-}
-
-/**
- * @param {Readonly<Module>} module
  */
 function editPatternZap(module) {
     let newMod = Object.assign(new Module(), module)
     newMod.patterns = Object.freeze([createPattern(newMod)])
     newMod.sequence = Object.freeze([0])
-    return Object.freeze(newMod)
-}
-
-/**
- * @param {Readonly<Module>} module
- * @param {number} pat
- */
-function editClonePattern(module, pat) {
-    /** @type {Module} */
-    let newMod = Object.assign(new Module(), module)
-    newMod.patterns = Object.freeze([...module.patterns, module.patterns[pat]])
     return Object.freeze(newMod)
 }
 
