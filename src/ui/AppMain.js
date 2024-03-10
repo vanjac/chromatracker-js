@@ -112,6 +112,7 @@ class AppMainElement extends HTMLElement {
         this._unsavedChangeCount = 0
     }
 
+    // Must be called as result of user interaction
     _resetPlayback() {
         if (this._intervalHandle) {
             this._pause()
@@ -120,6 +121,8 @@ class AppMainElement extends HTMLElement {
             // @ts-ignore
             let AudioContext = window.AudioContext || window.webkitAudioContext
             this._context = new AudioContext({latencyHint: 'interactive'})
+        } else if (this._context.state != 'running') {
+            this._context.resume()
         }
         this._playback = initPlayback(this._context, this._module)
 
@@ -131,6 +134,15 @@ class AppMainElement extends HTMLElement {
 
         this._playback.userPatternLoop = this._playbackControls._getPatternLoop()
         return this._playback
+    }
+
+    // Must be called as result of user interaction
+    _enablePlayback() {
+        if (!this._playback) {
+            this._resetPlayback()
+        } else if (this._context.state != 'running') {
+            this._context.resume()
+        }
     }
 
     _play() {
@@ -176,9 +188,7 @@ class AppMainElement extends HTMLElement {
      * @param {Readonly<Cell>} cell
      */
     _jamDown(e = null, cell = null) {
-        if (!this._playback) {
-            this._resetPlayback()
-        }
+        this._enablePlayback()
         if (!cell) {
             cell = this._cellEntry._getJamCell()
         }
