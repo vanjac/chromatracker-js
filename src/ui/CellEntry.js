@@ -27,8 +27,8 @@ function addReleaseEvent(elem, handler) {
 class CellEntryElement extends HTMLElement {
     constructor() {
         super()
-        /** @type {AppMainElement} */
-        this._app = null
+        /** @type {CellEntryTarget & JamTarget} */
+        this._target = null
         /** @type {readonly Readonly<Sample>[]} */
         this._viewSamples = null
     }
@@ -55,43 +55,43 @@ class CellEntryElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._param1Select = fragment.querySelector('#param1Select')
 
-        addPressEvent(this._entryCell, e => this._app._jamDown(e))
-        addReleaseEvent(this._entryCell, e => this._app._jamUp(e))
+        addPressEvent(this._entryCell, e => this._target._jamDown(e))
+        addReleaseEvent(this._entryCell, e => this._target._jamUp(e))
 
         let writeButton = fragment.querySelector('#write')
         addPressEvent(writeButton, e => {
-            this._app._putCell(this._getCell(), this._getCellParts())
-            this._app._jamDown(e, this._app._selCell())
-            this._app._advance()
+            this._target._putCell(this._getCell(), this._getCellParts())
+            this._target._jamDown(e, this._target._selCell())
+            this._target._advance()
         })
-        addReleaseEvent(writeButton, e => this._app._jamUp(e))
+        addReleaseEvent(writeButton, e => this._target._jamUp(e))
 
         let clearButton = fragment.querySelector('#clear')
         addPressEvent(clearButton, e => {
-            this._app._putCell(new Cell(), this._getCellParts())
-            this._app._jamDown(e, this._app._selCell())
-            this._app._advance()
+            this._target._putCell(new Cell(), this._getCellParts())
+            this._target._jamDown(e, this._target._selCell())
+            this._target._advance()
         })
-        addReleaseEvent(clearButton, e => this._app._jamUp(e))
+        addReleaseEvent(clearButton, e => this._target._jamUp(e))
 
         let liftButton = fragment.querySelector('#lift')
         addPressEvent(liftButton, e => {
             this._liftCell()
-            this._app._jamDown(e)
+            this._target._jamDown(e)
         })
-        addReleaseEvent(liftButton, e => this._app._jamUp(e))
+        addReleaseEvent(liftButton, e => this._target._jamUp(e))
 
-        this._pitchEnable.addEventListener('change', () => this._app._updateEntryParts())
-        this._sampleEnable.addEventListener('change', () => this._app._updateEntryParts())
-        this._effectEnable.addEventListener('change', () => this._app._updateEntryParts())
+        this._pitchEnable.addEventListener('change', () => this._target._updateEntryParts())
+        this._sampleEnable.addEventListener('change', () => this._target._updateEntryParts())
+        this._effectEnable.addEventListener('change', () => this._target._updateEntryParts())
 
-        this._pitchInput.addEventListener('mousedown', () => this._app._jamDown())
-        this._pitchInput.addEventListener('touchstart', () => this._app._jamDown())
-        this._pitchInput.addEventListener('mouseup', () => this._app._jamUp())
-        this._pitchInput.addEventListener('touchend', () => this._app._jamUp())
+        this._pitchInput.addEventListener('mousedown', () => this._target._jamDown())
+        this._pitchInput.addEventListener('touchstart', () => this._target._jamDown())
+        this._pitchInput.addEventListener('mouseup', () => this._target._jamUp())
+        this._pitchInput.addEventListener('touchend', () => this._target._jamUp())
         this._pitchInput.addEventListener('input', () => {
-            this._app._jamUp()
-            this._app._jamDown()
+            this._target._jamUp()
+            this._target._jamDown()
             this._updateCell()
         })
 
@@ -178,11 +178,11 @@ class CellEntryElement extends HTMLElement {
              */
             let pressEvent = e => {
                 this._setSelSample(i)
-                this._app._jamDown(e)
+                this._target._jamDown(e)
             }
             label.addEventListener('mousedown', pressEvent)
             label.addEventListener('touchstart', pressEvent)
-            addReleaseEvent(label, e => this._app._jamUp(e))
+            addReleaseEvent(label, e => this._target._jamUp(e))
         }
         this._sampleInput = this._sampleList.elements.namedItem('sample')
         this._setSelSample(selSample)
@@ -203,7 +203,7 @@ class CellEntryElement extends HTMLElement {
     }
 
     _liftCell() {
-        let cell = this._app._selCell()
+        let cell = this._target._selCell()
         if (this._pitchEnable.checked && cell.pitch >= 0) {
             this._pitchInput.valueAsNumber = cell.pitch
         }

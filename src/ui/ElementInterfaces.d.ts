@@ -15,3 +15,10 @@ interface ModuleEditTarget {
 interface PatternTableTarget {
     _setMute(c: number, mute: boolean): void
 }
+
+interface CellEntryTarget {
+    _putCell(cell: Readonly<Cell>, parts: CellParts): void
+    _selCell(): Readonly<Cell>
+    _advance(): void
+    _updateEntryParts(): void
+}

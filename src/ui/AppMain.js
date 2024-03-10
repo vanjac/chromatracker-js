@@ -13,6 +13,7 @@
  * @implements {JamTarget}
  * @implements {ModuleEditTarget}
  * @implements {PatternTableTarget}
+ * @implements {CellEntryTarget}
  */
 class AppMainElement extends HTMLElement {
     constructor() {
@@ -75,7 +76,7 @@ class AppMainElement extends HTMLElement {
         this._playbackControls._app = this
         this._sequenceEdit._target = this
         this._patternTable._target = this
-        this._cellEntry._app = this
+        this._cellEntry._target = this
         this._samplesList._setTarget(this)
 
         this._patternTable._setCellParts(this._entryParts())
