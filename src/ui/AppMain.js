@@ -282,7 +282,7 @@ class AppMainElement extends HTMLElement {
     _setModule(mod) {
         this._module = mod
         if (this._playback) {
-            this._playback.mod = mod
+            setPlaybackModule(this._playback, mod)
         }
     }
 

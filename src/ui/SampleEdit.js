@@ -100,6 +100,8 @@ class SampleEditElement extends HTMLElement {
                         sample.wave = newWave
                         sample.loopStart = sample.loopEnd = 0
                     }, '')
+                }, error => {
+                    window.alert(`Error reading audio file.\n${error.message}`)
                 })
             }
         }

@@ -16,7 +16,7 @@ const resampleFactor = 3
 const minPeriod = 15
 
 function Playback() {
-    /** @type {AudioBuffer[]} */
+    /** @type {SamplePlayback[]} */
     this.samples = []
     /** @type {ChannelPlayback[]} */
     this.channels = []
@@ -28,6 +28,8 @@ Playback.prototype = {
     ctx: null,
     /** @type {Readonly<Module>} */
     mod: null,
+    /** @type {readonly Readonly<Sample>[]} */
+    modSamples: null,
     tempo: 125,
     speed: 6,
     pos: 0,
@@ -36,6 +38,14 @@ Playback.prototype = {
     patLoopCount: 0,
     time: 0,
     userPatternLoop: false,
+}
+
+function SamplePlayback() {}
+SamplePlayback.prototype = {
+    /** @type {Int8Array} */
+    wave: null,
+    /** @type {AudioBuffer} */
+    buffer: null,
 }
 
 function ChannelPlayback() {
@@ -91,10 +101,7 @@ RowPlayback.prototype = {
 function initPlayback(context, mod) {
     let playback = new Playback()
     playback.ctx = context
-    playback.mod = mod
-    playback.samples = mod.samples.map(s => (
-        s ? createSampleAudioBuffer(context, s) : null
-    ))
+    setPlaybackModule(playback, mod)
     for (let c = 0; c < mod.numChannels; c++) {
         let channel = new ChannelPlayback()
         playback.channels.push(channel)
@@ -104,6 +111,31 @@ function initPlayback(context, mod) {
     playback.time = context.currentTime
 
     return playback
+}
+
+/**
+ * @param {Playback} playback
+ * @param {Module} mod
+ */
+function setPlaybackModule(playback, mod) {
+    playback.mod = mod
+    if (playback.modSamples == mod.samples) {
+        return
+    }
+    console.log('update playback sample list')
+    playback.modSamples = mod.samples
+
+    playback.samples.length = mod.samples.length
+    for (let i = 0; i < mod.samples.length; i++) {
+        let sample = mod.samples[i]
+        let sp = playback.samples[i]
+        if (sample && (!sp || sp.wave != sample.wave)) {
+            console.log('update playback sample')
+            playback.samples[i] = createSamplePlayback(playback.ctx, sample)
+        } else if (!sample) {
+            playback.samples[i] = null
+        }
+    }
 }
 
 /**
@@ -166,20 +198,22 @@ function setChannelMute(playback, c, mute) {
  * @param {AudioContext} ctx
  * @param {Sample} sample
  */
-function createSampleAudioBuffer(ctx, sample) {
+function createSamplePlayback(ctx, sample) {
     if (sample.wave.length == 0) {
-        return
+        return null
     }
+    let sp = new SamplePlayback()
+    sp.wave = sample.wave
     // TODO: support protracker one-shot loops
-    let buf = ctx.createBuffer(1, sample.wave.length * resampleFactor, baseRate * resampleFactor)
-    let data = buf.getChannelData(0)
+    sp.buffer = ctx.createBuffer(1, sample.wave.length * resampleFactor, baseRate * resampleFactor)
+    let data = sp.buffer.getChannelData(0)
     for (let i = 0; i < sample.wave.length; i++) {
         let s = sample.wave[i] / 128.0
         for (let j = 0; j < resampleFactor; j++) {
             data[i * resampleFactor + j] = s
         }
     }
-    return buf
+    return sp
 }
 
 /**
@@ -603,7 +637,7 @@ function playNote(playback, channel) {
  */
 function createNoteSource(playback, inst) {
     let source = playback.ctx.createBufferSource()
-    source.buffer = playback.samples[inst]
+    source.buffer = playback.samples[inst].buffer
     let sample = playback.mod.samples[inst]
     source.loop = sample.loopEnd != sample.loopStart
     source.loopStart = sample.loopStart / baseRate
