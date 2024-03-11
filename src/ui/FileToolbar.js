@@ -3,15 +3,12 @@
 class FileToolbarElement extends HTMLElement {
     constructor() {
         super()
-        /** @type {FileToolbarTarget & ModuleEditTarget} */
+        /** @type {FileToolbarTarget} */
         this._target = null
     }
 
     connectedCallback() {
         let fragment = templates.fileToolbar.cloneNode(true)
-
-        /** @type {HTMLInputElement} */
-        this._titleInput = fragment.querySelector('#title')
 
         /** @type {HTMLInputElement} */
         let fileSelect = fragment.querySelector('#fileSelect')
@@ -27,22 +24,8 @@ class FileToolbarElement extends HTMLElement {
         })
         fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile())
 
-        this._titleInput.addEventListener('input', () =>
-            this._target._changeModule(module => editSetModuleName(module, this._titleInput.value),
-                {refresh: false, combineTag: 'title'}))
-        this._titleInput.addEventListener('change', () => this._target._clearUndoCombine('title'))
-
-        fragment.querySelector('#patternZap').addEventListener('click', () => this._patternZap())
-
         this.style.display = 'contents'
         this.appendChild(fragment)
-    }
-
-    /**
-     * @param {string} title
-     */
-    _setTitle(title) {
-        this._titleInput.value = title
     }
 
     /**
@@ -53,7 +36,6 @@ class FileToolbarElement extends HTMLElement {
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
                 let mod = Object.freeze(readModule(reader.result))
-                console.log(mod)
                 this._target._moduleLoaded(mod)
             }
         }
@@ -66,10 +48,6 @@ class FileToolbarElement extends HTMLElement {
         console.log(url)
         window.open(url)
         this._target._moduleSaved()
-    }
-
-    _patternZap() {
-        this._target._changeModule(module => editPatternZap(module))
     }
 }
 window.customElements.define('file-toolbar', FileToolbarElement)

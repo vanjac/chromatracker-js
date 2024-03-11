@@ -45,6 +45,8 @@ class AppMainElement extends HTMLElement {
 
         /** @type {FileToolbarElement} */
         this._fileToolbar = fragment.querySelector('file-toolbar')
+        /** @type {ModulePropertiesElement} */
+        this._moduleProperties = fragment.querySelector('module-properties')
         /** @type {PlaybackControlsElement} */
         this._playbackControls = fragment.querySelector('playback-controls')
         /** @type {SequenceEditElement} */
@@ -75,6 +77,7 @@ class AppMainElement extends HTMLElement {
         this.appendChild(fragment)
 
         this._fileToolbar._target = this
+        this._moduleProperties._target = this
         this._playbackControls._target = this
         this._sequenceEdit._target = this
         this._patternTable._target = this
@@ -110,6 +113,7 @@ class AppMainElement extends HTMLElement {
      * @param {Readonly<Module>} mod
      */
     _moduleLoaded(mod) {
+        console.log(mod)
         this._module = mod
         this._resetEditorState()
         this._resetPlayback()
@@ -278,11 +282,13 @@ class AppMainElement extends HTMLElement {
     }
 
     _refreshModule() {
-        this._fileToolbar._setTitle(this._module.name)
+        console.groupCollapsed('refresh')
+        this._moduleProperties._setModule(this._module)
         this._sequenceEdit._setSequence(this._module.sequence)
         this._patternTable._setPattern(this._module.patterns[this._selPattern()])
         this._cellEntry._setSamples(this._module.samples)
         this._samplesList._setSamples(this._module.samples)
+        console.groupEnd()
     }
 
     /**
@@ -336,6 +342,7 @@ class AppMainElement extends HTMLElement {
             this._refreshModule()
             this._unsavedChangeCount--
             this._undoCombineTag = ''
+            console.log(this._module)
         }
     }
 
