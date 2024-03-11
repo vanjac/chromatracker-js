@@ -253,7 +253,7 @@ class AppMainElement extends HTMLElement {
             if (this._playbackControls._getFollow()) {
                 this._sequenceEdit._setSelPos(curLine.pos)
                 this._patternTable._selRow = curLine.row
-                this._refreshModule()
+                this._refreshPattern()
                 this._patternTable._updateSelCell()
                 this._patternTable._scrollToSelCell()
             }
@@ -285,10 +285,14 @@ class AppMainElement extends HTMLElement {
         console.groupCollapsed('refresh')
         this._moduleProperties._setModule(this._module)
         this._sequenceEdit._setSequence(this._module.sequence)
-        this._patternTable._setPattern(this._module.patterns[this._selPattern()])
+        this._refreshPattern()
         this._cellEntry._setSamples(this._module.samples)
         this._samplesList._setSamples(this._module.samples)
         console.groupEnd()
+    }
+
+    _refreshPattern() {
+        this._patternTable._setPattern(this._module.patterns[this._selPattern()])
     }
 
     /**
