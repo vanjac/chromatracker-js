@@ -25,6 +25,10 @@ body {
     user-select: none;
     -webkit-user-select: none;
 }
+output {
+    user-select: text;
+    -webkit-user-select: text;
+}
 
 img {
     /* no drag-and-drop, long tap, right click... */
