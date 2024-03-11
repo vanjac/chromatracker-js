@@ -3,8 +3,8 @@
 class PlaybackControlsElement extends HTMLElement {
     constructor() {
         super()
-        /** @type {AppMainElement} */
-        this._app = null
+        /** @type {PlaybackControlsTarget} */
+        this._target = null
     }
 
     connectedCallback() {
@@ -22,29 +22,26 @@ class PlaybackControlsElement extends HTMLElement {
         this._speedInput = fragment.querySelector('#speed')
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
-            this._app._resetPlayback()
-            this._app._play()
+            this._target._resetPlayback()
+            this._target._play()
         })
         fragment.querySelector('#playPattern').addEventListener('click', () => {
-            let playback = this._app._resetPlayback()
+            let playback = this._target._resetPlayback()
             this._restorePlaybackTempo(playback)
-            playback.pos = this._app._selPos()
-            this._app._play()
+            playback.pos = this._target._selPos()
+            this._target._play()
         })
         this._playRowButton.addEventListener('click', () => {
-            let playback = this._app._resetPlayback()
+            let playback = this._target._resetPlayback()
             this._restorePlaybackTempo(playback)
-            playback.pos = this._app._selPos()
-            playback.row = this._app._selRow()
-            this._app._play()
+            playback.pos = this._target._selPos()
+            playback.row = this._target._selRow()
+            this._target._play()
         })
-        this._pauseButton.addEventListener('click', () => this._app._pause())
-        fragment.querySelector('#patternLoop').addEventListener('click', () => {
-            if (this._app._playback) {
-                this._app._playback.userPatternLoop = this._getPatternLoop()
-            }
-        })
-        fragment.querySelector('#undo').addEventListener('click', () => this._app._undo())
+        this._pauseButton.addEventListener('click', () => this._target._pause())
+        fragment.querySelector('#patternLoop').addEventListener('click',
+            () => this._target._updatePlaySettings())
+        fragment.querySelector('#undo').addEventListener('click', () => this._target._undo())
 
         this.appendChild(fragment)
         this.style.display = 'contents'

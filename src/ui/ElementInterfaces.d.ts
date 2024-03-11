@@ -28,3 +28,13 @@ interface FileToolbarTarget {
     _moduleLoaded(mod: Readonly<Module>): void
     _moduleSaved(): void
 }
+
+interface PlaybackControlsTarget {
+    _resetPlayback(): Playback
+    _play(): void
+    _pause(): void
+    _updatePlaySettings(): void
+    _selPos(): number
+    _selRow(): number
+    _undo(): void
+}

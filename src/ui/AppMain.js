@@ -15,6 +15,7 @@
  * @implements {PatternTableTarget}
  * @implements {CellEntryTarget}
  * @implements {FileToolbarTarget}
+ * @implements {PlaybackControlsTarget}
  */
 class AppMainElement extends HTMLElement {
     constructor() {
@@ -74,7 +75,7 @@ class AppMainElement extends HTMLElement {
         this.style.display = 'contents'
 
         this._fileToolbar._target = this
-        this._playbackControls._app = this
+        this._playbackControls._target = this
         this._sequenceEdit._target = this
         this._patternTable._target = this
         this._cellEntry._target = this
@@ -138,7 +139,7 @@ class AppMainElement extends HTMLElement {
             }
         }
 
-        this._playback.userPatternLoop = this._playbackControls._getPatternLoop()
+        this._updatePlaySettings()
         return this._playback
     }
 
@@ -176,6 +177,12 @@ class AppMainElement extends HTMLElement {
             this._queuedTime = 0
             this._intervalHandle = null
             this._playbackControls._setPlayState(false)
+        }
+    }
+
+    _updatePlaySettings() {
+        if (this._playback) {
+            this._playback.userPatternLoop = this._playbackControls._getPatternLoop()
         }
     }
 
