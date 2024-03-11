@@ -478,7 +478,7 @@ function processCellRest(playback, channel, cell, tick) {
                     break
                 case ExtEffects.NoteDelay: {
                     let sample = playback.mod.samples[channel.sample]
-                    if (tick == cell.param1 && sample) {
+                    if (tick == cell.param1 && cell.pitch >= 0 && sample) {
                         channel.period = pitchToPeriod(cell.pitch, sample.finetune)
                         playNote(playback, channel)
                     }
@@ -565,7 +565,9 @@ function calcPanning(panning) {
  * @param {number} finetune
  */
 function pitchToPeriod(pitch, finetune) {
-    return periodTable[finetune + 8][pitch]
+    let period = periodTable[finetune + 8][pitch]
+    if (!period) { throw Error('Invalid pitch') }
+    return period
 }
 
 /**
@@ -606,17 +608,19 @@ function calcOscillator(osc, sawDir) {
  * @param {ChannelPlayback} channel
  */
 function playNote(playback, channel) {
-    if (!channel.sample) {
+    let source = createNoteSource(playback, channel.sample)
+    if (!source) {
         return
     }
     if (channel.source) {
         channel.source.stop(playback.time)
     }
-    channel.source = createNoteSource(playback, channel.sample)
-    channel.source.connect(channel.gain)
-    channel.source.start(playback.time, calcSampleOffset(channel.sampleOffset))
-    channel.activeSources.add(channel.source)
-    channel.source.onended = e => {
+
+    channel.source = source
+    source.connect(channel.gain)
+    source.start(playback.time, calcSampleOffset(channel.sampleOffset))
+    channel.activeSources.add(source)
+    source.onended = e => {
         if (e.target instanceof AudioBufferSourceNode) {
             channel.activeSources.delete(e.target)
             e.target.disconnect()
