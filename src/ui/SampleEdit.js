@@ -66,8 +66,8 @@ class SampleEditElement extends HTMLElement {
         })
         addReleaseEvent(jamButton, e => this._target._jamUp(e))
 
-        this.appendChild(fragment)
         this.style.display = 'contents'
+        this.appendChild(fragment)
     }
 
     /**

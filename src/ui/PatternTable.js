@@ -26,8 +26,8 @@ class PatternTableElement extends HTMLElement {
             })
         }
 
-        this.appendChild(fragment)
         this.style.display = 'contents'
+        this.appendChild(fragment)
     }
 
     /**

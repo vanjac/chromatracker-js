@@ -71,8 +71,8 @@ class AppMainElement extends HTMLElement {
             }
         }
 
-        this.appendChild(fragment)
         this.style.display = 'contents'
+        this.appendChild(fragment)
 
         this._fileToolbar._target = this
         this._playbackControls._target = this

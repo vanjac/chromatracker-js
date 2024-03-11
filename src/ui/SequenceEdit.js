@@ -23,8 +23,8 @@ class SequenceEditElement extends HTMLElement {
         fragment.querySelector('#seqUp').addEventListener('click', () => this._seqUp())
         fragment.querySelector('#seqDown').addEventListener('click', () => this._seqDown())
 
-        this.appendChild(fragment)
         this.style.display = 'contents'
+        this.appendChild(fragment)
     }
 
     /**

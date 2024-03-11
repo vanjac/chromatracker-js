@@ -34,8 +34,8 @@ class FileToolbarElement extends HTMLElement {
 
         fragment.querySelector('#patternZap').addEventListener('click', () => this._patternZap())
 
-        this.appendChild(fragment)
         this.style.display = 'contents'
+        this.appendChild(fragment)
     }
 
     /**

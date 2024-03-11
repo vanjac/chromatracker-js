@@ -22,8 +22,8 @@ class SamplesListElement extends HTMLElement {
         fragment.querySelector('#addSample').addEventListener('click', () => this._addSample())
         fragment.querySelector('#delSample').addEventListener('click', () => this._deleteSample())
 
-        this.appendChild(fragment)
         this.style.display = 'contents'
+        this.appendChild(fragment)
 
         this._sampleEdit._onChange = (sample, combineTag) => (
             this._target._changeModule(

@@ -105,8 +105,8 @@ class CellEntryElement extends HTMLElement {
         this._updateCell()
         this._toggleEntryCellParts(this._getCellParts())
 
-        this.appendChild(fragment)
         this.style.display = 'contents'
+        this.appendChild(fragment)
     }
 
     _getCell() {
