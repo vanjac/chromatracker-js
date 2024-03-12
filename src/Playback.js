@@ -44,7 +44,7 @@ function SamplePlayback() {}
 SamplePlayback.prototype = {
     wave: Object.freeze(new Int8Array()),
     /** @type {AudioBuffer} */
-    buffer: null,
+    buffer: null, // null = empty wave
 }
 
 function ChannelPlayback() {
@@ -198,18 +198,18 @@ function setChannelMute(playback, c, mute) {
  * @param {Readonly<Sample>} sample
  */
 function createSamplePlayback(ctx, sample) {
-    if (sample.wave.length == 0) {
-        return null
-    }
     let sp = new SamplePlayback()
     sp.wave = sample.wave
-    // TODO: support protracker one-shot loops
-    sp.buffer = ctx.createBuffer(1, sample.wave.length * resampleFactor, baseRate * resampleFactor)
-    let data = sp.buffer.getChannelData(0)
-    for (let i = 0; i < sample.wave.length; i++) {
-        let s = sample.wave[i] / 128.0
-        for (let j = 0; j < resampleFactor; j++) {
-            data[i * resampleFactor + j] = s
+    if (sample.wave.length) {
+        // TODO: support protracker one-shot loops
+        sp.buffer = ctx.createBuffer(1, sample.wave.length * resampleFactor,
+            baseRate * resampleFactor)
+        let data = sp.buffer.getChannelData(0)
+        for (let i = 0; i < sample.wave.length; i++) {
+            let s = sample.wave[i] / 128.0
+            for (let j = 0; j < resampleFactor; j++) {
+                data[i * resampleFactor + j] = s
+            }
         }
     }
     return sp
