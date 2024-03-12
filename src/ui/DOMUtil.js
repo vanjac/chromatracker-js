@@ -19,3 +19,17 @@ function selectRadioButton(namedItem, value) {
         namedItem.checked = (namedItem.value == value)
     }
 }
+
+/**
+ * @param {NamedFormItem} namedItem
+ * @param {string} defaultValue
+ */
+function getRadioButtonValue(namedItem, defaultValue) {
+    if (namedItem instanceof RadioNodeList) {
+        return namedItem.value || defaultValue
+    } else if (namedItem instanceof HTMLInputElement) {
+        return namedItem.checked ? namedItem.value : defaultValue
+    } else {
+        return defaultValue
+    }
+}

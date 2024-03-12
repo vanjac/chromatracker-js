@@ -46,7 +46,7 @@ class SequenceEditElement extends HTMLElement {
             let label = makeRadioButton('sequence', i.toString(), pos.toString())
             this._sequenceList.appendChild(label)
             label.addEventListener('change', () => {
-                this._selPos = Number(this._sequenceInput.value)
+                this._selPos = i
                 this._target._refreshModule()
             })
         }

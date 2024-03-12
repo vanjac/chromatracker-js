@@ -112,9 +112,7 @@ class CellEntryElement extends HTMLElement {
     _getCell() {
         let cell = new Cell()
         cell.pitch = this._pitchInput.valueAsNumber
-        if (this._sampleInput) {
-            cell.inst = this._getSelSample()
-        }
+        cell.inst = Number(getRadioButtonValue(this._sampleInput, '0'))
         cell.effect = this._effectSelect.selectedIndex
         cell.param0 = this._param0Select.selectedIndex
         cell.param1 = this._param1Select.selectedIndex
@@ -164,7 +162,7 @@ class CellEntryElement extends HTMLElement {
         console.log('update entry samples')
         this._viewSamples = samples
 
-        let selSample = this._getSelSample()
+        let selSample = Number(getRadioButtonValue(this._sampleInput, '1'))
 
         this._sampleList.textContent = ''
         for (let [i, sample] of samples.entries()) {
@@ -186,10 +184,6 @@ class CellEntryElement extends HTMLElement {
         }
         this._sampleInput = this._sampleList.elements.namedItem('sample')
         this._setSelSample(selSample)
-    }
-
-    _getSelSample() {
-        return this._sampleInput ? Number(this._sampleInput.value) : 1
     }
 
     /**

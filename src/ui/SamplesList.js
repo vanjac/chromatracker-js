@@ -67,7 +67,7 @@ class SamplesListElement extends HTMLElement {
     }
 
     _getSelSample() {
-        return this._input ? Number(this._input.value) : 1
+        return Number(getRadioButtonValue(this._input, '1'))
     }
 
     /**
