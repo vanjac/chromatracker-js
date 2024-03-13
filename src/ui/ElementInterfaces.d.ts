@@ -1,7 +1,7 @@
 // Interfaces between elements
 
 interface JamTarget {
-    _jamDown(e?: Event, cell?: Readonly<Cell>): void
+    _jamDown(cell: Readonly<Cell>, e?: Event): void
     _jamUp(e?: Event): void
 }
 

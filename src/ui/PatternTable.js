@@ -57,7 +57,7 @@ class PatternTableElement extends HTMLElement {
                     this._selRow = row
                     this._selChannel = c
                     this._updateSelCell()
-                    this._target._jamDown(e, cell)
+                    this._target._jamDown(cell, e)
                 }
                 td.addEventListener('mousedown', pressEvent)
                 td.addEventListener('touchstart', pressEvent)

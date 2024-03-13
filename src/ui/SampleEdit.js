@@ -62,7 +62,7 @@ class SampleEditElement extends HTMLElement {
 
         let jamButton = fragment.querySelector('#jam')
         addPressEvent(jamButton, e => {
-            this._target._jamDown(e, Object.assign(new Cell(), {pitch: 36, inst: this._index}))
+            this._target._jamDown(Object.assign(new Cell(), {pitch: 36, inst: this._index}), e)
         })
         addReleaseEvent(jamButton, e => this._target._jamUp(e))
 
