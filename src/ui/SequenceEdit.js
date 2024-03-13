@@ -3,7 +3,7 @@
 class SequenceEditElement extends HTMLElement {
     constructor() {
         super()
-        /** @type {ModuleEditTarget} */
+        /** @type {SequenceEditTarget & ModuleEditTarget} */
         this._target = null
         this._selPos = 0
         /** @type {readonly number[]} */
@@ -47,7 +47,7 @@ class SequenceEditElement extends HTMLElement {
             this._sequenceList.appendChild(label)
             label.addEventListener('change', () => {
                 this._selPos = i
-                this._target._refreshModule()
+                this._target._refreshPattern()
             })
         }
         this._sequenceInput = this._sequenceList.elements.namedItem('sequence')

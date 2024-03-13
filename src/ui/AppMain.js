@@ -12,6 +12,7 @@
 /**
  * @implements {JamTarget}
  * @implements {ModuleEditTarget}
+ * @implements {SequenceEditTarget}
  * @implements {PatternTableTarget}
  * @implements {FileToolbarTarget}
  * @implements {PlaybackControlsTarget}
