@@ -13,7 +13,6 @@
  * @implements {JamTarget}
  * @implements {ModuleEditTarget}
  * @implements {PatternTableTarget}
- * @implements {CellEntryTarget}
  * @implements {FileToolbarTarget}
  * @implements {PlaybackControlsTarget}
  */
@@ -53,8 +52,6 @@ class AppMainElement extends HTMLElement {
         this._sequenceEdit = fragment.querySelector('sequence-edit')
         /** @type {PatternTableElement} */
         this._patternTable = fragment.querySelector('pattern-table')
-        /** @type {CellEntryElement} */
-        this._cellEntry = fragment.querySelector('cell-entry')
         /** @type {SamplesListElement} */
         this._samplesList = fragment.querySelector('samples-list')
         this._errors = fragment.querySelector('#errors')
@@ -80,11 +77,11 @@ class AppMainElement extends HTMLElement {
         this._moduleProperties._target = this
         this._playbackControls._target = this
         this._sequenceEdit._target = this
-        this._patternTable._target = this
-        this._cellEntry._target = this
+        this._patternTable._setTarget(this)
         this._samplesList._setTarget(this)
 
-        this._patternTable._setCellParts(this._entryParts())
+        this._patternTable._onChange = pattern => (
+            this._changeModule(module => editSetPattern(module, this._selPattern(), pattern)))
 
         window.onbeforeunload = () => (this._unsavedChangeCount ? 'You have unsaved changes' : null)
         window.onerror = (message, source, line) => {
@@ -92,7 +89,7 @@ class AppMainElement extends HTMLElement {
                 `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`)
         }
 
-        this._resetEditorState()
+        this._refreshModule()
     }
 
     _resetEditorState() {
@@ -101,12 +98,9 @@ class AppMainElement extends HTMLElement {
         this._unsavedChangeCount = 0
 
         this._sequenceEdit._setSelPos(0)
-        this._patternTable._selRow = 0
-        this._patternTable._selChannel = 0
+        this._patternTable._resetState()
         this._refreshModule()
         this._patternTable._scrollToSelCell()
-
-        this._cellEntry._setSelSample(1)
     }
 
     /**
@@ -283,7 +277,7 @@ class AppMainElement extends HTMLElement {
         this._moduleProperties._setModule(this._module)
         this._sequenceEdit._setSequence(this._module.sequence)
         this._refreshPattern()
-        this._cellEntry._setSamples(this._module.samples)
+        this._patternTable._setSamples(this._module.samples)
         this._samplesList._setSamples(this._module.samples)
         console.groupEnd()
     }
@@ -345,33 +339,6 @@ class AppMainElement extends HTMLElement {
             this._undoCombineTag = ''
             console.log(this._module)
         }
-    }
-
-    _selCell() {
-        return this._module.patterns[this._selPattern()][this._selChannel()][this._selRow()]
-    }
-
-    _entryParts() {
-        return this._cellEntry._getCellParts()
-    }
-
-    _updateEntryParts() {
-        let parts = this._entryParts()
-        this._cellEntry._toggleEntryCellParts(parts)
-        this._patternTable._setCellParts(parts)
-    }
-
-    /**
-     * @param {Readonly<Cell>} cell
-     * @param {CellParts} parts
-     */
-    _putCell(cell, parts) {
-        let p = this._selPattern(), c = this._selChannel(), r = this._selRow()
-        this._changeModule(module => editPutCell(module, p, c, r, cell, parts))
-    }
-
-    _advance() {
-        this._patternTable._advance()
     }
 }
 window.customElements.define('app-main', AppMainElement)

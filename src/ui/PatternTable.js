@@ -1,19 +1,26 @@
 'use strict'
 
+/**
+ * @implements {CellEntryTarget}
+ */
 class PatternTableElement extends HTMLElement {
     constructor() {
         super()
         /** @type {PatternTableTarget & JamTarget} */
         this._target = null
+        /** @type {(pattern: Readonly<Pattern>) => void} */
+        this._onChange = null
         this._selRow = 0
         this._selChannel = 0
         /** @type {Readonly<Pattern>} */
         this._viewPattern = null
-        this._cellParts = CellParts.all
     }
 
     connectedCallback() {
         let fragment = templates.patternTable.cloneNode(true)
+
+        /** @type {CellEntryElement} */
+        this._cellEntry = fragment.querySelector('cell-entry')
 
         this._patternScroll = fragment.querySelector('#patternScroll')
         this._table = fragment.querySelector('table')
@@ -28,6 +35,22 @@ class PatternTableElement extends HTMLElement {
 
         this.style.display = 'contents'
         this.appendChild(fragment)
+
+        this._cellEntry._target = this
+    }
+
+    /**
+     * @param {PatternTableTarget & JamTarget} target
+     */
+    _setTarget(target) {
+        this._target = target
+        this._cellEntry._jam = target
+    }
+
+    _resetState() {
+        this._selRow = 0
+        this._selChannel = 0
+        this._cellEntry._setSelSample(1)
     }
 
     /**
@@ -72,6 +95,26 @@ class PatternTableElement extends HTMLElement {
         this._updateSelCell()
     }
 
+    /**
+     * @param {readonly Readonly<Sample>[]} samples
+     */
+    _setSamples(samples) {
+        this._cellEntry._setSamples(samples)
+    }
+
+    _selCell() {
+        return this._viewPattern[this._selChannel][this._selRow]
+    }
+
+    /**
+     * @param {Readonly<Cell>} cell
+     * @param {CellParts} parts
+     */
+    _putCell(cell, parts) {
+        this._onChange(
+            editPatternPutCell(this._viewPattern, this._selChannel, this._selRow, cell, parts))
+    }
+
     _updateSelCell() {
         let cell = this._table.querySelector('.sel-cell')
         if (cell) {
@@ -83,18 +126,14 @@ class PatternTableElement extends HTMLElement {
         if (this._selRow >= 0 && this._selChannel >= 0) {
             let cell = this._table.children[this._selRow].children[this._selChannel]
             cell.classList.add('sel-cell')
-            toggleCellParts(cell, this._cellParts)
+            toggleCellParts(cell, this._cellEntry._getCellParts())
         }
     }
 
-    /**
-     * @param {CellParts} parts
-     */
-    _setCellParts(parts) {
-        this._cellParts = parts
+    _updateEntryParts() {
         let selCell = this._table.querySelector('.sel-cell')
         if (selCell) {
-            toggleCellParts(selCell, parts)
+            toggleCellParts(selCell, this._cellEntry._getCellParts())
         }
     }
 
