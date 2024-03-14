@@ -1,5 +1,15 @@
 'use strict'
 
+/**
+ * @param {number} size
+ */
+function formatFileSize(size) {
+    // https://stackoverflow.com/a/20732091
+    let i = size ? Math.floor(Math.log(size) / Math.log(1024)) : 0
+    let n = size / (1024 ** i)
+    return ((i > 0 && n < 1000) ? n.toPrecision(3) : n) + ' ' + ['bytes', 'kB', 'MB'][i]
+}
+
 class ModulePropertiesElement extends HTMLElement {
     constructor() {
         super()
@@ -7,6 +17,8 @@ class ModulePropertiesElement extends HTMLElement {
         this._target = null
         /** @type {Module} */
         this._viewModule = null
+        this._viewPatternsSize = 0
+        this._viewSamplesSize = 0
     }
 
     connectedCallback() {
@@ -27,6 +39,8 @@ class ModulePropertiesElement extends HTMLElement {
         this._patternCountOutput = fragment.querySelector('#patternCount')
         /** @type {HTMLOutputElement} */
         this._sequenceCountOutput = fragment.querySelector('#sequenceCount')
+        /** @type {HTMLOutputElement} */
+        this._fileSizeOutput = fragment.querySelector('#fileSize')
 
         fragment.querySelector('#addChannels').addEventListener('click',
             () => this._target._changeModule(module => editAddChannels(module, 2)))
@@ -62,6 +76,7 @@ class ModulePropertiesElement extends HTMLElement {
             let sampleCount = module.samples.reduce(
                 (count, item) => (item ? (count + 1) : count), 0)
             this._sampleCountOutput.value = sampleCount.toString()
+            this._viewSamplesSize = calcModSamplesSize(module.samples)
         }
         if (!this._viewModule || module.patterns != this._viewModule.patterns) {
             console.log('update pattern count')
@@ -71,6 +86,13 @@ class ModulePropertiesElement extends HTMLElement {
             console.log('update sequence count')
             this._sequenceCountOutput.value = module.sequence.length.toString()
         }
+        if (!this._viewModule || module.sequence != this._viewModule.sequence
+                || module.numChannels != this._viewModule.numChannels) {
+            this._viewPatternsSize = calcModPatternsSize(module)
+        }
+        let fileSize = modHeaderSize + this._viewPatternsSize + this._viewSamplesSize
+        this._fileSizeOutput.value = formatFileSize(fileSize)
+
         this._viewModule = module
     }
 }

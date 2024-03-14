@@ -2,6 +2,9 @@
 
 const version = '0.0.1'
 
+const modHeaderSize = 1084
+const modTrackerInfoSize = 32 // nonstandard!
+
 const textEncode = new TextEncoder()
 
 /**
@@ -24,7 +27,7 @@ function writeString(buf, start, length, string) {
  * @param {Readonly<Module>} module
  */
 function writeModule(module) {
-    let buf = new ArrayBuffer(calcModuleSize(module))
+    let buf = new ArrayBuffer(calcModFileSize(module))
     let view = new DataView(buf)
 
     writeString(buf, 0, 20, module.name)
@@ -57,10 +60,16 @@ function writeModule(module) {
     let seqArr = new Uint8Array(buf, 952, numSongPositions)
     seqArr.set(module.sequence)
     let numPatterns = Math.max(...module.sequence) + 1
+    // TODO: This could allow saving patterns beyond the highest sequence number.
+    //       Most trackers don't seem to support this, and it's not clear if it would cause problems
+    //       with compatibility. Also could be a UX problem (would need to expose the ability to
+    //       "delete" patterns, rather than just not using them).
+    /*
     if (numPatterns < module.patterns.length && module.sequence.length < numSongPositions) {
         seqArr[module.sequence.length] = module.patterns.length - 1
         numPatterns = module.patterns.length
     }
+    */
 
     let initials
     if (module.numChannels == 4) {
@@ -75,7 +84,7 @@ function writeModule(module) {
     let patternSize = module.numChannels * numRows * 4
     for (let p = 0; p < numPatterns; p++) {
         let pat = module.patterns[p]
-        let patOff = 1084 + patternSize * p
+        let patOff = modHeaderSize + patternSize * p
         for (let row = 0; row < numRows; row++) {
             for (let c = 0; c < module.numChannels; c++) {
                 let cell = pat[c][row]
@@ -88,7 +97,7 @@ function writeModule(module) {
         }
     }
 
-    let wavePos = 1084 + patternSize * numPatterns
+    let wavePos = modHeaderSize + patternSize * numPatterns
     for (let sample of module.samples) {
         if (sample) {
             let waveArr = new Int8Array(buf, wavePos, sample.wave.length & ~1)
@@ -97,7 +106,7 @@ function writeModule(module) {
         }
     }
 
-    writeString(buf, wavePos + 8, 24, `ChromaTracker v${version}`)
+    writeString(buf, wavePos + 8, modTrackerInfoSize - 8, `ChromaTracker v${version}`)
 
     return buf
 }
@@ -105,14 +114,23 @@ function writeModule(module) {
 /**
  * @param {Readonly<Module>} module
  */
-function calcModuleSize(module) {
+function calcModFileSize(module) {
+    return (modHeaderSize + calcModPatternsSize(module) + calcModSamplesSize(module.samples)
+        + modTrackerInfoSize)
+}
+
+/**
+ * @param {Readonly<Module>} module
+ */
+function calcModPatternsSize(module) {
     let patternSize = module.numChannels * numRows * 4
     let numPatterns = Math.max(...module.sequence) + 1
-    let size = 1084 + patternSize * numPatterns
-    for (let sample of module.samples) {
-        if (sample) {
-            size += sample.wave.length & ~1
-        }
-    }
-    return size + 32
+    return patternSize * numPatterns
+}
+
+/**
+ * @param {readonly Readonly<Sample>[]} samples
+ */
+function calcModSamplesSize(samples) {
+    return samples.reduce((acc, sample) => (acc + (sample ? (sample.wave.length & ~1) : 0)), 0)
 }
