@@ -1,14 +1,16 @@
 <template id="patternTable">
-  <div id="mute">
-    <input type="checkbox" checked>
-    <input type="checkbox" checked>
-    <input type="checkbox" checked>
-    <input type="checkbox" checked>
+  <div class="vflex flex-grow">
+    <div id="mute">
+      <input type="checkbox" checked>
+      <input type="checkbox" checked>
+      <input type="checkbox" checked>
+      <input type="checkbox" checked>
+    </div>
+    <div class="hscrollable vscrollable flex-grow" id="patternScroll">
+      <div class="pattern-table-space"></div>
+      <table></table>
+      <div class="pattern-table-space"></div>
+    </div>
+    <cell-entry></cell-entry>
   </div>
-  <div class="hscrollable vscrollable flex-grow" id="patternScroll">
-    <div class="pattern-table-space"></div>
-    <table></table>
-    <div class="pattern-table-space"></div>
-  </div>
-  <cell-entry></cell-entry>
 </template>
