@@ -5,9 +5,8 @@
  * @returns {Readonly<Pattern>}
  */
 function createPattern(module) {
-    return Object.freeze([...Array(module.numChannels)].map(() =>
-        Object.freeze([...Array(numRows)].map(() =>
-            Object.freeze(new Cell()))))) // lisp is so cool
+    return Object.freeze(Array(module.numChannels).fill(
+        Object.freeze(Array(numRows).fill(emptyCell))))
 }
 
 /**

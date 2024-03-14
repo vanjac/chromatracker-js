@@ -27,6 +27,7 @@ Cell.prototype = {
     paramByte() { return (this.param0 << 4) | this.param1 },
     paramDecimal() { return this.param0 * 10 + this.param1 },
 }
+const emptyCell = Object.freeze(new Cell())
 
 /** @typedef {number} CellPart */
 /** @enum {CellPart} */

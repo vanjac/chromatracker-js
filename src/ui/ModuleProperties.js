@@ -28,6 +28,12 @@ class ModulePropertiesElement extends HTMLElement {
         /** @type {HTMLOutputElement} */
         this._sequenceCountOutput = fragment.querySelector('#sequenceCount')
 
+        fragment.querySelector('#addChannels').addEventListener('click',
+            () => this._target._changeModule(module => editAddChannels(module, 2)))
+        fragment.querySelector('#delChannels').addEventListener('click',
+            () => this._target._changeModule(
+                module => editDelChannels(module, module.numChannels - 2, 2)))
+
         fragment.querySelector('#patternZap').addEventListener('click',
             () => this._target._changeModule(module => editPatternZap(module)))
 
