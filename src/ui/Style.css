@@ -86,15 +86,25 @@ label {
 
 /* pattern table */
 
-.pattern-cell {
+th, .pattern-cell {
     font-family: monospace;
     border: 1px solid black;
     white-space: nowrap;
 }
-tr:nth-child(4n+1) {
+table {
+    border-collapse: collapse;
+}
+/* https://issues.chromium.org/issues/40511425 */
+thead th {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+    background-color: white;
+}
+tbody tr:nth-child(4n+1) {
     background: #eee;
 }
-tr:nth-child(16n+1) {
+tbody tr:nth-child(16n+1) {
     background: lightgray;
 }
 .sel-cell {

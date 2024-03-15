@@ -277,6 +277,7 @@ class AppMainElement extends HTMLElement {
         console.groupCollapsed('refresh')
         this._moduleProperties._setModule(this._module)
         this._sequenceEdit._setSequence(this._module.sequence)
+        this._patternTable._setNumChannels(this._module.numChannels)
         this._refreshPattern()
         this._patternTable._setSamples(this._module.samples)
         this._samplesList._setSamples(this._module.samples)

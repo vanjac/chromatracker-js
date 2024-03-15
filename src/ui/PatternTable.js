@@ -12,6 +12,7 @@ class PatternTableElement extends HTMLElement {
         this._onChange = null
         this._selRow = 0
         this._selChannel = 0
+        this._viewNumChannels = 0
         /** @type {Readonly<Pattern>} */
         this._viewPattern = null
     }
@@ -23,7 +24,8 @@ class PatternTableElement extends HTMLElement {
         this._cellEntry = fragment.querySelector('cell-entry')
 
         this._patternScroll = fragment.querySelector('#patternScroll')
-        this._table = fragment.querySelector('table')
+        this._theadRow = fragment.querySelector('tr')
+        this._tbody = fragment.querySelector('tbody')
         this._muteInputs = /** @type {HTMLInputElement[]} */ (
             [...fragment.querySelector('#mute').children])
 
@@ -54,6 +56,27 @@ class PatternTableElement extends HTMLElement {
     }
 
     /**
+     * @param {number} numChannels
+     */
+    _setNumChannels(numChannels) {
+        if (numChannels == this._viewNumChannels) {
+            return
+        }
+        console.log('update pattern channels')
+        this._viewNumChannels = numChannels
+
+        this._theadRow.textContent = ''
+        let rowFrag = document.createDocumentFragment()
+
+        rowFrag.appendChild(document.createElement('th')) // top-left corner
+        for (let c = 0; c < numChannels; c++) {
+            let th = rowFrag.appendChild(document.createElement('th'))
+            th.textContent = (c + 1).toString()
+        }
+        this._theadRow.appendChild(rowFrag)
+    }
+
+    /**
      * @param {Readonly<Pattern>} pattern
      */
     _setPattern(pattern) {
@@ -63,10 +86,14 @@ class PatternTableElement extends HTMLElement {
         console.log('update pattern')
         this._viewPattern = pattern
 
-        this._table.textContent = ''
+        this._tbody.textContent = ''
         let tableFrag = document.createDocumentFragment()
         for (let row = 0; row < pattern[0].length; row++) {
-            let tr = document.createElement('tr')
+            let tr = tableFrag.appendChild(document.createElement('tr'))
+
+            let th = tr.appendChild(document.createElement('th'))
+            th.textContent = row.toString()
+
             for (let c = 0; c < pattern.length; c++) {
                 let cell = pattern[c][row]
                 let cellFrag = templates.cellTemplate.cloneNode(true)
@@ -89,9 +116,8 @@ class PatternTableElement extends HTMLElement {
 
                 tr.appendChild(cellFrag)
             }
-            tableFrag.appendChild(tr)
         }
-        this._table.appendChild(tableFrag)
+        this._tbody.appendChild(tableFrag)
         this._updateSelCell()
     }
 
@@ -116,7 +142,7 @@ class PatternTableElement extends HTMLElement {
     }
 
     _updateSelCell() {
-        let cell = this._table.querySelector('.sel-cell')
+        let cell = this._tbody.querySelector('.sel-cell')
         if (cell) {
             cell.classList.remove('sel-cell')
             cell.classList.remove('sel-pitch')
@@ -124,14 +150,14 @@ class PatternTableElement extends HTMLElement {
             cell.classList.remove('sel-effect')
         }
         if (this._selRow >= 0 && this._selChannel >= 0) {
-            let cell = this._table.children[this._selRow].children[this._selChannel]
+            let cell = this._tbody.children[this._selRow].children[this._selChannel + 1]
             cell.classList.add('sel-cell')
             toggleCellParts(cell, this._cellEntry._getCellParts())
         }
     }
 
     _updateEntryParts() {
-        let selCell = this._table.querySelector('.sel-cell')
+        let selCell = this._tbody.querySelector('.sel-cell')
         if (selCell) {
             toggleCellParts(selCell, this._cellEntry._getCellParts())
         }
@@ -141,18 +167,18 @@ class PatternTableElement extends HTMLElement {
      * @param {number} row
      */
     _setPlaybackRow(row) {
-        let oldHilite = this._table.querySelector('.hilite-row')
+        let oldHilite = this._tbody.querySelector('.hilite-row')
         if (oldHilite) {
             oldHilite.classList.remove('hilite-row')
         }
         if (row >= 0) {
-            this._table.children[row].classList.add('hilite-row')
+            this._tbody.children[row].classList.add('hilite-row')
         }
     }
 
     _scrollToSelCell() {
         let parentRect = this._patternScroll.getBoundingClientRect()
-        let childRect = this._table.children[this._selRow].getBoundingClientRect()
+        let childRect = this._tbody.children[this._selRow].getBoundingClientRect()
         let scrollAmount = ((childRect.top - parentRect.top)
             - (this._patternScroll.clientHeight / 2))
         this._patternScroll.scrollTop += scrollAmount
