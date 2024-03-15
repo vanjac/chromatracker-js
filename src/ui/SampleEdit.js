@@ -26,6 +26,24 @@ class SampleEditElement extends HTMLElement {
             this._target._clearUndoCombine('sample name'))
 
         /** @type {HTMLInputElement} */
+        this._loopStartInput = fragment.querySelector('#loopStart')
+        this._loopStartInput.addEventListener('input', () =>
+            this._changeSample(sample => {sample.loopStart = this._loopStartInput.valueAsNumber},
+                'sample loop start'))
+        this._loopStartInput.addEventListener('change', () =>
+            this._target._clearUndoCombine('sample loop start'))
+        /** @type {HTMLInputElement} */
+        this._loopEndInput = fragment.querySelector('#loopEnd')
+        this._loopEndInput.addEventListener('input', () =>
+            this._changeSample(sample => {sample.loopEnd = this._loopEndInput.valueAsNumber},
+                'sample loop end'))
+        this._loopEndInput.addEventListener('change', () =>
+            this._target._clearUndoCombine('sample loop end'))
+
+        fragment.querySelector('#clearLoop').addEventListener('click', () => this._clearLoop())
+        fragment.querySelector('#trim').addEventListener('click', () => this._trim())
+
+        /** @type {HTMLInputElement} */
         this._volumeInput = fragment.querySelector('#volume')
         /** @type {HTMLOutputElement} */
         this._volumeOutput = fragment.querySelector('#volumeOut')
@@ -85,6 +103,9 @@ class SampleEditElement extends HTMLElement {
             this._viewSample = sample
 
             this._nameInput.value = sample.name
+            this._loopStartInput.max = this._loopEndInput.max = sample.wave.length.toString()
+            this._loopStartInput.valueAsNumber = sample.loopStart
+            this._loopEndInput.valueAsNumber = sample.loopEnd
             this._volumeInput.valueAsNumber = sample.volume
             this._volumeOutput.value = sample.volume.toString()
             this._finetuneInput.valueAsNumber = sample.finetune
@@ -136,6 +157,18 @@ class SampleEditElement extends HTMLElement {
             }
         }
         reader.readAsArrayBuffer(file)
+    }
+
+    _clearLoop() {
+        this._changeSample(sample => sample.loopStart = sample.loopEnd = 0, '', true)
+    }
+
+    _trim() {
+        this._changeSample(sample => {
+            sample.wave = sample.wave.subarray(sample.loopStart, sample.loopEnd)
+            sample.loopStart = 0
+            sample.loopEnd = sample.wave.length
+        }, '', true)
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)
