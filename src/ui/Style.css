@@ -106,10 +106,12 @@ thead th {
 tbody th {
     left: 0;
 }
-tbody tr:nth-child(4n+1) {
+tbody tr:nth-child(4n+1),
+tbody tr:nth-child(4n+1) th {
     background: #eee;
 }
-tbody tr:nth-child(16n+1) {
+tbody tr:nth-child(16n+1),
+tbody tr:nth-child(16n+1) th {
     background: lightgray;
 }
 .sel-cell {
