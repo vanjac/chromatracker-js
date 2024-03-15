@@ -101,14 +101,7 @@ function initPlayback(context, mod) {
     let playback = new Playback()
     playback.ctx = context
     setPlaybackModule(playback, mod)
-    for (let c = 0; c < mod.numChannels; c++) {
-        let channel = new ChannelPlayback()
-        playback.channels.push(channel)
-        channel.panning = ((c % 4) == 0 || (c % 4) == 3) ? 64 : 191
-        initChannelNodes(playback, channel)
-    }
     playback.time = context.currentTime
-
     return playback
 }
 
@@ -118,21 +111,35 @@ function initPlayback(context, mod) {
  */
 function setPlaybackModule(playback, mod) {
     playback.mod = mod
-    if (playback.modSamples == mod.samples) {
-        return
-    }
-    console.log('update playback sample list')
-    playback.modSamples = mod.samples
 
-    playback.samples.length = mod.samples.length
-    for (let i = 0; i < mod.samples.length; i++) {
-        let sample = mod.samples[i]
-        let sp = playback.samples[i]
-        if (sample && (!sp || sp.wave != sample.wave)) {
-            console.log('update playback sample')
-            playback.samples[i] = createSamplePlayback(playback.ctx, sample)
-        } else if (!sample) {
-            playback.samples[i] = null
+    if (playback.channels.length != mod.numChannels) {
+        console.log('update playback channels')
+        for (let channel of playback.channels) {
+            disconnectChannel(channel)
+        }
+        playback.channels = []
+        for (let c = 0; c < mod.numChannels; c++) {
+            let channel = new ChannelPlayback()
+            playback.channels.push(channel)
+            channel.panning = ((c % 4) == 0 || (c % 4) == 3) ? 64 : 191
+            initChannelNodes(playback, channel)
+        }
+    }
+
+    if (playback.modSamples != mod.samples) {
+        console.log('update playback sample list')
+        playback.modSamples = mod.samples
+
+        playback.samples.length = mod.samples.length
+        for (let i = 0; i < mod.samples.length; i++) {
+            let sample = mod.samples[i]
+            let sp = playback.samples[i]
+            if (sample && (!sp || sp.wave != sample.wave)) {
+                console.log('update playback sample')
+                playback.samples[i] = createSamplePlayback(playback.ctx, sample)
+            } else if (!sample) {
+                playback.samples[i] = null
+            }
         }
     }
 }
@@ -155,6 +162,18 @@ function initChannelNodes(playback, channel) {
     channel.gain = playback.ctx.createGain()
     channel.gain.connect(channel.panner)
     channel.gain.gain.value = 0
+}
+
+/**
+ * @param {ChannelPlayback} channel
+ */
+function disconnectChannel(channel) {
+    if (channel.source) {
+        channel.source.stop()
+        channel.source.disconnect()
+    }
+    channel.gain.disconnect()
+    channel.panner.disconnect()
 }
 
 /**
@@ -696,12 +715,7 @@ function jamPlay(playback, id, c, cell) {
 function jamRelease(playback, id) {
     let jam = playback.jamChannels.get(id)
     if (jam) {
-        if (jam.source) {
-            jam.source.stop()
-            jam.source.disconnect()
-        }
-        jam.gain.disconnect()
-        jam.panner.disconnect()
+        disconnectChannel(jam)
         playback.jamChannels.delete(id)
     }
 }
