@@ -1,33 +1,33 @@
 <template id="sampleEdit">
   <div class="vflex flex-grow">
-    <span class="hflex">
+    <div class="hflex">
       Sample&nbsp;
       <output id="number"></output>
-    </span>
-    <span class="hflex">
+    </div>
+    <div class="hflex">
       Name:
       <input id="name" maxlength="22" autocomplete="off">
-    </span>
-    <span class="hflex">
+    </div>
+    <div class="hflex">
       Volume:
       <input id="volume" type="range" class="flex-grow" min="0" max="64" autocomplete="off">
       <output id="volumeOut" class="small-input"></output>
-    </span>
-    <span class="hflex">
+    </div>
+    <div class="hflex">
       Finetune:
       <input id="finetune" type="range" class="flex-grow" min="-8" max="7" autocomplete="off">
       <output id="finetuneOut" class="small-input"></output>
-    </span>
-    <span class="hflex">
+    </div>
+    <div class="hflex">
       Wave file:
       <div class="vflex">
         <input id="file" type="file" accept="audio/*" autocomplete="off">
-        <span class="hflex">
+        <div class="hflex">
           Resample:
           <input id="sampleRate" type="number" value="16574.27" autocomplete="off">
-        </span>
+        </div>
       </div>
-    </span>
+    </div>
     <button id="jam">Listen</button>
   </div>
 </template>
