@@ -95,11 +95,16 @@ table {
     border-collapse: collapse;
 }
 /* https://issues.chromium.org/issues/40511425 */
-thead th {
+th {
     position: sticky;
     position: -webkit-sticky;
-    top: 0;
     background-color: white;
+}
+thead th {
+    top: 0;
+}
+tbody th {
+    left: 0;
 }
 tbody tr:nth-child(4n+1) {
     background: #eee;
