@@ -26,14 +26,8 @@ class PatternTableElement extends HTMLElement {
         this._patternScroll = fragment.querySelector('#patternScroll')
         this._theadRow = fragment.querySelector('tr')
         this._tbody = fragment.querySelector('tbody')
-        this._muteInputs = /** @type {HTMLInputElement[]} */ (
-            [...fragment.querySelector('#mute').children])
-
-        for (let [c, input] of this._muteInputs.entries()) {
-            input.addEventListener('change', () => {
-                this._target._setMute(c, !input.checked)
-            })
-        }
+        /** @type {HTMLInputElement[]} */
+        this._muteInputs = []
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -66,14 +60,25 @@ class PatternTableElement extends HTMLElement {
         this._viewNumChannels = numChannels
 
         this._theadRow.textContent = ''
+        let newMuteInputs = []
         let rowFrag = document.createDocumentFragment()
 
         rowFrag.appendChild(document.createElement('th')) // top-left corner
         for (let c = 0; c < numChannels; c++) {
             let th = rowFrag.appendChild(document.createElement('th'))
-            th.textContent = (c + 1).toString()
+            let label = th.appendChild(document.createElement('label'))
+            let input = label.appendChild(document.createElement('input'))
+            input.type = 'checkbox'
+            if (!this._muteInputs[c] || this._muteInputs[c].checked) {
+                input.checked = true
+            }
+            input.addEventListener('change',
+                () => this._target._setMute(c, !input.checked))
+            newMuteInputs.push(input)
+            label.append('Ch ' + (c + 1).toString())
         }
         this._theadRow.appendChild(rowFrag)
+        this._muteInputs = newMuteInputs
     }
 
     /**
