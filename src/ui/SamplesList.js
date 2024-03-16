@@ -56,7 +56,6 @@ class SamplesListElement extends HTMLElement {
                 continue
             }
             let label = makeRadioButton('sample', i.toString(), `${i}: ${sample.name}`)
-            label.classList.add('flex-grow')
             this._list.appendChild(label)
             label.addEventListener('change', () => {
                 this._sampleEdit._setSample(sample, i)
