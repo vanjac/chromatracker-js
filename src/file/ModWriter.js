@@ -5,32 +5,15 @@ const version = '0.0.1'
 const modHeaderSize = 1084
 const modTrackerInfoSize = 32 // nonstandard!
 
-const textEncode = new TextEncoder()
-
-/**
- * Write a UTF-8 string
- * @param {ArrayBuffer} buf
- * @param {number} start
- * @param {number} length
- * @param {string} string
- */
-function writeString(buf, start, length, string) {
-    let src = textEncode.encode(string)
-    let dest = new Uint8Array(buf, start, length)
-    if (src.length > length) {
-        src = src.slice(0, length)
-    }
-    dest.set(src)
-}
-
 /**
  * @param {Readonly<Module>} module
  */
 function writeModule(module) {
     let buf = new ArrayBuffer(calcModFileSize(module))
     let view = new DataView(buf)
+    let textEncode = new TextEncoder()
 
-    writeString(buf, 0, 20, module.name)
+    writeU8Array(buf, 0, 20, textEncode.encode(module.name))
 
     for (let s = 1; s < numSamples; s++) {
         let offset = s * 30 - 10
@@ -41,7 +24,7 @@ function writeModule(module) {
             continue
         }
         let sample = module.samples[s]
-        writeString(buf, offset, 22, sample.name)
+        writeU8Array(buf, offset, 22, textEncode.encode(sample.name))
         view.setUint16(offset + 22, (sample.wave.length / 2) | 0)
         view.setUint8(offset + 24, sample.finetune & 0xf)
         view.setUint8(offset + 25, sample.volume)
@@ -79,7 +62,7 @@ function writeModule(module) {
     } else {
         initials = module.numChannels + 'CH'
     }
-    writeString(buf, 1080, 4, initials)
+    writeU8Array(buf, 1080, 4, textEncode.encode(initials))
 
     let patternSize = module.numChannels * numRows * 4
     for (let p = 0; p < numPatterns; p++) {
@@ -106,7 +89,8 @@ function writeModule(module) {
         }
     }
 
-    writeString(buf, wavePos + 8, modTrackerInfoSize - 8, `ChromaTracker v${version}`)
+    writeU8Array(buf, wavePos + 8, modTrackerInfoSize - 8,
+        textEncode.encode(`ChromaTracker v${version}`))
 
     return buf
 }

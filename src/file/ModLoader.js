@@ -9,31 +9,16 @@ for (let p = 0; p < periodTable[8].length; p++) {
     periodToPitch.set(periodTable[8][p], p)
 }
 
-const textDecode = new TextDecoder() // TODO: determine encoding from file
-
-/**
- * Read a null-terminated UTF-8 string
- * @param {ArrayBuffer} buf
- * @param {number} start
- * @param {number} length
- */
-function readStringZ(buf, start, length) {
-    let u8 = new Uint8Array(buf, start, length)
-    let strlen = 0
-    while (strlen < length && u8[strlen] != 0) {
-        strlen++
-    }
-    return textDecode.decode(new DataView(buf, start, strlen))
-}
-
 /**
  * @param {ArrayBuffer} buf
  */
 function readModule(buf) {
     let view = new DataView(buf)
+    let textDecode = new TextDecoder() // TODO: determine encoding from file
+    let asciiDecode = new TextDecoder('ascii')
 
     let module = new Module()
-    module.name = readStringZ(buf, 0, 20)
+    module.name = textDecode.decode(readStringZ(buf, 0, 20))
 
     let songLen = Math.min(view.getUint8(950), numSongPositions)
     module.restartPos = view.getUint8(951)
@@ -44,7 +29,7 @@ function readModule(buf) {
     let numPatterns = Math.max(...seq) + 1
     module.sequence = Object.freeze(seq.slice(0, songLen))
 
-    let initials = textDecode.decode(new DataView(buf, 1080, 4))
+    let initials = asciiDecode.decode(new DataView(buf, 1080, 4))
     // TODO: support old 15-sample formats?
     let chanStr = initials.replace(/\D/g, '') // remove non-digits
     if (chanStr) {
@@ -97,7 +82,7 @@ function readModule(buf) {
             samples.push(null)
             continue
         }
-        sample.name = readStringZ(buf, offset, 22)
+        sample.name = textDecode.decode(readStringZ(buf, offset, 22))
         sample.finetune = view.getUint8(offset + 24) & 0xf
         if (sample.finetune >= 8) {
             sample.finetune -= 16 // sign-extend nibble
