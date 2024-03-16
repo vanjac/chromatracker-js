@@ -10,7 +10,6 @@
         "strict": ["error", "global"],
         // Deprecated stylistic rules (TODO)
         "semi": ["error", "never"],
-        "no-trailing-spaces": "error",
         // TypeScript handles these:
         "no-undef": "off",
         "no-unused-vars": "off"

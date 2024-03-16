@@ -132,26 +132,17 @@ class SampleEditElement extends HTMLElement {
      * @param {File} file
      */
     _readAudioFile(file) {
-        // @ts-ignore
-        let OfflineAudioContext = window.OfflineAudioContext || window.webkitOfflineAudioContext
-        /** @type {OfflineAudioContext} */
-        let context = new OfflineAudioContext(1, 1, this._sampleRateInput.value)
-
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                context.decodeAudioData(reader.result, audioBuffer => {
-                    let data = audioBuffer.getChannelData(0)
-                    let newWave = new Int8Array(data.length)
-                    for (let i = 0; i < data.length; i++) {
-                        newWave[i] = Math.min(Math.max(data[i] * 128.0, -128), 127)
-                    }
+                let promise = readAudioFile(reader.result, this._sampleRateInput.valueAsNumber)
+                promise.then(wave => {
                     this._changeSample(sample => {
-                        sample.wave = newWave
+                        sample.wave = wave
                         sample.loopStart = sample.loopEnd = 0
                         sample.name = file.name.replace(/\.[^/.]+$/, '') // remove extension
                     }, '', true)
-                }, error => {
+                }).catch(/** @param {DOMException} error */ error => {
                     window.alert(`Error reading audio file.\n${error.message}`)
                 })
             }
