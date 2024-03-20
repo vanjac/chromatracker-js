@@ -82,7 +82,7 @@ function readModule(buf) {
             samples.push(null)
             continue
         }
-        sample.name = textDecode.decode(readStringZ(buf, offset, 22))
+        sample.name = textDecode.decode(readStringZ(buf, offset, maxSampleNameLength))
         sample.finetune = view.getUint8(offset + 24) & 0xf
         if (sample.finetune >= 8) {
             sample.finetune -= 16 // sign-extend nibble

@@ -4,6 +4,7 @@ const numSamples = 32 // 0th sample is empty!
 const numSongPositions = 128
 const numRows = 64
 const maxVolume = 64
+const maxSampleNameLength = 22
 
 function Sample() {}
 Sample.prototype = {

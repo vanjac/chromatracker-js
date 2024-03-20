@@ -132,15 +132,18 @@ class SampleEditElement extends HTMLElement {
      * @param {File} file
      */
     _readAudioFile(file) {
+        let name = file.name.replace(/\.[^/.]+$/, '') // remove extension
+        name = name.slice(0, maxSampleNameLength)
+
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
                 if (isWavFile(reader.result)) {
                     try {
                         let {wave, finetune, loopStart, loopEnd} = readWavFile(reader.result)
-                        this._changeSample(
-                            sample => Object.assign(sample, {wave, finetune, loopStart, loopEnd}),
-                            '', true)
+                        /** @type {Partial<Sample>} */
+                        let samplePart = {wave, finetune, loopStart, loopEnd, name}
+                        this._changeSample(sample => Object.assign(sample, samplePart), '', true)
                     } catch (error) {
                         if (error instanceof Error) { window.alert(error.message) }
                     }
@@ -149,8 +152,8 @@ class SampleEditElement extends HTMLElement {
                     promise.then(wave => {
                         this._changeSample(sample => {
                             sample.wave = wave
+                            sample.name = name
                             sample.loopStart = sample.loopEnd = 0
-                            sample.name = file.name.replace(/\.[^/.]+$/, '') // remove extension
                         }, '', true)
                     }).catch(/** @param {DOMException} error */ error => {
                         window.alert(`Error reading audio file.\n${error.message}`)

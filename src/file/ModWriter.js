@@ -24,7 +24,7 @@ function writeModule(module) {
             continue
         }
         let sample = module.samples[s]
-        writeU8Array(buf, offset, 22, textEncode.encode(sample.name))
+        writeU8Array(buf, offset, maxSampleNameLength, textEncode.encode(sample.name))
         view.setUint16(offset + 22, (sample.wave.length / 2) | 0)
         view.setUint8(offset + 24, sample.finetune & 0xf)
         view.setUint8(offset + 25, sample.volume)
