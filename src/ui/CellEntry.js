@@ -1,5 +1,6 @@
 'use strict'
 
+// TODO: remove
 /**
  * @param {Element} elem
  * @param {(ev: Event) => any} handler
@@ -94,7 +95,6 @@ class CellEntryElement extends HTMLElement {
         this._pitchInput.addEventListener('mouseup', () => this._jam._jamUp())
         this._pitchInput.addEventListener('touchend', () => this._jam._jamUp())
         this._pitchInput.addEventListener('input', () => {
-            this._jam._jamUp()
             this._jam._jamDown(this._getJamCell())
             this._updateCell()
         })
@@ -105,6 +105,22 @@ class CellEntryElement extends HTMLElement {
         })
         this._param0Select.addEventListener('input', () => this._updateCell())
         this._param1Select.addEventListener('input', () => this._updateCell())
+
+        new KeyPad(this._sampleList, (id, elem) => {
+            if (elem.parentElement.parentElement == this._sampleList) {
+                let input = elem.parentElement.querySelector('input')
+                this._setSelSample(Number(input.value))
+                this._jam._jamPlay(id, this._getJamCell())
+            }
+        }, id => this._jam._jamRelease(id))
+        fragment.querySelector('#sampleScrollLeft').addEventListener('click', () => {
+            let width = this._sampleList.clientWidth
+            this._sampleList.scrollBy({left: -width / 2, behavior: 'smooth'})
+        })
+        fragment.querySelector('#sampleScrollRight').addEventListener('click', () => {
+            let width = this._sampleList.clientWidth
+            this._sampleList.scrollBy({left: width / 2, behavior: 'smooth'})
+        })
 
         this._updateCell()
         toggleCellParts(this._entryCell, this._getCellParts())
@@ -172,17 +188,10 @@ class CellEntryElement extends HTMLElement {
                 continue
             }
             let label = makeRadioButton('sample', i.toString(), i.toString())
+            label.classList.add('keypad-key')
             this._sampleList.appendChild(label)
-            /**
-             * @param {Event} e
-             */
-            let pressEvent = e => {
-                this._setSelSample(i)
-                this._jam._jamDown(this._getJamCell(), e)
-            }
-            label.addEventListener('mousedown', pressEvent)
-            label.addEventListener('touchstart', pressEvent)
-            addReleaseEvent(label, e => this._jam._jamUp(e))
+            label.addEventListener('mousedown', e => e.preventDefault())
+            label.addEventListener('touchdown', e => e.preventDefault())
         }
         this._sampleInput = this._sampleList.elements.namedItem('sample')
         this._setSelSample(selSample)

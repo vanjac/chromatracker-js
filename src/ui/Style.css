@@ -141,3 +141,14 @@ tbody tr:nth-child(16n+1) th {
 .pattern-table-space {
     height: 50%;
 }
+
+/* cell entry */
+
+.keypad-key {
+    width: 24pt;
+    touch-action: none;
+}
+.keypad-key span {
+    padding-left: 0;
+    padding-right: 0;
+}

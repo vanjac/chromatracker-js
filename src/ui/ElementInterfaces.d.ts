@@ -1,6 +1,9 @@
 // Interfaces between elements
 
 interface JamTarget {
+    _jamPlay(id: number, cell: Readonly<Cell>): void
+    _jamRelease(id: number): void
+    // event helpers (TODO: remove)
     _jamDown(cell: Readonly<Cell>, e?: Event): void
     _jamUp(e?: Event): void
 }

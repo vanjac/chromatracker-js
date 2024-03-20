@@ -196,6 +196,21 @@ class AppMainElement extends HTMLElement {
     }
 
     /**
+     * @param {number} id
+     * @param {Readonly<Cell>} cell
+     */
+    _jamPlay(id, cell) {
+        jamPlay(this._playback, id, this._selChannel(), cell)
+    }
+
+    /**
+     * @param {number} id
+     */
+    _jamRelease(id) {
+        jamRelease(this._playback, id)
+    }
+
+    /**
      * @param {Readonly<Cell>} cell
      * @param {Event} e
      */
