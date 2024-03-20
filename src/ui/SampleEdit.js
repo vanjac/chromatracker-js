@@ -135,16 +135,27 @@ class SampleEditElement extends HTMLElement {
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                let promise = readAudioFile(reader.result, this._sampleRateInput.valueAsNumber)
-                promise.then(wave => {
-                    this._changeSample(sample => {
-                        sample.wave = wave
-                        sample.loopStart = sample.loopEnd = 0
-                        sample.name = file.name.replace(/\.[^/.]+$/, '') // remove extension
-                    }, '', true)
-                }).catch(/** @param {DOMException} error */ error => {
-                    window.alert(`Error reading audio file.\n${error.message}`)
-                })
+                if (isWavFile(reader.result)) {
+                    try {
+                        let {wave, finetune, loopStart, loopEnd} = readWavFile(reader.result)
+                        this._changeSample(
+                            sample => Object.assign(sample, {wave, finetune, loopStart, loopEnd}),
+                            '', true)
+                    } catch (error) {
+                        if (error instanceof Error) { window.alert(error.message) }
+                    }
+                } else {
+                    let promise = readAudioFile(reader.result, this._sampleRateInput.valueAsNumber)
+                    promise.then(wave => {
+                        this._changeSample(sample => {
+                            sample.wave = wave
+                            sample.loopStart = sample.loopEnd = 0
+                            sample.name = file.name.replace(/\.[^/.]+$/, '') // remove extension
+                        }, '', true)
+                    }).catch(/** @param {DOMException} error */ error => {
+                        window.alert(`Error reading audio file.\n${error.message}`)
+                    })
+                }
             }
         }
         reader.readAsArrayBuffer(file)
