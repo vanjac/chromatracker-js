@@ -7,7 +7,7 @@
 function editAddSample(module) {
     let emptyIndex = module.samples.findIndex((sample, i) => i != 0 && !sample)
     if (emptyIndex == -1) { emptyIndex = module.samples.length }
-    let samples = immSplice(module.samples, emptyIndex, 1, new Sample())
+    let samples = immSplice(module.samples, emptyIndex, 1, emptySample)
     return [freezeAssign(new Module(), module, {samples}), emptyIndex]
 }
 

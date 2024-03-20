@@ -1,12 +1,14 @@
 'use strict'
 
+/** @type {Readonly<PatternChannel>} */
+const defaultNewPatternChannel = Object.freeze(Array(numRows).fill(emptyCell))
+
 /**
- * @param {Readonly<Module>} module
+ * @param {number} numChannels
  * @returns {Readonly<Pattern>}
  */
-function createPattern(module) {
-    return Object.freeze(Array(module.numChannels).fill(
-        Object.freeze(Array(numRows).fill(emptyCell))))
+function createPattern(numChannels) {
+    return Object.freeze(Array(numChannels).fill(defaultNewPatternChannel))
 }
 
 /**
@@ -21,7 +23,7 @@ function expandPatterns(module, idx) {
     let newPatterns = [...module.patterns]
     while (idx >= newPatterns.length) {
         console.log('Make new pattern')
-        newPatterns.push(createPattern(module))
+        newPatterns.push(createPattern(module.numChannels))
     }
     return Object.freeze(newPatterns)
 }

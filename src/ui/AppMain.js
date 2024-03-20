@@ -21,7 +21,7 @@ class AppMainElement extends HTMLElement {
     constructor() {
         super()
 
-        this._module = createEmptyModule()
+        this._module = defaultNewModule
 
         /** @type {Readonly<Module>[]} */
         this._undoStack = []

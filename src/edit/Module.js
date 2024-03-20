@@ -1,12 +1,10 @@
 'use strict'
 
-function createEmptyModule() {
-    let mod = new Module()
-    mod.patterns = Object.freeze([createPattern(mod)])
-    mod.sequence = Object.freeze([0])
-    mod.samples = Object.freeze([null])
-    return Object.freeze(mod)
-}
+const defaultNewModule = freezeAssign(new Module(), {
+    patterns: Object.freeze([createPattern(Module.prototype.numChannels)]),
+    sequence: Object.freeze([0]),
+    samples: Object.freeze([null]),
+})
 
 /**
  * @param {Readonly<Module>} module

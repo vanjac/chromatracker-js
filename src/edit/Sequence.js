@@ -5,7 +5,7 @@
  */
 function editPatternZap(module) {
     let sequence = Object.freeze([0])
-    let patterns = Object.freeze([createPattern(module)])
+    let patterns = Object.freeze([createPattern(module.numChannels)])
     return freezeAssign(new Module(), module, {sequence, patterns})
 }
 

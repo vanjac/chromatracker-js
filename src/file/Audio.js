@@ -19,6 +19,6 @@ function readAudioFile(buf, sampleRate) {
                 wave[i] = Math.min(Math.max(data[i] * 128.0, -128), 127)
             }
             resolve(wave)
-        }, error => reject(error))
+        }, reject)
     })
 }

@@ -15,6 +15,7 @@ Sample.prototype = {
     finetune: 0, // -8 to 7
     volume: 64,
 }
+const emptySample = Object.freeze(new Sample())
 
 function Cell() {}
 Cell.prototype = {
