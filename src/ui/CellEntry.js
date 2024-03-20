@@ -113,14 +113,18 @@ class CellEntryElement extends HTMLElement {
                 this._jam._jamPlay(id, this._getJamCell())
             }
         }, id => this._jam._jamRelease(id))
-        fragment.querySelector('#sampleScrollLeft').addEventListener('click', () => {
-            let width = this._sampleList.clientWidth
-            this._sampleList.scrollBy({left: -width / 2, behavior: 'smooth'})
-        })
-        fragment.querySelector('#sampleScrollRight').addEventListener('click', () => {
-            let width = this._sampleList.clientWidth
-            this._sampleList.scrollBy({left: width / 2, behavior: 'smooth'})
-        })
+        fragment.querySelector('#sampleScrollLeft').addEventListener('click',
+            /** @param {UIEventInit} e */
+            e => {
+                let width = this._sampleList.clientWidth
+                this._sampleList.scrollBy({left: -e.detail * width / 2, behavior: 'smooth'})
+            })
+        fragment.querySelector('#sampleScrollRight').addEventListener('click',
+            /** @param {UIEventInit} e */
+            e => {
+                let width = this._sampleList.clientWidth
+                this._sampleList.scrollBy({left: e.detail * width / 2, behavior: 'smooth'})
+            })
 
         this._updateCell()
         toggleCellParts(this._entryCell, this._getCellParts())
