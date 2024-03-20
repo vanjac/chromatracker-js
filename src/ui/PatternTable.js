@@ -184,9 +184,9 @@ class PatternTableElement extends HTMLElement {
     _scrollToSelCell() {
         let parentRect = this._patternScroll.getBoundingClientRect()
         let childRect = this._tbody.children[this._selRow].getBoundingClientRect()
-        let scrollAmount = ((childRect.top - parentRect.top)
-            - (this._patternScroll.clientHeight / 2))
-        this._patternScroll.scrollTop += scrollAmount
+        let centerY = this._patternScroll.clientHeight / 2
+        let scrollAmount = (childRect.top - parentRect.top) - centerY
+        this._patternScroll.scrollBy(0, scrollAmount)
     }
 
     _advance() {
