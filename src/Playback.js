@@ -677,6 +677,7 @@ function createNoteSource(playback, inst) {
  * @param {Readonly<Cell>} cell
  */
 function jamPlay(playback, id, c, cell) {
+    jamRelease(playback, id)
     if (cell.pitch < 0) {
         return
     }
