@@ -18,9 +18,10 @@ class FileToolbarElement extends HTMLElement {
             }
         })
         fragment.querySelector('#fileDownload').addEventListener('click', () => {
-            fetch('https://chroma.zone/share/space_debris.mod').then(
-                r => r.blob().then(
-                    b => this._readModuleBlob(b)))
+            fetch('https://chroma.zone/share/space_debris.mod')
+                .then(r => r.blob())
+                .then(b => this._readModuleBlob(b))
+                .catch(/** @param {Error} error */ error => window.alert(error.message))
         })
         fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile())
 
