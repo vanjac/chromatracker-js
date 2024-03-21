@@ -14,6 +14,7 @@ function setupKeypadKeyEvents(elem) {
  * @param {(id: number) => void} onRelease
  */
 function KeyPad(container, onPress, onRelease) {
+    this.container = container
     /** @type {Map<number, Element>} */
     this.pressed = new Map()
     this.onPress = onPress
@@ -44,9 +45,10 @@ function KeyPad(container, onPress, onRelease) {
      * @param {TouchEventInit & Event} e
      */
     let onTouchDown = e => {
-        e.preventDefault()
         for (let touch of e.changedTouches) {
-            this.press(touch.identifier, touch.clientX, touch.clientY)
+            if (this.press(touch.identifier, touch.clientX, touch.clientY) != this.container) {
+                e.preventDefault()
+            }
         }
     }
     container.addEventListener('touchstart', onTouchDown)
@@ -70,6 +72,7 @@ KeyPad.prototype = {
             this.pressed.set(id, elem)
             this.onPress(id, elem)
         }
+        return elem
     },
 
     /**
