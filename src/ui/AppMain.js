@@ -221,10 +221,10 @@ class AppMainElement extends HTMLElement {
     _jamDown(cell, e = null) {
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches) {
-                jamPlay(this._playback, touch.identifier, this._selChannel(), cell)
+                this._jamPlay(touch.identifier, cell)
             }
         } else {
-            jamPlay(this._playback, -1, this._selChannel(), cell)
+            this._jamPlay(-1, cell)
         }
     }
 
@@ -235,10 +235,10 @@ class AppMainElement extends HTMLElement {
         if (this._playback) {
             if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
                 for (let touch of e.changedTouches) {
-                    jamRelease(this._playback, touch.identifier)
+                    this._jamRelease(touch.identifier)
                 }
             } else {
-                jamRelease(this._playback, -1)
+                this._jamRelease(-1)
             }
         }
     }
