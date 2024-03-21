@@ -25,7 +25,12 @@
       </label>
       <div class="hflex">
         <button id="pianoScrollLeft">&lt;</button>
-        <form id="piano" class="hflex flex-grow hscrollable" autocomplete="off"></form>
+        <form id="piano" class="vflex flex-grow hscrollable" autocomplete="off">
+          <div class="hflex" id="blackKeys">
+            <div class="keypad-half-key"></div>
+          </div>
+          <div class="hflex" id="whiteKeys"></div>
+        </form>
         <button id="pianoScrollRight">&gt;</button>
       </div>
 

@@ -113,10 +113,13 @@ class CellEntryElement extends HTMLElement {
         this._param0Select.addEventListener('input', () => this._updateCell())
         this._param1Select.addEventListener('input', () => this._updateCell())
 
+        /** @type {Element[]} */
+        this._pianoKeys = []
         this._createPiano()
 
         new KeyPad(this._piano, (id, elem) => {
-            if (elem.parentElement.parentElement == this._piano) {
+            if (elem.parentElement && elem.parentElement.parentElement
+                    && elem.parentElement.parentElement.parentElement == this._piano) {
                 let input = elem.parentElement.querySelector('input')
                 selectRadioButton(this._pitchInput, input.value)
                 this._updateCell()
@@ -128,7 +131,7 @@ class CellEntryElement extends HTMLElement {
             fragment.querySelector('#pianoScrollRight'))
 
         new KeyPad(this._sampleList, (id, elem) => {
-            if (elem.parentElement.parentElement == this._sampleList) {
+            if (elem.parentElement && elem.parentElement.parentElement == this._sampleList) {
                 let input = elem.parentElement.querySelector('input')
                 this._setSelSample(Number(input.value))
                 this._jam._jamPlay(id, this._getJamCell())
@@ -146,6 +149,8 @@ class CellEntryElement extends HTMLElement {
     }
 
     _createPiano() {
+        let blackKeys = this._piano.querySelector('#blackKeys')
+        let whiteKeys = this._piano.querySelector('#whiteKeys')
         for (let i = 0; i < periodTable[0].length; i++) {
             let note = i % 12
             let noteStr = noteNamesShort[note]
@@ -156,8 +161,14 @@ class CellEntryElement extends HTMLElement {
             label.classList.add('keypad-key')
             let isBlackKey = [1, 3, 6, 8, 10].includes(note)
             label.classList.add(isBlackKey ? 'black-key' : 'white-key')
-            this._piano.appendChild(label)
+            ;(isBlackKey ? blackKeys : whiteKeys).appendChild(label)
             setupKeypadKeyEvents(label)
+            this._pianoKeys.push(label)
+
+            if ([3, 10].includes(note)) {
+                let space = blackKeys.appendChild(document.createElement('div'))
+                space.classList.add('keypad-key')
+            }
         }
         this._pitchInput = this._piano.elements.namedItem('pitch')
         selectRadioButton(this._pitchInput, '36')
@@ -167,7 +178,7 @@ class CellEntryElement extends HTMLElement {
         let selPitch = Number(getRadioButtonValue(this._pitchInput, '0'))
         selPitch -= (selPitch % 12)
         let parentRect = this._piano.getBoundingClientRect()
-        let childRect = this._piano.children[selPitch].getBoundingClientRect()
+        let childRect = this._pianoKeys[selPitch].getBoundingClientRect()
         let scrollAmount = childRect.left - parentRect.left
         this._piano.scrollBy({left: scrollAmount, behavior: 'instant'})
     }
