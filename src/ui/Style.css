@@ -151,7 +151,6 @@ tbody tr:nth-child(16n+1) th {
 }
 .keypad-half-key {
     width: 12pt;
-    touch-action: none;
     flex-shrink: 0;
 }
 .keypad-key span {

@@ -126,9 +126,16 @@ class CellEntryElement extends HTMLElement {
                 this._jam._jamPlay(id, this._getJamCell())
             }
         }, id => this._jam._jamRelease(id))
-        setupScrollerButtons(this._piano,
-            fragment.querySelector('#pianoScrollLeft'),
-            fragment.querySelector('#pianoScrollRight'))
+        fragment.querySelector('#pianoLeft').addEventListener('click',
+            /** @param {UIEventInit} e */ e => {
+                let keyWidth = this._pianoKeys[0].clientWidth
+                this._piano.scrollBy({left: -e.detail * keyWidth * 7, behavior: 'smooth'})
+            })
+        fragment.querySelector('#pianoRight').addEventListener('click',
+            /** @param {UIEventInit} e */ e => {
+                let keyWidth = this._pianoKeys[0].clientWidth
+                this._piano.scrollBy({left: e.detail * keyWidth * 7, behavior: 'smooth'})
+            })
 
         new KeyPad(this._sampleList, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement == this._sampleList) {
@@ -137,9 +144,16 @@ class CellEntryElement extends HTMLElement {
                 this._jam._jamPlay(id, this._getJamCell())
             }
         }, id => this._jam._jamRelease(id))
-        setupScrollerButtons(this._sampleList,
-            fragment.querySelector('#sampleScrollLeft'),
-            fragment.querySelector('#sampleScrollRight'))
+        fragment.querySelector('#sampleLeft').addEventListener('click',
+            /** @param {UIEventInit} e */ e => {
+                let width = this._sampleList.clientWidth
+                this._sampleList.scrollBy({left: -e.detail * width / 2, behavior: 'smooth'})
+            })
+        fragment.querySelector('#sampleRight').addEventListener('click',
+            /** @param {UIEventInit} e */ e => {
+                let width = this._sampleList.clientWidth
+                this._sampleList.scrollBy({left: e.detail * width / 2, behavior: 'smooth'})
+            })
 
         this._updateCell()
         toggleCellParts(this._entryCell, this._getCellParts())
