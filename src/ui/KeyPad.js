@@ -46,7 +46,7 @@ function KeyPad(container, onPress, onRelease) {
      */
     let onTouchDown = e => {
         for (let touch of e.changedTouches) {
-            if (this.press(touch.identifier, touch.clientX, touch.clientY) != this.container) {
+            if (this.press(touch.identifier, touch.clientX, touch.clientY)) {
                 e.preventDefault()
             }
         }
@@ -68,11 +68,14 @@ KeyPad.prototype = {
      */
     press(id, x, y) {
         let elem = document.elementFromPoint(x, y)
+        let valid = elem && elem != this.container
         if (elem != this.pressed.get(id)) {
             this.pressed.set(id, elem)
-            this.onPress(id, elem)
+            if (valid) {
+                this.onPress(id, elem)
+            }
         }
-        return elem
+        return valid
     },
 
     /**
