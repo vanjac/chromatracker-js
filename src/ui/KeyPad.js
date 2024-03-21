@@ -1,6 +1,14 @@
 'use strict'
 
 /**
+ * @param {Element} elem
+ */
+function setupKeypadKeyEvents(elem) {
+    elem.addEventListener('mousedown', e => e.preventDefault())
+    elem.addEventListener('touchdown', e => e.preventDefault())
+}
+
+/**
  * @param {Element} container
  * @param {(id: number, elem: Element) => void} onPress
  * @param {(id: number) => void} onRelease

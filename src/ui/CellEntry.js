@@ -25,6 +25,22 @@ function addReleaseEvent(elem, handler) {
     })
 }
 
+/**
+ * @param {HTMLElement} container
+ * @param {HTMLElement} scrollLeft
+ * @param {HTMLElement} scrollRight
+ */
+function setupScrollerButtons(container, scrollLeft, scrollRight) {
+    scrollLeft.addEventListener('click', /** @param {UIEventInit} e */ e => {
+            let width = container.clientWidth
+            container.scrollBy({left: -e.detail * width / 2, behavior: 'smooth'})
+        })
+    scrollRight.addEventListener('click', /** @param {UIEventInit} e */ e => {
+            let width = container.clientWidth
+            container.scrollBy({left: e.detail * width / 2, behavior: 'smooth'})
+        })
+}
+
 class CellEntryElement extends HTMLElement {
     constructor() {
         super()
@@ -45,8 +61,10 @@ class CellEntryElement extends HTMLElement {
         this._sampleEnable = fragment.querySelector('#sampleEnable')
         /** @type {HTMLInputElement} */
         this._effectEnable = fragment.querySelector('#effectEnable')
-        /** @type {HTMLInputElement} */
-        this._pitchInput = fragment.querySelector('#pitchInput')
+        /** @type {HTMLFormElement} */
+        this._piano = fragment.querySelector('#piano')
+        /** @type {NamedFormItem} */
+        this._pitchInput = null
         /** @type {HTMLFormElement} */
         this._sampleList = fragment.querySelector('#sampleList')
         /** @type {NamedFormItem} */
@@ -88,23 +106,26 @@ class CellEntryElement extends HTMLElement {
         this._sampleEnable.addEventListener('change', () => this._updateEntryParts())
         this._effectEnable.addEventListener('change', () => this._updateEntryParts())
 
-        this._pitchInput.addEventListener('mousedown',
-            () => this._jam._jamDown(this._getJamCell()))
-        this._pitchInput.addEventListener('touchstart',
-            () => this._jam._jamDown(this._getJamCell()))
-        this._pitchInput.addEventListener('mouseup', () => this._jam._jamUp())
-        this._pitchInput.addEventListener('touchend', () => this._jam._jamUp())
-        this._pitchInput.addEventListener('input', () => {
-            this._jam._jamDown(this._getJamCell())
-            this._updateCell()
-        })
-
         this._effectSelect.addEventListener('input', () => {
             this._param0Select.selectedIndex = this._param1Select.selectedIndex = 0
             this._updateCell()
         })
         this._param0Select.addEventListener('input', () => this._updateCell())
         this._param1Select.addEventListener('input', () => this._updateCell())
+
+        this._createPiano()
+
+        new KeyPad(this._piano, (id, elem) => {
+            if (elem.parentElement.parentElement == this._piano) {
+                let input = elem.parentElement.querySelector('input')
+                selectRadioButton(this._pitchInput, input.value)
+                this._updateCell()
+                this._jam._jamPlay(id, this._getJamCell())
+            }
+        }, id => this._jam._jamRelease(id))
+        setupScrollerButtons(this._piano,
+            fragment.querySelector('#pianoScrollLeft'),
+            fragment.querySelector('#pianoScrollRight'))
 
         new KeyPad(this._sampleList, (id, elem) => {
             if (elem.parentElement.parentElement == this._sampleList) {
@@ -113,18 +134,9 @@ class CellEntryElement extends HTMLElement {
                 this._jam._jamPlay(id, this._getJamCell())
             }
         }, id => this._jam._jamRelease(id))
-        fragment.querySelector('#sampleScrollLeft').addEventListener('click',
-            /** @param {UIEventInit} e */
-            e => {
-                let width = this._sampleList.clientWidth
-                this._sampleList.scrollBy({left: -e.detail * width / 2, behavior: 'smooth'})
-            })
-        fragment.querySelector('#sampleScrollRight').addEventListener('click',
-            /** @param {UIEventInit} e */
-            e => {
-                let width = this._sampleList.clientWidth
-                this._sampleList.scrollBy({left: e.detail * width / 2, behavior: 'smooth'})
-            })
+        setupScrollerButtons(this._sampleList,
+            fragment.querySelector('#sampleScrollLeft'),
+            fragment.querySelector('#sampleScrollRight'))
 
         this._updateCell()
         toggleCellParts(this._entryCell, this._getCellParts())
@@ -133,9 +145,36 @@ class CellEntryElement extends HTMLElement {
         this.appendChild(fragment)
     }
 
+    _createPiano() {
+        for (let i = 0; i < periodTable[0].length; i++) {
+            let note = i % 12
+            let noteStr = noteNamesShort[note]
+            if (note == 0) {
+                noteStr += Math.floor(i / 12)
+            }
+            let label = makeRadioButton('pitch', i.toString(), noteStr)
+            label.classList.add('keypad-key')
+            let isBlackKey = [1, 3, 6, 8, 10].includes(note)
+            label.classList.add(isBlackKey ? 'black-key' : 'white-key')
+            this._piano.appendChild(label)
+            setupKeypadKeyEvents(label)
+        }
+        this._pitchInput = this._piano.elements.namedItem('pitch')
+        selectRadioButton(this._pitchInput, '36')
+    }
+
+    _scrollToSelPitch() {
+        let selPitch = Number(getRadioButtonValue(this._pitchInput, '0'))
+        selPitch -= (selPitch % 12)
+        let parentRect = this._piano.getBoundingClientRect()
+        let childRect = this._piano.children[selPitch].getBoundingClientRect()
+        let scrollAmount = childRect.left - parentRect.left
+        this._piano.scrollBy({left: scrollAmount, behavior: 'instant'})
+    }
+
     _getCell() {
         let cell = new Cell()
-        cell.pitch = this._pitchInput.valueAsNumber
+        cell.pitch = Number(getRadioButtonValue(this._pitchInput, '36'))
         cell.inst = Number(getRadioButtonValue(this._sampleInput, '0'))
         cell.effect = this._effectSelect.selectedIndex
         cell.param0 = this._param0Select.selectedIndex
@@ -194,8 +233,7 @@ class CellEntryElement extends HTMLElement {
             let label = makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key')
             this._sampleList.appendChild(label)
-            label.addEventListener('mousedown', e => e.preventDefault())
-            label.addEventListener('touchdown', e => e.preventDefault())
+            setupKeypadKeyEvents(label)
         }
         this._sampleInput = this._sampleList.elements.namedItem('sample')
         this._setSelSample(selSample)
@@ -214,7 +252,7 @@ class CellEntryElement extends HTMLElement {
     _liftCell() {
         let cell = this._target._selCell()
         if (this._pitchEnable.checked && cell.pitch >= 0) {
-            this._pitchInput.valueAsNumber = cell.pitch
+            selectRadioButton(this._pitchInput, cell.pitch.toString())
         }
         if (this._sampleEnable.checked && cell.inst) {
             selectRadioButton(this._sampleInput, cell.inst.toString())

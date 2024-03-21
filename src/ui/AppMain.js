@@ -67,6 +67,9 @@ class AppMainElement extends HTMLElement {
                     for (let element of tabBody.children) {
                         element.classList.toggle('hide', element.id != tabName)
                     }
+                    if (tabName == 'sequence') {
+                        this._patternTable._onVisible()
+                    }
                 })
             }
         }
@@ -200,6 +203,7 @@ class AppMainElement extends HTMLElement {
      * @param {Readonly<Cell>} cell
      */
     _jamPlay(id, cell) {
+        this._enablePlayback()
         jamPlay(this._playback, id, this._selChannel(), cell)
     }
 
@@ -215,7 +219,6 @@ class AppMainElement extends HTMLElement {
      * @param {Event} e
      */
     _jamDown(cell, e = null) {
-        this._enablePlayback()
         if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches) {
                 jamPlay(this._playback, touch.identifier, this._selChannel(), cell)

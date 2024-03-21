@@ -4,11 +4,13 @@
       <button id="lift">
         <img class="icon" src="assets/eyedropper.svg">
       </button>
+      <div class="flex-grow"></div>
       <span id="entryCell" class="pattern-cell">
         <span id="pitch" class="cell-pitch"></span>
         <span id="inst" class="cell-inst"></span>
         <span id="effect" class="cell-effect"></span>
       </span>
+      <div class="flex-grow"></div>
       <button id="write">
         <img class="icon" src="assets/pencil.svg">
       </button>
@@ -21,7 +23,11 @@
         <input type="checkbox" checked id="pitchEnable">
         <span>P</span>
       </label>
-      <input class="flex-grow" type="range" min="0" max="59" value="36" id="pitchInput">
+      <div class="hflex">
+        <button id="pianoScrollLeft">&lt;</button>
+        <form id="piano" class="hflex flex-grow hscrollable" autocomplete="off"></form>
+        <button id="pianoScrollRight">&gt;</button>
+      </div>
 
       <label class="label-button">
         <input type="checkbox" checked id="sampleEnable">

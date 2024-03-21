@@ -152,3 +152,8 @@ tbody tr:nth-child(16n+1) th {
     padding-left: 0;
     padding-right: 0;
 }
+
+.black-key span {
+    background: #222;
+    color: #fff;
+}

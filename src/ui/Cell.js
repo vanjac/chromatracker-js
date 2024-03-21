@@ -3,21 +3,22 @@
 // TODO: make this a custom element?
 
 const noteNames = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-']
+const noteNamesShort = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 /**
- * @param {Readonly<Cell>} cell cell
+ * @param {number} pitch
  */
-function cellPitchString(cell) {
-    let noteStr = (cell.pitch >= 0) ? noteNames[cell.pitch % 12] : '..'
-    let octStr = (cell.pitch >= 0) ? ((cell.pitch / 12) | 0) : '.'
+function cellPitchString(pitch) {
+    let noteStr = (pitch >= 0) ? noteNames[pitch % 12] : '..'
+    let octStr = (pitch >= 0) ? ((pitch / 12) | 0) : '.'
     return noteStr + octStr
 }
 
 /**
- * @param {Readonly<Cell>} cell cell
+ * @param {number} inst
  */
-function cellInstString(cell) {
-    return cell.inst ? cell.inst.toString().padStart(2, '0') : '..'
+function cellInstString(inst) {
+    return inst ? inst.toString().padStart(2, '0') : '..'
 }
 
 /**
@@ -36,8 +37,8 @@ function cellEffectString(cell) {
  * @param {Readonly<Cell>} cell
  */
 function setCellContents(elem, cell) {
-    elem.querySelector('#pitch').textContent = cellPitchString(cell)
-    elem.querySelector('#inst').textContent = cellInstString(cell)
+    elem.querySelector('#pitch').textContent = cellPitchString(cell.pitch)
+    elem.querySelector('#inst').textContent = cellInstString(cell.inst)
     elem.querySelector('#effect').textContent = cellEffectString(cell)
 }
 

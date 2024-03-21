@@ -35,6 +35,10 @@ class PatternTableElement extends HTMLElement {
         this._cellEntry._target = this
     }
 
+    _onVisible() {
+        this._cellEntry._scrollToSelPitch()
+    }
+
     /**
      * @param {PatternTableTarget & JamTarget} target
      */
