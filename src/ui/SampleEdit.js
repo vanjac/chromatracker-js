@@ -25,6 +25,9 @@ class SampleEditElement extends HTMLElement {
         this._nameInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample name'))
 
+        /** @type {HTMLCanvasElement} */
+        this._wavePreview = fragment.querySelector('#wavePreview')
+
         /** @type {HTMLInputElement} */
         this._loopStartInput = fragment.querySelector('#loopStart')
         this._loopStartInput.addEventListener('input', () =>
@@ -97,21 +100,27 @@ class SampleEditElement extends HTMLElement {
             this._index = index
             this._sampleNumberOutput.value = index.toString()
         }
-
-        if (sample != this._viewSample) {
-            console.log('update sample')
-            this._viewSample = sample
-
-            this._nameInput.value = sample.name
-            this._loopStartInput.max = this._loopEndInput.max = sample.wave.length.toString()
-            this._loopStartInput.valueAsNumber = sample.loopStart
-            this._loopEndInput.valueAsNumber = sample.loopEnd
-            this._volumeInput.valueAsNumber = sample.volume
-            this._volumeOutput.value = sample.volume.toString()
-            this._finetuneInput.valueAsNumber = sample.finetune
-            this._finetuneOutput.value = sample.finetune.toString()
-            this._fileInput.value = ''
+        if (sample == this._viewSample) {
+            return
         }
+
+        console.log('update sample')
+
+        this._nameInput.value = sample.name
+        this._loopStartInput.max = this._loopEndInput.max = sample.wave.length.toString()
+        this._loopStartInput.valueAsNumber = sample.loopStart
+        this._loopEndInput.valueAsNumber = sample.loopEnd
+        this._volumeInput.valueAsNumber = sample.volume
+        this._volumeOutput.value = sample.volume.toString()
+        this._finetuneInput.valueAsNumber = sample.finetune
+        this._finetuneOutput.value = sample.finetune.toString()
+        this._fileInput.value = ''
+
+        if (!this._viewSample || sample.wave != this._viewSample.wave) {
+            this._createSamplePreview(sample.wave)
+        }
+
+        this._viewSample = sample
     }
 
     /**
@@ -162,6 +171,43 @@ class SampleEditElement extends HTMLElement {
             }
         }
         reader.readAsArrayBuffer(file)
+    }
+
+    /**
+     * @param {Readonly<Int8Array>} wave
+     */
+    _createSamplePreview(wave) {
+        let numBlocks = this._wavePreview.width
+        let blockPerFrame = numBlocks / wave.length
+
+        let ctx = this._wavePreview.getContext('2d')
+        ctx.strokeStyle = 'black'
+        ctx.clearRect(0, 0, this._wavePreview.width, this._wavePreview.height)
+
+        /**
+         * @param {number} amp
+         */
+        let ampYPos = amp => this._wavePreview.height * ((127 - amp) / 256.0)
+
+        // TODO: use different drawing algorithm if wave length is less than numBlocks
+
+        ctx.beginPath()
+        let min = 127
+        let max = -128
+        for (let i = 0; i < wave.length; i++) {
+            min = Math.min(min, wave[i])
+            max = Math.max(max, wave[i])
+
+            let blockIdx = Math.floor(i * blockPerFrame)
+            let nextBlockIdx = Math.floor((i + 1) * blockPerFrame)
+            if (nextBlockIdx != blockIdx) {
+                ctx.moveTo(blockIdx, ampYPos(min))
+                ctx.lineTo(blockIdx, ampYPos(max))
+                min = 127
+                max = -128
+            }
+        }
+        ctx.stroke()
     }
 
     _clearLoop() {
