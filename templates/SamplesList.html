@@ -1,10 +1,11 @@
 <template id="samplesList">
   <div class="vflex flex-grow">
-    <div class="vflex flex-grow vscrollable">
-      <form id="sampleList" class="vflex" autocomplete="off"></form>
+    <div class="hflex">
+      <select id="sampleSelect" class="flex-grow"></select>
       <button id="addSample">+</button>
+      <button id="delSample">X</button>
     </div>
+    </select>
     <sample-edit></sample-edit>
-    <button id="delSample">Delete</button>
   </div>
 </template>

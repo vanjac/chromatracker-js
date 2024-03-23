@@ -12,12 +12,15 @@ class SamplesListElement extends HTMLElement {
     connectedCallback() {
         let fragment = templates.samplesList.cloneNode(true)
 
-        /** @type {HTMLFormElement} */
-        this._list = fragment.querySelector('#sampleList')
-        /** @type {NamedFormItem} */
-        this._input = null
+        /** @type {HTMLSelectElement} */
+        this._select = fragment.querySelector('#sampleSelect')
         /** @type {SampleEditElement} */
         this._sampleEdit = fragment.querySelector('sample-edit')
+
+        this._select.addEventListener('input', () => {
+            let idx = Number(this._select.value)
+            this._sampleEdit._setSample(this._viewSamples[idx], idx)
+        })
 
         fragment.querySelector('#addSample').addEventListener('click', () => this._addSample())
         fragment.querySelector('#delSample').addEventListener('click', () => this._deleteSample())
@@ -50,31 +53,32 @@ class SamplesListElement extends HTMLElement {
 
         let selSample = this._getSelSample()
 
-        this._list.textContent = ''
+        this._select.textContent = ''
         for (let [i, sample] of samples.entries()) {
             if (!sample) {
                 continue
             }
-            let label = makeRadioButton('sample', i.toString(), `${i}: ${sample.name}`)
-            this._list.appendChild(label)
-            label.addEventListener('change', () => {
-                this._sampleEdit._setSample(sample, i)
-            })
+            let option = this._select.appendChild(document.createElement('option'))
+            option.value = i.toString()
+            option.textContent = `${i}: ${sample.name}`
         }
-        this._input = this._list.elements.namedItem('sample')
         this._selectSample(selSample)
     }
 
     _getSelSample() {
-        return Number(getRadioButtonValue(this._input, '1'))
+        return Number(this._select.value)
     }
 
     /**
      * @param {number} s
      */
     _selectSample(s) {
-        if (this._viewSamples[s]) {
-            selectRadioButton(this._input, s.toString())
+        this._select.value = s.toString()
+        if (!this._select.value) {
+            this._select.selectedIndex = 0
+            s = this._getSelSample()
+        }
+        if (s) {
             this._sampleEdit._setSample(this._viewSamples[s], s)
         }
     }
