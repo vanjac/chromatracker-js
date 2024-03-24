@@ -82,9 +82,19 @@ class SampleEditElement extends HTMLElement {
         this._loopEndInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample loop end'))
 
+        /** @type {HTMLSelectElement} */
+        let selectMenu = fragment.querySelector('#selectMenu')
+        selectMenu.addEventListener('change', () => {
+            switch (selectMenu.value) {
+                case 'all': this._selectAll(); break
+                case 'none': this._selectNone(); break
+                case 'loop': this._selectLoop(); break
+            }
+            selectMenu.selectedIndex = 0
+        })
+
         fragment.querySelector('#setLoop').addEventListener('click', () => this._loopSelection())
         fragment.querySelector('#clearLoop').addEventListener('click', () => this._clearLoop())
-        fragment.querySelector('#selectLoop').addEventListener('click', () => this._selectLoop())
         fragment.querySelector('#trim').addEventListener('click', () => this._trim())
         fragment.querySelector('#delete').addEventListener('click', () => this._deleteSelection())
 
@@ -329,6 +339,17 @@ class SampleEditElement extends HTMLElement {
 
     _clearLoop() {
         this._changeSample(sample => sample.loopStart = sample.loopEnd = 0, '', true)
+    }
+
+    _selectAll() {
+        this._selectA = 0
+        this._selectB = this._viewSample.wave.length
+        this._updateSelection()
+    }
+
+    _selectNone() {
+        this._selectA = this._selectB = -1
+        this._updateSelection()
     }
 
     _selectLoop() {
