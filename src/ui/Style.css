@@ -175,20 +175,28 @@ tbody tr:nth-child(16n+1) th {
 }
 
 .wave-mark,
+.wave-mark:before,
 .wave-range {
     position: absolute;
     height: 100%;
-    background: #44f;
+}
+.wave-mark:before,
+.wave-range {
     pointer-events: none;
 }
-.wave-mark {
-    width: 0px;
+.wave-mark:before {
+    content: "";
     padding: 0 1px;
+    margin: 0 -1px;
+    background-color: inherit;
 }
 .wave-range {
     opacity: 0.2;
 }
 
+.wave-select {
+    background: #44f;
+}
 .wave-loop {
     background: #2d8;
 }
