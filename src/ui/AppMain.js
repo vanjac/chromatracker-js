@@ -82,7 +82,7 @@ class AppMainElement extends HTMLElement {
         this._playbackControls._target = this
         this._sequenceEdit._target = this
         this._patternTable._setTarget(this)
-        this._samplesList._setTarget(this)
+        this._samplesList._target = this
 
         this._patternTable._onChange = pattern => (
             this._changeModule(module => editSetPattern(module, this._selPattern(), pattern)))

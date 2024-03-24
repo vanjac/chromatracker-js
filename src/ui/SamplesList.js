@@ -14,31 +14,36 @@ class SamplesListElement extends HTMLElement {
 
         /** @type {HTMLSelectElement} */
         this._select = fragment.querySelector('#sampleSelect')
+        this._sampleEditContainer = fragment.querySelector('#sampleEditContainer')
         /** @type {SampleEditElement} */
-        this._sampleEdit = fragment.querySelector('sample-edit')
+        this._sampleEdit = null
 
-        this._select.addEventListener('input', () => {
-            let idx = Number(this._select.value)
-            this._sampleEdit._setSample(this._viewSamples[idx], idx)
-        })
+        this._select.addEventListener('input',
+            () => this._createSampleEdit(Number(this._select.value)))
 
         fragment.querySelector('#addSample').addEventListener('click', () => this._addSample())
         fragment.querySelector('#delSample').addEventListener('click', () => this._deleteSample())
 
         this.style.display = 'contents'
         this.appendChild(fragment)
-
-        this._sampleEdit._onChange = (sample, combineTag) => (
-            this._target._changeModule(
-                module => editSetSample(module, this._getSelSample(), sample), {combineTag}))
     }
 
     /**
-     * @param {ModuleEditTarget & JamTarget} target
+     * @param {number} idx
      */
-    _setTarget(target) {
-        this._target = target
+    _createSampleEdit(idx) {
+        this._destroySampleEdit()
+        this._sampleEdit = /** @type {SampleEditElement} */(document.createElement('sample-edit'))
+        this._sampleEditContainer.appendChild(this._sampleEdit)
         this._sampleEdit._target = this._target
+        this._sampleEdit._onChange = (sample, combineTag) => (
+            this._target._changeModule(module => editSetSample(module, idx, sample), {combineTag}))
+        this._sampleEdit._setIndex(idx)
+        this._sampleEdit._setSample(this._viewSamples[idx])
+    }
+
+    _destroySampleEdit() {
+        this._sampleEditContainer.textContent = ''
     }
 
     /**
@@ -62,7 +67,7 @@ class SamplesListElement extends HTMLElement {
             option.value = i.toString()
             option.textContent = `${i}: ${sample.name}`
         }
-        this._selectSample(selSample)
+        this._selectSample(selSample ? selSample : 1)
     }
 
     _getSelSample() {
@@ -74,12 +79,13 @@ class SamplesListElement extends HTMLElement {
      */
     _selectSample(s) {
         this._select.value = s.toString()
+        let idx = this._getSelSample()
         if (!this._select.value) {
-            this._select.selectedIndex = 0
-            s = this._getSelSample()
-        }
-        if (s) {
-            this._sampleEdit._setSample(this._viewSamples[s], s)
+            this._destroySampleEdit()
+        } else if (!this._sampleEdit || idx != this._sampleEdit._index) {
+            this._createSampleEdit(idx)
+        } else {
+            this._sampleEdit._setSample(this._viewSamples[idx])
         }
     }
 

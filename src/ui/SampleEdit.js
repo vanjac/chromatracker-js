@@ -148,14 +148,17 @@ class SampleEditElement extends HTMLElement {
     }
 
     /**
-     * @param {Readonly<Sample>} sample
      * @param {number} index
      */
-    _setSample(sample, index) {
-        if (this._index != index) {
-            this._index = index
-            this._sampleNumberOutput.value = index.toString()
-        }
+    _setIndex(index) {
+        this._index = index
+        this._sampleNumberOutput.value = index.toString()
+    }
+
+    /**
+     * @param {Readonly<Sample>} sample
+     */
+    _setSample(sample) {
         if (sample == this._viewSample) {
             return
         }
