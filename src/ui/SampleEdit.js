@@ -201,8 +201,12 @@ class SampleEditElement extends HTMLElement {
             let blockIdx = Math.floor(i * blockPerFrame)
             let nextBlockIdx = Math.floor((i + 1) * blockPerFrame)
             if (nextBlockIdx != blockIdx) {
-                ctx.moveTo(blockIdx, ampYPos(min))
-                ctx.lineTo(blockIdx, ampYPos(max))
+                let minY = ampYPos(min)
+                let maxY = ampYPos(max + 1)
+                for (let x = blockIdx; x < nextBlockIdx; x++) {
+                    ctx.moveTo(x + 0.5, minY)
+                    ctx.lineTo(x + 0.5, maxY)
+                }
                 min = 127
                 max = -128
             }
