@@ -204,6 +204,36 @@ class SampleEditElement extends HTMLElement {
         return Math.max(this._selectA, this._selectB)
     }
 
+    _anySelected() {
+        return this._selectA >= 0 && this._selectB >= 0
+    }
+
+    _rangeSelected() {
+        return this._anySelected() && this._selectA != this._selectB
+    }
+
+    /**
+     * @returns {[number, number]}
+     */
+    _selOrAll() {
+        if (this._anySelected()) {
+            return [this._selMin(), this._selMax()]
+        } else {
+            return [0, this._viewSample.wave.length]
+        }
+    }
+
+    /**
+     * @returns {[number, number]}
+     */
+    _selRangeOrAll() {
+        if (this._rangeSelected()) {
+            return [this._selMin(), this._selMax()]
+        } else {
+            return [0, this._viewSample.wave.length]
+        }
+    }
+
     _selLen() {
         return Math.abs(this._selectA - this._selectB)
     }
@@ -218,9 +248,8 @@ class SampleEditElement extends HTMLElement {
             this._setMarkPos(this._selectMarkB, this._viewSample, this._selectB)
         }
 
-        let showRange = this._selectA >= 0 && this._selectB >= 0
-        this._selectRange.classList.toggle('hide', !showRange)
-        if (showRange) {
+        this._selectRange.classList.toggle('hide', !this._rangeSelected())
+        if (this._rangeSelected()) {
             this._setMarkPos(this._selectRange, this._viewSample, this._selMin())
             let waveLen = this._viewSample.wave.length
             this._selectRange.style.width = (100 * this._selLen() / waveLen) + '%'
@@ -340,10 +369,8 @@ class SampleEditElement extends HTMLElement {
     }
 
     _loopSelection() {
-        this._changeSample(sample => {
-            sample.loopStart = this._selMin()
-            sample.loopEnd = this._selMax()
-        }, '', true)
+        this._changeSample(sample => [sample.loopStart, sample.loopEnd] = this._selRangeOrAll(),
+            '', true)
     }
 
     _clearLoop() {
@@ -370,26 +397,32 @@ class SampleEditElement extends HTMLElement {
     }
 
     _trim() {
-        this._onChange(editSampleTrim(this._viewSample, this._selMin(), this._selMax()), '')
-        this._selectA = this._selectB = -1
-        this._updateSelection()
+        if (this._rangeSelected()) {
+            this._onChange(editSampleTrim(this._viewSample, this._selMin(), this._selMax()), '')
+            this._selectA = this._selectB = -1
+            this._updateSelection()
+        }
     }
 
     _copy() {
-        global.audioClipboard = this._viewSample.wave.subarray(this._selMin(), this._selMax())
+        let [start, end] = this._selRangeOrAll()
+        global.audioClipboard = this._viewSample.wave.subarray(start, end)
     }
 
     _cut() {
-        this._copy()
-        this._onChange(editSampleDelete(this._viewSample, this._selMin(), this._selMax()), '')
-        this._selectA = this._selectB = this._selMin()
-        this._updateSelection()
+        if (this._rangeSelected()) {
+            this._copy()
+            this._onChange(editSampleDelete(this._viewSample, this._selMin(), this._selMax()), '')
+            this._selectA = this._selectB = this._selMin()
+            this._updateSelection()
+        }
     }
 
     _paste() {
+        let [start, end] = this._selOrAll()
         this._onChange(editSampleSplice(
-            this._viewSample, this._selMin(), this._selMax(), global.audioClipboard), '')
-        this._selectA = this._selectB = this._selMin() + global.audioClipboard.length
+            this._viewSample, start, end, global.audioClipboard), '')
+        this._selectA = this._selectB = start + global.audioClipboard.length
         this._updateSelection()
     }
 }
