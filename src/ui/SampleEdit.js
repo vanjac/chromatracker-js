@@ -48,12 +48,24 @@ class SampleEditElement extends HTMLElement {
                 this._updateSelection()
             }
         })
+        this._wavePreview.addEventListener('touchstart',
+            /** @param {TouchEventInit & Event} e */ e => {
+                e.preventDefault()
+                this._selectA = this._selectB = this._mouseToWavePos(e.touches[0].clientX)
+                this._updateSelection()
+            })
         this._wavePreview.addEventListener('mousemove', /** @param {MouseEventInit} e */ e => {
             if (e.buttons & 1) {
                 this._selectB = this._mouseToWavePos(e.clientX)
                 this._updateSelection()
             }
         })
+        this._wavePreview.addEventListener('touchmove',
+            /** @param {TouchEventInit & Event} e */ e => {
+                e.preventDefault()
+                this._selectB = this._mouseToWavePos(e.touches[0].clientX)
+                this._updateSelection()
+            })
 
         /** @type {HTMLInputElement} */
         this._loopStartInput = fragment.querySelector('#loopStart')
