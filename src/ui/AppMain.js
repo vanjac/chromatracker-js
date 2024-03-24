@@ -219,7 +219,7 @@ class AppMainElement extends HTMLElement {
      * @param {Event} e
      */
     _jamDown(cell, e = null) {
-        if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
+        if (typeof TouchEvent != 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches) {
                 this._jamPlay(touch.identifier, cell)
             }
@@ -233,7 +233,7 @@ class AppMainElement extends HTMLElement {
      */
     _jamUp(e = null) {
         if (this._playback) {
-            if (typeof TouchEvent !== 'undefined' && (e instanceof TouchEvent)) {
+            if (typeof TouchEvent != 'undefined' && (e instanceof TouchEvent)) {
                 for (let touch of e.changedTouches) {
                     this._jamRelease(touch.identifier)
                 }

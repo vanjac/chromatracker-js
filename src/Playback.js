@@ -533,7 +533,7 @@ function processCellAll(playback, channel, cell, tick) {
 
     if (channel.panning != channel.scheduledPanning) {
         let pan = calcPanning(channel.panning)
-        if (typeof StereoPannerNode !== 'undefined'
+        if (typeof StereoPannerNode != 'undefined'
                 && (channel.panner instanceof StereoPannerNode)) {
             channel.panner.pan.setTargetAtTime(pan, playback.time, rampTimeConstant)
         }
@@ -702,7 +702,7 @@ function jamPlay(playback, id, c, cell) {
         jam.source.connect(jam.gain)
         jam.source.start(0, calcSampleOffset(jam.sampleOffset))
         jam.gain.gain.value = volumeToGain(jam.volume)
-        if (typeof StereoPannerNode !== 'undefined' && (jam.panner instanceof StereoPannerNode)) {
+        if (typeof StereoPannerNode != 'undefined' && (jam.panner instanceof StereoPannerNode)) {
             jam.panner.pan.value = calcPanning(jam.panning)
         }
         jam.source.playbackRate.value = periodToRate(jam.period)
