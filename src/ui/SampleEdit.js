@@ -1,7 +1,5 @@
 'use strict'
 
-let audioClipboard = new Int8Array() // global state!
-
 class SampleEditElement extends HTMLElement {
     constructor() {
         super()
@@ -372,37 +370,27 @@ class SampleEditElement extends HTMLElement {
     }
 
     _trim() {
-        this._changeSample(sample => {
-            sample.wave = sample.wave.subarray(this._selMin(), this._selMax())
-            this._selectA = this._selectB = -1
-        }, '', true)
+        this._onChange(editSampleTrim(this._viewSample, this._selMin(), this._selMax()), '')
+        this._selectA = this._selectB = -1
+        this._updateSelection()
     }
 
     _copy() {
-        audioClipboard = this._viewSample.wave.subarray(this._selMin(), this._selMax())
+        global.audioClipboard = this._viewSample.wave.subarray(this._selMin(), this._selMax())
     }
 
     _cut() {
         this._copy()
-        this._changeSample(sample => {
-            let newWave = new Int8Array(sample.wave.length - this._selLen())
-            newWave.set(sample.wave.subarray(0, this._selMin()))
-            newWave.set(sample.wave.subarray(this._selMax()), this._selMin())
-            sample.wave = newWave
-            this._selectA = this._selectB = this._selMin()
-        }, '', true)
+        this._onChange(editSampleDelete(this._viewSample, this._selMin(), this._selMax()), '')
+        this._selectA = this._selectB = this._selMin()
+        this._updateSelection()
     }
 
     _paste() {
-        this._changeSample(sample => {
-            let newWave = new Int8Array(sample.wave.length - this._selLen() + audioClipboard.length)
-            newWave.set(sample.wave.subarray(0, this._selMin()))
-            newWave.set(audioClipboard, this._selMin())
-            let pasteEnd = this._selMin() + audioClipboard.length
-            newWave.set(sample.wave.subarray(this._selMax()), pasteEnd)
-            sample.wave = newWave
-            this._selectA = this._selectB = pasteEnd
-        }, '', true)
+        this._onChange(editSampleSplice(
+            this._viewSample, this._selMin(), this._selMax(), global.audioClipboard), '')
+        this._selectA = this._selectB = this._selMin() + global.audioClipboard.length
+        this._updateSelection()
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)
