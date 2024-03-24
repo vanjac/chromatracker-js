@@ -71,3 +71,25 @@ function editSampleSplice(sample, start, end, insert) {
     let loopEnd = transform(sample.loopEnd)
     return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
 }
+
+/**
+ * @param {Readonly<Sample>} sample
+ * @param {number} start
+ * @param {number} end
+ * @param {(wave: Int8Array) => void} effect
+ */
+function editSampleEffect(sample, start, end, effect) {
+    let wave = sample.wave.slice()
+    effect(wave.subarray(start, end))
+    return freezeAssign(new Sample(), sample, {wave})
+}
+
+/**
+ * @param {Int8Array} wave
+ * @param {number} amount
+ */
+function waveAmplify(wave, amount) {
+    for (let i = 0; i < wave.length; i++) {
+        wave[i] = clamp(Math.round(wave[i] * amount), -128, 127)
+    }
+}

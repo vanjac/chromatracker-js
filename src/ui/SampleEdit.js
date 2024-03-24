@@ -103,6 +103,11 @@ class SampleEditElement extends HTMLElement {
                 case 'clear': this._clearLoop(); break
             }
         })
+        addMenuListener(fragment.querySelector('#effectMenu'), value => {
+            switch (value) {
+                case 'amplify': this._amplify(); break
+            }
+        })
 
         /** @type {HTMLInputElement} */
         this._volumeInput = fragment.querySelector('#volume')
@@ -424,6 +429,16 @@ class SampleEditElement extends HTMLElement {
             this._viewSample, start, end, global.audioClipboard), '')
         this._selectA = this._selectB = start + global.audioClipboard.length
         this._updateSelection()
+    }
+
+    _amplify() {
+        let result = window.prompt('Amount:', global.lastAmplify.toString())
+        if (result != null) {
+            let [start, end] = this._selRangeOrAll()
+            this._onChange(editSampleEffect(
+                this._viewSample, start, end, w => waveAmplify(w, Number(result))), '')
+            global.lastAmplify = Number(result)
+        }
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)
