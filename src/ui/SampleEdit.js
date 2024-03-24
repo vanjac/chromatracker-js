@@ -1,5 +1,7 @@
 'use strict'
 
+let audioClipboard = new Int8Array() // global state!
+
 class SampleEditElement extends HTMLElement {
     constructor() {
         super()
@@ -92,7 +94,9 @@ class SampleEditElement extends HTMLElement {
         addMenuListener(fragment.querySelector('#editMenu'), value => {
             switch (value) {
                 case 'trim': this._trim(); break
-                case 'delete': this._deleteSelection(); break
+                case 'cut': this._cut(); break
+                case 'copy': this._copy(); break
+                case 'paste': this._paste(); break
             }
         })
         addMenuListener(fragment.querySelector('#loopMenu'), value => {
@@ -374,13 +378,30 @@ class SampleEditElement extends HTMLElement {
         }, '', true)
     }
 
-    _deleteSelection() {
+    _copy() {
+        audioClipboard = this._viewSample.wave.subarray(this._selMin(), this._selMax())
+    }
+
+    _cut() {
+        this._copy()
         this._changeSample(sample => {
             let newWave = new Int8Array(sample.wave.length - this._selLen())
             newWave.set(sample.wave.subarray(0, this._selMin()))
             newWave.set(sample.wave.subarray(this._selMax()), this._selMin())
             sample.wave = newWave
             this._selectA = this._selectB = this._selMin()
+        }, '', true)
+    }
+
+    _paste() {
+        this._changeSample(sample => {
+            let newWave = new Int8Array(sample.wave.length - this._selLen() + audioClipboard.length)
+            newWave.set(sample.wave.subarray(0, this._selMin()))
+            newWave.set(audioClipboard, this._selMin())
+            let pasteEnd = this._selMin() + audioClipboard.length
+            newWave.set(sample.wave.subarray(this._selMax()), pasteEnd)
+            sample.wave = newWave
+            this._selectA = this._selectB = pasteEnd
         }, '', true)
     }
 }
