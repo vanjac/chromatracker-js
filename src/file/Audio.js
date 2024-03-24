@@ -16,7 +16,7 @@ function readAudioFile(buf, sampleRate) {
             let data = audioBuffer.getChannelData(0)
             let wave = new Int8Array(data.length)
             for (let i = 0; i < data.length; i++) {
-                wave[i] = Math.min(Math.max(data[i] * 127.0, -128), 127)
+                wave[i] = clamp(data[i] * 127.0, -128, 127)
             }
             resolve(wave)
         }, reject)

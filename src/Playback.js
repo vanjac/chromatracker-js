@@ -510,7 +510,7 @@ function processCellRest(playback, channel, cell, tick) {
             || cell.effect == Effects.VolSlidePort || cell.effect == Effects.VolSlideVib) {
         channel.volume += cell.param0
         channel.volume -= cell.param1
-        channel.volume = Math.min(Math.max(channel.volume, 0), maxVolume)
+        channel.volume = clamp(channel.volume, 0, maxVolume)
     }
 }
 
@@ -524,7 +524,7 @@ function processCellAll(playback, channel, cell, tick) {
     let volume = channel.volume
     if (cell.effect == Effects.Tremolo) {
         volume += calcOscillator(channel.tremolo, -1) * 4
-        volume = Math.max(Math.min(volume, maxVolume), 0)
+        volume = clamp(volume, 0, maxVolume)
     }
     if (volume != channel.scheduledVolume) {
         channel.gain.gain.setTargetAtTime(volumeToGain(volume), playback.time, rampTimeConstant)
