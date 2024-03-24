@@ -48,12 +48,16 @@
         <option value="none">None</option>
         <option value="loop">Loop</option>
       </select>
-      <button id="setLoop">Set Loop</button>
-      <button id="clearLoop">Clear Loop</button>
-    </div>
-    <div class="hflex">
-      <button id="trim">Trim</button>
-      <button id="delete">Delete</button>
+      <select id="editMenu">
+        <option selected disabled hidden>Edit</option>
+        <option value="trim">Trim</option>
+        <option value="delete">Delete</option>
+      </select>
+      <select id="loopMenu">
+        <option selected disabled hidden>Loop</option>
+        <option value="set">Set</option>
+        <option value="clear">Clear</option>
+      </select>
     </div>
     <button id="jam">Listen</button>
   </div>

@@ -82,21 +82,25 @@ class SampleEditElement extends HTMLElement {
         this._loopEndInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample loop end'))
 
-        /** @type {HTMLSelectElement} */
-        let selectMenu = fragment.querySelector('#selectMenu')
-        selectMenu.addEventListener('change', () => {
-            switch (selectMenu.value) {
+        addMenuListener(fragment.querySelector('#selectMenu'), value => {
+            switch (value) {
                 case 'all': this._selectAll(); break
                 case 'none': this._selectNone(); break
                 case 'loop': this._selectLoop(); break
             }
-            selectMenu.selectedIndex = 0
         })
-
-        fragment.querySelector('#setLoop').addEventListener('click', () => this._loopSelection())
-        fragment.querySelector('#clearLoop').addEventListener('click', () => this._clearLoop())
-        fragment.querySelector('#trim').addEventListener('click', () => this._trim())
-        fragment.querySelector('#delete').addEventListener('click', () => this._deleteSelection())
+        addMenuListener(fragment.querySelector('#editMenu'), value => {
+            switch (value) {
+                case 'trim': this._trim(); break
+                case 'delete': this._deleteSelection(); break
+            }
+        })
+        addMenuListener(fragment.querySelector('#loopMenu'), value => {
+            switch (value) {
+                case 'set': this._loopSelection(); break
+                case 'clear': this._clearLoop(); break
+            }
+        })
 
         /** @type {HTMLInputElement} */
         this._volumeInput = fragment.querySelector('#volume')

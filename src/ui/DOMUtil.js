@@ -33,3 +33,14 @@ function getRadioButtonValue(namedItem, defaultValue) {
         return defaultValue
     }
 }
+
+/**
+ * @param {HTMLSelectElement} menu
+ * @param {(value: string) => void} listener
+ */
+function addMenuListener(menu, listener) {
+    menu.addEventListener('change', () => {
+        listener(menu.value)
+        menu.selectedIndex = 0 // restore menu title
+    })
+}
