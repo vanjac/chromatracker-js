@@ -28,7 +28,11 @@
         </div>
       </div>
     </div>
-    <canvas id="wavePreview" width="1024" height="256"></canvas>
+    <div class="vflex wave-container">
+      <canvas id="wavePreview" width="1024" height="256"></canvas>
+      <div id="loopStartMark" class="wave-mark"></div>
+      <div id="loopEndMark" class="wave-mark"></div>
+    </div>
     <div class="vflex">
       Loop:
       <input id="loopStart" type="range" min="0" autocomplete="off">

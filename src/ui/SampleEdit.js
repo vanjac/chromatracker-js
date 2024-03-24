@@ -27,19 +27,23 @@ class SampleEditElement extends HTMLElement {
 
         /** @type {HTMLCanvasElement} */
         this._wavePreview = fragment.querySelector('#wavePreview')
+        /** @type {HTMLElement} */
+        this._loopStartMark = fragment.querySelector('#loopStartMark')
+        /** @type {HTMLElement} */
+        this._loopEndMark = fragment.querySelector('#loopEndMark')
 
         /** @type {HTMLInputElement} */
         this._loopStartInput = fragment.querySelector('#loopStart')
         this._loopStartInput.addEventListener('input', () =>
             this._changeSample(sample => {sample.loopStart = this._loopStartInput.valueAsNumber},
-                'sample loop start'))
+                'sample loop start', true))
         this._loopStartInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample loop start'))
         /** @type {HTMLInputElement} */
         this._loopEndInput = fragment.querySelector('#loopEnd')
         this._loopEndInput.addEventListener('input', () =>
             this._changeSample(sample => {sample.loopEnd = this._loopEndInput.valueAsNumber},
-                'sample loop end'))
+                'sample loop end', true))
         this._loopEndInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample loop end'))
 
@@ -110,6 +114,13 @@ class SampleEditElement extends HTMLElement {
         this._loopStartInput.max = this._loopEndInput.max = sample.wave.length.toString()
         this._loopStartInput.valueAsNumber = sample.loopStart
         this._loopEndInput.valueAsNumber = sample.loopEnd
+        if (sample.wave.length) {
+            this._loopStartMark.style.left = (100 * sample.loopStart / sample.wave.length) + '%'
+            this._loopEndMark.style.left = (100 * sample.loopEnd / sample.wave.length) + '%'
+        } else {
+            this._loopStartMark.style.left = '0'
+            this._loopEndMark.style.left = '0'
+        }
         this._volumeInput.valueAsNumber = sample.volume
         this._volumeOutput.value = sample.volume.toString()
         this._finetuneInput.valueAsNumber = sample.finetune
@@ -188,8 +199,6 @@ class SampleEditElement extends HTMLElement {
          * @param {number} amp
          */
         let ampYPos = amp => this._wavePreview.height * ((127 - amp) / 256.0)
-
-        // TODO: use different drawing algorithm if wave length is less than numBlocks
 
         ctx.beginPath()
         let min = 127

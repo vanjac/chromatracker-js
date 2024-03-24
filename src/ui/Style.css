@@ -164,3 +164,17 @@ tbody tr:nth-child(16n+1) th {
     background: #222;
     color: #fff;
 }
+
+/* wave editor */
+
+.wave-container {
+    position: relative;
+}
+
+.wave-mark {
+    position: absolute;
+    width: 0px;
+    height: 100%;
+    padding: 0 1px;
+    background: #44f;
+}
