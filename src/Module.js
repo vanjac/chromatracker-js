@@ -5,6 +5,7 @@ const numSongPositions = 128
 const numRows = 64
 const maxVolume = 64
 const maxSampleNameLength = 22
+const maxSampleLength = 2 ** 17
 
 function Sample() {}
 Sample.prototype = {

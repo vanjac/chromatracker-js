@@ -12,7 +12,9 @@
         "semi": ["error", "never"],
         // TypeScript handles these:
         "no-undef": "off",
-        "no-unused-vars": "off"
+        "no-unused-vars": "off",
+        // annoying:
+        "no-empty": "off"
     },
     "overrides": [
         {

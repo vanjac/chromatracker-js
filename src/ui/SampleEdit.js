@@ -204,6 +204,12 @@ class SampleEditElement extends HTMLElement {
         let min = 127
         let max = -128
         for (let i = 0; i < wave.length; i++) {
+            if (i == maxSampleLength) {
+                ctx.stroke()
+                ctx.strokeStyle = 'red'
+                ctx.beginPath()
+            }
+
             min = Math.min(min, wave[i])
             max = Math.max(max, wave[i])
 
