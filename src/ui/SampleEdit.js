@@ -111,16 +111,18 @@ class SampleEditElement extends HTMLElement {
         console.log('update sample')
 
         this._nameInput.value = sample.name
+
         this._loopStartInput.max = this._loopEndInput.max = sample.wave.length.toString()
         this._loopStartInput.valueAsNumber = sample.loopStart
         this._loopEndInput.valueAsNumber = sample.loopEnd
-        if (sample.wave.length) {
+        let showLoop = sample.wave.length && sample.hasLoop()
+        this._loopStartMark.classList.toggle('hide', !showLoop)
+        this._loopEndMark.classList.toggle('hide', !showLoop)
+        if (showLoop) {
             this._loopStartMark.style.left = (100 * sample.loopStart / sample.wave.length) + '%'
             this._loopEndMark.style.left = (100 * sample.loopEnd / sample.wave.length) + '%'
-        } else {
-            this._loopStartMark.style.left = '0'
-            this._loopEndMark.style.left = '0'
         }
+
         this._volumeInput.valueAsNumber = sample.volume
         this._volumeOutput.value = sample.volume.toString()
         this._finetuneInput.valueAsNumber = sample.finetune

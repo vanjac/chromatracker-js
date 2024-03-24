@@ -28,7 +28,7 @@ function writeModule(module) {
         view.setUint16(offset + 22, (sample.wave.length / 2) | 0)
         view.setUint8(offset + 24, sample.finetune & 0xf)
         view.setUint8(offset + 25, sample.volume)
-        if (sample.loopStart == sample.loopEnd) {
+        if (!sample.hasLoop()) {
             view.setUint16(offset + 26, 0)
             view.setUint16(offset + 28, 1)
         } else {

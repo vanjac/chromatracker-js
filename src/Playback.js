@@ -664,7 +664,7 @@ function createNoteSource(playback, inst) {
     if (!sample) { return null }
     let source = playback.ctx.createBufferSource()
     source.buffer = playback.samples[inst].buffer
-    source.loop = sample.loopEnd != sample.loopStart
+    source.loop = sample.hasLoop()
     source.loopStart = sample.loopStart / baseRate
     source.loopEnd = sample.loopEnd / baseRate
     return source
