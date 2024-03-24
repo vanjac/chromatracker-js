@@ -20,22 +20,22 @@ function KeyPad(container, onPress, onRelease) {
     this.onPress = onPress
     this.onRelease = onRelease
 
-    container.addEventListener('mousedown', /** @param {MouseEventInit & Event} e */ e => {
+    container.addEventListener('mousedown', /** @param {MouseEventInit} e */ e => {
         if (e.button == 0) {
             this.press(-1, e.clientX, e.clientY)
         }
     })
-    container.addEventListener('mousemove', /** @param {MouseEventInit & Event} e */ e => {
+    container.addEventListener('mousemove', /** @param {MouseEventInit} e */ e => {
         if (e.buttons & 1) {
             this.press(-1, e.clientX, e.clientY)
         }
     })
-    container.addEventListener('mouseup', /** @param {MouseEventInit & Event} e */ e => {
+    container.addEventListener('mouseup', /** @param {MouseEventInit} e */ e => {
         if (e.button == 0) {
             this.release(-1)
         }
     })
-    container.addEventListener('mouseleave', /** @param {MouseEventInit & Event} e */ e => {
+    container.addEventListener('mouseleave', /** @param {MouseEventInit} e */ e => {
         if (e.buttons & 1) {
             this.release(-1)
         }

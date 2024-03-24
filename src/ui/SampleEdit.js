@@ -7,6 +7,10 @@ class SampleEditElement extends HTMLElement {
         this._target = null
         /** @type {(sample: Readonly<Sample>, combineTag: string) => void} */
         this._onChange = null
+
+        this._selectA = -1
+        this._selectB = -1
+
         /** @type {Readonly<Sample>} */
         this._viewSample = null
         this._index = 0
@@ -28,9 +32,28 @@ class SampleEditElement extends HTMLElement {
         /** @type {HTMLCanvasElement} */
         this._wavePreview = fragment.querySelector('#wavePreview')
         /** @type {HTMLElement} */
+        this._selectMarkA = fragment.querySelector('#selectMarkA')
+        /** @type {HTMLElement} */
+        this._selectMarkB = fragment.querySelector('#selectMarkB')
+        /** @type {HTMLElement} */
+        this._selectRange = fragment.querySelector('#selectRange')
+        /** @type {HTMLElement} */
         this._loopStartMark = fragment.querySelector('#loopStartMark')
         /** @type {HTMLElement} */
         this._loopEndMark = fragment.querySelector('#loopEndMark')
+
+        this._wavePreview.addEventListener('mousedown', /** @param {MouseEventInit} e */ e => {
+            if (e.button == 0) {
+                this._selectA = this._selectB = this._mouseToWavePos(e.clientX)
+                this._updateSelection()
+            }
+        })
+        this._wavePreview.addEventListener('mousemove', /** @param {MouseEventInit} e */ e => {
+            if (e.buttons & 1) {
+                this._selectB = this._mouseToWavePos(e.clientX)
+                this._updateSelection()
+            }
+        })
 
         /** @type {HTMLInputElement} */
         this._loopStartInput = fragment.querySelector('#loopStart')
@@ -119,8 +142,8 @@ class SampleEditElement extends HTMLElement {
         this._loopStartMark.classList.toggle('hide', !showLoop)
         this._loopEndMark.classList.toggle('hide', !showLoop)
         if (showLoop) {
-            this._loopStartMark.style.left = (100 * sample.loopStart / sample.wave.length) + '%'
-            this._loopEndMark.style.left = (100 * sample.loopEnd / sample.wave.length) + '%'
+            this._setMarkPos(this._loopStartMark, sample, sample.loopStart)
+            this._setMarkPos(this._loopEndMark, sample, sample.loopEnd)
         }
 
         this._volumeInput.valueAsNumber = sample.volume
@@ -134,6 +157,43 @@ class SampleEditElement extends HTMLElement {
         }
 
         this._viewSample = sample
+        this._updateSelection()
+    }
+
+    _selMin() {
+        return Math.min(this._selectA, this._selectB)
+    }
+
+    _selLen() {
+        return Math.abs(this._selectA - this._selectB)
+    }
+
+    _updateSelection() {
+        this._selectMarkA.classList.toggle('hide', this._selectA < 0)
+        if (this._selectA >= 0) {
+            this._setMarkPos(this._selectMarkA, this._viewSample, this._selectA)
+        }
+        this._selectMarkB.classList.toggle('hide', this._selectB < 0)
+        if (this._selectB >= 0) {
+            this._setMarkPos(this._selectMarkB, this._viewSample, this._selectB)
+        }
+
+        let showRange = this._selectA >= 0 && this._selectB >= 0
+        this._selectRange.classList.toggle('hide', !showRange)
+        if (showRange) {
+            this._setMarkPos(this._selectRange, this._viewSample, this._selMin())
+            let waveLen = this._viewSample.wave.length
+            this._selectRange.style.width = (100 * this._selLen() / waveLen) + '%'
+        }
+    }
+
+    /**
+     * @param {HTMLElement} mark
+     * @param {Readonly<Sample>} sample
+     * @param {number} pos
+     */
+    _setMarkPos(mark, sample, pos) {
+        mark.style.left = (100 * pos / sample.wave.length) + '%'
     }
 
     /**
@@ -184,6 +244,14 @@ class SampleEditElement extends HTMLElement {
             }
         }
         reader.readAsArrayBuffer(file)
+    }
+
+    /**
+     * @param {number} clientX
+     */
+    _mouseToWavePos(clientX) {
+        let waveRect = this._wavePreview.getBoundingClientRect()
+        return (clientX - waveRect.left) * this._viewSample.wave.length / waveRect.width
     }
 
     /**
