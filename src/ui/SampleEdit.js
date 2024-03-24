@@ -70,8 +70,11 @@ class SampleEditElement extends HTMLElement {
         this._loopEndInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample loop end'))
 
+        fragment.querySelector('#setLoop').addEventListener('click', () => this._loopSelection())
         fragment.querySelector('#clearLoop').addEventListener('click', () => this._clearLoop())
+        fragment.querySelector('#selectLoop').addEventListener('click', () => this._selectLoop())
         fragment.querySelector('#trim').addEventListener('click', () => this._trim())
+        fragment.querySelector('#delete').addEventListener('click', () => this._deleteSelection())
 
         /** @type {HTMLInputElement} */
         this._volumeInput = fragment.querySelector('#volume')
@@ -157,11 +160,17 @@ class SampleEditElement extends HTMLElement {
         }
 
         this._viewSample = sample
+        this._selectA = Math.min(this._selectA, sample.wave.length)
+        this._selectB = Math.min(this._selectB, sample.wave.length)
         this._updateSelection()
     }
 
     _selMin() {
         return Math.min(this._selectA, this._selectB)
+    }
+
+    _selMax() {
+        return Math.max(this._selectA, this._selectB)
     }
 
     _selLen() {
@@ -251,7 +260,7 @@ class SampleEditElement extends HTMLElement {
      */
     _mouseToWavePos(clientX) {
         let waveRect = this._wavePreview.getBoundingClientRect()
-        return (clientX - waveRect.left) * this._viewSample.wave.length / waveRect.width
+        return Math.floor((clientX - waveRect.left) * this._viewSample.wave.length / waveRect.width)
     }
 
     /**
@@ -299,15 +308,39 @@ class SampleEditElement extends HTMLElement {
         ctx.stroke()
     }
 
+    _loopSelection() {
+        this._changeSample(sample => {
+            sample.loopStart = this._selMin()
+            sample.loopEnd = this._selMax()
+        }, '', true)
+    }
+
     _clearLoop() {
         this._changeSample(sample => sample.loopStart = sample.loopEnd = 0, '', true)
     }
 
+    _selectLoop() {
+        if (this._viewSample.hasLoop()) {
+            this._selectA = this._viewSample.loopStart
+            this._selectB = this._viewSample.loopEnd
+            this._updateSelection()
+        }
+    }
+
     _trim() {
         this._changeSample(sample => {
-            sample.wave = sample.wave.subarray(sample.loopStart, sample.loopEnd)
-            sample.loopStart = 0
-            sample.loopEnd = sample.wave.length
+            sample.wave = sample.wave.subarray(this._selMin(), this._selMax())
+            this._selectA = this._selectB = -1
+        }, '', true)
+    }
+
+    _deleteSelection() {
+        this._changeSample(sample => {
+            let newWave = new Int8Array(sample.wave.length - this._selLen())
+            newWave.set(sample.wave.subarray(0, this._selMin()))
+            newWave.set(sample.wave.subarray(this._selMax()), this._selMin())
+            sample.wave = newWave
+            this._selectA = this._selectB = this._selMin()
         }, '', true)
     }
 }

@@ -25,7 +25,7 @@ function readStringZ(buf, start, length) {
 function writeU8Array(buf, start, length, src) {
     let dest = new Uint8Array(buf, start, length)
     if (src.length > length) {
-        src = src.slice(0, length)
+        src = src.subarray(0, length)
     }
     dest.set(src)
 }
