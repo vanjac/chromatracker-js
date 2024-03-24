@@ -27,8 +27,11 @@ function editSetSample(module, idx, sample) {
  */
 function editSampleTrim(sample, start, end) {
     let wave = sample.wave.subarray(start, end)
-    // TODO: update loop points
-    return freezeAssign(new Sample(), sample, {wave})
+    /** @param {number} pos */
+    let transform = pos => clamp(pos - start, 0, wave.length)
+    let loopStart = transform(sample.loopStart)
+    let loopEnd = transform(sample.loopEnd)
+    return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
 }
 
 /**
@@ -40,8 +43,15 @@ function editSampleDelete(sample, start, end) {
     let wave = new Int8Array(sample.wave.length - (end - start))
     wave.set(sample.wave.subarray(0, start))
     wave.set(sample.wave.subarray(end), start)
-    // TODO: update loop points
-    return freezeAssign(new Sample(), sample, {wave})
+    /** @param {number} pos */
+    let transform = pos => {
+        if (pos > end) { return pos - (end - start) }
+        else if (pos > start) { return start }
+        else { return pos}
+    }
+    let loopStart = transform(sample.loopStart)
+    let loopEnd = transform(sample.loopEnd)
+    return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
 }
 
 /**
@@ -55,6 +65,9 @@ function editSampleSplice(sample, start, end, insert) {
     wave.set(sample.wave.subarray(0, start))
     wave.set(insert, start)
     wave.set(sample.wave.subarray(end), start + insert.length)
-    // TODO: update loop points
-    return freezeAssign(new Sample(), sample, {wave})
+    /** @param {number} pos */
+    let transform = pos => (pos > end) ? pos - (end - start) + insert.length : pos
+    let loopStart = transform(sample.loopStart)
+    let loopEnd = transform(sample.loopEnd)
+    return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
 }
