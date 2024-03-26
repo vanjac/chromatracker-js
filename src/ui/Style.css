@@ -167,11 +167,13 @@ tbody tr:nth-child(16n+1) th {
 
 /* wave editor */
 
+.wave-edit {
+    padding: 0 8pt;
+    touch-action: none;
+}
+
 .wave-container {
     position: relative;
-}
-.wave-container canvas {
-    touch-action: none;
 }
 
 .wave-mark,

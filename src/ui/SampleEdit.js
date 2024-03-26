@@ -29,6 +29,7 @@ class SampleEditElement extends HTMLElement {
         this._nameInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample name'))
 
+        this._waveEditBox = fragment.querySelector('#waveEdit')
         /** @type {HTMLCanvasElement} */
         this._wavePreview = fragment.querySelector('#wavePreview')
         /** @type {HTMLElement} */
@@ -42,25 +43,25 @@ class SampleEditElement extends HTMLElement {
         /** @type {HTMLElement} */
         this._loopEndMark = fragment.querySelector('#loopEndMark')
 
-        this._wavePreview.addEventListener('mousedown', /** @param {MouseEventInit} e */ e => {
+        this._waveEditBox.addEventListener('mousedown', /** @param {MouseEventInit} e */ e => {
             if (e.button == 0) {
                 this._selectA = this._selectB = this._mouseToWavePos(e.clientX)
                 this._updateSelection()
             }
         })
-        this._wavePreview.addEventListener('touchstart',
+        this._waveEditBox.addEventListener('touchstart',
             /** @param {TouchEventInit & Event} e */ e => {
                 e.preventDefault()
                 this._selectA = this._selectB = this._mouseToWavePos(e.touches[0].clientX)
                 this._updateSelection()
             })
-        this._wavePreview.addEventListener('mousemove', /** @param {MouseEventInit} e */ e => {
+        this._waveEditBox.addEventListener('mousemove', /** @param {MouseEventInit} e */ e => {
             if (e.buttons & 1) {
                 this._selectB = this._mouseToWavePos(e.clientX)
                 this._updateSelection()
             }
         })
-        this._wavePreview.addEventListener('touchmove',
+        this._waveEditBox.addEventListener('touchmove',
             /** @param {TouchEventInit & Event} e */ e => {
                 e.preventDefault()
                 this._selectB = this._mouseToWavePos(e.touches[0].clientX)
@@ -325,7 +326,8 @@ class SampleEditElement extends HTMLElement {
      */
     _mouseToWavePos(clientX) {
         let waveRect = this._wavePreview.getBoundingClientRect()
-        return Math.floor((clientX - waveRect.left) * this._viewSample.wave.length / waveRect.width)
+        let pos = (clientX - waveRect.left) * this._viewSample.wave.length / waveRect.width
+        return clamp(Math.round(pos), 0, this._viewSample.wave.length)
     }
 
     /**

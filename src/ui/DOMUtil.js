@@ -2,7 +2,7 @@
 'use strict'
 
 /** @type {Record<string, DocumentFragment>} */
-let templates = {}
+const templates = {}
 
 for (let template of document.querySelectorAll('template')) {
     templates[template.id] = template.content
