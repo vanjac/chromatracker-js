@@ -20,8 +20,8 @@ class FileToolbarElement extends HTMLElement {
                 this._readModuleBlob(fileSelect.files[0])
             }
         })
-        fragment.querySelector('#fileDownload').addEventListener('click', () => {
-            fetch('https://chroma.zone/share/space_debris.mod')
+        addMenuListener(fragment.querySelector('#demoMenu'), value => {
+            fetch(value)
                 .then(r => r.blob())
                 .then(b => this._readModuleBlob(b))
                 .catch(/** @param {Error} error */ error => window.alert(error.message))
