@@ -55,6 +55,7 @@ select,
 .label-button span {
     display: inline-flex;
     justify-content: center;
+    align-items: center;
     padding: 6pt 8pt;
     border: 1pt solid #888;
     background: #eee;
@@ -80,14 +81,22 @@ select:active,
     background: #abe;
 }
 
+body {
+    line-height: 1.5;
+}
 .icon {
-    width: 18pt;
-    height: 18pt;
+    width: 1.5em;
+    height: 1.5em;
 }
 
 label {
     display: inline-flex;
     align-items: center;
+}
+
+select {
+    appearance: menulist-button;
+    -webkit-appearance: menulist-button;
 }
 
 /* pattern table */
