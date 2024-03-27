@@ -44,6 +44,7 @@ class SamplesListElement extends HTMLElement {
 
     _destroySampleEdit() {
         this._sampleEditContainer.textContent = ''
+        this._sampleEdit = null
     }
 
     /**
