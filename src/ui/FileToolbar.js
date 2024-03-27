@@ -10,6 +10,9 @@ class FileToolbarElement extends HTMLElement {
     connectedCallback() {
         let fragment = templates.fileToolbar.cloneNode(true)
 
+        fragment.querySelector('#newModule').addEventListener('click',
+            () => this._target._moduleLoaded(defaultNewModule))
+
         /** @type {HTMLInputElement} */
         let fileSelect = fragment.querySelector('#fileSelect')
         fileSelect.addEventListener('change', () => {

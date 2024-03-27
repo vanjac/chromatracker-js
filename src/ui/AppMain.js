@@ -113,6 +113,10 @@ class AppMainElement extends HTMLElement {
      * @param {Readonly<Module>} mod
      */
     _moduleLoaded(mod) {
+        if (this._unsavedChangeCount
+                && !window.confirm('You will lose your unsaved changes. Continue?')) {
+            return
+        }
         console.log(mod)
         this._module = mod
         this._resetEditorState()
