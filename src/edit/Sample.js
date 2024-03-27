@@ -1,6 +1,7 @@
 'use strict'
 
-let ditherAmplitude = 0.99609375 // in units of 1/2 bit
+let ditherScale = 0.99609375
+let errorScale = 0.875
 
 /**
  * @param {Readonly<Module>} module
@@ -87,10 +88,15 @@ function editSampleEffect(sample, start, end, effect) {
 }
 
 /**
+ * Perform dithering and noise shaping
  * @param {number} s
+ * @param {number} error
+ * @returns {[number, number]}
  */
-function dither(s) {
-    return clamp(Math.round(s + (Math.random() - 0.5) * ditherAmplitude), -128, 127)
+function dither(s, error) {
+    let shaped = s + errorScale * error
+    let quantized = Math.round(shaped + (Math.random() - 0.5) * ditherScale)
+    return [clamp(quantized, -128, 127), shaped - quantized]
 }
 
 /**
@@ -98,8 +104,9 @@ function dither(s) {
  * @param {number} amount
  */
 function waveAmplify(wave, amount) {
+    let error = 0
     for (let i = 0; i < wave.length; i++) {
-        wave[i] = dither(wave[i] * amount)
+        [wave[i], error] = dither(wave[i] * amount, error)
     }
 }
 
@@ -112,9 +119,10 @@ function waveAmplify(wave, amount) {
 function waveFade(wave, startAmp, endAmp, exp) {
     startAmp **= 1 / exp
     endAmp **= 1 / exp
+    let error = 0
     for (let i = 0; i < wave.length; i++) {
         let t = i / wave.length
         let x = (startAmp * (t - 1) + endAmp * t) ** exp
-        wave[i] = dither(wave[i] * x)
+        ;[wave[i], error] = dither(wave[i] * x, error)
     }
 }
