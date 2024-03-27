@@ -19,9 +19,6 @@ class SampleEditElement extends HTMLElement {
     connectedCallback() {
         let fragment = templates.sampleEdit.cloneNode(true)
 
-        /** @type {HTMLOutputElement} */
-        this._sampleNumberOutput = fragment.querySelector('#number')
-
         /** @type {HTMLInputElement} */
         this._nameInput = fragment.querySelector('#name')
         this._nameInput.addEventListener('input', () => this._changeSample(
@@ -160,7 +157,6 @@ class SampleEditElement extends HTMLElement {
      */
     _setIndex(index) {
         this._index = index
-        this._sampleNumberOutput.value = index.toString()
     }
 
     /**

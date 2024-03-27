@@ -40,6 +40,9 @@ body {
 .small-input {
     width: 48pt;
 }
+.med-input {
+    width: 80pt;
+}
 
 /* Buttons */
 
