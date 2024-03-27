@@ -69,7 +69,7 @@ function editSampleSplice(sample, start, end, insert) {
     wave.set(insert, start)
     wave.set(sample.wave.subarray(end), start + insert.length)
     /** @param {number} pos */
-    let transform = pos => (pos > end) ? pos - (end - start) + insert.length : pos
+    let transform = pos => (pos >= end) ? pos - (end - start) + insert.length : pos
     let loopStart = transform(sample.loopStart)
     let loopEnd = transform(sample.loopEnd)
     return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
