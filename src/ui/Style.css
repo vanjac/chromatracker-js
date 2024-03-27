@@ -102,9 +102,11 @@ label {
     align-items: center;
 }
 
-select {
-    appearance: menulist-button;
-    -webkit-appearance: menulist-button;
+.med-menu {
+    width: 70pt;
+}
+.large-menu {
+    width: 100pt;
 }
 
 /* grid */
@@ -243,8 +245,4 @@ tbody tr:nth-child(16n+1) th {
 }
 .wave-loop {
     background: #2d8;
-}
-
-.sample-edit-menu {
-    width: 70pt;
 }

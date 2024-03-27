@@ -8,6 +8,10 @@
 input, button, textarea, select {
     font: inherit;
 }
+select {
+    appearance: menulist-button;
+    -webkit-appearance: menulist-button;
+}
 
 html, body {
     /* no pinch to zoom */
