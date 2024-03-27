@@ -8,6 +8,7 @@ class SequenceEditElement extends HTMLElement {
         this._selPos = 0
         /** @type {readonly number[]} */
         this._viewSequence = null
+        this._viewNumPatterns = 0
     }
 
     connectedCallback() {
@@ -16,12 +17,14 @@ class SequenceEditElement extends HTMLElement {
         this._sequenceList = fragment.querySelector('form')
         /** @type {NamedFormItem} */
         this._sequenceInput = null
+        /** @type {HTMLSelectElement} */
+        this._select = fragment.querySelector('#patternSelect')
 
         fragment.querySelector('#seqInsSame').addEventListener('click', () => this._seqInsSame())
         fragment.querySelector('#seqInsClone').addEventListener('click', () => this._seqInsClone())
         fragment.querySelector('#seqDel').addEventListener('click', () => this._seqDel())
-        fragment.querySelector('#seqUp').addEventListener('click', () => this._seqUp())
-        fragment.querySelector('#seqDown').addEventListener('click', () => this._seqDown())
+
+        this._select.addEventListener('change', () => this._seqSet(this._select.selectedIndex))
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -48,10 +51,35 @@ class SequenceEditElement extends HTMLElement {
             label.addEventListener('change', () => {
                 this._selPos = i
                 this._target._refreshPattern()
+                this._updateSelPattern()
             })
         }
         this._sequenceInput = this._sequenceList.elements.namedItem('sequence')
         selectRadioButton(this._sequenceInput, this._selPos.toString())
+        this._updateSelPattern()
+    }
+
+    /**
+     * @param {readonly Readonly<Pattern>[]} patterns
+     */
+    _setPatterns(patterns) {
+        if (patterns.length == this._viewNumPatterns) {
+            return
+        }
+        console.log('update num patterns')
+        this._viewNumPatterns = patterns.length
+
+        this._select.textContent = ''
+        // last option = create pattern
+        for (let i = 0; i < patterns.length + 1; i++) {
+            let option = this._select.appendChild(document.createElement('option'))
+            option.textContent = i.toString()
+        }
+        this._updateSelPattern()
+    }
+
+    _updateSelPattern() {
+        this._select.selectedIndex = this._viewSequence[this._selPos]
     }
 
     /**
@@ -62,14 +90,11 @@ class SequenceEditElement extends HTMLElement {
         selectRadioButton(this._sequenceInput, pos.toString())
     }
 
-    _seqUp() {
-        this._target._changeModule(module =>
-            editSetPos(module, this._selPos, module.sequence[this._selPos] + 1))
-    }
-
-    _seqDown() {
-        this._target._changeModule(module =>
-            editSetPos(module, this._selPos, module.sequence[this._selPos] - 1))
+    /**
+     * @param {number} p
+     */
+    _seqSet(p) {
+        this._target._changeModule(module => editSetPos(module, this._selPos, p))
     }
 
     _seqInsSame() {
