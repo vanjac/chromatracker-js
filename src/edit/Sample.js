@@ -1,7 +1,7 @@
 'use strict'
 
 let ditherScale = 0.99609375
-let errorScale = 0.875
+let errorScale = 0.8
 
 /**
  * @param {Readonly<Module>} module
