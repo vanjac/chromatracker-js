@@ -49,7 +49,7 @@ class SampleEditElement extends HTMLElement {
         this._waveEditBox.addEventListener('touchstart',
             /** @param {TouchEventInit & Event} e */ e => {
                 e.preventDefault()
-                this._selectA = this._selectB = this._mouseToWavePos(e.touches[0].clientX)
+                this._selectA = this._selectB = this._mouseToWavePos(e.changedTouches[0].clientX)
                 this._updateSelection()
             })
         this._waveEditBox.addEventListener('mousemove', /** @param {MouseEventInit} e */ e => {
@@ -61,7 +61,7 @@ class SampleEditElement extends HTMLElement {
         this._waveEditBox.addEventListener('touchmove',
             /** @param {TouchEventInit & Event} e */ e => {
                 e.preventDefault()
-                this._selectB = this._mouseToWavePos(e.touches[0].clientX)
+                this._selectB = this._mouseToWavePos(e.changedTouches[0].clientX)
                 this._updateSelection()
             })
 
