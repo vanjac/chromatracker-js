@@ -99,6 +99,7 @@ class SampleEditElement extends HTMLElement {
             switch (value) {
                 case 'set': this._loopSelection(); break
                 case 'clear': this._clearLoop(); break
+                case 'repeat': this._loopRepeat(); break
             }
         })
         addMenuListener(fragment.querySelector('#effectMenu'), value => {
@@ -430,6 +431,27 @@ class SampleEditElement extends HTMLElement {
             this._viewSample, start, end, global.audioClipboard), '')
         this._selectA = this._selectB = start + global.audioClipboard.length
         this._updateSelection()
+    }
+
+    _loopRepeat() {
+        if (!this._viewSample.hasLoop()) {
+            return
+        }
+        let result = window.prompt('Repeat count:', global.lastLoopRepeat.toString())
+        if (result != null) {
+            let loopWave = this._viewSample.wave.subarray(
+                this._viewSample.loopStart, this._viewSample.loopEnd)
+            let pos = this._viewSample.loopStart
+
+            // TODO: this could be much more efficient
+            let newSample = this._viewSample
+            for (let i = 1; i < Number(result); i++) {
+                newSample = editSampleSplice(newSample, pos, pos, loopWave)
+            }
+            newSample = freezeAssign(new Sample(), newSample, {loopStart: pos})
+            this._onChange(newSample, '')
+            global.lastLoopRepeat = Number(result)
+        }
     }
 
     /**
