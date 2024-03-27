@@ -59,15 +59,13 @@ class SequenceEditElement extends HTMLElement {
             label.addEventListener('change', () => {
                 this._selPos = i
                 this._target._refreshPattern()
-                this._updateSelPattern()
-                this._updateSelPos()
+                this._updateSel()
             })
             this._sequenceButtons.push(label)
         }
         this._sequenceInput = this._sequenceList.elements.namedItem('sequence')
         selectRadioButton(this._sequenceInput, this._selPos.toString())
-        this._updateSelPattern()
-        this._updateSelPos()
+        this._updateSel()
     }
 
     /**
@@ -86,19 +84,16 @@ class SequenceEditElement extends HTMLElement {
             let option = this._select.appendChild(document.createElement('option'))
             option.textContent = i.toString()
         }
-        this._updateSelPattern()
-    }
-
-    _updateSelPattern() {
         this._select.selectedIndex = this._viewSequence[this._selPos]
     }
 
-    _updateSelPos() {
+    _updateSel() {
         let button = this._sequenceButtons[this._selPos]
         button.after(this._select)
         for (let [i, button] of this._sequenceButtons.entries()) {
             button.classList.toggle('hide', i == this._selPos)
         }
+        this._select.selectedIndex = this._viewSequence[this._selPos]
     }
 
     /**
@@ -107,7 +102,7 @@ class SequenceEditElement extends HTMLElement {
     _setSelPos(pos) {
         this._selPos = pos
         selectRadioButton(this._sequenceInput, pos.toString())
-        this._updateSelPos()
+        this._updateSel()
     }
 
     /**
