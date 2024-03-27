@@ -100,9 +100,11 @@ class SequenceEditElement extends HTMLElement {
      * @param {number} pos
      */
     _setSelPos(pos) {
-        this._selPos = pos
-        selectRadioButton(this._sequenceInput, pos.toString())
-        this._updateSel()
+        if (pos != this._selPos && pos < this._viewSequence.length) {
+            this._selPos = pos
+            selectRadioButton(this._sequenceInput, pos.toString())
+            this._updateSel()
+        }
     }
 
     /**

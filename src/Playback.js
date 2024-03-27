@@ -238,8 +238,17 @@ function createSamplePlayback(ctx, sample) {
  * @param {Playback} playback
  */
 function processRow(playback) {
+    // in case module changed since last call
+    if (playback.pos >= playback.mod.sequence.length) {
+        playback.pos = playback.mod.sequence.length - 1
+    }
+
     let patIdx = playback.mod.sequence[playback.pos]
     let pattern = playback.mod.patterns[patIdx]
+
+    if (playback.row >= pattern[0].length) {
+        playback.row = pattern[0].length - 1
+    }
 
     let rowPlay = new RowPlayback()
     for (let repeat = 0; repeat < rowPlay.patDelay + 1; repeat++) {
