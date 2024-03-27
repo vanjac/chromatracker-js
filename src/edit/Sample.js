@@ -93,3 +93,19 @@ function waveAmplify(wave, amount) {
         wave[i] = clamp(Math.round(wave[i] * amount), -128, 127)
     }
 }
+
+/**
+ * @param {Int8Array} wave
+ * @param {number} startAmp
+ * @param {number} endAmp
+ * @param {number} exp
+ */
+function waveFade(wave, startAmp, endAmp, exp) {
+    startAmp **= 1 / exp
+    endAmp **= 1 / exp
+    for (let i = 0; i < wave.length; i++) {
+        let t = i / wave.length
+        let x = (startAmp * (t - 1) + endAmp * t) ** exp
+        wave[i] = clamp(Math.round(wave[i] * x), -128, 127)
+    }
+}
