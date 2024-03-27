@@ -113,12 +113,19 @@ select {
 
 /* sequence edit */
 
-.seq-button {
+.seq-button,
+.seq-select {
     width: 30pt;
 }
 .seq-button span {
     padding-left: 0;
     padding-right: 0;
+}
+
+.seq-select {
+    appearance: none;
+    text-align: center;
+    text-align-last: center;
 }
 
 /* pattern table */
