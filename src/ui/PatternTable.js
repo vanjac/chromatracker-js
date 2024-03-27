@@ -150,6 +150,22 @@ class PatternTableElement extends HTMLElement {
             editPatternPutCell(this._viewPattern, this._selChannel, this._selRow, cell, parts))
     }
 
+    /**
+     * @param {number} count
+     */
+    _insert(count) {
+        this._onChange(
+            editPatternChannelInsert(this._viewPattern, this._selChannel, this._selRow, count))
+    }
+
+    /**
+     * @param {number} count
+     */
+    _delete(count) {
+        this._onChange(
+            editPatternChannelDelete(this._viewPattern, this._selChannel, this._selRow, count))
+    }
+
     _updateSelCell() {
         let cell = this._tbody.querySelector('.sel-cell')
         if (cell) {

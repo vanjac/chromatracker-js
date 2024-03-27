@@ -59,3 +59,29 @@ function editPatternPutCell(pattern, c, r, cell, parts) {
     let channel = immSplice(pattern[c], r, 1, Object.freeze(newCell))
     return immSplice(pattern, c, 1, channel)
 }
+
+/**
+ * @param {Readonly<Pattern>} pattern
+ * @param {number} c
+ * @param {number} r
+ * @param {number} count
+ */
+function editPatternChannelInsert(pattern, c, r, count) {
+    let channel = [...pattern[c]]
+    channel.copyWithin(r + count, r, channel.length - count + 1)
+    channel.fill(emptyCell, r, r + count)
+    return immSplice(pattern, c, 1, Object.freeze(channel))
+}
+
+/**
+ * @param {Readonly<Pattern>} pattern
+ * @param {number} c
+ * @param {number} r
+ * @param {number} count
+ */
+function editPatternChannelDelete(pattern, c, r, count) {
+    let channel = [...pattern[c]]
+    channel.copyWithin(r, r + count, channel.length)
+    channel.fill(emptyCell, channel.length - count, channel.length)
+    return immSplice(pattern, c, 1, Object.freeze(channel))
+}

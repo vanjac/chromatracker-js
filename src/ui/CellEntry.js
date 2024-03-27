@@ -102,6 +102,9 @@ class CellEntryElement extends HTMLElement {
         })
         addReleaseEvent(liftButton, e => this._jam._jamUp(e))
 
+        fragment.querySelector('#insert').addEventListener('click', () => this._target._insert(1))
+        fragment.querySelector('#delete').addEventListener('click', () => this._target._delete(1))
+
         this._pitchEnable.addEventListener('change', () => this._updateEntryParts())
         this._sampleEnable.addEventListener('change', () => this._updateEntryParts())
         this._effectEnable.addEventListener('change', () => this._updateEntryParts())
