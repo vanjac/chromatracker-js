@@ -14,7 +14,10 @@ class SequenceEditElement extends HTMLElement {
     connectedCallback() {
         let fragment = templates.sequenceEdit.cloneNode(true)
 
-        this._sequenceList = fragment.querySelector('form')
+        /** @type {HTMLFormElement} */
+        this._sequenceList = fragment.querySelector('#seqList')
+        /** @type {Element[]} */
+        this._sequenceButtons = []
         /** @type {NamedFormItem} */
         this._sequenceInput = null
         /** @type {HTMLSelectElement} */
@@ -24,7 +27,7 @@ class SequenceEditElement extends HTMLElement {
         fragment.querySelector('#seqInsClone').addEventListener('click', () => this._seqInsClone())
         fragment.querySelector('#seqDel').addEventListener('click', () => this._seqDel())
 
-        this._select.addEventListener('change', () => this._seqSet(this._select.selectedIndex))
+        this._select.addEventListener('input', () => this._seqSet(this._select.selectedIndex))
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -44,19 +47,27 @@ class SequenceEditElement extends HTMLElement {
             this._selPos = sequence.length - 1
         }
 
-        this._sequenceList.textContent = ''
+        for (let button of this._sequenceButtons) {
+            button.remove()
+        }
+        this._sequenceButtons = []
+
         for (let [i, pos] of sequence.entries()) {
             let label = makeRadioButton('sequence', i.toString(), pos.toString())
+            label.classList.add('seq-button')
             this._sequenceList.appendChild(label)
             label.addEventListener('change', () => {
                 this._selPos = i
                 this._target._refreshPattern()
                 this._updateSelPattern()
+                this._updateSelPos()
             })
+            this._sequenceButtons.push(label)
         }
         this._sequenceInput = this._sequenceList.elements.namedItem('sequence')
         selectRadioButton(this._sequenceInput, this._selPos.toString())
         this._updateSelPattern()
+        this._updateSelPos()
     }
 
     /**
@@ -82,12 +93,21 @@ class SequenceEditElement extends HTMLElement {
         this._select.selectedIndex = this._viewSequence[this._selPos]
     }
 
+    _updateSelPos() {
+        let button = this._sequenceButtons[this._selPos]
+        button.after(this._select)
+        for (let [i, button] of this._sequenceButtons.entries()) {
+            button.classList.toggle('hide', i == this._selPos)
+        }
+    }
+
     /**
      * @param {number} pos
      */
     _setSelPos(pos) {
         this._selPos = pos
         selectRadioButton(this._sequenceInput, pos.toString())
+        this._updateSelPos()
     }
 
     /**

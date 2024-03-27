@@ -1,9 +1,10 @@
 <template id="sequenceEdit">
   <div class="hflex">
-    <form class="hflex flex-grow hscrollable" autocomplete="off"></form>
+    <form id="seqList" class="hflex flex-grow hscrollable" autocomplete="off">
+      <select id="patternSelect" class="show-checked"></select>
+    </form>
     <button id="seqInsSame">=</button>
     <button id="seqInsClone">*</button>
     <button id="seqDel">X</button>
-    <select id="patternSelect"></select>
   </div>
 </template>
