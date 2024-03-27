@@ -107,6 +107,7 @@ class AppMainElement extends HTMLElement {
         this._patternTable._resetState()
         this._refreshModule()
         this._patternTable._scrollToSelCell()
+        this._playbackStatus._setTempoSpeed(defaultTempo, defaultSpeed)
     }
 
     /**

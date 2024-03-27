@@ -30,8 +30,8 @@ Playback.prototype = {
     mod: null,
     /** @type {readonly Readonly<Sample>[]} */
     modSamples: Object.freeze([]),
-    tempo: 125,
-    speed: 6,
+    tempo: defaultTempo,
+    speed: defaultSpeed,
     pos: 0,
     row: 0,
     patLoopRow: 0,

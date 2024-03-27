@@ -6,6 +6,8 @@ const numRows = 64
 const maxVolume = 64
 const maxSampleNameLength = 22
 const maxSampleLength = 2 ** 17
+const defaultTempo = 125
+const defaultSpeed = 6
 
 function Sample() {}
 Sample.prototype = {
