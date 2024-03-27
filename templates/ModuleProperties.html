@@ -8,6 +8,7 @@
     <span>Channels:&nbsp;</span>
     <div class="hflex">
       <output id="channelCount"></output>
+      &nbsp;
       <button id="delChannels">
         <img class="icon" src="assets/minus.svg">
       </button>
@@ -20,19 +21,18 @@
     <output id="sampleCount"></output>
 
     <span>Patterns:&nbsp;</span>
-    <output id="patternCount"></output>
+    <div class="hflex">
+      <output id="patternCount"></output>
+      &nbsp;
+      <button id="patternZap">
+        <img class="icon" src="assets/playlist-remove.svg">
+      </button>
+    </div>
 
     <span>Length:&nbsp;</span>
     <output id="sequenceCount"></output>
 
     <span>File size:&nbsp;</span>
     <output id="fileSize"></output>
-
-    <div></div>
-    <div class="hflex">
-      <button id="patternZap">
-        <img class="icon" src="assets/playlist-remove.svg">
-      </button>
-    </div>
   </div>
 </template>
