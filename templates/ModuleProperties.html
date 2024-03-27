@@ -1,11 +1,12 @@
 <template id="moduleProperties">
-  <div class="vflex">
+  <div class="properties-grid">
+    <span>Title:&nbsp;</span>
     <div class="hflex">
-      Title:
       <input id="title" maxlength="20" autocomplete="off">
     </div>
+
+    <span>Channels:&nbsp;</span>
     <div class="hflex">
-      Channels:&nbsp;
       <output id="channelCount"></output>
       <button id="delChannels">
         <img class="icon" src="assets/minus.svg">
@@ -14,22 +15,20 @@
         <img class="icon" src="assets/plus.svg">
       </button>
     </div>
-    <div class="hflex">
-      Samples:&nbsp;
-      <output id="sampleCount"></output>
-    </div>
-    <div class="hflex">
-      Patterns:&nbsp;
-      <output id="patternCount"></output>
-    </div>
-    <div class="hflex">
-      Length:&nbsp;
-      <output id="sequenceCount"></output>
-    </div>
-    <div class="hflex">
-      File size:&nbsp;
-      <output id="fileSize"></output>
-    </div>
+
+    <span>Samples:&nbsp;</span>
+    <output id="sampleCount"></output>
+
+    <span>Patterns:&nbsp;</span>
+    <output id="patternCount"></output>
+
+    <span>Length:&nbsp;</span>
+    <output id="sequenceCount"></output>
+
+    <span>File size:&nbsp;</span>
+    <output id="fileSize"></output>
+
+    <div></div>
     <div class="hflex">
       <button id="patternZap">
         <img class="icon" src="assets/playlist-remove.svg">

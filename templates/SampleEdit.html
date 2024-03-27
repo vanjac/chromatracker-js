@@ -1,25 +1,29 @@
 <template id="sampleEdit">
-  <div class="vflex flex-grow">
+  <div class="vflex">
     <div class="hflex">
       Sample&nbsp;
       <output id="number"></output>
     </div>
-    <div class="hflex">
-      Name:
-      <input id="name" maxlength="22" autocomplete="off">
-    </div>
-    <div class="hflex">
-      Volume:
-      <input id="volume" type="range" class="flex-grow" min="0" max="64" autocomplete="off">
-      <output id="volumeOut" class="small-input"></output>
-    </div>
-    <div class="hflex">
-      Finetune:
-      <input id="finetune" type="range" class="flex-grow" min="-8" max="7" autocomplete="off">
-      <output id="finetuneOut" class="small-input"></output>
-    </div>
-    <div class="hflex">
-      Wave file:
+
+    <div class="properties-grid">
+      <span>Name:&nbsp;</span>
+      <div class="hflex">
+        <input id="name" maxlength="22" autocomplete="off">
+      </div>
+
+      <span>Volume:&nbsp;</span>
+      <div class="hflex">
+        <input id="volume" type="range" class="flex-grow" min="0" max="64" autocomplete="off">
+        <output id="volumeOut" class="small-input"></output>
+      </div>
+
+      <span>Finetune:&nbsp;</span>
+      <div class="hflex">
+        <input id="finetune" type="range" class="flex-grow" min="-8" max="7" autocomplete="off">
+        <output id="finetuneOut" class="small-input"></output>
+      </div>
+
+      <span class="hflex">Wave file:&nbsp;</span>
       <div class="vflex">
         <input id="file" type="file" accept="audio/*" autocomplete="off">
         <div class="hflex">
@@ -28,6 +32,7 @@
         </div>
       </div>
     </div>
+
     <div id="waveEdit" class="vflex wave-edit">
       <div class="vflex wave-container">
         <canvas id="wavePreview" width="1024" height="256"></canvas>
