@@ -244,3 +244,7 @@ tbody tr:nth-child(16n+1) th {
 .wave-loop {
     background: #2d8;
 }
+
+.sample-edit-menu {
+    width: 60pt;
+}

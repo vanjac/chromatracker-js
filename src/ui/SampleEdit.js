@@ -100,6 +100,7 @@ class SampleEditElement extends HTMLElement {
                 case 'set': this._loopSelection(); break
                 case 'clear': this._clearLoop(); break
                 case 'repeat': this._loopRepeat(); break
+                case 'pingpong': this._loopPingPong(); break
             }
         })
         addMenuListener(fragment.querySelector('#effectMenu'), value => {
@@ -439,19 +440,27 @@ class SampleEditElement extends HTMLElement {
         }
         let result = window.prompt('Repeat count:', global.lastLoopRepeat.toString())
         if (result != null) {
-            let loopWave = this._viewSample.wave.subarray(
-                this._viewSample.loopStart, this._viewSample.loopEnd)
-            let pos = this._viewSample.loopStart
-
+            let {loopStart} = this._viewSample
+            let loopWave = this._viewSample.wave.subarray(loopStart, this._viewSample.loopEnd)
             // TODO: this could be much more efficient
             let newSample = this._viewSample
             for (let i = 1; i < Number(result); i++) {
-                newSample = editSampleSplice(newSample, pos, pos, loopWave)
+                newSample = editSampleSplice(newSample, loopStart, loopStart, loopWave)
             }
-            newSample = freezeAssign(new Sample(), newSample, {loopStart: pos})
+            newSample = freezeAssign(new Sample(), newSample, {loopStart})
             this._onChange(newSample, '')
             global.lastLoopRepeat = Number(result)
         }
+    }
+
+    _loopPingPong() {
+        if (!this._viewSample.hasLoop()) {
+            return
+        }
+        let {loopEnd} = this._viewSample
+        let loopWave = this._viewSample.wave.slice(this._viewSample.loopStart, loopEnd)
+        waveReverse(loopWave)
+        this._onChange(editSampleSplice(this._viewSample, loopEnd, loopEnd, loopWave), '')
     }
 
     /**
