@@ -29,6 +29,10 @@
     display: none;
 }
 
+.vspace {
+    height: 6pt;
+}
+
 /* common */
 
 body {
