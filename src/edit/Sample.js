@@ -1,5 +1,7 @@
 'use strict'
 
+let ditherAmplitude = 0.99609375 // in units of 1/2 bit
+
 /**
  * @param {Readonly<Module>} module
  * @returns {[Readonly<Module>, number]}
@@ -85,12 +87,19 @@ function editSampleEffect(sample, start, end, effect) {
 }
 
 /**
+ * @param {number} s
+ */
+function dither(s) {
+    return clamp(Math.round(s + (Math.random() - 0.5) * ditherAmplitude), -128, 127)
+}
+
+/**
  * @param {Int8Array} wave
  * @param {number} amount
  */
 function waveAmplify(wave, amount) {
     for (let i = 0; i < wave.length; i++) {
-        wave[i] = clamp(Math.round(wave[i] * amount), -128, 127)
+        wave[i] = dither(wave[i] * amount)
     }
 }
 
@@ -106,6 +115,6 @@ function waveFade(wave, startAmp, endAmp, exp) {
     for (let i = 0; i < wave.length; i++) {
         let t = i / wave.length
         let x = (startAmp * (t - 1) + endAmp * t) ** exp
-        wave[i] = clamp(Math.round(wave[i] * x), -128, 127)
+        wave[i] = dither(wave[i] * x)
     }
 }
