@@ -1,6 +1,6 @@
 'use strict'
 
-let ditherScale = 0.99609375
+let ditherScale = 0.5
 let errorScale = 0.8
 
 /**
@@ -95,7 +95,8 @@ function editSampleEffect(sample, start, end, effect) {
  */
 function dither(s, error) {
     let shaped = s + errorScale * error
-    let quantized = Math.round(shaped + (Math.random() - 0.5) * ditherScale)
+    let d = Math.random() + Math.random() - 1
+    let quantized = Math.round(shaped + d * ditherScale)
     return [clamp(quantized, -128, 127), shaped - quantized]
 }
 
