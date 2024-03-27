@@ -16,10 +16,6 @@ class PlaybackControlsElement extends HTMLElement {
         this._patternLoopInput = fragment.querySelector('#patternLoop')
         /** @type {HTMLInputElement} */
         this._followInput = fragment.querySelector('#follow')
-        /** @type {HTMLInputElement} */
-        this._tempoInput = fragment.querySelector('#tempo')
-        /** @type {HTMLInputElement} */
-        this._speedInput = fragment.querySelector('#speed')
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
             this._target._resetPlayback(false)
@@ -51,23 +47,6 @@ class PlaybackControlsElement extends HTMLElement {
 
     _getFollow() {
         return this._followInput.checked
-    }
-
-    _getTempo() {
-        return this._tempoInput.valueAsNumber
-    }
-
-    _getSpeed() {
-        return this._speedInput.valueAsNumber
-    }
-
-    /**
-     * @param {number} tempo
-     * @param {number} speed
-     */
-    _setTempoSpeed(tempo, speed) {
-        this._tempoInput.valueAsNumber = tempo
-        this._speedInput.valueAsNumber = speed
     }
 
     /**

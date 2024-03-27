@@ -49,6 +49,8 @@ class AppMainElement extends HTMLElement {
         this._moduleProperties = fragment.querySelector('module-properties')
         /** @type {PlaybackControlsElement} */
         this._playbackControls = fragment.querySelector('playback-controls')
+        /** @type {PlaybackStatusElement} */
+        this._playbackStatus = fragment.querySelector('playback-status')
         /** @type {SequenceEditElement} */
         this._sequenceEdit = fragment.querySelector('sequence-edit')
         /** @type {PatternTableElement} */
@@ -144,8 +146,8 @@ class AppMainElement extends HTMLElement {
             }
         }
         if (restoreSpeed) {
-            this._playback.tempo = this._playbackControls._getTempo()
-            this._playback.speed = this._playbackControls._getSpeed()
+            this._playback.tempo = this._playbackStatus._getTempo()
+            this._playback.speed = this._playbackStatus._getSpeed()
         }
 
         this._updatePlaySettings()
@@ -265,7 +267,7 @@ class AppMainElement extends HTMLElement {
             this._queuedLines.splice(0, i)
             let curLine = this._queuedLines[0]
 
-            this._playbackControls._setTempoSpeed(curLine.tempo, curLine.speed)
+            this._playbackStatus._setTempoSpeed(curLine.tempo, curLine.speed)
 
             if (this._playbackControls._getFollow()) {
                 this._sequenceEdit._setSelPos(curLine.pos)
