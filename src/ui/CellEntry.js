@@ -87,6 +87,14 @@ class CellEntryElement extends HTMLElement {
         })
         addReleaseEvent(writeButton, e => this._jam._jamUp(e))
 
+        let writeEffectButton = fragment.querySelector('#writeEffect')
+        addPressEvent(writeEffectButton, e => {
+            this._target._putCell(this._getCell(), CellParts.effect | CellParts.param)
+            this._jam._jamDown(this._target._selCell(), e)
+            this._target._advance()
+        })
+        addReleaseEvent(writeEffectButton, e => this._jam._jamUp(e))
+
         let clearButton = fragment.querySelector('#clear')
         addPressEvent(clearButton, e => {
             this._target._putCell(new Cell(), this._getCellParts())
