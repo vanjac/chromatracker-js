@@ -38,7 +38,7 @@ interface FileToolbarTarget {
 }
 
 interface PlaybackControlsTarget {
-    _resetPlayback(): Playback
+    _resetPlayback(restoreSpeed: boolean): Playback
     _play(): void
     _pause(): void
     _updatePlaySettings(): void

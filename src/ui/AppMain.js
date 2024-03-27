@@ -114,15 +114,18 @@ class AppMainElement extends HTMLElement {
         console.log(mod)
         this._module = mod
         this._resetEditorState()
-        this._resetPlayback()
+        this._resetPlayback(false)
     }
 
     _moduleSaved() {
         this._unsavedChangeCount = 0
     }
 
-    // Must be called as result of user interaction
-    _resetPlayback() {
+    /**
+     * Must be called as result of user interaction
+     * @param {boolean} restoreSpeed
+     */
+    _resetPlayback(restoreSpeed) {
         if (this._intervalHandle) {
             this._pause()
         }
@@ -140,6 +143,10 @@ class AppMainElement extends HTMLElement {
                 setChannelMute(this._playback, c, true)
             }
         }
+        if (restoreSpeed) {
+            this._playback.tempo = this._playbackControls._getTempo()
+            this._playback.speed = this._playbackControls._getSpeed()
+        }
 
         this._updatePlaySettings()
         return this._playback
@@ -148,7 +155,7 @@ class AppMainElement extends HTMLElement {
     // Must be called as result of user interaction
     _enablePlayback() {
         if (!this._playback) {
-            this._resetPlayback()
+            this._resetPlayback(false)
         } else if (this._context.state != 'running') {
             this._context.resume()
         }

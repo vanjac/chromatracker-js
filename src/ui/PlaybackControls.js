@@ -22,18 +22,16 @@ class PlaybackControlsElement extends HTMLElement {
         this._speedInput = fragment.querySelector('#speed')
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
-            this._target._resetPlayback()
+            this._target._resetPlayback(false)
             this._target._play()
         })
         fragment.querySelector('#playPattern').addEventListener('click', () => {
-            let playback = this._target._resetPlayback()
-            this._restorePlaybackTempo(playback)
+            let playback = this._target._resetPlayback(true)
             playback.pos = this._target._selPos()
             this._target._play()
         })
         this._playRowButton.addEventListener('click', () => {
-            let playback = this._target._resetPlayback()
-            this._restorePlaybackTempo(playback)
+            let playback = this._target._resetPlayback(true)
             playback.pos = this._target._selPos()
             playback.row = this._target._selRow()
             this._target._play()
@@ -55,6 +53,14 @@ class PlaybackControlsElement extends HTMLElement {
         return this._followInput.checked
     }
 
+    _getTempo() {
+        return this._tempoInput.valueAsNumber
+    }
+
+    _getSpeed() {
+        return this._speedInput.valueAsNumber
+    }
+
     /**
      * @param {number} tempo
      * @param {number} speed
@@ -62,14 +68,6 @@ class PlaybackControlsElement extends HTMLElement {
     _setTempoSpeed(tempo, speed) {
         this._tempoInput.valueAsNumber = tempo
         this._speedInput.valueAsNumber = speed
-    }
-
-    /**
-     * @param {Playback} playback
-     */
-    _restorePlaybackTempo(playback) {
-        playback.tempo = this._tempoInput.valueAsNumber
-        playback.speed = this._speedInput.valueAsNumber
     }
 
     /**
