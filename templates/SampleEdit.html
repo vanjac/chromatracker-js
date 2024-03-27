@@ -1,18 +1,18 @@
 <template id="sampleEdit">
   <div class="vflex">
     <div class="properties-grid">
-      <span>Name:&nbsp;</span>
+      <label for="name">Name:&nbsp;</label>
       <div class="hflex">
         <input id="name" maxlength="22" autocomplete="off">
       </div>
 
-      <span>Volume:&nbsp;</span>
+      <label for="volume">Volume:&nbsp;</label>
       <div class="hflex">
         <input id="volume" type="range" class="flex-grow" min="0" max="64" autocomplete="off">
         <output id="volumeOut" class="small-input"></output>
       </div>
 
-      <span>Finetune:&nbsp;</span>
+      <label for="finetune">Finetune:&nbsp;</label>
       <div class="hflex">
         <input id="finetune" type="range" class="flex-grow" min="-8" max="7" autocomplete="off">
         <output id="finetuneOut" class="small-input"></output>
@@ -25,7 +25,7 @@
           <span><img class="icon" src="assets/folder-open.svg"></span>
         </label>
         &nbsp;
-        Resample:&nbsp;
+        <label for="sampleRate">Resample:&nbsp;</label>
         <input id="sampleRate" type="number" class="med-input" value="16574.27">
       </div>
     </div>
