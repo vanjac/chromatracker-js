@@ -24,24 +24,24 @@
         <img class="icon" src="assets/backspace-outline.svg">
       </button>
     </div>
-    <div style="display: grid; grid-template-columns: auto minmax(0, 1fr)">
+    <div class="cell-entry-grid">
       <label class="label-button">
-        <input type="checkbox" checked id="pitchEnable">
+        <input id="pitchEnable" type="checkbox" checked>
         <span>P</span>
       </label>
       <div class="hflex">
         <button id="pianoLeft">&lt;</button>
         <form id="piano" class="vflex flex-grow hscrollable" autocomplete="off">
-          <div class="hflex" id="blackKeys">
+          <div id="blackKeys" class="hflex">
             <div class="keypad-half-key"></div>
           </div>
-          <div class="hflex" id="whiteKeys"></div>
+          <div id="whiteKeys" class="hflex"></div>
         </form>
         <button id="pianoRight">&gt;</button>
       </div>
 
       <label class="label-button">
-        <input type="checkbox" checked id="sampleEnable">
+        <input id="sampleEnable" type="checkbox" checked>
         <span>I</span>
       </label>
       <div class="hflex">
@@ -51,7 +51,7 @@
       </div>
 
       <label class="label-button">
-        <input type="checkbox" id="effectEnable">
+        <input id="effectEnable" type="checkbox">
         <span>E</span>
       </label>
       <div class="hflex">

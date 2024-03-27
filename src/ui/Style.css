@@ -166,6 +166,11 @@ tbody tr:nth-child(16n+1) th {
 
 /* cell entry */
 
+.cell-entry-grid {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+}
+
 .keypad-key {
     width: 24pt;
     touch-action: none;
