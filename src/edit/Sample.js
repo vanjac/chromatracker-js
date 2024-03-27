@@ -126,3 +126,12 @@ function waveFade(wave, startAmp, endAmp, exp) {
         ;[wave[i], error] = dither(wave[i] * x, error)
     }
 }
+
+/**
+ * @param {Int8Array} wave
+ */
+function waveReverse(wave) {
+    for (let i = 0, j = wave.length - 1; i < j; i++, j--) {
+        [wave[i], wave[j]] = [wave[j], wave[i]]
+    }
+}

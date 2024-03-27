@@ -104,8 +104,9 @@ class SampleEditElement extends HTMLElement {
         addMenuListener(fragment.querySelector('#effectMenu'), value => {
             switch (value) {
                 case 'amplify': this._amplify(); break
-                case 'fadeIn': this._fade(0, 1); break
-                case 'fadeOut': this._fade(1, 0); break
+                case 'fadeIn': this._applyEffect(w => waveFade(w, 0, 1, 2)); break
+                case 'fadeOut': this._applyEffect(w => waveFade(w, 1, 0, 2)); break
+                case 'reverse': this._applyEffect(waveReverse); break
             }
         })
 
@@ -431,24 +432,20 @@ class SampleEditElement extends HTMLElement {
         this._updateSelection()
     }
 
+    /**
+     * @param {(wave: Int8Array) => void} effect
+     */
+    _applyEffect(effect) {
+        let [start, end] = this._selRangeOrAll()
+        this._onChange(editSampleEffect(this._viewSample, start, end, effect), '')
+    }
+
     _amplify() {
         let result = window.prompt('Amount:', global.lastAmplify.toString())
         if (result != null) {
-            let [start, end] = this._selRangeOrAll()
-            this._onChange(editSampleEffect(
-                this._viewSample, start, end, w => waveAmplify(w, Number(result))), '')
+            this._applyEffect(w => waveAmplify(w, Number(result)))
             global.lastAmplify = Number(result)
         }
-    }
-
-    /**
-     * @param {number} startAmp
-     * @param {number} endAmp
-     */
-    _fade(startAmp, endAmp) {
-        let [start, end] = this._selRangeOrAll()
-        this._onChange(editSampleEffect(
-            this._viewSample, start, end, w => waveFade(w, startAmp, endAmp, 2)), '')
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)
