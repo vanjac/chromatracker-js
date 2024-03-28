@@ -89,6 +89,7 @@ select,
 .tab-group label:not(:last-of-type) span {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+    border-right-width: 0;
 }
 
 .label-button span {
