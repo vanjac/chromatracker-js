@@ -144,8 +144,11 @@ label {
 .seq-button,
 .seq-select {
     width: 30pt;
+    margin-left: 0;
+    margin-right: 0;
 }
-.seq-button span {
+.seq-button span,
+.seq-select {
     padding-left: 0;
     padding-right: 0;
 }
