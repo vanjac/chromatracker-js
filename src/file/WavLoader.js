@@ -61,6 +61,7 @@ function readWavFile(buf) {
     if (!dataChunk) { throw Error('Missing data chunk') }
     let numFrames = Math.floor(dataChunk.size / frameSize)
     let wave = new Int8Array(numFrames)
+    let error = 0
     if (sampleSize == 1 && fmtCode == wavFormatPCM) {
         console.log('8-bit PCM')
         for (let i = 0; i < numFrames; i++) {
@@ -69,18 +70,21 @@ function readWavFile(buf) {
     } else if (sampleSize == 2 && fmtCode == wavFormatPCM) {
         console.log('16-bit PCM')
         for (let i = 0; i < numFrames; i++) {
-            wave[i] = view.getInt16(dataChunk.pos + i * frameSize, true) / 256.0
+            let s = view.getInt16(dataChunk.pos + i * frameSize, true)
+            ;[wave[i], error] = dither(s / 256.0, error)
         }
     } else if (sampleSize == 3 && fmtCode == wavFormatPCM) {
         console.log('24-bit PCM')
         for (let i = 0; i < numFrames; i++) {
             // ignore lower 8 bits
-            wave[i] = view.getInt16(dataChunk.pos + i * frameSize + 1, true) / 256.0
+            let s = view.getInt16(dataChunk.pos + i * frameSize + 1, true)
+            ;[wave[i], error] = dither(s / 256.0, error)
         }
     } else if (sampleSize == 4 && fmtCode == wavFormatIEEE) {
         console.log('32-bit float')
         for (let i = 0; i < numFrames; i++) {
-            wave[i] = view.getFloat32(dataChunk.pos + i * frameSize, true) * 127.0
+            let s = view.getFloat32(dataChunk.pos + i * frameSize, true)
+            ;[wave[i], error] = dither(s * 127.0, error)
         }
     } else {
         throw Error('Unrecognized format')
