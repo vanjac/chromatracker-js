@@ -72,8 +72,23 @@ select,
 
 button,
 select,
-.label-button {
+.label-button,
+.tab-group {
     margin: 1.5pt;
+}
+
+.tab-group label {
+    margin: 0;
+}
+
+.tab-group label:not(:first-of-type) span {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.tab-group label:not(:last-of-type) span {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .label-button span {
