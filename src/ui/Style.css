@@ -41,6 +41,14 @@ body {
     font-family: sans-serif;
     background: var(--color-bg);
     color: var(--color-fg);
+    accent-color: var(--color-fg-hl);
+}
+
+input {
+    background: var(--color-bg);
+    border-color: var(--color-fg);
+    border: 1px solid var(--color-fg);
+    border-radius: 2pt;
 }
 
 .small-input {
@@ -66,8 +74,8 @@ select,
     justify-content: center;
     align-items: center;
     padding: 5pt 7pt;
-    border: 1px solid var(--color-fg);
     background: var(--color-bg-btn);
+    border: 1px solid var(--color-fg);
     border-radius: 6pt;
     touch-action: manipulation;
 }
