@@ -63,11 +63,17 @@ select,
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    padding: 6pt 8pt;
-    border: 1pt solid #888;
+    padding: 5pt 7pt;
+    border: 1px solid #222;
     background: #eee;
     border-radius: 6pt;
     touch-action: manipulation;
+}
+
+button,
+select,
+.label-button {
+    margin: 1.5pt;
 }
 
 .label-button span {
@@ -194,6 +200,7 @@ tbody tr:nth-child(16n+1) th {
     width: 24pt;
     touch-action: none;
     flex-shrink: 0;
+    margin: 0;
 }
 .keypad-half-key {
     width: 12pt;
@@ -207,6 +214,7 @@ tbody tr:nth-child(16n+1) th {
 .black-key span {
     background: #222;
     color: #fff;
+    border-color: #ddd;
 }
 
 /* wave editor */
