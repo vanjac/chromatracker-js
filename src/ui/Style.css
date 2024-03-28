@@ -144,7 +144,7 @@ label {
 
 th, .pattern-cell {
     font-family: monospace;
-    border: 1px solid black;
+    border: 1px solid #000;
     white-space: nowrap;
 }
 table {
@@ -154,7 +154,7 @@ table {
 th {
     position: sticky;
     position: -webkit-sticky;
-    background-color: white;
+    background-color: #fff;
 }
 thead th {
     top: 0;
@@ -168,18 +168,19 @@ tbody tr:nth-child(4n+1) th {
 }
 tbody tr:nth-child(16n+1),
 tbody tr:nth-child(16n+1) th {
-    background: lightgray;
+    background: #ccc;
 }
 .sel-cell {
-    background: pink;
+    background: #fcc;
 }
 .sel-pitch .cell-pitch,
 .sel-inst .cell-inst,
 .sel-effect .cell-effect {
-    background: greenyellow;
+    background: #f29;
+    color: #fff;
 }
 .hilite-row {
-    background: lightblue !important;
+    background: #cdf !important;
 }
 
 .hselect {
