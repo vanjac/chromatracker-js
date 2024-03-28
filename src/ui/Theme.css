@@ -1,0 +1,14 @@
+body {
+    --color-bg: #fff;
+    --color-fg: #222;
+
+    --color-bg-btn: #eee;
+    --color-bg-btn-press: #ccc;
+
+    --color-bg-hl: #ecf;
+    --color-bg-hl-press: #dae;
+    --color-fg-hl: #94f;
+
+    --color-bg-alt: #fcd;
+    --color-fg-alt: #d28;
+}

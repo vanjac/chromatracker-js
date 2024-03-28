@@ -39,6 +39,8 @@ body {
     display: flex;
     flex-direction: column;
     font-family: sans-serif;
+    background: var(--color-bg);
+    color: var(--color-fg);
 }
 
 .small-input {
@@ -64,8 +66,8 @@ select,
     justify-content: center;
     align-items: center;
     padding: 5pt 7pt;
-    border: 1px solid #222;
-    background: #eee;
+    border: 1px solid var(--color-fg);
+    background: var(--color-bg-btn);
     border-radius: 6pt;
     touch-action: manipulation;
 }
@@ -99,16 +101,16 @@ select,
 button:active,
 select:active,
 .label-button :active + span {
-    background: #ccc;
+    background: var(--color-bg-btn-press);
 }
 
 .label-button :checked + span,
 .show-checked {
-    background: #cdf;
+    background: var(--color-bg-hl);
 }
 
 .label-button :checked:active + span {
-    background: #abe;
+    background: var(--color-bg-hl-press);
 }
 
 body {
@@ -117,6 +119,7 @@ body {
 .icon svg {
     width: 1.5em;
     height: 1.5em;
+    fill: var(--color-fg);
 }
 
 label {
@@ -163,7 +166,7 @@ label {
 
 th, .pattern-cell {
     font-family: monospace;
-    border: 1px solid #000;
+    border: 1px solid var(--color-fg);
     white-space: nowrap;
 }
 table {
@@ -173,7 +176,7 @@ table {
 th {
     position: sticky;
     position: -webkit-sticky;
-    background-color: #fff;
+    background-color: var(--color-bg);
 }
 thead th {
     top: 0;
@@ -183,23 +186,23 @@ tbody th {
 }
 tbody tr:nth-child(4n+1),
 tbody tr:nth-child(4n+1) th {
-    background: #eee;
+    background: var(--color-bg-btn);
 }
 tbody tr:nth-child(16n+1),
 tbody tr:nth-child(16n+1) th {
-    background: #ccc;
+    background: var(--color-bg-btn-press);
 }
 .sel-cell {
-    background: #fcc;
+    background: var(--color-bg-hl);
 }
 .sel-pitch .cell-pitch,
 .sel-inst .cell-inst,
 .sel-effect .cell-effect {
-    background: #f29;
-    color: #fff;
+    background: var(--color-fg-hl);
+    color: var(--color-bg);
 }
 .hilite-row {
-    background: #cdf !important;
+    background: var(--color-bg-alt) !important;
 }
 
 .hselect {
@@ -231,10 +234,10 @@ tbody tr:nth-child(16n+1) th {
     padding-right: 0;
 }
 
-.black-key span {
-    background: #222;
-    color: #fff;
-    border-color: #ddd;
+.black-key :not(:checked) + span {
+    background: var(--color-fg);
+    color: var(--color-bg);
+    border-color: var(--color-bg);
 }
 
 /* wave editor */
@@ -269,8 +272,8 @@ tbody tr:nth-child(16n+1) th {
 }
 
 .wave-select {
-    background: #44f;
+    background: var(--color-fg-hl);
 }
 .wave-loop {
-    background: #2d8;
+    background: var(--color-fg-alt);
 }
