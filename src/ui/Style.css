@@ -114,7 +114,7 @@ select:active,
 body {
     line-height: 1.5;
 }
-.icon {
+.icon svg {
     width: 1.5em;
     height: 1.5em;
 }

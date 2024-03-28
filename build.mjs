@@ -12,6 +12,17 @@ function main() {
         templates += fs.readFileSync(path.join('templates', file), {encoding: 'utf8'})
     }
 
+    let assetFiles = fs.readdirSync('assets')
+    for (let file of assetFiles) {
+        if (file.endsWith('svg')) {
+            let content = fs.readFileSync(path.join('assets', file), {encoding: 'utf8'})
+            templates += `<template id="${file}">
+  ${content}
+</template>
+`
+        }
+    }
+
     let html = fs.readFileSync('_main.html', {encoding: 'utf8'})
     html = html.replace('{{templates}}', templates)
 

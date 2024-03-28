@@ -1,28 +1,28 @@
 <template id="playbackControls">
   <div class="hflex">
     <button id="playStart">
-      <img class="icon" src="assets/step-forward.svg">
+      <inline-svg class="icon" src="step-forward.svg"></inline-svg>
     </button>
     <button id="playPattern">
-      <img class="icon" src="assets/playlist-play.svg">
+      <inline-svg class="icon" src="playlist-play.svg"></inline-svg>
     </button>
     <button id="playRow">
-      <img class="icon" src="assets/play.svg">
+      <inline-svg class="icon" src="play.svg"></inline-svg>
     </button>
     <button id="pause" class="hide show-checked">
-      <img class="icon" src="assets/pause.svg">
+      <inline-svg class="icon" src="pause.svg"></inline-svg>
     </button>
     <label class="label-button">
       <input id="patternLoop" type="checkbox">
-      <span><img class="icon" src="assets/repeat-variant.svg"></span>
+      <span><inline-svg class="icon" src="repeat-variant.svg"></inline-svg></span>
     </label>
     <label class="label-button">
       <input id="follow" type="checkbox" checked>
-      <span><img class="icon" src="assets/format-indent-increase.svg"></span>
+      <span><inline-svg class="icon" src="format-indent-increase.svg"></inline-svg></span>
     </label>
     <div class="flex-grow"></div>
     <button id="undo">
-      <img class="icon" src="assets/undo.svg">
+      <inline-svg class="icon" src="undo.svg"></inline-svg>
     </button>
   </div>
 </template>
