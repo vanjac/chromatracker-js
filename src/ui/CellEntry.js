@@ -25,22 +25,6 @@ function addReleaseEvent(elem, handler) {
     })
 }
 
-/**
- * @param {HTMLElement} container
- * @param {HTMLElement} scrollLeft
- * @param {HTMLElement} scrollRight
- */
-function setupScrollerButtons(container, scrollLeft, scrollRight) {
-    scrollLeft.addEventListener('click', /** @param {UIEventInit} e */ e => {
-            let width = container.clientWidth
-            container.scrollBy({left: -e.detail * width / 2, behavior: 'smooth'})
-        })
-    scrollRight.addEventListener('click', /** @param {UIEventInit} e */ e => {
-            let width = container.clientWidth
-            container.scrollBy({left: e.detail * width / 2, behavior: 'smooth'})
-        })
-}
-
 class CellEntryElement extends HTMLElement {
     constructor() {
         super()
@@ -157,12 +141,12 @@ class CellEntryElement extends HTMLElement {
         fragment.querySelector('#sampleLeft').addEventListener('click',
             /** @param {UIEventInit} e */ e => {
                 let width = this._sampleList.clientWidth
-                this._sampleList.scrollBy({left: -e.detail * width / 2, behavior: 'smooth'})
+                this._sampleList.scrollBy({left: -e.detail * width * .75, behavior: 'smooth'})
             })
         fragment.querySelector('#sampleRight').addEventListener('click',
             /** @param {UIEventInit} e */ e => {
                 let width = this._sampleList.clientWidth
-                this._sampleList.scrollBy({left: e.detail * width / 2, behavior: 'smooth'})
+                this._sampleList.scrollBy({left: e.detail * width * .75, behavior: 'smooth'})
             })
 
         this._updateCell()
