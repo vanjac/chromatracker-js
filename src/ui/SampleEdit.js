@@ -298,18 +298,20 @@ class SampleEditElement extends HTMLElement {
             if (reader.result instanceof ArrayBuffer) {
                 if (isWavFile(reader.result)) {
                     try {
-                        let {wave, finetune, loopStart, loopEnd} = readWavFile(reader.result)
+                        let {wave, volume, finetune, loopStart, loopEnd}
+                            = readWavFile(reader.result)
                         /** @type {Partial<Sample>} */
-                        let samplePart = {wave, finetune, loopStart, loopEnd, name}
+                        let samplePart = {wave, volume, finetune, loopStart, loopEnd, name}
                         this._changeSample(sample => Object.assign(sample, samplePart), '', true)
                     } catch (error) {
                         if (error instanceof Error) { window.alert(error.message) }
                     }
                 } else {
                     let promise = readAudioFile(reader.result, this._sampleRateInput.valueAsNumber)
-                    promise.then(wave => {
+                    promise.then(({wave, volume}) => {
                         this._changeSample(sample => {
                             sample.wave = wave
+                            sample.volume = volume
                             sample.name = name
                             sample.loopStart = sample.loopEnd = 0
                         }, '', true)
