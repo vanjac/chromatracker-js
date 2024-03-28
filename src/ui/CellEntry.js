@@ -91,7 +91,6 @@ class CellEntryElement extends HTMLElement {
         addPressEvent(writeEffectButton, e => {
             this._target._putCell(this._getCell(), CellParts.effect | CellParts.param)
             this._jam._jamDown(this._target._selCell(), e)
-            this._target._advance()
         })
         addReleaseEvent(writeEffectButton, e => this._jam._jamUp(e))
 
