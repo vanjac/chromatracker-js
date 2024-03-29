@@ -692,8 +692,8 @@ function jamPlay(playback, id, c, cell) {
     }
     // clone channel
     let jam = new ChannelPlayback()
-    {
-        let channel = playback.channels[c]
+    let channel = playback.channels[c]
+    if (channel) {
         let {sample, sampleOffset, period, volume, panning, portTarget, memPort, memOff} = channel
         Object.assign(jam,
             {sample, sampleOffset, period, volume, panning, portTarget, memPort, memOff})

@@ -217,9 +217,9 @@ class AppMainElement extends HTMLElement {
      * @param {number} id
      * @param {Readonly<Cell>} cell
      */
-    _jamPlay(id, cell) {
+    _jamPlay(id, cell, useChannel = true) {
         this._enablePlayback()
-        jamPlay(this._playback, id, this._selChannel(), cell)
+        jamPlay(this._playback, id, useChannel ? this._selChannel() : -1, cell)
     }
 
     /**
@@ -233,13 +233,13 @@ class AppMainElement extends HTMLElement {
      * @param {Readonly<Cell>} cell
      * @param {Event} e
      */
-    _jamDown(cell, e = null) {
+    _jamDown(cell, e = null, useChannel = true) {
         if (typeof TouchEvent != 'undefined' && (e instanceof TouchEvent)) {
             for (let touch of e.changedTouches) {
-                this._jamPlay(touch.identifier, cell)
+                this._jamPlay(touch.identifier, cell, useChannel)
             }
         } else {
-            this._jamPlay(-1, cell)
+            this._jamPlay(-1, cell, useChannel)
         }
     }
 
