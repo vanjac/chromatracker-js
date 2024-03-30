@@ -161,3 +161,47 @@ function waveResample(src, dst) {
         dst[i] = src[(i * factor) | 0]
     }
 }
+
+/**
+ * @param {Readonly<Sample>} sample
+ * @param {number} start
+ * @param {number} end
+ * @param {(ctx: OfflineAudioContext) => AudioNode} createNode
+ * @returns {Promise<Readonly<Sample>>}
+ */
+function editSampleNodeEffect(sample, start, end, createNode) {
+    return new Promise(resolve => {
+        let length = end - start
+
+        // @ts-ignore
+        let OfflineAudioContext = window.OfflineAudioContext || window.webkitOfflineAudioContext
+        // Safari is very picky about sample rates
+        /** @type {OfflineAudioContext} */
+        let context = new OfflineAudioContext(1, length, 44100)
+
+        let buffer = context.createBuffer(1, length, context.sampleRate)
+        let srcData = buffer.getChannelData(0)
+        for (let i = 0; i < length; i++) {
+            srcData[i] = sample.wave[start + i] / 128.0
+        }
+
+        let source = context.createBufferSource()
+        source.buffer = buffer
+
+        let effectNode = createNode(context)
+        source.connect(effectNode)
+        effectNode.connect(context.destination)
+
+        source.start()
+        context.oncomplete = e => {
+            let wave = sample.wave.slice()
+            let renderData = e.renderedBuffer.getChannelData(0)
+            let error = 0
+            for (let i = 0; i < renderData.length; i++) {
+                [wave[start + i], error] = dither(renderData[i] * 128.0, error)
+            }
+            resolve(freezeAssign(new Sample(), sample, {wave}))
+        }
+        context.startRendering()
+    })
+}

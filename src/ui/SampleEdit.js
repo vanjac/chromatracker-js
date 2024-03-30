@@ -110,6 +110,11 @@ class SampleEditElement extends HTMLElement {
                 case 'fadeOut': this._applyEffect(waveFade.bind(null, 1, 0, 2)); break
                 case 'reverse': this._applyEffect(waveReverse); break
                 case 'resample': this._resample(); break
+                case 'lowpass': this._filter('lowpass'); break
+                case 'highpass': this._filter('highpass'); break
+                case 'bandpass': this._filter('bandpass'); break
+                case 'notch': this._filter('notch'); break
+                case 'allpass': this._filter('allpass'); break
             }
         })
 
@@ -498,6 +503,28 @@ class SampleEditElement extends HTMLElement {
             }
             global.lastResampleSemitones = Number(result)
         }
+    }
+
+    /**
+     * @param {BiquadFilterType} type
+     */
+    _filter(type) {
+        let freq = window.prompt('Frequency:', global.lastFilterFreq.toString())
+        if (freq == null) { return }
+        let q = window.prompt('Q:', global.lastFilterQ.toString())
+        if (q == null) { return }
+
+        let [start, end] = this._selRangeOrAll()
+        editSampleNodeEffect(this._viewSample, start, end, ctx => {
+            let node = ctx.createBiquadFilter()
+            node.frequency.value = Number(freq) * ctx.sampleRate / baseRate // TODO!
+            node.Q.value = Number(q)
+            node.type = type
+            return node
+        }).then(s => this._onChange(s, ''))
+
+        global.lastFilterFreq = Number(freq)
+        global.lastFilterQ = Number(q)
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)
