@@ -1,0 +1,12 @@
+{
+    "name": "ChromaTracker",
+    "display": "standalone",
+    "start_url": "./",
+    "scope": ".",
+    "icons": [
+        {
+            "src": "https://chroma.zone/favicon.ico",
+            "sizes": "32x32"
+        }
+    ]
+}
