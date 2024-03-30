@@ -82,6 +82,8 @@ class AppMainElement extends HTMLElement {
             }
         }
 
+        fragment.querySelector('#version').textContent = this.getAttribute('data-version')
+
         this.style.display = 'contents'
         this.appendChild(fragment)
 

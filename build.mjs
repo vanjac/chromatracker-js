@@ -25,6 +25,7 @@ function main() {
 
     let html = fs.readFileSync('_main.html', {encoding: 'utf8'})
     html = html.replace('{{templates}}', templates)
+    html = html.replace('{{version}}', process.argv[2] || '')
 
     fs.writeFileSync('index.html', html)
 }
