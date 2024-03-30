@@ -515,15 +515,18 @@ class SampleEditElement extends HTMLElement {
     _filter(type, useQ, useGain) {
         let freq = window.prompt('Frequency:', global.lastFilterFreq)
         if (freq == null) { return }
+        global.lastFilterFreq = freq
         let q = '1'
         if (useQ) {
             q = window.prompt('Q:', global.lastFilterQ.toString())
             if (q == null) { return }
+            global.lastFilterQ = Number(q)
         }
         let gain = '0'
         if (useGain) {
             gain = window.prompt('Gain (dB):', global.lastFilterGain.toString())
             if (gain == null) { return }
+            global.lastFilterGain = Number(gain)
         }
 
         let [start, end] = this._selRangeOrAll()
@@ -541,10 +544,6 @@ class SampleEditElement extends HTMLElement {
             node.type = type
             return node
         }).then(s => this._onChange(s, ''))
-
-        global.lastFilterFreq = freq
-        global.lastFilterQ = Number(q)
-        global.lastFilterGain = Number(gain)
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)
