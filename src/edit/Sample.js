@@ -1,7 +1,7 @@
 'use strict'
 
-let ditherScale = 0.5
-let errorScale = 0.8
+const ditherScale = 0.5
+const errorScale = 0.8
 
 /**
  * @param {Readonly<Module>} module
