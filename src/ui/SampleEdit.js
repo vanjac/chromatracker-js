@@ -110,11 +110,13 @@ class SampleEditElement extends HTMLElement {
                 case 'fadeOut': this._applyEffect(waveFade.bind(null, 1, 0, 2)); break
                 case 'reverse': this._applyEffect(waveReverse); break
                 case 'resample': this._resample(); break
-                case 'lowpass': this._filter('lowpass'); break
-                case 'highpass': this._filter('highpass'); break
-                case 'bandpass': this._filter('bandpass'); break
-                case 'notch': this._filter('notch'); break
-                case 'allpass': this._filter('allpass'); break
+                case 'lowpass': this._filter('lowpass', true, false); break
+                case 'highpass': this._filter('highpass', true, false); break
+                case 'bandpass': this._filter('bandpass', true, false); break
+                case 'lowshelf': this._filter('lowshelf', false, true); break
+                case 'highshelf': this._filter('highshelf', false, true); break
+                case 'peaking': this._filter('peaking', true, true); break
+                case 'notch': this._filter('notch', true, false); break
             }
         })
 
@@ -507,24 +509,36 @@ class SampleEditElement extends HTMLElement {
 
     /**
      * @param {BiquadFilterType} type
+     * @param {boolean} useQ
+     * @param {boolean} useGain
      */
-    _filter(type) {
+    _filter(type, useQ, useGain) {
         let freq = window.prompt('Frequency:', global.lastFilterFreq.toString())
         if (freq == null) { return }
-        let q = window.prompt('Q:', global.lastFilterQ.toString())
-        if (q == null) { return }
+        let q = '1'
+        if (useQ) {
+            q = window.prompt('Q:', global.lastFilterQ.toString())
+            if (q == null) { return }
+        }
+        let gain = '0'
+        if (useGain) {
+            gain = window.prompt('Gain (dB):', global.lastFilterGain.toString())
+            if (gain == null) { return }
+        }
 
         let [start, end] = this._selRangeOrAll()
         editSampleNodeEffect(this._viewSample, start, end, ctx => {
             let node = ctx.createBiquadFilter()
             node.frequency.value = Number(freq) * ctx.sampleRate / baseRate // TODO!
             node.Q.value = Number(q)
+            node.gain.value = Number(gain)
             node.type = type
             return node
         }).then(s => this._onChange(s, ''))
 
         global.lastFilterFreq = Number(freq)
         global.lastFilterQ = Number(q)
+        global.lastFilterGain = Number(gain)
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)

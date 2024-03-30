@@ -8,5 +8,6 @@ let global = {
     lastResampleSemitones: 12,
     lastFilterFreq: 350,
     lastFilterQ: 1,
+    lastFilterGain: 2,
     lastLoopRepeat: 2,
 }
