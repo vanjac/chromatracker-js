@@ -106,8 +106,8 @@ class SampleEditElement extends HTMLElement {
         addMenuListener(fragment.querySelector('#effectMenu'), value => {
             switch (value) {
                 case 'amplify': this._amplify(); break
-                case 'fadeIn': this._applyEffect(w => waveFade(w, 0, 1, 2)); break
-                case 'fadeOut': this._applyEffect(w => waveFade(w, 1, 0, 2)); break
+                case 'fadeIn': this._applyEffect(waveFade.bind(null, 0, 1, 2)); break
+                case 'fadeOut': this._applyEffect(waveFade.bind(null, 1, 0, 2)); break
                 case 'reverse': this._applyEffect(waveReverse); break
             }
         })
@@ -461,14 +461,14 @@ class SampleEditElement extends HTMLElement {
         if (!this._viewSample.hasLoop()) {
             return
         }
-        let {loopEnd} = this._viewSample
-        let loopWave = this._viewSample.wave.slice(this._viewSample.loopStart, loopEnd)
-        waveReverse(loopWave)
+        let {loopStart, loopEnd} = this._viewSample
+        let loopWave = new Int8Array(loopEnd - loopStart)
+        waveReverse(this._viewSample.wave.subarray(loopStart, loopEnd), loopWave)
         this._onChange(editSampleSplice(this._viewSample, loopEnd, loopEnd, loopWave), '')
     }
 
     /**
-     * @param {(wave: Int8Array) => void} effect
+     * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
      */
     _applyEffect(effect) {
         let [start, end] = this._selRangeOrAll()
@@ -478,7 +478,7 @@ class SampleEditElement extends HTMLElement {
     _amplify() {
         let result = window.prompt('Amount:', global.lastAmplify.toString())
         if (result != null) {
-            this._applyEffect(w => waveAmplify(w, Number(result)))
+            this._applyEffect(waveAmplify.bind(null, Number(result)))
             global.lastAmplify = Number(result)
         }
     }

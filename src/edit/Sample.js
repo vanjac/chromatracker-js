@@ -79,11 +79,11 @@ function editSampleSplice(sample, start, end, insert) {
  * @param {Readonly<Sample>} sample
  * @param {number} start
  * @param {number} end
- * @param {(wave: Int8Array) => void} effect
+ * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
  */
 function editSampleEffect(sample, start, end, effect) {
     let wave = sample.wave.slice()
-    effect(wave.subarray(start, end))
+    effect(sample.wave.subarray(start, end), wave.subarray(start, end))
     return freezeAssign(new Sample(), sample, {wave})
 }
 
@@ -101,38 +101,41 @@ function dither(s, error) {
 }
 
 /**
- * @param {Int8Array} wave
  * @param {number} amount
+ * @param {Readonly<Int8Array>} src
+ * @param {Int8Array} dst
  */
-function waveAmplify(wave, amount) {
+function waveAmplify(amount, src, dst) {
     let error = 0
-    for (let i = 0; i < wave.length; i++) {
-        [wave[i], error] = dither(wave[i] * amount, error)
+    for (let i = 0; i < dst.length; i++) {
+        [dst[i], error] = dither(src[i] * amount, error)
     }
 }
 
 /**
- * @param {Int8Array} wave
  * @param {number} startAmp
  * @param {number} endAmp
  * @param {number} exp
+ * @param {Readonly<Int8Array>} src
+ * @param {Int8Array} dst
  */
-function waveFade(wave, startAmp, endAmp, exp) {
+function waveFade(startAmp, endAmp, exp, src, dst) {
     startAmp **= 1 / exp
     endAmp **= 1 / exp
     let error = 0
-    for (let i = 0; i < wave.length; i++) {
-        let t = i / wave.length
+    for (let i = 0; i < dst.length; i++) {
+        let t = i / dst.length
         let x = (startAmp * (t - 1) + endAmp * t) ** exp
-        ;[wave[i], error] = dither(wave[i] * x, error)
+        ;[dst[i], error] = dither(src[i] * x, error)
     }
 }
 
 /**
- * @param {Int8Array} wave
+ * @param {Readonly<Int8Array>} src
+ * @param {Int8Array} dst
  */
-function waveReverse(wave) {
-    for (let i = 0, j = wave.length - 1; i < j; i++, j--) {
-        [wave[i], wave[j]] = [wave[j], wave[i]]
+function waveReverse(src, dst) {
+    for (let i = 0; i < dst.length; i++) {
+        dst[i] = src[dst.length - i - 1]
     }
 }
