@@ -170,17 +170,8 @@ class AppMainElement extends HTMLElement {
     }
 
     _play() {
-        let process = () => {
-            while (this._queuedTime < this._context.currentTime + 0.5) {
-                this._queuedTime = this._playback.time
-                let {pos, row} = this._playback
-                processRow(this._playback)
-                let {tempo, speed} = this._playback
-                this._queuedLines.push({time: this._queuedTime, pos, row, tempo, speed})
-            }
-        }
-        process()
-        this._intervalHandle = window.setInterval(process, 200)
+        this._processPlayback()
+        this._intervalHandle = window.setInterval(() => this._processPlayback(), 200)
         this._animHandle = window.requestAnimationFrame(() => this._frameUpdate())
         this._playbackControls._setPlayState(true)
     }
@@ -194,6 +185,16 @@ class AppMainElement extends HTMLElement {
             this._queuedTime = 0
             this._intervalHandle = null
             this._playbackControls._setPlayState(false)
+        }
+    }
+
+    _processPlayback() {
+        while (this._queuedTime < this._context.currentTime + 0.5) {
+            this._queuedTime = this._playback.time
+            let {pos, row} = this._playback
+            processRow(this._playback)
+            let {tempo, speed} = this._playback
+            this._queuedLines.push({time: this._queuedTime, pos, row, tempo, speed})
         }
     }
 
