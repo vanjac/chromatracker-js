@@ -1,5 +1,8 @@
 'use strict'
 
+const playbackQueueTime = 0.5
+const playbackDelay = 0.1
+
 /**
  * @typedef {object} QueuedLine
  * @property {number} time
@@ -145,6 +148,7 @@ class AppMainElement extends HTMLElement {
             this._context.resume()
         }
         this._playback = initPlayback(this._context, this._module)
+        this._playback.time += playbackDelay // avoid "catching up"
 
         for (let c = 0; c < this._module.numChannels; c++) {
             if (this._patternTable._isChannelMuted(c)) {
@@ -189,7 +193,7 @@ class AppMainElement extends HTMLElement {
     }
 
     _processPlayback() {
-        while (this._queuedTime < this._context.currentTime + 0.5) {
+        while (this._queuedTime < this._context.currentTime + playbackQueueTime) {
             this._queuedTime = this._playback.time
             let {pos, row} = this._playback
             processRow(this._playback)
