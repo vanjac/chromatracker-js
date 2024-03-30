@@ -5,8 +5,8 @@
     "scope": ".",
     "icons": [
         {
-            "src": "https://chroma.zone/favicon.ico",
-            "sizes": "32x32"
+            "src": "assets/playlist-play.svg",
+            "sizes": "any"
         }
     ]
 }
