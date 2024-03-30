@@ -5,5 +5,6 @@ let global = {
     audioClipboard: new Int8Array(),
     // Effect parameters
     lastAmplify: 1,
+    lastResampleSemitones: 12,
     lastLoopRepeat: 2,
 }

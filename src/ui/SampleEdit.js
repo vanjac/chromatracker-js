@@ -109,6 +109,7 @@ class SampleEditElement extends HTMLElement {
                 case 'fadeIn': this._applyEffect(waveFade.bind(null, 0, 1, 2)); break
                 case 'fadeOut': this._applyEffect(waveFade.bind(null, 1, 0, 2)); break
                 case 'reverse': this._applyEffect(waveReverse); break
+                case 'resample': this._resample(); break
             }
         })
 
@@ -480,6 +481,22 @@ class SampleEditElement extends HTMLElement {
         if (result != null) {
             this._applyEffect(waveAmplify.bind(null, Number(result)))
             global.lastAmplify = Number(result)
+        }
+    }
+
+    _resample() {
+        let result = window.prompt('Semitones:', global.lastResampleSemitones.toString())
+        if (result != null) {
+            let [start, end] = this._selRangeOrAll()
+            let length = (end - start) * (2 ** (-Number(result) / 12))
+            let newWave = editSampleEffectSplice(this._viewSample, start, end, length, waveResample)
+            this._onChange(newWave, '')
+            if (this._rangeSelected()) {
+                this._selectA = start
+                this._selectB = start + length
+                this._updateSelection()
+            }
+            global.lastResampleSemitones = Number(result)
         }
     }
 }

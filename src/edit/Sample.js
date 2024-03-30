@@ -64,15 +64,7 @@ function editSampleDelete(sample, start, end) {
  * @param {Readonly<Int8Array>} insert
  */
 function editSampleSplice(sample, start, end, insert) {
-    let wave = new Int8Array(sample.wave.length - (end - start) + insert.length)
-    wave.set(sample.wave.subarray(0, start))
-    wave.set(insert, start)
-    wave.set(sample.wave.subarray(end), start + insert.length)
-    /** @param {number} pos */
-    let transform = pos => (pos >= end) ? pos - (end - start) + insert.length : pos
-    let loopStart = transform(sample.loopStart)
-    let loopEnd = transform(sample.loopEnd)
-    return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
+    return editSampleEffectSplice(sample, start, end, insert.length, (_, dst) => dst.set(insert))
 }
 
 /**
@@ -85,6 +77,25 @@ function editSampleEffect(sample, start, end, effect) {
     let wave = sample.wave.slice()
     effect(sample.wave.subarray(start, end), wave.subarray(start, end))
     return freezeAssign(new Sample(), sample, {wave})
+}
+
+/**
+ * @param {Readonly<Sample>} sample
+ * @param {number} start
+ * @param {number} end
+ * @param {number} length
+ * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
+ */
+function editSampleEffectSplice(sample, start, end, length, effect) {
+    let wave = new Int8Array(sample.wave.length - (end - start) + length)
+    wave.set(sample.wave.subarray(0, start))
+    wave.set(sample.wave.subarray(end), start + length)
+    effect(sample.wave.subarray(start, end), wave.subarray(start, start + length))
+    /** @param {number} pos */
+    let transform = pos => (pos >= end) ? pos - (end - start) + length : pos
+    let loopStart = transform(sample.loopStart)
+    let loopEnd = transform(sample.loopEnd)
+    return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
 }
 
 /**
@@ -137,5 +148,16 @@ function waveFade(startAmp, endAmp, exp, src, dst) {
 function waveReverse(src, dst) {
     for (let i = 0; i < dst.length; i++) {
         dst[i] = src[dst.length - i - 1]
+    }
+}
+
+/**
+ * @param {Readonly<Int8Array>} src
+ * @param {Int8Array} dst
+ */
+function waveResample(src, dst) {
+    let factor = src.length / dst.length
+    for (let i = 0; i < dst.length; i++) {
+        dst[i] = src[(i * factor) | 0]
     }
 }
