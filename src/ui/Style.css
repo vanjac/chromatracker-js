@@ -117,7 +117,8 @@ select:active,
     background: var(--color-bg-hl);
 }
 
-.label-button :checked:active + span {
+.label-button :checked:active + span,
+.show-checked:active {
     background: var(--color-bg-hl-press);
 }
 
