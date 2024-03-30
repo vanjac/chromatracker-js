@@ -2,6 +2,9 @@
 
 const playbackQueueTime = 0.5
 const playbackDelay = 0.1
+const processInterval = 200
+
+const maxUndo = 100
 
 /**
  * @typedef {object} QueuedLine
@@ -175,7 +178,7 @@ class AppMainElement extends HTMLElement {
 
     _play() {
         this._processPlayback()
-        this._intervalHandle = window.setInterval(() => this._processPlayback(), 200)
+        this._intervalHandle = window.setInterval(() => this._processPlayback(), processInterval)
         this._animHandle = window.requestAnimationFrame(() => this._frameUpdate())
         this._playbackControls._setPlayState(true)
     }
@@ -355,7 +358,7 @@ class AppMainElement extends HTMLElement {
     _pushUndo(combineTag) {
         if (!combineTag || combineTag != this._undoCombineTag) {
             this._undoStack.push(this._module)
-            if (this._undoStack.length > 100) {
+            if (this._undoStack.length > maxUndo) {
                 this._undoStack.shift()
             }
             this._unsavedChangeCount++
