@@ -513,7 +513,7 @@ class SampleEditElement extends HTMLElement {
      * @param {boolean} useGain
      */
     _filter(type, useQ, useGain) {
-        let freq = window.prompt('Frequency:', global.lastFilterFreq.toString())
+        let freq = window.prompt('Frequency:', global.lastFilterFreq)
         if (freq == null) { return }
         let q = '1'
         if (useQ) {
@@ -529,14 +529,20 @@ class SampleEditElement extends HTMLElement {
         let [start, end] = this._selRangeOrAll()
         editSampleNodeEffect(this._viewSample, start, end, ctx => {
             let node = ctx.createBiquadFilter()
-            node.frequency.value = Number(freq) * ctx.sampleRate / baseRate // TODO!
+            let factor = ctx.sampleRate / baseRate // TODO!
+            let [startFreq, endFreq] = freq.split(':')
+            node.frequency.setValueAtTime(Number(startFreq) * factor, 0)
+            if (endFreq != null) {
+                node.frequency.exponentialRampToValueAtTime(
+                    Number(endFreq) * factor, (end - start) / ctx.sampleRate)
+            }
             node.Q.value = Number(q)
             node.gain.value = Number(gain)
             node.type = type
             return node
         }).then(s => this._onChange(s, ''))
 
-        global.lastFilterFreq = Number(freq)
+        global.lastFilterFreq = freq
         global.lastFilterQ = Number(q)
         global.lastFilterGain = Number(gain)
     }

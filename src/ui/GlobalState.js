@@ -6,7 +6,7 @@ let global = {
     // Effect parameters
     lastAmplify: 1,
     lastResampleSemitones: 12,
-    lastFilterFreq: 350,
+    lastFilterFreq: '350',
     lastFilterQ: 1,
     lastFilterGain: 2,
     lastLoopRepeat: 2,
