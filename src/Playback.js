@@ -271,10 +271,12 @@ function processRow(playback) {
     let curPos = playback.pos
     let curRow = playback.row
     playback.row++
-
-    let patJump = false
+    playback.pos = -1
     for (let c = 0; c < playback.mod.numChannels; c++) {
-        patJump = processCellEnd(playback, playback.channels[c], pattern[c][curRow], patJump)
+        processCellEnd(playback, playback.channels[c], pattern[c][curRow], curPos)
+    }
+    if (playback.pos == -1) {
+        playback.pos = curPos
     }
     if (playback.row >= pattern[0].length) {
         playback.row = 0
@@ -552,22 +554,20 @@ function processCellAll(playback, channel, cell, tick) {
 * @param {Playback} playback
 * @param {ChannelPlayback} channel
 * @param {Readonly<Cell>} cell
-* @param {boolean} patJump
+* @param {number} pos
 */
-function processCellEnd(playback, channel, cell, patJump) {
+function processCellEnd(playback, channel, cell, pos) {
     switch (cell.effect) {
         case Effect.PositionJump:
             playback.pos = cell.paramByte()
             // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PatternJump.mod
             playback.row = 0
-            patJump = true
             break
         case Effect.PatternBreak:
             // note: OpenMPT displays this value in hex, but writes to the file in BCD
             playback.row = cell.paramDecimal()
-            if (!patJump) {
-                playback.pos++
-                patJump = true
+            if (playback.pos == -1) {
+                playback.pos = pos + 1
             }
             break
         case Effect.Extended:
@@ -585,7 +585,6 @@ function processCellEnd(playback, channel, cell, patJump) {
             }
             break
     }
-    return patJump
 }
 
 /**
