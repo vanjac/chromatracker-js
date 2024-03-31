@@ -34,7 +34,8 @@ Playback.prototype = {
     speed: defaultSpeed,
     pos: 0,
     row: 0,
-    patLoopRow: 0,
+    rowDelay: 0,
+    patLoopRow: 0, // TODO: this should actually be per-channel
     patLoopCount: 0,
     time: 0,
     userPatternLoop: false,
@@ -82,15 +83,6 @@ OscillatorPlayback.prototype = {
     speed: 0,
     depth: 0,
     tick: 0,
-}
-
-function RowPlayback() {}
-RowPlayback.prototype = {
-    // TODO: some of these are actually per-channel
-    patDelay: 0,
-    posJump: -1,
-    patBreak: -1,
-    patLoop: false,
 }
 
 /**
@@ -250,8 +242,8 @@ function processRow(playback) {
         playback.row = pattern[0].length - 1
     }
 
-    let rowPlay = new RowPlayback()
-    for (let repeat = 0; repeat < rowPlay.patDelay + 1; repeat++) {
+    playback.rowDelay = 0
+    for (let repeat = 0; repeat < playback.rowDelay + 1; repeat++) {
         for (let tick = 0; tick < playback.speed; tick++) {
             for (let c = 0; c < playback.mod.numChannels; c++) {
                 let cell = pattern[c][playback.row]
@@ -266,7 +258,7 @@ function processRow(playback) {
                     }
                 }
                 if (tick == 0) {
-                    processCellFirst(playback, channel, cell, rowPlay)
+                    processCellFirst(playback, channel, cell)
                 } else {
                     processCellRest(playback, channel, cell, tick)
                 }
@@ -276,28 +268,20 @@ function processRow(playback) {
         }
     }
 
-    if (playback.userPatternLoop) {
-        // do nothing
-    } else if (rowPlay.posJump != -1) {
-        playback.pos = rowPlay.posJump
-    } else if (rowPlay.patBreak != -1) {
-        playback.pos++
-    }
-    if (rowPlay.patLoop) {
-        playback.row = playback.patLoopRow
-    } else if (rowPlay.patBreak != -1) {
-        playback.row = rowPlay.patBreak
-    } else if (rowPlay.posJump != -1) {
-        playback.row = 0
-    } else {
-        playback.row++
-    }
+    let curPos = playback.pos
+    let curRow = playback.row
+    playback.row++
 
+    let patJump = false
+    for (let c = 0; c < playback.mod.numChannels; c++) {
+        patJump = processCellEnd(playback, playback.channels[c], pattern[c][curRow], patJump)
+    }
     if (playback.row >= pattern[0].length) {
         playback.row = 0
-        if (!playback.userPatternLoop) {
-            playback.pos++
-        }
+        playback.pos++
+    }
+    if (playback.userPatternLoop) {
+        playback.pos = curPos
     }
     if (playback.pos >= playback.mod.sequence.length) {
         playback.pos = playback.mod.restartPos
@@ -346,9 +330,8 @@ function processCellNote(playback, channel, cell) {
  * @param {Playback} playback
  * @param {ChannelPlayback} channel
  * @param {Readonly<Cell>} cell
- * @param {RowPlayback} row
  */
-function processCellFirst(playback, channel, cell, row) {
+function processCellFirst(playback, channel, cell) {
     switch (cell.effect) {
         case Effect.Portamento:
             if (cell.paramByte()) {
@@ -381,17 +364,8 @@ function processCellFirst(playback, channel, cell, row) {
         case Effect.Panning:
             channel.panning = cell.paramByte()
             break
-        case Effect.PositionJump:
-            row.posJump = cell.paramByte()
-            // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PatternJump.mod
-            row.patBreak = -1
-            break
         case Effect.Volume:
             channel.volume = Math.min(cell.paramByte(), maxVolume)
-            break
-        case Effect.PatternBreak:
-            // note: OpenMPT displays this value in hex, but writes to the file in BCD
-            row.patBreak = cell.paramDecimal()
             break
         case Effect.Extended:
             switch (cell.param0) {
@@ -410,16 +384,6 @@ function processCellFirst(playback, channel, cell, row) {
                         let finetune = cell.param1
                         finetune = (finetune >= 8) ? (finetune - 16) : finetune
                         channel.period = pitchToPeriod(cell.pitch, finetune)
-                    }
-                    break
-                case ExtEffect.PatternLoop:
-                    if (cell.param1 == 0) {
-                        playback.patLoopRow = playback.row
-                    } else if (playback.patLoopCount < cell.param1) {
-                        playback.patLoopCount++
-                        row.patLoop = true
-                    } else {
-                        playback.patLoopCount = 0
                     }
                     break
                 case ExtEffect.TremoloWave:
@@ -442,7 +406,7 @@ function processCellFirst(playback, channel, cell, row) {
                     channel.volume = Math.max(channel.volume - cell.param1, 0)
                     break
                 case ExtEffect.PatternDelay:
-                    row.patDelay = cell.param1
+                    playback.rowDelay = cell.param1
                     break
             }
             break
@@ -579,6 +543,47 @@ function processCellAll(playback, channel, cell, tick) {
 }
 
 /**
+* Process the end of a row for one channel.
+* @param {Playback} playback
+* @param {ChannelPlayback} channel
+* @param {Readonly<Cell>} cell
+* @param {boolean} patJump
+*/
+function processCellEnd(playback, channel, cell, patJump) {
+    switch (cell.effect) {
+        case Effect.PositionJump:
+            playback.pos = cell.paramByte()
+            // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PatternJump.mod
+            playback.row = 0
+            patJump = true
+            break
+        case Effect.PatternBreak:
+            // note: OpenMPT displays this value in hex, but writes to the file in BCD
+            playback.row = cell.paramDecimal()
+            if (!patJump) {
+                playback.pos++
+                patJump = true
+            }
+            break
+        case Effect.Extended:
+            switch (cell.param0) {
+                case ExtEffect.PatternLoop:
+                    if (cell.param1 == 0) {
+                        playback.patLoopRow = playback.row
+                    } else if (playback.patLoopCount < cell.param1) {
+                        playback.patLoopCount++
+                        playback.row = playback.patLoopRow
+                    } else {
+                        playback.patLoopCount = 0
+                    }
+                    break
+            }
+            break
+    }
+    return patJump
+}
+
+/**
  * @param {number} volume
  */
 function volumeToGain(volume) {
@@ -709,7 +714,7 @@ function jamPlay(playback, id, c, cell) {
     let sample = playback.mod.samples[jam.sample]
     if (sample) {
         jam.period = pitchToPeriod(cell.pitch, sample.finetune)
-        processCellFirst(playback, jam, cell, new RowPlayback())
+        processCellFirst(playback, jam, cell)
 
         jam.source = createNoteSource(playback, jam.sample)
         jam.source.connect(jam.gain)

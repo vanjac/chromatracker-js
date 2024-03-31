@@ -32,7 +32,9 @@ Cell.prototype = {
     param0: 0,
     param1: 0,
 
+    /** Interpret the parameter hex digits as a single byte */
     paramByte() { return (this.param0 << 4) | this.param1 },
+    /** Interpret the parameter hex digits as binary-coded decimal */
     paramDecimal() { return this.param0 * 10 + this.param1 },
 }
 const emptyCell = Object.freeze(new Cell())
