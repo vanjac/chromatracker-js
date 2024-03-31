@@ -235,14 +235,15 @@ function processTick(playback) {
     if (playback.pos >= playback.mod.sequence.length) {
         playback.pos = playback.mod.sequence.length - 1
     }
-    let patIdx = playback.mod.sequence[playback.pos]
-    let pattern = playback.mod.patterns[patIdx]
+    const pos = playback.pos
+    let pattern = playback.mod.patterns[playback.mod.sequence[pos]]
     if (playback.row >= pattern[0].length) {
         playback.row = pattern[0].length - 1
     }
+    const row = playback.row
 
     for (let c = 0; c < playback.mod.numChannels; c++) {
-        let cell = pattern[c][playback.row]
+        let cell = pattern[c][row]
         let channel = playback.channels[c]
         if (playback.tick == 0 && playback.rowDelayCount == 0) {
             // Protracker instrument changes always take effect at the start of the row
@@ -264,24 +265,22 @@ function processTick(playback) {
     // advance...
     playback.tick++
     if (playback.tick == playback.speed) {
-        let curPos = playback.pos
-        let curRow = playback.row
         playback.tick = 0
         playback.row++
         playback.pos = -1
 
         for (let c = 0; c < playback.mod.numChannels; c++) {
-            processCellEnd(playback, playback.channels[c], pattern[c][curRow], curPos, curRow)
+            processCellEnd(playback, playback.channels[c], pattern[c][row], pos, row)
         }
         if (playback.pos == -1) {
-            playback.pos = curPos
+            playback.pos = pos
         }
         if (playback.row >= pattern[0].length) {
             playback.row = 0
             playback.pos++
         }
         if (playback.userPatternLoop) {
-            playback.pos = curPos
+            playback.pos = pos
         }
         if (playback.pos >= playback.mod.sequence.length) {
             playback.pos = playback.mod.restartPos
