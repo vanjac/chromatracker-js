@@ -35,8 +35,6 @@ Playback.prototype = {
     pos: 0,
     row: 0,
     rowDelay: 0,
-    patLoopRow: 0, // TODO: this should actually be per-channel
-    patLoopCount: 0,
     time: 0,
     userPatternLoop: false,
 }
@@ -73,6 +71,8 @@ ChannelPlayback.prototype = {
     portTarget: 0,
     memPort: 0,     // 3xx, 5xx
     memOff: 0,      // 9xx
+    patLoopRow: 0,
+    patLoopCount: 0,
     userMute: false,
 }
 
@@ -386,6 +386,11 @@ function processCellFirst(playback, channel, cell) {
                         channel.period = pitchToPeriod(cell.pitch, finetune)
                     }
                     break
+                case ExtEffect.PatternLoop:
+                    if (cell.param1 == 0) {
+                        channel.patLoopRow = playback.row
+                    }
+                    break
                 case ExtEffect.TremoloWave:
                     channel.tremolo.waveform = cell.param1 & 0x3
                     channel.tremolo.continue = (cell.param1 & 0x4) != 0
@@ -568,13 +573,13 @@ function processCellEnd(playback, channel, cell, patJump) {
         case Effect.Extended:
             switch (cell.param0) {
                 case ExtEffect.PatternLoop:
-                    if (cell.param1 == 0) {
-                        playback.patLoopRow = playback.row
-                    } else if (playback.patLoopCount < cell.param1) {
-                        playback.patLoopCount++
-                        playback.row = playback.patLoopRow
-                    } else {
-                        playback.patLoopCount = 0
+                    if (cell.param1 != 0) {
+                        if (channel.patLoopCount < cell.param1) {
+                            channel.patLoopCount++
+                            playback.row = channel.patLoopRow
+                        } else {
+                            channel.patLoopCount = 0
+                        }
                     }
                     break
             }
