@@ -143,7 +143,7 @@ class PatternTableElement extends HTMLElement {
 
     /**
      * @param {Readonly<Cell>} cell
-     * @param {CellParts} parts
+     * @param {CellPart} parts
      */
     _putCell(cell, parts) {
         this._onChange(

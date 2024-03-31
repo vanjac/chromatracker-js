@@ -44,7 +44,7 @@ function setCellContents(elem, cell) {
 
 /**
  * @param {Element} elem
- * @param {CellParts} parts
+ * @param {CellPart} parts
  */
 function toggleCellParts(elem, parts) {
     elem.classList.toggle('sel-pitch', !!(parts & CellParts.pitch))

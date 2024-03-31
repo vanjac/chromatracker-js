@@ -115,7 +115,7 @@ Module.prototype = {
 /**
  * @param {Readonly<Cell>} dest
  * @param {Readonly<Cell>} src
- * @param {CellParts} parts
+ * @param {CellPart} parts
  */
 function cellApply(dest, src, parts) {
     let newCell = new Cell()
