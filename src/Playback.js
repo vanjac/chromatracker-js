@@ -34,7 +34,7 @@ Playback.prototype = {
     speed: defaultSpeed,
     pos: 0,
     row: 0,
-    rowDelay: 0,
+    rowDelayCount: 0,
     time: 0,
     userPatternLoop: false,
 }
@@ -242,30 +242,27 @@ function processRow(playback) {
         playback.row = pattern[0].length - 1
     }
 
-    playback.rowDelay = 0
-    for (let repeat = 0; repeat < playback.rowDelay + 1; repeat++) {
-        for (let tick = 0; tick < playback.speed; tick++) {
-            for (let c = 0; c < playback.mod.numChannels; c++) {
-                let cell = pattern[c][playback.row]
-                let channel = playback.channels[c]
-                if (tick == 0 && repeat == 0) {
-                    // Protracker instrument changes always take effect at the start of the row
-                    // (not affected by note delays). Other trackers are different!
-                    processCellInst(playback, channel, cell)
-                    if (! (cell.effect == Effect.Extended && cell.param0 == ExtEffect.NoteDelay
-                            && cell.param1)) {
-                        processCellNote(playback, channel, cell)
-                    }
+    for (let tick = 0; tick < playback.speed; tick++) {
+        for (let c = 0; c < playback.mod.numChannels; c++) {
+            let cell = pattern[c][playback.row]
+            let channel = playback.channels[c]
+            if (tick == 0 && playback.rowDelayCount == 0) {
+                // Protracker instrument changes always take effect at the start of the row
+                // (not affected by note delays). Other trackers are different!
+                processCellInst(playback, channel, cell)
+                if (! (cell.effect == Effect.Extended && cell.param0 == ExtEffect.NoteDelay
+                        && cell.param1)) {
+                    processCellNote(playback, channel, cell)
                 }
-                if (tick == 0) {
-                    processCellFirst(playback, channel, cell)
-                } else {
-                    processCellRest(playback, channel, cell, tick)
-                }
-                processCellAll(playback, channel, cell, tick)
             }
-            playback.time += (60 / playback.tempo / 24)
+            if (tick == 0) {
+                processCellFirst(playback, channel, cell)
+            } else {
+                processCellRest(playback, channel, cell, tick)
+            }
+            processCellAll(playback, channel, cell, tick)
         }
+        playback.time += (60 / playback.tempo / 24)
     }
 
     let curPos = playback.pos
@@ -273,7 +270,7 @@ function processRow(playback) {
     playback.row++
     playback.pos = -1
     for (let c = 0; c < playback.mod.numChannels; c++) {
-        processCellEnd(playback, playback.channels[c], pattern[c][curRow], curPos)
+        processCellEnd(playback, playback.channels[c], pattern[c][curRow], curPos, curRow)
     }
     if (playback.pos == -1) {
         playback.pos = curPos
@@ -411,9 +408,6 @@ function processCellFirst(playback, channel, cell) {
                     break
                 case ExtEffect.FineVolumeDown:
                     channel.volume = Math.max(channel.volume - cell.param1, 0)
-                    break
-                case ExtEffect.PatternDelay:
-                    playback.rowDelay = cell.param1
                     break
             }
             break
@@ -555,8 +549,9 @@ function processCellAll(playback, channel, cell, tick) {
 * @param {ChannelPlayback} channel
 * @param {Readonly<Cell>} cell
 * @param {number} pos
+* @param {number} row
 */
-function processCellEnd(playback, channel, cell, pos) {
+function processCellEnd(playback, channel, cell, pos, row) {
     switch (cell.effect) {
         case Effect.PositionJump:
             playback.pos = cell.paramByte()
@@ -582,6 +577,13 @@ function processCellEnd(playback, channel, cell, pos) {
                         }
                     }
                     break
+                case ExtEffect.PatternDelay:
+                    if (playback.rowDelayCount < cell.param1) {
+                        playback.rowDelayCount++
+                        playback.row = row
+                    } else {
+                        playback.rowDelayCount = 0
+                    }
             }
             break
     }
