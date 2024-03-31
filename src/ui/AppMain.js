@@ -200,10 +200,12 @@ class AppMainElement extends HTMLElement {
     _processPlayback() {
         while (this._queuedTime < this._context.currentTime + playbackQueueTime) {
             this._queuedTime = this._playback.time
-            let {pos, row} = this._playback
-            processRow(this._playback)
-            let {tempo, speed} = this._playback
-            this._queuedLines.push({time: this._queuedTime, pos, row, tempo, speed})
+            let {pos, row, tick} = this._playback
+            processTick(this._playback)
+            if (tick == 0) {
+                let {tempo, speed} = this._playback
+                this._queuedLines.push({time: this._queuedTime, pos, row, tempo, speed})
+            }
         }
     }
 

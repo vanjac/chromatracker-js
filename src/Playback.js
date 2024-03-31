@@ -34,6 +34,7 @@ Playback.prototype = {
     speed: defaultSpeed,
     pos: 0,
     row: 0,
+    tick: 0,
     rowDelayCount: 0,
     time: 0,
     userPatternLoop: false,
@@ -229,62 +230,65 @@ function createSamplePlayback(ctx, sample) {
 /**
  * @param {Playback} playback
  */
-function processRow(playback) {
+function processTick(playback) {
     // in case module changed since last call
     if (playback.pos >= playback.mod.sequence.length) {
         playback.pos = playback.mod.sequence.length - 1
     }
-
     let patIdx = playback.mod.sequence[playback.pos]
     let pattern = playback.mod.patterns[patIdx]
-
     if (playback.row >= pattern[0].length) {
         playback.row = pattern[0].length - 1
     }
 
-    for (let tick = 0; tick < playback.speed; tick++) {
-        for (let c = 0; c < playback.mod.numChannels; c++) {
-            let cell = pattern[c][playback.row]
-            let channel = playback.channels[c]
-            if (tick == 0 && playback.rowDelayCount == 0) {
-                // Protracker instrument changes always take effect at the start of the row
-                // (not affected by note delays). Other trackers are different!
-                processCellInst(playback, channel, cell)
-                if (! (cell.effect == Effect.Extended && cell.param0 == ExtEffect.NoteDelay
-                        && cell.param1)) {
-                    processCellNote(playback, channel, cell)
-                }
+    for (let c = 0; c < playback.mod.numChannels; c++) {
+        let cell = pattern[c][playback.row]
+        let channel = playback.channels[c]
+        if (playback.tick == 0 && playback.rowDelayCount == 0) {
+            // Protracker instrument changes always take effect at the start of the row
+            // (not affected by note delays). Other trackers are different!
+            processCellInst(playback, channel, cell)
+            if (! (cell.effect == Effect.Extended && cell.param0 == ExtEffect.NoteDelay
+                    && cell.param1)) {
+                processCellNote(playback, channel, cell)
             }
-            if (tick == 0) {
-                processCellFirst(playback, channel, cell)
-            } else {
-                processCellRest(playback, channel, cell, tick)
-            }
-            processCellAll(playback, channel, cell, tick)
         }
-        playback.time += (60 / playback.tempo / 24)
+        if (playback.tick == 0) {
+            processCellFirst(playback, channel, cell)
+        } else {
+            processCellRest(playback, channel, cell)
+        }
+        processCellAll(playback, channel, cell)
     }
 
-    let curPos = playback.pos
-    let curRow = playback.row
-    playback.row++
-    playback.pos = -1
-    for (let c = 0; c < playback.mod.numChannels; c++) {
-        processCellEnd(playback, playback.channels[c], pattern[c][curRow], curPos, curRow)
+    // advance...
+    playback.tick++
+    if (playback.tick == playback.speed) {
+        let curPos = playback.pos
+        let curRow = playback.row
+        playback.tick = 0
+        playback.row++
+        playback.pos = -1
+
+        for (let c = 0; c < playback.mod.numChannels; c++) {
+            processCellEnd(playback, playback.channels[c], pattern[c][curRow], curPos, curRow)
+        }
+        if (playback.pos == -1) {
+            playback.pos = curPos
+        }
+        if (playback.row >= pattern[0].length) {
+            playback.row = 0
+            playback.pos++
+        }
+        if (playback.userPatternLoop) {
+            playback.pos = curPos
+        }
+        if (playback.pos >= playback.mod.sequence.length) {
+            playback.pos = playback.mod.restartPos
+        }
     }
-    if (playback.pos == -1) {
-        playback.pos = curPos
-    }
-    if (playback.row >= pattern[0].length) {
-        playback.row = 0
-        playback.pos++
-    }
-    if (playback.userPatternLoop) {
-        playback.pos = curPos
-    }
-    if (playback.pos >= playback.mod.sequence.length) {
-        playback.pos = playback.mod.restartPos
-    }
+
+    playback.time += (60 / playback.tempo / 24)
 }
 
 /**
@@ -428,9 +432,8 @@ function processCellFirst(playback, channel, cell) {
  * @param {Playback} playback
  * @param {ChannelPlayback} channel
  * @param {Readonly<Cell>} cell
- * @param {number} tick
  */
-function processCellRest(playback, channel, cell, tick) {
+function processCellRest(playback, channel, cell) {
     switch (cell.effect) {
         case Effect.SlideUp:
             channel.period = Math.max(channel.period - cell.paramByte(), minPeriod)
@@ -462,18 +465,18 @@ function processCellRest(playback, channel, cell, tick) {
         case Effect.Extended:
             switch (cell.param0) {
                 case ExtEffect.Retrigger:
-                    if (tick % cell.param1 == 0) {
+                    if (playback.tick % cell.param1 == 0) {
                         playNote(playback, channel)
                     }
                     break
                 case ExtEffect.NoteCut:
-                    if (tick == cell.param1) {
+                    if (playback.tick == cell.param1) {
                         channel.volume = 0
                     }
                     break
                 case ExtEffect.NoteDelay: {
                     let sample = playback.mod.samples[channel.sample]
-                    if (tick == cell.param1 && cell.pitch >= 0 && sample) {
+                    if (playback.tick == cell.param1 && cell.pitch >= 0 && sample) {
                         channel.period = pitchToPeriod(cell.pitch, sample.finetune)
                         playNote(playback, channel)
                     }
@@ -496,9 +499,8 @@ function processCellRest(playback, channel, cell, tick) {
  * @param {Playback} playback
  * @param {ChannelPlayback} channel
  * @param {Readonly<Cell>} cell
- * @param {number} tick
  */
-function processCellAll(playback, channel, cell, tick) {
+function processCellAll(playback, channel, cell) {
     let volume = channel.volume
     if (cell.effect == Effect.Tremolo) {
         volume += calcOscillator(channel.tremolo, -1) * 4
@@ -525,8 +527,8 @@ function processCellAll(playback, channel, cell, tick) {
         let period = channel.period
         let detune = 0
         if (cell.effect == Effect.Arpeggio && cell.paramByte()) {
-            detune = (tick % 3 == 1) ? cell.param0 :
-                (tick % 3 == 2) ? cell.param1 : 0
+            detune = (playback.tick % 3 == 1) ? cell.param0 :
+                (playback.tick % 3 == 2) ? cell.param1 : 0
         }
 
         if (cell.effect == Effect.Vibrato || cell.effect == Effect.VolSlideVib) {
@@ -578,6 +580,8 @@ function processCellEnd(playback, channel, cell, pos, row) {
                     }
                     break
                 case ExtEffect.PatternDelay:
+                    // TODO: problems with multiple delays or other control effects on the same row
+                    // see MOD test cases
                     if (playback.rowDelayCount < cell.param1) {
                         playback.rowDelayCount++
                         playback.row = row
