@@ -24,7 +24,7 @@ function Playback() {
     this.jamChannels = new Map()
 }
 Playback.prototype = {
-    /** @type {AudioContext} */
+    /** @type {BaseAudioContext} */
     ctx: null,
     /** @type {Readonly<Module>} */
     mod: null,
@@ -94,7 +94,7 @@ RowPlayback.prototype = {
 }
 
 /**
- * @param {AudioContext} context
+ * @param {BaseAudioContext} context
  * @param {Readonly<Module>} mod
  */
 function initPlayback(context, mod) {
@@ -213,7 +213,7 @@ function setChannelMute(playback, c, mute) {
 }
 
 /**
- * @param {AudioContext} ctx
+ * @param {BaseAudioContext} ctx
  * @param {Readonly<Sample>} sample
  */
 function createSamplePlayback(ctx, sample) {
