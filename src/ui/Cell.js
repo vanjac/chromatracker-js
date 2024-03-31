@@ -47,7 +47,7 @@ function setCellContents(elem, cell) {
  * @param {CellPart} parts
  */
 function toggleCellParts(elem, parts) {
-    elem.classList.toggle('sel-pitch', !!(parts & CellParts.pitch))
-    elem.classList.toggle('sel-inst', !!(parts & CellParts.inst))
-    elem.classList.toggle('sel-effect', !!(parts & CellParts.effect))
+    elem.classList.toggle('sel-pitch', !!(parts & CellPart.pitch))
+    elem.classList.toggle('sel-inst', !!(parts & CellPart.inst))
+    elem.classList.toggle('sel-effect', !!(parts & CellPart.effect))
 }

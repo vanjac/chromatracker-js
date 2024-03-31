@@ -73,7 +73,7 @@ class CellEntryElement extends HTMLElement {
 
         let writeEffectButton = fragment.querySelector('#writeEffect')
         addPressEvent(writeEffectButton, e => {
-            this._target._putCell(this._getCell(), CellParts.effect | CellParts.param)
+            this._target._putCell(this._getCell(), CellPart.effect | CellPart.param)
             this._jam._jamDown(this._target._selCell(), e)
         })
         addReleaseEvent(writeEffectButton, e => this._jam._jamUp(e))
@@ -210,15 +210,15 @@ class CellEntryElement extends HTMLElement {
     }
 
     _getCellParts() {
-        let parts = CellParts.none
+        let parts = CellPart.none
         if (this._pitchEnable.checked) {
-            parts |= CellParts.pitch
+            parts |= CellPart.pitch
         }
         if (this._sampleEnable.checked) {
-            parts |= CellParts.inst
+            parts |= CellPart.inst
         }
         if (this._effectEnable.checked) {
-            parts |= CellParts.effect | CellParts.param
+            parts |= CellPart.effect | CellPart.param
         }
         return parts
     }

@@ -37,9 +37,8 @@ Cell.prototype = {
 }
 const emptyCell = Object.freeze(new Cell())
 
-/** @typedef {number} CellPart */
-/** @enum {CellPart} */
-const CellParts = {
+/** @enum {number} */
+const CellPart = Object.freeze({
     pitch: 0x1,
     inst: 0x2,
     effect: 0x4,
@@ -47,11 +46,10 @@ const CellParts = {
 
     none: 0x0,
     all: 0xf,
-}
+})
 
-/** @typedef {number} Effect */
-/** @enum {Effect} */
-const Effects = {
+/** @enum {number} */
+const Effect = Object.freeze({
     Arpeggio:       0x0,
     SlideUp:        0x1,
     SlideDown:      0x2,
@@ -68,10 +66,10 @@ const Effects = {
     PatternBreak:   0xD,
     Extended:       0xE,
     Speed:          0xF,
-}
+})
 
 /** @enum {number} */
-const ExtEffects = {
+const ExtEffect = Object.freeze({
     // Filter:      0x0, (not supported in XM)
     FineSlideUp:    0x1,
     FineSlideDown:  0x2,
@@ -88,7 +86,7 @@ const ExtEffects = {
     NoteDelay:      0xD,
     PatternDelay:   0xE,
     // InvertLoop:  0xF, (not supported in XM)
-}
+})
 
 /**
  * @typedef {Readonly<Cell>[]} PatternChannel
@@ -119,10 +117,10 @@ Module.prototype = {
  */
 function cellApply(dest, src, parts) {
     let newCell = new Cell()
-    newCell.pitch  = (parts & CellParts.pitch)  ? src.pitch  : dest.pitch
-    newCell.inst   = (parts & CellParts.inst)   ? src.inst   : dest.inst
-    newCell.effect = (parts & CellParts.effect) ? src.effect : dest.effect
-    newCell.param0 = (parts & CellParts.param)  ? src.param0 : dest.param0
-    newCell.param1 = (parts & CellParts.param)  ? src.param1 : dest.param1
+    newCell.pitch  = (parts & CellPart.pitch)  ? src.pitch  : dest.pitch
+    newCell.inst   = (parts & CellPart.inst)   ? src.inst   : dest.inst
+    newCell.effect = (parts & CellPart.effect) ? src.effect : dest.effect
+    newCell.param0 = (parts & CellPart.param)  ? src.param0 : dest.param0
+    newCell.param1 = (parts & CellPart.param)  ? src.param1 : dest.param1
     return newCell
 }
