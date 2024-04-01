@@ -323,7 +323,7 @@ function processCellInst(playback, channel, cell) {
         if (cell.paramByte()) {
             channel.memOff = cell.paramByte()
         }
-        channel.sampleOffset = channel.memOff
+        channel.sampleOffset = channel.memOff * 256
     }
 }
 
@@ -645,7 +645,7 @@ function periodToRate(period) {
  * @param {number} param
  */
 function calcSampleOffset(param) {
-    return param * 256 / baseRate
+    return param / baseRate
 }
 
 /**
