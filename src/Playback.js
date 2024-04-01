@@ -29,7 +29,7 @@ Playback.prototype = {
     /** @type {Readonly<Module>} */
     mod: null,
     /** @type {readonly Readonly<Sample>[]} */
-    modSamples: Object.freeze([]),
+    modSamples: emptyArray,
     tempo: defaultTempo,
     speed: defaultSpeed,
     pos: 0,

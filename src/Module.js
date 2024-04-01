@@ -9,6 +9,8 @@ const maxSampleLength = 2 ** 17
 const defaultTempo = 125
 const defaultSpeed = 6
 
+const emptyArray = Object.freeze([])
+
 function Sample() {}
 Sample.prototype = {
     name: '',
@@ -103,12 +105,12 @@ Module.prototype = {
     name: '',
     numChannels: 4,
     /** @type {readonly number[]} */
-    sequence: Object.freeze([]),
+    sequence: emptyArray,
     restartPos: 0,
     /** @type {readonly Readonly<Pattern>[]} */
-    patterns: Object.freeze([]),
+    patterns: emptyArray,
     /** @type {readonly Readonly<Sample>[]} */
-    samples: Object.freeze([]),
+    samples: emptyArray,
 }
 
 
