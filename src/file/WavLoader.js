@@ -34,7 +34,7 @@ function readWavFile(buf) {
     let fileEnd = Math.min(riffSize + 8, buf.byteLength)
 
     /** @type {Record<string, RIFFChunk>} */
-    let chunks = {}
+    let chunks = {__proto__: null}
 
     let chunkPos = 12
     while (chunkPos <= fileEnd - 8) {
