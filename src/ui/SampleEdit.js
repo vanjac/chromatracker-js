@@ -27,6 +27,7 @@ class SampleEditElement extends HTMLElement {
             this._target._clearUndoCombine('sample name'))
 
         this._waveEditBox = fragment.querySelector('#waveEdit')
+        this._waveContainer = fragment.querySelector('#waveContainer')
         /** @type {HTMLCanvasElement} */
         this._wavePreview = fragment.querySelector('#wavePreview')
         /** @type {HTMLElement} */
@@ -39,6 +40,8 @@ class SampleEditElement extends HTMLElement {
         this._loopStartMark = fragment.querySelector('#loopStartMark')
         /** @type {HTMLElement} */
         this._loopEndMark = fragment.querySelector('#loopEndMark')
+        /** @type {HTMLElement[]} */
+        this._playMarks = []
 
         this._waveEditBox.addEventListener('mousedown', /** @param {MouseEventInit} e */ e => {
             if (e.button == 0) {
@@ -210,6 +213,21 @@ class SampleEditElement extends HTMLElement {
         this._selectA = Math.min(this._selectA, sample.wave.length)
         this._selectB = Math.min(this._selectB, sample.wave.length)
         this._updateSelection()
+    }
+
+    /**
+     * @param {number[]} positions
+     */
+    _setPlayPos(positions) {
+        for (let mark of this._playMarks) {
+            mark.remove()
+        }
+        for (let pos of positions) {
+            let mark = this._waveContainer.appendChild(document.createElement('div'))
+            mark.classList.add('wave-mark', 'wave-loop')
+            this._setMarkPos(mark, this._viewSample, pos)
+            this._playMarks.push(mark)
+        }
     }
 
     _selMin() {

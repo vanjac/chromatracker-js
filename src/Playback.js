@@ -74,7 +74,23 @@ ChannelPlayback.prototype = {
     memOff: 0,      // 9xx
     patLoopRow: 0,
     patLoopCount: 0,
+
+    samplePredictPos: 0,
+    samplePredictTime: 0,
+
     userMute: false,
+}
+
+/**
+ * @constructor
+ * @param {ChannelPlayback} channel
+ */
+function ChannelState(channel) {
+    this.sample = channel.sample
+    this.volume = channel.volume
+    this.scheduledPeriod = channel.scheduledPeriod
+    this.samplePredictPos = channel.samplePredictPos
+    this.samplePredictTime = channel.samplePredictTime
 }
 
 function OscillatorPlayback() {}
@@ -534,10 +550,14 @@ function processCellAll(playback, channel, cell) {
         if (period != channel.scheduledPeriod) {
             channel.source.playbackRate.setValueAtTime(periodToRate(period), playback.time)
         }
-        channel.scheduledPeriod = period
         if (detune != channel.scheduledDetune) {
             channel.source.detune.setValueAtTime(detune * 100, playback.time)
         }
+        if (period != channel.scheduledPeriod || detune != channel.scheduledDetune) {
+            channel.samplePredictPos = getSamplePredictedPos(playback, channel, playback.time)
+            channel.samplePredictTime = playback.time
+        }
+        channel.scheduledPeriod = period
         channel.scheduledDetune = detune
     }
 }
@@ -670,6 +690,8 @@ function playNote(playback, channel) {
             e.target.disconnect()
         }
     }
+    channel.samplePredictPos = channel.sampleOffset
+    channel.samplePredictTime = playback.time
 
     channel.gain.gain.setValueAtTime(0, playback.time) // ramp up from zero
     channel.scheduledVolume = 0
@@ -693,6 +715,25 @@ function createNoteSource(playback, inst) {
     source.loopStart = sample.loopStart / baseRate
     source.loopEnd = sample.loopEnd / baseRate
     return source
+}
+
+/**
+ * @param {Playback} playback
+ * @param {ChannelState} channel
+ * @param {number} time
+ */
+function getSamplePredictedPos(playback, channel, time) {
+    let sample = playback.mod.samples[channel.sample]
+    if (!sample) { return 0 }
+
+    let timeDiff = time - channel.samplePredictTime
+    let rate = periodToRate(channel.scheduledPeriod)
+    // TODO: use detune (arpeggios)
+    let pos = Math.floor(channel.samplePredictPos + rate * baseRate * timeDiff)
+    if (sample.hasLoop() && pos >= sample.loopEnd) {
+        pos = (pos - sample.loopStart) % (sample.loopEnd - sample.loopStart) + sample.loopStart
+    }
+    return pos
 }
 
 /**
@@ -726,11 +767,14 @@ function jamPlay(playback, id, c, cell) {
         jam.source = createNoteSource(playback, jam.sample)
         jam.source.connect(jam.gain)
         jam.source.start(0, calcSampleOffset(jam.sampleOffset))
+        jam.samplePredictPos = jam.sampleOffset
+        jam.samplePredictTime = playback.ctx.currentTime
         jam.gain.gain.value = volumeToGain(jam.volume)
         if (typeof StereoPannerNode != 'undefined' && (jam.panner instanceof StereoPannerNode)) {
             jam.panner.pan.value = calcPanning(jam.panning)
         }
         jam.source.playbackRate.value = periodToRate(jam.period)
+        jam.scheduledPeriod = jam.period
     }
 }
 

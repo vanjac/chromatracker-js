@@ -71,6 +71,22 @@ class SamplesListElement extends HTMLElement {
         this._selectSample(selSample ? selSample : 1)
     }
 
+    /**
+     * @param {Playback} playback
+     * @param {readonly Readonly<ChannelState>[]} channels
+     * @param {number} time
+     */
+    _setChannelStates(playback, channels, time) {
+        if (!this._sampleEdit) { return }
+        let positions = []
+        for (let channel of channels) {
+            if (channel.volume && channel.sample == this._getSelSample()) {
+                positions.push(getSamplePredictedPos(playback, channel, time))
+            }
+        }
+        this._sampleEdit._setPlayPos(positions)
+    }
+
     _getSelSample() {
         return Number(this._select.value)
     }

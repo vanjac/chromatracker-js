@@ -14,6 +14,8 @@ PlaybackState.prototype = {
     tick: 0,
     tempo: 0,
     speed: 0,
+    /** @type {readonly Readonly<ChannelState>[]} */
+    channels: emptyArray,
 }
 
 /**
@@ -204,7 +206,10 @@ class AppMainElement extends HTMLElement {
             processTick(this._playback)
             if (tick == 0) {
                 let {tempo, speed} = this._playback
-                let state = freezeAssign(new PlaybackState(), {time, pos, row, tempo, speed})
+                let channels = Object.freeze(this._playback.channels.map(
+                    channel => Object.freeze(new ChannelState(channel))))
+                let state = freezeAssign(new PlaybackState(),
+                    {time, pos, row, tempo, speed, channels})
                 this._queuedStates.push(state)
             }
             this._queuedTime = time
@@ -302,6 +307,7 @@ class AppMainElement extends HTMLElement {
             } else {
                 this._patternTable._setPlaybackRow(-1)
             }
+            this._samplesList._setChannelStates(this._playback, curState.channels, curTime)
         }
     }
 
