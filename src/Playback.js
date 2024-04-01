@@ -20,6 +20,8 @@ function Playback() {
     this.samples = []
     /** @type {ChannelPlayback[]} */
     this.channels = []
+    /** @type {Set<AudioBufferSourceNode>} */
+    this.activeSources = new Set() // not including jam
     /** @type {Map<number, ChannelPlayback>} */
     this.jamChannels = new Map()
 }
@@ -48,8 +50,6 @@ SamplePlayback.prototype = {
 }
 
 function ChannelPlayback() {
-    /** @type {Set<AudioBufferSourceNode>} */
-    this.activeSources = new Set()
     this.vibrato = new OscillatorPlayback()
     this.tremolo = new OscillatorPlayback()
 }
@@ -173,19 +173,17 @@ function disconnectChannel(channel) {
  * @param {Playback} playback
  */
 function stopPlayback(playback) {
-    for (let channel of playback.channels) {
-        for (let source of channel.activeSources) {
-            try {
-                source.stop()
-            } catch (e) {
-                // bug found on iOS 12, can't stop before sample has started
-                // https://stackoverflow.com/a/59653104/11525734
-                // https://github.com/webaudio/web-audio-api/issues/15
-                // will this leak memory for looping samples?
-                console.error(e)
-                source.disconnect()
-                channel.activeSources.delete(source)
-            }
+    for (let source of playback.activeSources) {
+        try {
+            source.stop()
+        } catch (e) {
+            // bug found on iOS 12, can't stop before sample has started
+            // https://stackoverflow.com/a/59653104/11525734
+            // https://github.com/webaudio/web-audio-api/issues/15
+            // will this leak memory for looping samples?
+            console.error(e)
+            source.disconnect()
+            playback.activeSources.delete(source)
         }
     }
 }
@@ -665,10 +663,10 @@ function playNote(playback, channel) {
     channel.source = source
     source.connect(channel.gain)
     source.start(playback.time, calcSampleOffset(channel.sampleOffset))
-    channel.activeSources.add(source)
+    playback.activeSources.add(source)
     source.onended = e => {
         if (e.target instanceof AudioBufferSourceNode) {
-            channel.activeSources.delete(e.target)
+            playback.activeSources.delete(e.target)
             e.target.disconnect()
         }
     }
