@@ -6,14 +6,15 @@ const processInterval = 200
 
 const maxUndo = 100
 
-/**
- * @typedef {object} QueuedLine
- * @property {number} time
- * @property {number} pos
- * @property {number} row
- * @property {number} tempo
- * @property {number} speed
- */
+function PlaybackState() {}
+PlaybackState.prototype = {
+    time: 0,
+    pos: 0,
+    row: 0,
+    tick: 0,
+    tempo: 0,
+    speed: 0,
+}
 
 /**
  * @implements {JamTarget}
@@ -42,8 +43,8 @@ class AppMainElement extends HTMLElement {
         this._intervalHandle = 0
 
         this._queuedTime = 0
-        /** @type {QueuedLine[]} */
-        this._queuedLines = []
+        /** @type {Readonly<PlaybackState>[]} */
+        this._queuedStates = []
     }
 
     connectedCallback() {
@@ -190,7 +191,7 @@ class AppMainElement extends HTMLElement {
             stopPlayback(this._playback)
             clearInterval(this._intervalHandle)
             cancelAnimationFrame(this._animHandle)
-            this._queuedLines = []
+            this._queuedStates = []
             this._queuedTime = 0
             this._intervalHandle = null
             this._playbackControls._setPlayState(false)
@@ -199,13 +200,14 @@ class AppMainElement extends HTMLElement {
 
     _processPlayback() {
         while (this._queuedTime < this._context.currentTime + playbackQueueTime) {
-            this._queuedTime = this._playback.time
-            let {pos, row, tick} = this._playback
+            let {pos, row, tick, time} = this._playback
             processTick(this._playback)
             if (tick == 0) {
                 let {tempo, speed} = this._playback
-                this._queuedLines.push({time: this._queuedTime, pos, row, tempo, speed})
+                let state = freezeAssign(new PlaybackState(), {time, pos, row, tempo, speed})
+                this._queuedStates.push(state)
             }
+            this._queuedTime = time
         }
     }
 
@@ -277,25 +279,26 @@ class AppMainElement extends HTMLElement {
         if (this._context.outputLatency) { // if supported
             curTime -= this._context.outputLatency
         }
-        if (this._queuedLines.length) {
+        if (this._queuedStates.length) {
             let i = 0
-            while (i < (this._queuedLines.length - 1) && this._queuedLines[i + 1].time <= curTime) {
+            while (i < (this._queuedStates.length - 1)
+                    && this._queuedStates[i + 1].time <= curTime) {
                 i++
             }
-            this._queuedLines.splice(0, i)
-            let curLine = this._queuedLines[0]
+            this._queuedStates.splice(0, i)
+            let curState = this._queuedStates[0]
 
-            this._playbackStatus._setTempoSpeed(curLine.tempo, curLine.speed)
+            this._playbackStatus._setTempoSpeed(curState.tempo, curState.speed)
 
             if (this._playbackControls._getFollow()) {
-                this._sequenceEdit._setSelPos(curLine.pos)
-                this._patternTable._selRow = curLine.row
+                this._sequenceEdit._setSelPos(curState.pos)
+                this._patternTable._selRow = curState.row
                 this._refreshPattern()
                 this._patternTable._updateSelCell()
                 this._patternTable._scrollToSelCell()
             }
-            if (this._selPattern() == this._module.sequence[curLine.pos]) {
-                this._patternTable._setPlaybackRow(curLine.row)
+            if (this._selPattern() == this._module.sequence[curState.pos]) {
+                this._patternTable._setPlaybackRow(curState.row)
             } else {
                 this._patternTable._setPlaybackRow(-1)
             }
