@@ -145,9 +145,7 @@ class AppMainElement extends HTMLElement {
      * @param {boolean} restoreSpeed
      */
     _resetPlayback(restoreSpeed) {
-        if (this._intervalHandle) {
-            this._pause()
-        }
+        this._pause()
         if (!this._context) {
             // @ts-ignore
             let AudioContext = window.AudioContext || window.webkitAudioContext
@@ -181,29 +179,39 @@ class AppMainElement extends HTMLElement {
         }
     }
 
+    /**
+     * Must call _resetPlayback() first
+     */
     _play() {
         this._processPlayback()
         this._intervalHandle = window.setInterval(() => this._processPlayback(), processInterval)
-        this._animHandle = window.requestAnimationFrame(() => this._frameUpdate())
+        this._enableAnimation()
         this._playbackControls._setPlayState(true)
     }
 
     _pause() {
-        if (this._intervalHandle) {
+        if (this._isPlaying()) {
             stopPlayback(this._playback)
-            clearInterval(this._intervalHandle)
-            cancelAnimationFrame(this._animHandle)
+            window.clearInterval(this._intervalHandle)
             this._queuedStates = []
             this._queuedTime = 0
-            this._intervalHandle = null
+            if (this._playback.jamChannels.size == 0) {
+                this._disableAnimation() // should be called after clearing queuedStates
+            }
+            this._intervalHandle = 0
             this._playbackControls._setPlayState(false)
         }
+    }
+
+    _isPlaying() {
+        return !!this._intervalHandle
     }
 
     _processPlayback() {
         while (this._queuedTime < this._context.currentTime + playbackQueueTime) {
             let {pos, row, tick, time} = this._playback
             processTick(this._playback)
+            // TODO: pitch slides will be inaccurate
             if (tick == 0) {
                 let {tempo, speed} = this._playback
                 let channels = Object.freeze(this._playback.channels.map(
@@ -238,6 +246,7 @@ class AppMainElement extends HTMLElement {
      */
     _jamPlay(id, cell, useChannel = true) {
         this._enablePlayback()
+        this._enableAnimation()
         jamPlay(this._playback, id, useChannel ? this._selChannel() : -1, cell)
     }
 
@@ -246,6 +255,9 @@ class AppMainElement extends HTMLElement {
      */
     _jamRelease(id) {
         jamRelease(this._playback, id)
+        if (!this._isPlaying() && this._playback.jamChannels.size == 0) {
+            this._disableAnimation()
+        }
     }
 
     /**
@@ -277,9 +289,28 @@ class AppMainElement extends HTMLElement {
         }
     }
 
-    _frameUpdate() {
-        this._animHandle = window.requestAnimationFrame(() => this._frameUpdate())
+    _enableAnimation() {
+        if (!this._animHandle) {
+            console.log('enable animation')
+            this._animHandle = window.requestAnimationFrame(() => this._frameUpdateCallback())
+        }
+    }
 
+    _disableAnimation() {
+        if (this._animHandle) {
+            console.log('disable animation')
+            this._frameUpdate() // clear frame
+            window.cancelAnimationFrame(this._animHandle)
+            this._animHandle = 0
+        }
+    }
+
+    _frameUpdateCallback() {
+        this._animHandle = window.requestAnimationFrame(() => this._frameUpdateCallback())
+        this._frameUpdate()
+    }
+
+    _frameUpdate() {
         let curTime = this._context.currentTime
         if (this._context.outputLatency) { // if supported
             curTime -= this._context.outputLatency
@@ -292,6 +323,7 @@ class AppMainElement extends HTMLElement {
             }
             this._queuedStates.splice(0, i)
             let curState = this._queuedStates[0]
+            // TODO: check if state changed since last frame
 
             this._playbackStatus._setTempoSpeed(curState.tempo, curState.speed)
 
@@ -308,6 +340,8 @@ class AppMainElement extends HTMLElement {
                 this._patternTable._setPlaybackRow(-1)
             }
             this._samplesList._setChannelStates(this._playback, curState.channels, curTime)
+        } else {
+            this._samplesList._setChannelStates(this._playback, [], curTime)
         }
     }
 

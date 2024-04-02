@@ -84,6 +84,11 @@ class SamplesListElement extends HTMLElement {
                 positions.push(getSamplePredictedPos(playback, channel, time))
             }
         }
+        for (let [_, channel] of playback.jamChannels) {
+            if (channel.sample == this._getSelSample()) {
+                positions.push(getSamplePredictedPos(playback, channel, time))
+            }
+        }
         this._sampleEdit._setPlayPos(positions)
     }
 
