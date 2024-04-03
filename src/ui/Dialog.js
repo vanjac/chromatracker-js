@@ -17,6 +17,8 @@ function openDialog(dialog) {
 
     // TODO: need to prevent tabbing outside of the dialog
     // https://bitsofco.de/accessible-modal-dialog/#5-while-open-prevent-tabbing-to-outside-the-dialog
+
+    return dialog
 }
 
 /**

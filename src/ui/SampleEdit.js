@@ -335,8 +335,10 @@ class SampleEditElement extends HTMLElement {
                         if (error instanceof Error) { window.alert(error.message) }
                     }
                 } else {
+                    let dialog = openDialog(document.createElement('wait-dialog'))
                     let promise = readAudioFile(reader.result, this._sampleRateInput.valueAsNumber)
                     promise.then(({wave, volume}) => {
+                        closeDialog(dialog)
                         this._changeSample(sample => {
                             sample.wave = wave
                             sample.volume = volume
@@ -344,6 +346,7 @@ class SampleEditElement extends HTMLElement {
                             sample.loopStart = sample.loopEnd = 0
                         }, '', true)
                     }).catch(/** @param {DOMException} error */ error => {
+                        closeDialog(dialog)
                         window.alert(`Error reading audio file.\n${error.message}`)
                     })
                 }
@@ -549,20 +552,25 @@ class SampleEditElement extends HTMLElement {
         }
 
         let [start, end] = this._selRangeOrAll()
-        editSampleNodeEffect(this._viewSample, start, end, ctx => {
-            let node = ctx.createBiquadFilter()
-            let factor = ctx.sampleRate / baseRate // TODO!
-            let [startFreq, endFreq] = freq.split(':')
-            node.frequency.setValueAtTime(Number(startFreq) * factor, 0)
-            if (endFreq != null) {
-                node.frequency.exponentialRampToValueAtTime(
-                    Number(endFreq) * factor, (end - start) / ctx.sampleRate)
-            }
-            node.Q.value = Number(q)
-            node.gain.value = Number(gain)
-            node.type = type
-            return node
-        }).then(s => this._onChange(s, ''))
+        let dialog = openDialog(document.createElement('wait-dialog'))
+        editSampleNodeEffect(this._viewSample, start, end,
+            ctx => {
+                let node = ctx.createBiquadFilter()
+                let factor = ctx.sampleRate / baseRate // TODO!
+                let [startFreq, endFreq] = freq.split(':')
+                node.frequency.setValueAtTime(Number(startFreq) * factor, 0)
+                if (endFreq != null) {
+                    node.frequency.exponentialRampToValueAtTime(
+                        Number(endFreq) * factor, (end - start) / ctx.sampleRate)
+                }
+                node.Q.value = Number(q)
+                node.gain.value = Number(gain)
+                node.type = type
+                return node
+            })
+            .then(s => this._onChange(s, ''))
+            .then(() => closeDialog(dialog))
+            .catch(() => closeDialog(dialog))
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)

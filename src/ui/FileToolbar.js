@@ -21,10 +21,15 @@ class FileToolbarElement extends HTMLElement {
             }
         })
         addMenuListener(fragment.querySelector('#demoMenu'), value => {
+            let dialog = openDialog(document.createElement('wait-dialog'))
             fetch(value)
                 .then(r => r.blob())
                 .then(b => this._readModuleBlob(b))
-                .catch(/** @param {Error} error */ error => window.alert(error.message))
+                .then(() => closeDialog(dialog))
+                .catch(/** @param {Error} error */ error => {
+                    closeDialog(dialog)
+                    window.alert(error.message)
+                })
         })
         fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile())
 
