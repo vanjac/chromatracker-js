@@ -223,6 +223,7 @@ class SampleEditElement extends HTMLElement {
             mark.remove()
         }
         for (let pos of positions) {
+            if (pos > this._viewSample.wave.length) { continue }
             let mark = this._waveContainer.appendChild(document.createElement('div'))
             mark.classList.add('wave-mark', 'wave-loop')
             this._setMarkPos(mark, this._viewSample, pos)
