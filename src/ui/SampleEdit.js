@@ -370,7 +370,7 @@ class SampleEditElement extends HTMLElement {
 
         let ctx = this._wavePreview.getContext('2d')
         // 'currentColor' doesn't work in Chrome or Safari
-        ctx.strokeStyle = window.getComputedStyle(this._wavePreview).getPropertyValue("--color-fg")
+        ctx.strokeStyle = window.getComputedStyle(this._wavePreview).getPropertyValue('--color-fg')
         ctx.clearRect(0, 0, this._wavePreview.width, this._wavePreview.height)
 
         /**

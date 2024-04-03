@@ -143,6 +143,26 @@ label {
     width: 100pt;
 }
 
+.dialog {
+    background: var(--color-bg);
+    padding: 12pt;
+    border-radius: 8pt;
+    box-shadow: var(--color-fg) 0 0 60pt;
+}
+
+.dialog-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* grid */
 
 .properties-grid {
