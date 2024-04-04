@@ -44,3 +44,34 @@ function addMenuListener(menu, listener) {
         menu.selectedIndex = 0 // restore menu title
     })
 }
+
+/**
+ * @param {HTMLFormElement} form
+ * @param {string[]} names
+ * @param {Record<string, string>} record
+ */
+function saveFormData(form, names, record) {
+    let data = new FormData(form)
+    for (let name of names) {
+        record[name] = (data.get(name) || '').toString()
+    }
+}
+
+/**
+ * @param {HTMLFormElement} form
+ * @param {string[]} names
+ * @param {Record<string, string>} record
+ */
+function restoreFormData(form, names, record) {
+    for (let name of names) {
+        let value = record[name]
+        if (value != null) {
+            let elem = form.elements.namedItem(name)
+            if (elem instanceof HTMLInputElement && elem.type == 'checkbox') {
+                elem.checked = (elem.value == value)
+            } else {
+                elem.value = value
+            }
+        }
+    }
+}

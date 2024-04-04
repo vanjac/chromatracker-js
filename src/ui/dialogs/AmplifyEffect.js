@@ -1,5 +1,7 @@
 'use strict'
 
+const amplifyEffectInputs = ['amount', 'dither']
+
 class AmplifyEffectElement extends HTMLElement {
     constructor() {
         super()
@@ -10,14 +12,13 @@ class AmplifyEffectElement extends HTMLElement {
     connectedCallback() {
         let fragment = templates.amplifyEffect.cloneNode(true)
 
+        this._form = fragment.querySelector('form')
         /** @type {HTMLInputElement} */
         this._amountInput = fragment.querySelector('#amount')
         /** @type {HTMLInputElement} */
         this._ditherInput = fragment.querySelector('#dither')
 
-        this._amountInput.valueAsNumber = global.lastAmplify
-        this._ditherInput.checked = global.lastDither
-
+        restoreFormData(this._form, amplifyEffectInputs, global.effectFormData)
         fragment.querySelector('#done').addEventListener('click', () => this._complete())
 
         this.style.display = 'contents'
@@ -29,8 +30,7 @@ class AmplifyEffectElement extends HTMLElement {
             amount: this._amountInput.valueAsNumber,
             dithering: this._ditherInput.checked
         })
-        global.lastAmplify = this._amountInput.valueAsNumber
-        global.lastDither = this._ditherInput.checked
+        saveFormData(this._form, amplifyEffectInputs, global.effectFormData)
         closeDialog(this)
     }
 }

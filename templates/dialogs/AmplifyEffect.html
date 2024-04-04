@@ -1,14 +1,14 @@
 <template id="amplifyEffect">
-  <div class="dialog vflex">
+  <form class="dialog vflex">
     <h3>Amplify</h3>
     <div class="properties-grid">
       <label for="amount">Amount:&nbsp;</label>
-      <input id="amount" type="number">
+      <input id="amount" name="amount" type="number" value="1">
       <label for="dither">Dither:&nbsp;</label>
       <div class="hflex">
-        <input id="dither" type="checkbox">
+        <input id="dither" name="dither" type="checkbox">
       </div>
     </div>
-    <button id="done">Done</button>
-  </div>
+    <button id="done" type="button">Done</button>
+  </form>
 </template>
