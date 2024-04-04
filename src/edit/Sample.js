@@ -117,7 +117,7 @@ function dither(s, error) {
  * @returns {[number, number]}
  */
 function dontDither(s, error) {
-    return [s, error]
+    return [clamp(Math.round(s), -128, 127), error]
 }
 
 /**
