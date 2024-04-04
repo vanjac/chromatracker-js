@@ -37,7 +37,6 @@ function readModule(buf) {
     }
 
     let patternSize = module.numChannels * numRows * 4
-    /** @type {Readonly<Pattern>[]} */
     let patterns = []
     for (let p = 0; p < numPatterns; p++) {
         let patOff = 1084 + patternSize * p
@@ -69,7 +68,6 @@ function readModule(buf) {
     }
     module.patterns = Object.freeze(patterns)
 
-    /** @type {Readonly<Sample>[]} */
     let samples = []
     samples.push(null) // sample 0 is empty
     let wavePos = 1084 + patternSize * numPatterns
