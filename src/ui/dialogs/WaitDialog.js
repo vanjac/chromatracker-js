@@ -1,6 +1,6 @@
 'use strict'
 
-class WaitDialogElement extends HTMLElement {
+class WaitDialogElement extends DialogElement {
     connectedCallback() {
         let fragment = templates.waitDialog.cloneNode(true)
 

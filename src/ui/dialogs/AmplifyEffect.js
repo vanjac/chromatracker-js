@@ -2,7 +2,7 @@
 
 const amplifyEffectInputs = ['amount', 'dither']
 
-class AmplifyEffectElement extends HTMLElement {
+class AmplifyEffectElement extends DialogElement {
     constructor() {
         super()
         /** @type {(params: {amount: number, dithering: boolean}) => void} */

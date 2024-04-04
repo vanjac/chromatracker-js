@@ -49,6 +49,7 @@ interface PlaybackControlsTarget {
 
 // Element type extensions
 interface HTMLElementTagNameMap {
-    "amplify-effect": AmplifyEffectElement
-    "sample-edit": SampleEditElement
+    'amplify-effect': AmplifyEffectElement
+    'sample-edit': SampleEditElement
+    'wait-dialog': WaitDialogElement
 }
