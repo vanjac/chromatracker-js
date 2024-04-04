@@ -7,14 +7,16 @@ import path from 'node:path'
 function main() {
     let templates = ''
 
-    let templateFiles = fs.readdirSync('templates')
+    let templateFiles = fs.readdirSync('templates', {recursive: true})
     for (let file of templateFiles) {
-        templates += fs.readFileSync(path.join('templates', file), {encoding: 'utf8'})
+        if (file.endsWith('.html')) {
+            templates += fs.readFileSync(path.join('templates', file), {encoding: 'utf8'})
+        }
     }
 
-    let assetFiles = fs.readdirSync('assets')
+    let assetFiles = fs.readdirSync('assets', {recursive: true})
     for (let file of assetFiles) {
-        if (file.endsWith('svg')) {
+        if (file.endsWith('.svg')) {
             let content = fs.readFileSync(path.join('assets', file), {encoding: 'utf8'})
             templates += `<template id="${file}">
   ${content}
