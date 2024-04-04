@@ -46,3 +46,9 @@ interface PlaybackControlsTarget {
     _selRow(): number
     _undo(): void
 }
+
+// Element type extensions
+interface HTMLElementTagNameMap {
+    "amplify-effect": AmplifyEffectElement
+    "sample-edit": SampleEditElement
+}

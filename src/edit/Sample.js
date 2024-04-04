@@ -112,14 +112,24 @@ function dither(s, error) {
 }
 
 /**
- * @param {number} amount
+ * @param {number} s number
+ * @param {number} error number
+ * @returns {[number, number]}
+ */
+function dontDither(s, error) {
+    return [s, error]
+}
+
+/**
+ * @param {{amount: number, dithering: boolean}} params
  * @param {Readonly<Int8Array>} src
  * @param {Int8Array} dst
  */
-function waveAmplify(amount, src, dst) {
+function waveAmplify({amount, dithering}, src, dst) {
+    let ditherFn = dithering ? dither : dontDither
     let error = 0
     for (let i = 0; i < dst.length; i++) {
-        [dst[i], error] = dither(src[i] * amount, error)
+        [dst[i], error] = ditherFn(src[i] * amount, error)
     }
 }
 

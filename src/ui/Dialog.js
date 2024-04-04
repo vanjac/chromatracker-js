@@ -1,9 +1,10 @@
 'use strict'
 
 /**
- * @param {Element} dialog
+ * @template {Element} T
+ * @param {T} dialog
  */
-function openDialog(dialog) {
+function openDialog(dialog, {dismissable = false} = {}) {
     let body = document.querySelector('body')
 
     let container = document.createElement('div')
@@ -13,7 +14,13 @@ function openDialog(dialog) {
 
     container.appendChild(dialog)
 
-    // TODO: allow dismissing by tapping background (optional)
+    if (dismissable) {
+        container.addEventListener('click', e => {
+            if (e.target == container) {
+                closeDialog(dialog)
+            }
+        })
+    }
 
     // TODO: need to prevent tabbing outside of the dialog
     // https://bitsofco.de/accessible-modal-dialog/#5-while-open-prevent-tabbing-to-outside-the-dialog

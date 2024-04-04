@@ -33,7 +33,7 @@ class SamplesListElement extends HTMLElement {
      */
     _createSampleEdit(idx) {
         this._destroySampleEdit()
-        this._sampleEdit = /** @type {SampleEditElement} */(document.createElement('sample-edit'))
+        this._sampleEdit = document.createElement('sample-edit')
         this._sampleEditContainer.appendChild(this._sampleEdit)
         this._sampleEdit._target = this._target
         this._sampleEdit._onChange = (sample, combineTag) => (

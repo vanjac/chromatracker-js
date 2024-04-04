@@ -506,11 +506,8 @@ class SampleEditElement extends HTMLElement {
     }
 
     _amplify() {
-        let result = window.prompt('Amount:', global.lastAmplify.toString())
-        if (result != null) {
-            this._applyEffect(waveAmplify.bind(null, Number(result)))
-            global.lastAmplify = Number(result)
-        }
+        let dialog = openDialog(document.createElement('amplify-effect'), {dismissable: true})
+        dialog._onComplete = params => this._applyEffect(waveAmplify.bind(null, params))
     }
 
     _resample() {
