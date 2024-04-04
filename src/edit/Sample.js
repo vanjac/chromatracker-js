@@ -177,9 +177,10 @@ function waveResample(src, dst) {
  * @param {number} start
  * @param {number} end
  * @param {(ctx: OfflineAudioContext) => AudioNode} createNode
+ * @param {boolean} dithering
  * @returns {Promise<Readonly<Sample>>}
  */
-function editSampleNodeEffect(sample, start, end, createNode) {
+function editSampleNodeEffect(sample, start, end, dithering, createNode) {
     return new Promise(resolve => {
         let length = end - start
 
@@ -206,9 +207,10 @@ function editSampleNodeEffect(sample, start, end, createNode) {
         context.oncomplete = e => {
             let wave = sample.wave.slice()
             let renderData = e.renderedBuffer.getChannelData(0)
+            let ditherFn = dithering ? dither : dontDither
             let error = 0
             for (let i = 0; i < renderData.length; i++) {
-                [wave[start + i], error] = dither(renderData[i] * 128.0, error)
+                [wave[start + i], error] = ditherFn(renderData[i] * 128.0, error)
             }
             resolve(freezeAssign(new Sample(), sample, {wave}))
         }

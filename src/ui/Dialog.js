@@ -33,6 +33,7 @@ function openDialog(dialog, {dismissable = false} = {}) {
     // https://bitsofco.de/accessible-modal-dialog/
 
     dialog._lastFocused = document.activeElement
+    // TODO: doesn't work if elements change disabled state
     let focusable = [...dialog.querySelectorAll(focusableSelector)]
     if (focusable.length == 0) {
         focusable = [container]

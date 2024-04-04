@@ -1,0 +1,51 @@
+<template id="filterEffect">
+  <form class="dialog vflex">
+    <h3>Filter / EQ</h3>
+    <div class="properties-grid">
+      <label for="filterType">Type:</label>
+      <select id="filterType" name="filterType">
+        <optgroup label="Filter">
+          <option value="lowpass">Lowpass</option>
+          <option value="highpass">Highpass</option>
+          <option value="bandpass">Bandpass</option>
+          <option value="notch">Notch</option>
+        </optgroup>
+        <optgroup label="EQ">
+          <option value="lowshelf">Lowshelf</option>
+          <option value="highshelf">Highshelf</option>
+          <option value="peaking">Peaking</option>
+        </optgroup>
+      </select>
+
+      <label for="freqEnvelope">Envelope:&nbsp;</label>
+      <div class="hflex">
+        <input id="freqEnvelope" name="freqEnvelope" type="checkbox">
+      </div>
+
+      <label for="frequency">Frequency:&nbsp;</label>
+      <div class="hflex">
+        <input id="frequency" name="frequency" type="number" class="small-input" value="350">
+        &nbsp;Hz
+        <div class="flex-grow"></div>
+        <label for="freqEnd">&nbsp;To:&nbsp;</label>
+        <input id="freqEnd" name="freqEnd" type="number" class="small-input" value="350">
+        &nbsp;Hz
+      </div>
+
+      <label for="q">Q:&nbsp;</label>
+      <input id="q" name="q" type="number" value="1">
+
+      <label for="gain">Gain:&nbsp;</label>
+      <div class="hflex">
+        <input id="gain" name="gain" type="number" value="2">
+        &nbsp;dB
+      </div>
+
+      <label for="dither">Dither:&nbsp;</label>
+      <div class="hflex">
+        <input id="dither" name="dither" type="checkbox" checked>
+      </div>
+    </div>
+    <button id="done" type="button">Done</button>
+  </form>
+</template>

@@ -113,13 +113,7 @@ class SampleEditElement extends HTMLElement {
                 case 'fadeOut': this._applyEffect(waveFade.bind(null, 1, 0, 2)); break
                 case 'reverse': this._applyEffect(waveReverse); break
                 case 'resample': this._resample(); break
-                case 'lowpass': this._filter('lowpass', true, false); break
-                case 'highpass': this._filter('highpass', true, false); break
-                case 'bandpass': this._filter('bandpass', true, false); break
-                case 'lowshelf': this._filter('lowshelf', false, true); break
-                case 'highshelf': this._filter('highshelf', false, true); break
-                case 'peaking': this._filter('peaking', true, true); break
-                case 'notch': this._filter('notch', true, false); break
+                case 'filter': this._filter(); break
             }
         })
 
@@ -526,48 +520,29 @@ class SampleEditElement extends HTMLElement {
         }
     }
 
-    /**
-     * @param {BiquadFilterType} type
-     * @param {boolean} useQ
-     * @param {boolean} useGain
-     */
-    _filter(type, useQ, useGain) {
-        let freq = window.prompt('Frequency:', global.lastFilterFreq)
-        if (freq == null) { return }
-        global.lastFilterFreq = freq
-        let q = '1'
-        if (useQ) {
-            q = window.prompt('Q:', global.lastFilterQ.toString())
-            if (q == null) { return }
-            global.lastFilterQ = Number(q)
+    _filter() {
+        let dialog = openDialog(document.createElement('filter-effect'), {dismissable: true})
+        dialog._onComplete = params => {
+            let [start, end] = this._selRangeOrAll()
+            let waitDialog = openDialog(document.createElement('wait-dialog'))
+            editSampleNodeEffect(this._viewSample, start, end, params.dither,
+                ctx => {
+                    let node = ctx.createBiquadFilter()
+                    let factor = ctx.sampleRate / baseRate // TODO!
+                    node.frequency.setValueAtTime(params.freqStart * factor, 0)
+                    if (params.freqEnd != null) {
+                        node.frequency.exponentialRampToValueAtTime(
+                            params.freqEnd * factor, (end - start) / ctx.sampleRate)
+                    }
+                    node.Q.value = params.q
+                    node.gain.value = params.gain
+                    node.type = params.type
+                    return node
+                })
+                .then(s => this._onChange(s, ''))
+                .then(() => closeDialog(waitDialog))
+                .catch(() => closeDialog(waitDialog))
         }
-        let gain = '0'
-        if (useGain) {
-            gain = window.prompt('Gain (dB):', global.lastFilterGain.toString())
-            if (gain == null) { return }
-            global.lastFilterGain = Number(gain)
-        }
-
-        let [start, end] = this._selRangeOrAll()
-        let dialog = openDialog(document.createElement('wait-dialog'))
-        editSampleNodeEffect(this._viewSample, start, end,
-            ctx => {
-                let node = ctx.createBiquadFilter()
-                let factor = ctx.sampleRate / baseRate // TODO!
-                let [startFreq, endFreq] = freq.split(':')
-                node.frequency.setValueAtTime(Number(startFreq) * factor, 0)
-                if (endFreq != null) {
-                    node.frequency.exponentialRampToValueAtTime(
-                        Number(endFreq) * factor, (end - start) / ctx.sampleRate)
-                }
-                node.Q.value = Number(q)
-                node.gain.value = Number(gain)
-                node.type = type
-                return node
-            })
-            .then(s => this._onChange(s, ''))
-            .then(() => closeDialog(dialog))
-            .catch(() => closeDialog(dialog))
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)

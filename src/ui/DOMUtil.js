@@ -51,9 +51,13 @@ function addMenuListener(menu, listener) {
  * @param {Record<string, string>} record
  */
 function saveFormData(form, names, record) {
-    let data = new FormData(form)
     for (let name of names) {
-        record[name] = (data.get(name) || '').toString()
+        let elem = form.elements.namedItem(name)
+        if (elem instanceof HTMLInputElement && elem.type == 'checkbox') {
+            record[name] = elem.checked ? elem.value : ''
+        } else if (elem) {
+            record[name] = elem.value
+        }
     }
 }
 
