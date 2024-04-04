@@ -58,6 +58,7 @@ class FilterEffectElement extends DialogElement {
             highpass:  [true, false],
             bandpass:  [true, false],
             notch:     [true, false],
+            allpass:   [true, false],
             lowshelf:  [false, true],
             highshelf: [false, true],
             peaking:   [true, true],
