@@ -8,6 +8,17 @@
     </div>
   </div>
 </template>
+<template id="confirmDialog">
+  <div class="vflex dialog message-dialog">
+    <h3 id="title"></h3>
+    <output id="message" class="message-out"></output>
+    <div class="hflex">
+      <div class="flex-grow"></div>
+      <button id="ok" class="show-checked">OK</button>
+      <button id="cancel">Cancel</button>
+    </div>
+  </div>
+</template>
 <template id="waitDialog">
   <div class="vflex dialog">
     <span>Please wait...</span>

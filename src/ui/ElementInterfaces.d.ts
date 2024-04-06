@@ -51,6 +51,7 @@ interface PlaybackControlsTarget {
 interface HTMLElementTagNameMap {
     'alert-dialog': AlertDialogElement
     'amplify-effect': AmplifyEffectElement
+    'confirm-dialog': ConfirmDialogElement
     'filter-effect': FilterEffectElement
     'sample-edit': SampleEditElement
     'wait-dialog': WaitDialogElement

@@ -122,18 +122,25 @@ class AppMainElement extends HTMLElement {
         this._playbackStatus._setTempoSpeed(defaultTempo, defaultSpeed)
     }
 
+    _askUnsavedChanges() {
+        if (this._unsavedChangeCount) {
+            let message = 'You will lose your unsaved changes. Continue?'
+            return openConfirmDialog(message, 'Unsaved Changes')
+        } else {
+            return Promise.resolve()
+        }
+    }
+
     /**
      * @param {Readonly<Module>} mod
      */
     _moduleLoaded(mod) {
-        if (this._unsavedChangeCount
-                && !window.confirm('You will lose your unsaved changes. Continue?')) {
-            return
-        }
-        console.log(mod)
-        this._module = mod
-        this._resetEditorState()
-        this._resetPlayback(false)
+        this._askUnsavedChanges().then(() => {
+            console.log(mod)
+            this._module = mod
+            this._resetEditorState()
+            this._resetPlayback(false)
+        })
     }
 
     _moduleSaved() {
