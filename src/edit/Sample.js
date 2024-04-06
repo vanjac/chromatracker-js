@@ -50,7 +50,7 @@ function editSampleDelete(sample, start, end) {
     let transform = pos => {
         if (pos > end) { return pos - (end - start) }
         else if (pos > start) { return start }
-        else { return pos}
+        else { return pos }
     }
     let loopStart = transform(sample.loopStart)
     let loopEnd = transform(sample.loopEnd)
@@ -92,7 +92,11 @@ function editSampleEffectSplice(sample, start, end, length, effect) {
     wave.set(sample.wave.subarray(end), start + length)
     effect(sample.wave.subarray(start, end), wave.subarray(start, start + length))
     /** @param {number} pos */
-    let transform = pos => (pos >= end) ? pos - (end - start) + length : pos
+    let transform = pos => {
+        if (pos >= end) { return pos - (end - start) + length }
+        else if (pos > start) { return start + (pos - start) * length / (end - start) }
+        else { return pos }
+    }
     let loopStart = transform(sample.loopStart)
     let loopEnd = transform(sample.loopEnd)
     return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
