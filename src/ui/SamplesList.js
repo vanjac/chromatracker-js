@@ -79,12 +79,12 @@ class SamplesListElement extends HTMLElement {
         let positions = []
         for (let channel of channels) {
             if (channel.volume && channel.sample == this._getSelSample()) {
-                positions.push(getSamplePredictedPos(playback, channel, time))
+                positions.push(getSamplePredictedPos(channel, time))
             }
         }
         for (let [_, channel] of playback.jamChannels) {
             if (channel.sample == this._getSelSample()) {
-                positions.push(getSamplePredictedPos(playback, channel, time))
+                positions.push(getSamplePredictedPos(channel, time))
             }
         }
         this._sampleEdit._setPlayPos(positions)

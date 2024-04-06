@@ -56,6 +56,8 @@ function ChannelPlayback() {
 ChannelPlayback.prototype = {
     /** @type {AudioBufferSourceNode} */
     source: null,
+    /** @type {Sample} */
+    sourceSample: null,
     /** @type {GainNode} */
     gain: null,
     /** @type {StereoPannerNode|PannerNode} */
@@ -86,6 +88,7 @@ ChannelPlayback.prototype = {
  * @param {ChannelPlayback} channel
  */
 function ChannelState(channel) {
+    this.sourceSample = channel.sourceSample
     this.sample = channel.sample
     this.volume = channel.volume
     this.scheduledPeriod = channel.scheduledPeriod
@@ -554,7 +557,7 @@ function processCellAll(playback, channel, cell) {
             channel.source.detune.setValueAtTime(detune * 100, playback.time)
         }
         if (period != channel.scheduledPeriod || detune != channel.scheduledDetune) {
-            channel.samplePredictPos = getSamplePredictedPos(playback, channel, playback.time)
+            channel.samplePredictPos = getSamplePredictedPos(channel, playback.time)
             channel.samplePredictTime = playback.time
         }
         channel.scheduledPeriod = period
@@ -672,7 +675,7 @@ function calcOscillator(osc, sawDir) {
  * @param {ChannelPlayback} channel
  */
 function playNote(playback, channel) {
-    let source = createNoteSource(playback, channel.sample)
+    let [source, sourceSample] = createNoteSource(playback, channel.sample)
     if (!source) {
         return
     }
@@ -681,6 +684,7 @@ function playNote(playback, channel) {
     }
 
     channel.source = source
+    channel.sourceSample = sourceSample
     source.connect(channel.gain)
     source.start(playback.time, calcSampleOffset(channel.sampleOffset))
     playback.activeSources.add(source)
@@ -705,33 +709,33 @@ function playNote(playback, channel) {
 /**
  * @param {Playback} playback
  * @param {number} inst
+ * @returns {[AudioBufferSourceNode, Sample]}
  */
 function createNoteSource(playback, inst) {
     let sample = playback.mod.samples[inst]
-    if (!sample) { return null }
+    if (!sample) { return [null, null] }
     let source = playback.ctx.createBufferSource()
     source.buffer = playback.samples[inst].buffer
     source.loop = sample.hasLoop()
     source.loopStart = sample.loopStart / baseRate
     source.loopEnd = sample.loopEnd / baseRate
-    return source
+    return [source, sample]
 }
 
 /**
- * @param {Playback} playback
  * @param {ChannelState} channel
  * @param {number} time
  */
-function getSamplePredictedPos(playback, channel, time) {
-    let sample = playback.mod.samples[channel.sample]
-    if (!sample) { return 0 }
+function getSamplePredictedPos(channel, time) {
+    if (!channel.sample || !channel.sourceSample) { return 0 }
 
     let timeDiff = time - channel.samplePredictTime
     let rate = periodToRate(channel.scheduledPeriod)
     // TODO: use detune (arpeggios)
     let pos = Math.floor(channel.samplePredictPos + rate * baseRate * timeDiff)
-    if (sample.hasLoop() && pos >= sample.loopEnd) {
-        pos = (pos - sample.loopStart) % (sample.loopEnd - sample.loopStart) + sample.loopStart
+    let {loopStart, loopEnd} = channel.sourceSample
+    if (channel.sourceSample.hasLoop() && pos >= loopEnd) {
+        pos = (pos - loopStart) % (loopEnd - loopStart) + loopStart
     }
     return pos
 }
@@ -764,7 +768,7 @@ function jamPlay(playback, id, c, cell) {
         jam.period = pitchToPeriod(cell.pitch, sample.finetune)
         processCellFirst(playback, jam, cell)
 
-        jam.source = createNoteSource(playback, jam.sample)
+        ;[jam.source, jam.sourceSample] = createNoteSource(playback, jam.sample)
         jam.source.connect(jam.gain)
         jam.source.start(0, calcSampleOffset(jam.sampleOffset))
         jam.samplePredictPos = jam.sampleOffset
