@@ -21,7 +21,7 @@ Sample.prototype = {
     finetune: 0, // -8 to 7
     volume: 64,
 
-    hasLoop() { return this.loopStart != this.loopEnd },
+    hasLoop() { return this.loopEnd > this.loopStart },
 }
 const emptySample = Object.freeze(new Sample())
 
