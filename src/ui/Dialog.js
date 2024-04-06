@@ -27,6 +27,7 @@ function openDialog(dialog, {dismissable = false} = {}) {
                 dialog._dismiss()
             }
         })
+        // TODO: handle back button (pushState)
     }
 
     // https://bitsofco.de/accessible-modal-dialog/
@@ -70,7 +71,7 @@ function openDialog(dialog, {dismissable = false} = {}) {
 }
 
 /**
- * @param {Element} dialog
+ * @param {DialogElement} dialog
  */
 function closeDialog(dialog) {
     let container = dialog.parentElement
