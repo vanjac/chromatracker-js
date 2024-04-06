@@ -47,6 +47,8 @@ class AppMainElement extends HTMLElement {
         this._queuedTime = 0
         /** @type {Readonly<PlaybackState>[]} */
         this._queuedStates = []
+        /** @type {PlaybackState} */
+        this._viewState = null
     }
 
     connectedCallback() {
@@ -322,7 +324,10 @@ class AppMainElement extends HTMLElement {
         if (this._context.outputLatency) { // if supported
             curTime -= this._context.outputLatency
         }
-        if (this._queuedStates.length) {
+        if (!this._queuedStates.length) {
+            this._viewState = null
+            this._samplesList._setChannelStates(this._playback, [], curTime)
+        } else {
             let i = 0
             while (i < (this._queuedStates.length - 1)
                     && this._queuedStates[i + 1].time <= curTime) {
@@ -330,25 +335,25 @@ class AppMainElement extends HTMLElement {
             }
             this._queuedStates.splice(0, i)
             let curState = this._queuedStates[0]
-            // TODO: check if state changed since last frame
 
-            this._playbackStatus._setTempoSpeed(curState.tempo, curState.speed)
+            if (curState != this._viewState) {
+                this._viewState = curState
 
-            if (this._playbackControls._getFollow()) {
-                this._sequenceEdit._setSelPos(curState.pos)
-                this._patternTable._selRow = curState.row
-                this._refreshPattern()
-                this._patternTable._updateSelCell()
-                this._patternTable._scrollToSelCell()
-            }
-            if (this._selPattern() == this._module.sequence[curState.pos]) {
-                this._patternTable._setPlaybackRow(curState.row)
-            } else {
-                this._patternTable._setPlaybackRow(-1)
+                this._playbackStatus._setTempoSpeed(curState.tempo, curState.speed)
+                if (this._playbackControls._getFollow()) {
+                    this._sequenceEdit._setSelPos(curState.pos)
+                    this._patternTable._selRow = curState.row
+                    this._refreshPattern()
+                    this._patternTable._updateSelCell()
+                    this._patternTable._scrollToSelCell()
+                }
+                if (this._selPattern() == this._module.sequence[curState.pos]) {
+                    this._patternTable._setPlaybackRow(curState.row)
+                } else {
+                    this._patternTable._setPlaybackRow(-1)
+                }
             }
             this._samplesList._setChannelStates(this._playback, curState.channels, curTime)
-        } else {
-            this._samplesList._setChannelStates(this._playback, [], curTime)
         }
     }
 
