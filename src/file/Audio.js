@@ -7,10 +7,7 @@
  */
 function readAudioFile(buf, sampleRate) {
     return new Promise((resolve, reject) => {
-        // @ts-ignore
-        let OfflineAudioContext = window.OfflineAudioContext || window.webkitOfflineAudioContext
-        /** @type {OfflineAudioContext} */
-        let context = new OfflineAudioContext(1, 1, sampleRate)
+        let context = createOfflineAudioContext(1, 1, sampleRate)
 
         context.decodeAudioData(buf, audioBuffer => {
             let data = audioBuffer.getChannelData(0)

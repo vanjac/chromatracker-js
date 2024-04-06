@@ -9,6 +9,9 @@
     display: flex;
     flex-direction: column;
 }
+.width0 {
+    width: 0
+}
 .flex-grow {
     flex: 1 0 0;
 }

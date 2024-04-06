@@ -1,6 +1,6 @@
 'use strict'
 
-const amplifyEffectInputs = ['amount', 'dither']
+const amplifyEffectInputs = ['amp', 'dither']
 
 class AmplifyEffectElement extends DialogElement {
     constructor() {
@@ -14,7 +14,7 @@ class AmplifyEffectElement extends DialogElement {
 
         this._form = fragment.querySelector('form')
         /** @type {HTMLInputElement} */
-        this._amountInput = fragment.querySelector('#amount')
+        this._amountInput = fragment.querySelector('#amp')
         /** @type {HTMLInputElement} */
         this._ditherInput = fragment.querySelector('#dither')
 

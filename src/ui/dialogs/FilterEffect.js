@@ -3,6 +3,19 @@
 const filterEffectInputs =
     ['filterType', 'freqEnvelope', 'frequency', 'freqEnd', 'q', 'gain', 'dither']
 
+const minGraphFreq = 20
+const maxGraphFreq = 20000
+const numGraphFreq = 64
+const graphFreq = new Float32Array(numGraphFreq)
+{
+    let minLog = Math.log(minGraphFreq)
+    let maxLog = Math.log(maxGraphFreq)
+    for (let x = 0; x < numGraphFreq; x++) {
+        let log = minLog + (x / (numGraphFreq - 1)) * (maxLog - minLog)
+        graphFreq[x] = Math.exp(log)
+    }
+}
+
 /**
  * @typedef {object} FilterEffectParams
  * @property {BiquadFilterType} type
@@ -38,13 +51,26 @@ class FilterEffectElement extends DialogElement {
         this._gainInput = fragment.querySelector('#gain')
         /** @type {HTMLInputElement} */
         this._ditherInput = fragment.querySelector('#dither')
+        /** @type {HTMLCanvasElement} */
+        this._graph = fragment.querySelector('#graph')
 
         restoreFormData(this._form, filterEffectInputs, global.effectFormData)
 
+        this._context = createOfflineAudioContext()
+        this._filter = this._context.createBiquadFilter()
+
         this._updateFilterType()
         this._updateEnvelopeEnabled()
-        this._typeInput.addEventListener('input', () => this._updateFilterType())
+        this._updateGraph()
+
+        this._typeInput.addEventListener('input', () => {
+            this._updateFilterType()
+            this._updateGraph()
+        })
         this._envelopeEnableInput.addEventListener('change', () => this._updateEnvelopeEnabled())
+        this._freqStartInput.addEventListener('input', () => this._updateGraph())
+        this._qInput.addEventListener('input', () => this._updateGraph())
+        this._gainInput.addEventListener('input', () => this._updateGraph())
 
         fragment.querySelector('#done').addEventListener('click', () => this._complete())
 
@@ -70,6 +96,32 @@ class FilterEffectElement extends DialogElement {
 
     _updateEnvelopeEnabled() {
         this._freqEndInput.disabled = !this._envelopeEnableInput.checked
+    }
+
+    _updateGraph() {
+        this._filter.type = /** @type {BiquadFilterType} */(this._typeInput.value)
+        this._filter.frequency.value = this._freqStartInput.valueAsNumber || 0
+        this._filter.Q.value = this._qInput.valueAsNumber || 0
+        this._filter.gain.value = this._gainInput.valueAsNumber || 0
+
+        let magResponse = new Float32Array(numGraphFreq)
+        let phaseResponse = new Float32Array(numGraphFreq)
+        this._filter.getFrequencyResponse(graphFreq, magResponse, phaseResponse)
+
+        let ctx = this._graph.getContext('2d')
+        // 'currentColor' doesn't work in Chrome or Safari
+        ctx.strokeStyle = window.getComputedStyle(this._graph).getPropertyValue('--color-fg')
+        let {width, height} = this._graph
+        ctx.clearRect(0, 0, width, height)
+
+        ctx.beginPath()
+        for (let i = 0; i < numGraphFreq; i++) {
+            let log = Math.log10(magResponse[i])
+            let x = i * (width / numGraphFreq) + 0.5
+            let y = (height / 2) - log * height
+            if (i == 0) { ctx.moveTo(x, y) } else { ctx.lineTo(x, y) }
+        }
+        ctx.stroke()
     }
 
     _complete() {

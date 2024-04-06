@@ -183,12 +183,7 @@ function waveResample(src, dst) {
 function editSampleNodeEffect(sample, start, end, dithering, createNode) {
     return new Promise(resolve => {
         let length = end - start
-
-        // @ts-ignore
-        let OfflineAudioContext = window.OfflineAudioContext || window.webkitOfflineAudioContext
-        // Safari is very picky about sample rates
-        /** @type {OfflineAudioContext} */
-        let context = new OfflineAudioContext(1, length, 44100)
+        let context = createOfflineAudioContext(1, length)
 
         let buffer = context.createBuffer(1, length, context.sampleRate)
         let srcData = buffer.getChannelData(0)
