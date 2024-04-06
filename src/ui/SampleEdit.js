@@ -218,7 +218,7 @@ class SampleEditElement extends HTMLElement {
         }
         for (let pos of positions) {
             if (pos > this._viewSample.wave.length) { continue }
-            let mark = this._waveContainer.appendChild(document.createElement('div'))
+            let mark = this._waveContainer.appendChild(createElem('div'))
             mark.classList.add('wave-mark', 'wave-loop')
             this._setMarkPos(mark, this._viewSample, pos)
             this._playMarks.push(mark)
@@ -329,7 +329,7 @@ class SampleEditElement extends HTMLElement {
                         if (error instanceof Error) { window.alert(error.message) }
                     }
                 } else {
-                    let dialog = openDialog(document.createElement('wait-dialog'))
+                    let dialog = openDialog(createElem('wait-dialog'))
                     let promise = readAudioFile(reader.result, this._sampleRateInput.valueAsNumber)
                     promise.then(({wave, volume}) => {
                         closeDialog(dialog)
@@ -500,7 +500,7 @@ class SampleEditElement extends HTMLElement {
     }
 
     _amplify() {
-        let dialog = openDialog(document.createElement('amplify-effect'), {dismissable: true})
+        let dialog = openDialog(createElem('amplify-effect'), {dismissable: true})
         dialog._onComplete = params => this._applyEffect(waveAmplify.bind(null, params))
     }
 
@@ -521,10 +521,10 @@ class SampleEditElement extends HTMLElement {
     }
 
     _filter() {
-        let dialog = openDialog(document.createElement('filter-effect'), {dismissable: true})
+        let dialog = openDialog(createElem('filter-effect'), {dismissable: true})
         dialog._onComplete = params => {
             let [start, end] = this._selRangeOrAll()
-            let waitDialog = openDialog(document.createElement('wait-dialog'))
+            let waitDialog = openDialog(createElem('wait-dialog'))
             editSampleNodeEffect(this._viewSample, start, end, params.dither,
                 ctx => {
                     let node = ctx.createBiquadFilter()

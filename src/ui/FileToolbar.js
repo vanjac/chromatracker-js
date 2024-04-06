@@ -21,7 +21,7 @@ class FileToolbarElement extends HTMLElement {
             }
         })
         addMenuListener(fragment.querySelector('#demoMenu'), value => {
-            let dialog = openDialog(document.createElement('wait-dialog'))
+            let dialog = openDialog(createElem('wait-dialog'))
             fetch(value)
                 .then(r => r.blob())
                 .then(b => this._readModuleBlob(b))

@@ -33,9 +33,8 @@ class SamplesListElement extends HTMLElement {
      */
     _createSampleEdit(idx) {
         this._destroySampleEdit()
-        this._sampleEdit = document.createElement('sample-edit')
+        this._sampleEdit = createElem('sample-edit', {_target: this._target})
         this._sampleEditContainer.appendChild(this._sampleEdit)
-        this._sampleEdit._target = this._target
         this._sampleEdit._onChange = (sample, combineTag) => (
             this._target._changeModule(module => editSetSample(module, idx, sample), {combineTag}))
         this._sampleEdit._setIndex(idx)
@@ -64,9 +63,8 @@ class SamplesListElement extends HTMLElement {
             if (!sample) {
                 continue
             }
-            let option = this._select.appendChild(document.createElement('option'))
-            option.value = i.toString()
-            option.textContent = `${i}: ${sample.name}`
+            let textContent = `${i}: ${sample.name}`
+            this._select.appendChild(createElem('option', {value: i.toString(), textContent}))
         }
         this._selectSample(selSample ? selSample : 1)
     }

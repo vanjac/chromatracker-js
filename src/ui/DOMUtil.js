@@ -9,6 +9,16 @@ for (let template of document.querySelectorAll('template')) {
 }
 
 /**
+ * @template {keyof HTMLElementTagNameMap} K
+ * @param {K} tagName
+ * @param {Partial<HTMLElementTagNameMap[K]>} properties
+ * @returns {HTMLElementTagNameMap[K]}
+ */
+function createElem(tagName, properties = {}) {
+    return Object.assign(document.createElement(tagName), properties)
+}
+
+/**
  * @param {NamedFormItem} namedItem
  * @param {string} value
  */

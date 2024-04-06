@@ -81,8 +81,7 @@ class SequenceEditElement extends HTMLElement {
         this._select.textContent = ''
         // last option = create pattern
         for (let i = 0; i < patterns.length + 1; i++) {
-            let option = this._select.appendChild(document.createElement('option'))
-            option.textContent = i.toString()
+            this._select.appendChild(createElem('option', {textContent: i.toString()}))
         }
         this._select.selectedIndex = this._viewSequence[this._selPos]
     }

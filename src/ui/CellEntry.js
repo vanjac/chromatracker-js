@@ -174,7 +174,7 @@ class CellEntryElement extends HTMLElement {
             this._pianoKeys.push(label)
 
             if ([3, 10].includes(note)) {
-                let space = blackKeys.appendChild(document.createElement('div'))
+                let space = blackKeys.appendChild(createElem('div'))
                 space.classList.add('keypad-key')
             }
         }
