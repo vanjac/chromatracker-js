@@ -466,19 +466,18 @@ class SampleEditElement extends HTMLElement {
         if (!this._viewSample.hasLoop()) {
             return
         }
-        let result = window.prompt('Repeat count:', global.lastLoopRepeat.toString())
-        if (result != null) {
+        openInputDialog('Count:', 'Repeat Loop', global.lastLoopRepeat).then(count => {
             let {loopStart} = this._viewSample
             let loopWave = this._viewSample.wave.subarray(loopStart, this._viewSample.loopEnd)
             // TODO: this could be much more efficient
             let newSample = this._viewSample
-            for (let i = 1; i < Number(result); i++) {
+            for (let i = 1; i < count; i++) {
                 newSample = editSampleSplice(newSample, loopStart, loopStart, loopWave)
             }
             newSample = freezeAssign(new Sample(), newSample, {loopStart})
             this._onChange(newSample, '')
-            global.lastLoopRepeat = Number(result)
-        }
+            global.lastLoopRepeat = count
+        })
     }
 
     _loopPingPong() {
@@ -505,10 +504,9 @@ class SampleEditElement extends HTMLElement {
     }
 
     _resample() {
-        let result = window.prompt('Semitones:', global.lastResampleSemitones.toString())
-        if (result != null) {
+        openInputDialog('Semitones:', 'Resample', global.lastResampleSemitones).then(semitones => {
             let [start, end] = this._selRangeOrAll()
-            let length = (end - start) * (2 ** (-Number(result) / 12))
+            let length = (end - start) * (2 ** (-semitones / 12))
             let newWave = editSampleEffectSplice(this._viewSample, start, end, length, waveResample)
             this._onChange(newWave, '')
             if (this._rangeSelected()) {
@@ -516,8 +514,8 @@ class SampleEditElement extends HTMLElement {
                 this._selectB = start + length
                 this._updateSelection()
             }
-            global.lastResampleSemitones = Number(result)
-        }
+            global.lastResampleSemitones = semitones
+        })
     }
 
     _filter() {

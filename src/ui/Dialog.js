@@ -24,7 +24,7 @@ function openDialog(dialog, {dismissable = false} = {}) {
     if (dismissable) {
         container.addEventListener('click', e => {
             if (e.target == container) {
-                closeDialog(dialog)
+                dialog._dismiss()
             }
         })
     }
@@ -62,7 +62,7 @@ function openDialog(dialog, {dismissable = false} = {}) {
                 e.preventDefault()
             }
         } else if (dismissable && e.code == 'Escape') {
-            closeDialog(dialog)
+            dialog._dismiss()
         }
     })
 
@@ -82,6 +82,10 @@ class DialogElement extends HTMLElement {
         if (this._lastFocused instanceof HTMLElement) {
             this._lastFocused.focus()
         }
+    }
+
+    _dismiss() {
+        closeDialog(this)
     }
 }
 /** @type {Element} */

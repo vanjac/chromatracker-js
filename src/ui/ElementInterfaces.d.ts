@@ -53,6 +53,7 @@ interface HTMLElementTagNameMap {
     'amplify-effect': AmplifyEffectElement
     'confirm-dialog': ConfirmDialogElement
     'filter-effect': FilterEffectElement
+    'input-dialog': InputDialogElement
     'sample-edit': SampleEditElement
     'wait-dialog': WaitDialogElement
 }

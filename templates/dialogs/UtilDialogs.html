@@ -19,6 +19,20 @@
     </div>
   </div>
 </template>
+<template id="inputDialog">
+  <div class="vflex dialog">
+    <h3 id="title"></h3>
+    <div class="hflex">
+      <span id="prompt"></span>&nbsp;
+      <input type="number" class="med-input">
+    </div>
+    <div class="hflex">
+      <div class="flex-grow"></div>
+      <button id="ok" class="show-checked">OK</button>
+      <button id="cancel">Cancel</button>
+    </div>
+  </div>
+</template>
 <template id="waitDialog">
   <div class="vflex dialog">
     <span>Please wait...</span>
