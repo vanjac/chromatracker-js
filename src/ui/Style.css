@@ -42,6 +42,10 @@ body {
     display: flex;
     flex-direction: column;
     font-family: sans-serif;
+
+    line-height: 1.5;
+    --line-height: 1.5em;
+
     background: var(--color-bg);
     color: var(--color-fg);
     accent-color: var(--color-fg-hl);
@@ -131,12 +135,9 @@ select:active,
     color: var(--color-fg)
 }
 
-body {
-    line-height: 1.5;
-}
 .icon svg {
-    width: 1.5em;
-    height: 1.5em;
+    width: var(--line-height);
+    height: var(--line-height);
     fill: currentColor;
 }
 
@@ -245,6 +246,22 @@ tbody tr:nth-child(16n+1) th {
 .sel-effect .cell-effect {
     background: var(--color-fg-hl);
     color: var(--color-bg);
+}
+.cell-pitch,
+.cell-effect,
+.cell-inst {
+    /* Layout performance optimization */
+    display: inline-block;
+    height: var(--line-height);
+    vertical-align: top;
+    overflow: hidden;
+    contain: strict;
+}
+.cell-pitch, .cell-effect {
+    width: 3ch;
+}
+.cell-inst {
+    width: 2ch;
 }
 .hilite-row {
     background: var(--color-bg-alt) !important;
