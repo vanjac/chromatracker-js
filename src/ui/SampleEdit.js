@@ -326,7 +326,9 @@ class SampleEditElement extends HTMLElement {
                         let samplePart = {wave, volume, finetune, loopStart, loopEnd, name}
                         this._changeSample(sample => Object.assign(sample, samplePart), '', true)
                     } catch (error) {
-                        if (error instanceof Error) { window.alert(error.message) }
+                        if (error instanceof Error) {
+                            openDialog(createElem('alert-dialog', {_message: error.message}))
+                        }
                     }
                 } else {
                     let dialog = openDialog(createElem('wait-dialog'))
@@ -341,7 +343,8 @@ class SampleEditElement extends HTMLElement {
                         }, '', true)
                     }).catch(/** @param {DOMException} error */ error => {
                         closeDialog(dialog)
-                        window.alert(`Error reading audio file.\n${error.message}`)
+                        let _message = `Error reading audio file.\n${error.message}`
+                        openDialog(createElem('alert-dialog', {_message}))
                     })
                 }
             }

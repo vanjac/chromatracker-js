@@ -170,6 +170,13 @@ label {
     justify-content: center;
 }
 
+.message-dialog {
+    max-width: 300pt;
+}
+.message-out {
+    white-space: pre-wrap;
+}
+
 /* grid */
 
 .properties-grid {
