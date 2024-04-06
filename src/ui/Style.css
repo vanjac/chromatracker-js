@@ -121,12 +121,14 @@ select:active,
 
 .label-button :checked + span,
 .show-checked {
-    background: var(--color-bg-hl);
+    background: var(--color-fg-hl);
+    color: var(--color-bg)
 }
 
 .label-button :checked:active + span,
 .show-checked:active {
-    background: var(--color-bg-hl-press);
+    background: var(--color-bg-hl);
+    color: var(--color-fg)
 }
 
 body {
@@ -135,7 +137,7 @@ body {
 .icon svg {
     width: 1.5em;
     height: 1.5em;
-    fill: var(--color-fg);
+    fill: currentColor;
 }
 
 label {
