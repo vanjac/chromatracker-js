@@ -307,7 +307,8 @@ class SampleEditElement extends HTMLElement {
      * @param {number} pos
      */
     _setMarkPos(mark, sample, pos) {
-        mark.style.left = (100 * pos / sample.wave.length) + '%'
+        let waveRect = this._wavePreview.getBoundingClientRect()
+        mark.style.transform = `translate(${pos * waveRect.width / sample.wave.length}px, 0)`
     }
 
     /**
