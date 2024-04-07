@@ -54,19 +54,12 @@ class TrackerMainElement extends HTMLElement {
     connectedCallback() {
         let fragment = templates.trackerMain.cloneNode(true)
 
-        /** @type {FileToolbarElement} */
         this._fileToolbar = fragment.querySelector('file-toolbar')
-        /** @type {ModulePropertiesElement} */
         this._moduleProperties = fragment.querySelector('module-properties')
-        /** @type {PlaybackControlsElement} */
         this._playbackControls = fragment.querySelector('playback-controls')
-        /** @type {PlaybackStatusElement} */
         this._playbackStatus = fragment.querySelector('playback-status')
-        /** @type {SequenceEditElement} */
         this._sequenceEdit = fragment.querySelector('sequence-edit')
-        /** @type {PatternTableElement} */
         this._patternTable = fragment.querySelector('pattern-table')
-        /** @type {SamplesListElement} */
         this._samplesList = fragment.querySelector('samples-list')
         this._errors = fragment.querySelector('#errors')
 

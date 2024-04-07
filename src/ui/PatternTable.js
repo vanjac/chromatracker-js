@@ -20,7 +20,6 @@ class PatternTableElement extends HTMLElement {
     connectedCallback() {
         let fragment = templates.patternTable.cloneNode(true)
 
-        /** @type {CellEntryElement} */
         this._cellEntry = fragment.querySelector('cell-entry')
 
         this._patternScroll = fragment.querySelector('#patternScroll')

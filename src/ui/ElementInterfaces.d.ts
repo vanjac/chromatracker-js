@@ -51,9 +51,17 @@ interface PlaybackControlsTarget {
 interface HTMLElementTagNameMap {
     'alert-dialog': AlertDialogElement
     'amplify-effect': AmplifyEffectElement
+    'cell-entry': CellEntryElement
     'confirm-dialog': ConfirmDialogElement
+    'file-toolbar': FileToolbarElement
     'filter-effect': FilterEffectElement
     'input-dialog': InputDialogElement
+    'module-properties': ModulePropertiesElement
+    'pattern-table': PatternTableElement
+    'playback-controls': PlaybackControlsElement
+    'playback-status': PlaybackStatusElement
     'sample-edit': SampleEditElement
+    'samples-list': SamplesListElement
+    'sequence-edit': SequenceEditElement
     'wait-dialog': WaitDialogElement
 }
