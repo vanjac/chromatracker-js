@@ -67,9 +67,12 @@ class PatternTableElement extends HTMLElement {
         let newMuteInputs = []
         let rowFrag = document.createDocumentFragment()
 
-        rowFrag.appendChild(createElem('th')) // top-left corner
+        let cornerHead = createElem('th')
+        cornerHead.classList.add('pattern-row-head')
+        rowFrag.appendChild(cornerHead)
         for (let c = 0; c < numChannels; c++) {
             let th = rowFrag.appendChild(createElem('th'))
+            th.classList.add('pattern-col-head')
             let label = th.appendChild(createElem('label'))
             let input = label.appendChild(createElem('input', {type: 'checkbox'}))
             if (!this._muteInputs[c] || this._muteInputs[c].checked) {
@@ -98,7 +101,9 @@ class PatternTableElement extends HTMLElement {
         let tableFrag = document.createDocumentFragment()
         for (let row = 0; row < pattern[0].length; row++) {
             let tr = tableFrag.appendChild(createElem('tr'))
-            tr.appendChild(createElem('th', {textContent: row.toString()}))
+            let th = createElem('th', {textContent: row.toString()})
+            th.classList.add('pattern-row-head')
+            tr.appendChild(th)
 
             for (let c = 0; c < pattern.length; c++) {
                 let cell = pattern[c][row]

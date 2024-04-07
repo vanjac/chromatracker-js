@@ -211,12 +211,14 @@ label {
 /* pattern table */
 
 th, .pattern-cell {
-    font-family: monospace;
     border: 1px solid var(--color-fg);
     white-space: nowrap;
 }
 table {
+    font-family: monospace;
     border-collapse: collapse;
+    table-layout: fixed;
+    width: 0;
 }
 /* https://issues.chromium.org/issues/40511425 */
 th {
@@ -247,20 +249,30 @@ tbody tr:nth-child(16n+1) th {
     background: var(--color-fg-hl);
     color: var(--color-bg);
 }
+td,
+tr,
 .cell-pitch,
 .cell-effect,
 .cell-inst {
     /* Layout performance optimization */
-    display: inline-block;
     height: var(--line-height);
-    vertical-align: top;
     overflow: hidden;
     contain: strict;
+}
+td,
+.pattern-col-head {
+    width: 10ch;
+}
+.cell-pitch,
+.cell-effect,
+.cell-inst {
+    display: inline-block;
+    vertical-align: top;
 }
 .cell-pitch, .cell-effect {
     width: 3ch;
 }
-.cell-inst {
+.cell-inst, .pattern-row-head {
     width: 2ch;
 }
 .hilite-row {
