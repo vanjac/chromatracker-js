@@ -37,6 +37,7 @@ class PatternTableElement extends HTMLElement {
         }
         console.log('update pattern channels')
         this._viewNumChannels = numChannels
+        this._viewNumRows = 0
 
         this._theadRow.textContent = ''
         let newMuteInputs = []
