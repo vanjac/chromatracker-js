@@ -72,7 +72,7 @@ class SamplesListElement extends HTMLElement {
             let textContent = `${i}: ${sample.name}`
             this._select.appendChild(createElem('option', {value: i.toString(), textContent}))
         }
-        this._selectSample(selSample ? selSample : 1)
+        this._setSelSample(selSample ? selSample : 1)
     }
 
     /**
@@ -103,7 +103,7 @@ class SamplesListElement extends HTMLElement {
     /**
      * @param {number} s
      */
-    _selectSample(s) {
+    _setSelSample(s) {
         this._select.value = s.toString()
         let idx = this._getSelSample()
         if (!this._select.value) {
@@ -122,18 +122,18 @@ class SamplesListElement extends HTMLElement {
             selSample = idx
             return newMod
         })
-        this._selectSample(selSample)
+        this._setSelSample(selSample)
     }
 
     _deleteSample() {
         let idx = this._getSelSample()
         let selIdx = this._viewSamples.findIndex((sample, i) => i > idx && sample)
         if (selIdx != -1) {
-            this._selectSample(selIdx)
+            this._setSelSample(selIdx)
         } else {
             for (let i = idx - 1; i >= 0; i--) {
                 if (this._viewSamples[i]) {
-                    this._selectSample(i)
+                    this._setSelSample(i)
                     break
                 }
             }
