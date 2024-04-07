@@ -35,7 +35,7 @@ class PatternTableElement extends HTMLElement {
     }
 
     _onVisible() {
-        this._cellEntry._scrollToSelPitch()
+        this._cellEntry._onVisible()
     }
 
     /**
@@ -43,7 +43,7 @@ class PatternTableElement extends HTMLElement {
      */
     _setTarget(target) {
         this._target = target
-        this._cellEntry._jam = target
+        this._cellEntry._setJamTarget(target)
     }
 
     _resetState() {

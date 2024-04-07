@@ -31,6 +31,11 @@ interface CellEntryTarget {
     _updateEntryParts(): void
 }
 
+interface PianoKeyboardTarget {
+    _pitchChanged(): void
+    _getJamCell(): Readonly<Cell>
+}
+
 interface FileToolbarTarget {
     readonly _module: Readonly<Module>
     _moduleLoaded(mod: Readonly<Module>): void
@@ -58,6 +63,7 @@ interface HTMLElementTagNameMap {
     'input-dialog': InputDialogElement
     'module-properties': ModulePropertiesElement
     'pattern-table': PatternTableElement
+    'piano-keyboard': PianoKeyboardElement
     'playback-controls': PlaybackControlsElement
     'playback-status': PlaybackStatusElement
     'sample-edit': SampleEditElement
