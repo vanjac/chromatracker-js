@@ -1,5 +1,8 @@
 'use strict'
 
+/**
+ * @implements {PianoKeyboardTarget}
+ */
 class SampleEditElement extends HTMLElement {
     constructor() {
         super()
@@ -152,15 +155,18 @@ class SampleEditElement extends HTMLElement {
         /** @type {HTMLInputElement} */
         this._sampleRateInput = fragment.querySelector('#sampleRate')
 
-        let jamButton = fragment.querySelector('#jam')
-        addPressEvent(jamButton, e => {
-            let jamCell = Object.assign(new Cell(), {pitch: 36, inst: this._index})
-            this._target._jamDown(jamCell, e, false)
-        })
-        addReleaseEvent(jamButton, e => this._target._jamUp(e))
+        this._piano = fragment.querySelector('piano-keyboard')
 
         this.style.display = 'contents'
         this.appendChild(fragment)
+
+        this._piano._target = this
+        this._piano._jam = this._target
+        this._piano._scrollToSelPitch()
+    }
+
+    _onVisible() {
+        this._piano._scrollToSelPitch()
     }
 
     /**
@@ -541,6 +547,14 @@ class SampleEditElement extends HTMLElement {
                 .then(() => closeDialog(waitDialog))
                 .catch(() => closeDialog(waitDialog))
         }
+    }
+
+    /* PianoKeyboardTarget */
+
+    _pitchChanged() {}
+
+    _getJamCell() {
+        return Object.assign(new Cell(), {pitch: this._piano._getPitch(), inst: this._index})
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)

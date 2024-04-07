@@ -75,6 +75,8 @@ class TrackerMainElement extends HTMLElement {
                     }
                     if (tabName == 'sequence') {
                         this._patternTable._onVisible()
+                    } else if (tabName == 'samples') {
+                        this._samplesList._onVisible()
                     }
                 })
             }

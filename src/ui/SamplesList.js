@@ -28,6 +28,12 @@ class SamplesListElement extends HTMLElement {
         this.appendChild(fragment)
     }
 
+    _onVisible() {
+        if (this._sampleEdit) {
+            this._sampleEdit._onVisible()
+        }
+    }
+
     /**
      * @param {number} idx
      */

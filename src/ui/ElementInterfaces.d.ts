@@ -33,7 +33,7 @@ interface CellEntryTarget {
 
 interface PianoKeyboardTarget {
     _pitchChanged(): void
-    _getJamCell(): Readonly<Cell>
+    _getJamCell(): Cell
 }
 
 interface FileToolbarTarget {
