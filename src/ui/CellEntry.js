@@ -45,6 +45,7 @@ class CellEntryElement extends HTMLElement {
         this._param0Select.addEventListener('input', () => this._target._updateCell())
         this._param1Select.addEventListener('input', () => this._target._updateCell())
 
+        disableFormSubmit(this._sampleList)
         new KeyPad(this._sampleList, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement == this._sampleList) {
                 let input = elem.parentElement.querySelector('input')

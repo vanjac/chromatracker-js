@@ -19,6 +19,13 @@ function createElem(tagName, properties = {}) {
 }
 
 /**
+ * @param {HTMLFormElement} form
+ */
+function disableFormSubmit(form) {
+    form.addEventListener('submit', e => e.preventDefault())
+}
+
+/**
  * @param {NamedFormItem} namedItem
  * @param {string} value
  */

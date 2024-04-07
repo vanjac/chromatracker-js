@@ -25,6 +25,7 @@ class SequenceEditElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._select = fragment.querySelector('#patternSelect')
 
+        disableFormSubmit(this._sequenceList)
         fragment.querySelector('#seqInsSame').addEventListener('click', () => this._seqInsSame())
         fragment.querySelector('#seqInsClone').addEventListener('click', () => this._seqInsClone())
         fragment.querySelector('#seqDel').addEventListener('click', () => this._seqDel())

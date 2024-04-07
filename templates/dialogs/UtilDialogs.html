@@ -1,26 +1,26 @@
 <template id="alertDialog">
-  <div class="vflex dialog message-dialog">
+  <form class="vflex dialog message-dialog">
     <h3 id="title"></h3>
     <output id="message" class="message-out"></output>
     <div class="hflex">
       <div class="flex-grow"></div>
       <button id="ok" class="show-checked">OK</button>
     </div>
-  </div>
+  </form>
 </template>
 <template id="confirmDialog">
-  <div class="vflex dialog message-dialog">
+  <form class="vflex dialog message-dialog">
     <h3 id="title"></h3>
     <output id="message" class="message-out"></output>
     <div class="hflex">
       <div class="flex-grow"></div>
       <button id="ok" class="show-checked">OK</button>
-      <button id="cancel">Cancel</button>
+      <button id="cancel" type="button">Cancel</button>
     </div>
-  </div>
+  </form>
 </template>
 <template id="inputDialog">
-  <div class="vflex dialog">
+  <form class="vflex dialog">
     <h3 id="title"></h3>
     <div class="hflex">
       <span id="prompt"></span>&nbsp;
@@ -29,9 +29,9 @@
     <div class="hflex">
       <div class="flex-grow"></div>
       <button id="ok" class="show-checked">OK</button>
-      <button id="cancel">Cancel</button>
+      <button id="cancel" type="button">Cancel</button>
     </div>
-  </div>
+  </form>
 </template>
 <template id="waitDialog">
   <div class="vflex dialog">

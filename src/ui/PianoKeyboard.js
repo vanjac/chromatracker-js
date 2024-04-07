@@ -22,6 +22,7 @@ class PianoKeyboardElement extends HTMLElement {
         this._pianoKeys = []
         this._createPiano()
 
+        disableFormSubmit(this._piano)
         new KeyPad(this._piano, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement
                     && elem.parentElement.parentElement.parentElement == this._piano) {

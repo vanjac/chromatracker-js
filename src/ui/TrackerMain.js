@@ -63,6 +63,7 @@ class TrackerMainElement extends HTMLElement {
 
         /** @type {HTMLFormElement} */
         let tabForm = fragment.querySelector('#appTabs')
+        disableFormSubmit(tabForm)
         let tabBody = fragment.querySelector('#appTabBody')
         for (let tabButton of tabForm.elements) {
             if (tabButton instanceof HTMLInputElement) {

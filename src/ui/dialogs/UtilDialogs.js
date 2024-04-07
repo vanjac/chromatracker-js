@@ -1,6 +1,6 @@
 'use strict'
 
-class AlertDialogElement extends DialogElement {
+class AlertDialogElement extends FormDialogElement {
     constructor() {
         super()
         this._title = ''
@@ -10,11 +10,11 @@ class AlertDialogElement extends DialogElement {
     connectedCallback() {
         let fragment = templates.alertDialog.cloneNode(true)
 
+        this._initForm(fragment.querySelector('form'))
         fragment.querySelector('#title').textContent = this._title
         /** @type {HTMLOutputElement} */
         let messageOut = fragment.querySelector('#message')
         messageOut.value = this._message
-        fragment.querySelector('#ok').addEventListener('click', () => closeDialog(this))
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -30,7 +30,7 @@ function openAlertDialog(message, title = 'Error') {
     return openDialog(createElem('alert-dialog', {_message: message, _title: title}))
 }
 
-class ConfirmDialogElement extends DialogElement {
+class ConfirmDialogElement extends FormDialogElement {
     constructor() {
         super()
         this._title = ''
@@ -44,19 +44,24 @@ class ConfirmDialogElement extends DialogElement {
     connectedCallback() {
         let fragment = templates.confirmDialog.cloneNode(true)
 
+        this._initForm(fragment.querySelector('form'))
         fragment.querySelector('#title').textContent = this._title
         /** @type {HTMLOutputElement} */
         let messageOut = fragment.querySelector('#message')
         messageOut.value = this._message
 
-        fragment.querySelector('#ok').addEventListener('click', () => {
-            if (this._onConfirm) { this._onConfirm() }
-            closeDialog(this)
-        })
         fragment.querySelector('#cancel').addEventListener('click', () => this._dismiss())
 
         this.style.display = 'contents'
         this.appendChild(fragment)
+    }
+
+    /**
+     * @override
+     */
+    _submit() {
+        if (this._onConfirm) { this._onConfirm() }
+        closeDialog(this)
     }
 
     /**
@@ -83,7 +88,7 @@ function openConfirmDialog(message, title = '') {
     })
 }
 
-class InputDialogElement extends DialogElement {
+class InputDialogElement extends FormDialogElement {
     constructor() {
         super()
         this._title = ''
@@ -98,25 +103,23 @@ class InputDialogElement extends DialogElement {
     connectedCallback() {
         let fragment = templates.inputDialog.cloneNode(true)
 
+        this._initForm(fragment.querySelector('form'))
         fragment.querySelector('#title').textContent = this._title
         fragment.querySelector('#prompt').textContent = this._prompt
 
         this._input = fragment.querySelector('input')
         this._input.valueAsNumber = this._defaultValue
 
-        fragment.querySelector('#ok').addEventListener('click', () => this._confirm())
         fragment.querySelector('#cancel').addEventListener('click', () => this._dismiss())
-        this._input.addEventListener('keyup', e => {
-            if (e.key == 'Enter') {
-                this._confirm()
-            }
-        })
 
         this.style.display = 'contents'
         this.appendChild(fragment)
     }
 
-    _confirm() {
+    /**
+     * @override
+     */
+    _submit() {
         if (Number.isNaN(this._input.valueAsNumber)) {
             this._dismiss()
         } else {

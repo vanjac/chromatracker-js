@@ -91,3 +91,19 @@ class DialogElement extends HTMLElement {
 }
 /** @type {Element} */
 DialogElement.prototype._lastFocused = null
+
+class FormDialogElement extends DialogElement {
+    /**
+     * @param {HTMLFormElement} form
+     */
+    _initForm(form) {
+        form.addEventListener('submit', e => {
+            e.preventDefault()
+            this._submit()
+        })
+    }
+
+    _submit() {
+        closeDialog(this)
+    }
+}

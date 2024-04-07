@@ -2,7 +2,7 @@
 
 const amplifyEffectInputs = ['amp', 'dither']
 
-class AmplifyEffectElement extends DialogElement {
+class AmplifyEffectElement extends FormDialogElement {
     constructor() {
         super()
         /** @type {(params: {amount: number, dithering: boolean}) => void} */
@@ -18,14 +18,17 @@ class AmplifyEffectElement extends DialogElement {
         /** @type {HTMLInputElement} */
         this._ditherInput = fragment.querySelector('#dither')
 
+        this._initForm(this._form)
         restoreFormData(this._form, amplifyEffectInputs, global.effectFormData)
-        fragment.querySelector('#done').addEventListener('click', () => this._complete())
 
         this.style.display = 'contents'
         this.appendChild(fragment)
     }
 
-    _complete() {
+    /**
+     * @override
+     */
+    _submit() {
         this._onComplete({
             amount: this._amountInput.valueAsNumber,
             dithering: this._ditherInput.checked

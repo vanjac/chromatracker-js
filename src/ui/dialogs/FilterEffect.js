@@ -26,7 +26,7 @@ const graphFreq = new Float32Array(numGraphFreq)
  * @property {boolean} dither
  */
 
-class FilterEffectElement extends DialogElement {
+class FilterEffectElement extends FormDialogElement {
     constructor() {
         super()
         /** @type {(params: FilterEffectParams) => void} */
@@ -54,6 +54,7 @@ class FilterEffectElement extends DialogElement {
         /** @type {HTMLCanvasElement} */
         this._graph = fragment.querySelector('#graph')
 
+        this._initForm(this._form)
         restoreFormData(this._form, filterEffectInputs, global.effectFormData)
 
         this._context = createOfflineAudioContext()
@@ -71,8 +72,6 @@ class FilterEffectElement extends DialogElement {
         this._freqStartInput.addEventListener('input', () => this._updateGraph())
         this._qInput.addEventListener('input', () => this._updateGraph())
         this._gainInput.addEventListener('input', () => this._updateGraph())
-
-        fragment.querySelector('#done').addEventListener('click', () => this._complete())
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -124,7 +123,10 @@ class FilterEffectElement extends DialogElement {
         ctx.stroke()
     }
 
-    _complete() {
+    /**
+     * @override
+     */
+    _submit() {
         this._onComplete({
             type: /** @type {BiquadFilterType} */(this._typeInput.value),
             freqStart: this._freqStartInput.valueAsNumber,
