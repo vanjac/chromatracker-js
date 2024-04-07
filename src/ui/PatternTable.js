@@ -119,6 +119,10 @@ class PatternTableElement extends HTMLElement {
         }
     }
 
+    _selCell() {
+        return this._viewPattern[this._selChannel][this._selRow]
+    }
+
     /**
      * @param {CellPart} parts
      */

@@ -20,10 +20,37 @@ class PatternEditElement extends HTMLElement {
         this._patternTable = fragment.querySelector('pattern-table')
         this._cellEntry = fragment.querySelector('cell-entry')
 
+        this._entryCell = fragment.querySelector('#entryCell')
+
+        setupKeyButton(this._entryCell,
+            id => this._target._jamPlay(id, this._cellEntry._getJamCell()),
+            id => this._target._jamRelease(id))
+
+        setupKeyButton(fragment.querySelector('#write'), id => {
+            this._putCell(this._cellEntry._getCell(), this._cellEntry._getCellParts())
+            this._target._jamPlay(id, this._selCell())
+            this._advance()
+        }, id => this._target._jamRelease(id))
+
+        setupKeyButton(fragment.querySelector('#clear'), id => {
+            this._putCell(new Cell(), this._cellEntry._getCellParts())
+            this._target._jamPlay(id, this._selCell())
+            this._advance()
+        }, id => this._target._jamRelease(id))
+
+        setupKeyButton(fragment.querySelector('#lift'), id => {
+            this._cellEntry._liftCell(this._selCell())
+            this._target._jamPlay(id, this._cellEntry._getJamCell())
+        }, id => this._target._jamRelease(id))
+
+        fragment.querySelector('#insert').addEventListener('click', () => this._insert(1))
+        fragment.querySelector('#delete').addEventListener('click', () => this._delete(1))
+
         this.style.display = 'contents'
         this.appendChild(fragment)
 
         this._cellEntry._target = this
+        this._updateCell()
         this._updateEntryParts()
     }
 
@@ -98,7 +125,7 @@ class PatternEditElement extends HTMLElement {
     }
 
     _selCell() {
-        return this._viewPattern[this._patternTable._selChannel][this._patternTable._selRow]
+        return this._patternTable._selCell()
     }
 
     /**
@@ -126,8 +153,14 @@ class PatternEditElement extends HTMLElement {
         this._onChange(editPatternChannelDelete(this._viewPattern, channel, row, count))
     }
 
+    _updateCell() {
+        setCellContents(this._entryCell, this._cellEntry._getCell())
+    }
+
     _updateEntryParts() {
-        this._patternTable._setEntryParts(this._cellEntry._getCellParts())
+        let parts = this._cellEntry._getCellParts()
+        toggleCellParts(this._entryCell, parts)
+        this._patternTable._setEntryParts(parts)
     }
 
     /**

@@ -1,6 +1,30 @@
 <template id="patternEdit">
   <div class="vflex flex-grow">
     <pattern-table></pattern-table>
+    <div class="hflex">
+      <button id="lift">
+        <inline-svg class="icon" src="eyedropper.svg"></inline-svg>
+      </button>
+      <div class="flex-grow"></div>
+      <span id="entryCell" class="pattern-cell">
+        <span id="pitch" class="cell-pitch"></span>
+        <span id="inst" class="cell-inst"></span>
+        <span id="effect" class="cell-effect"></span>
+      </span>
+      <div class="flex-grow"></div>
+      <button id="write">
+        <inline-svg class="icon" src="pencil.svg"></inline-svg>
+      </button>
+      <button id="clear">
+        <inline-svg class="icon" src="eraser.svg"></inline-svg>
+      </button>
+      <button id="insert">
+        <inline-svg class="icon" src="arrow-expand-down.svg"></inline-svg>
+      </button>
+      <button id="delete">
+        <inline-svg class="icon" src="backspace-reverse-outline.svg"></inline-svg>
+      </button>
+    </div>
     <cell-entry></cell-entry>
   </div>
 </template>

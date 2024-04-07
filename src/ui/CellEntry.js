@@ -16,7 +16,6 @@ class CellEntryElement extends HTMLElement {
     connectedCallback() {
         let fragment = templates.cellEntry.cloneNode(true)
 
-        this._entryCell = fragment.querySelector('#entryCell')
         /** @type {HTMLInputElement} */
         this._pitchEnable = fragment.querySelector('#pitchEnable')
         /** @type {HTMLInputElement} */
@@ -35,45 +34,16 @@ class CellEntryElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._param1Select = fragment.querySelector('#param1Select')
 
-        setupKeyButton(this._entryCell,
-            id => this._jam._jamPlay(id, this._getJamCell()),
-            id => this._jam._jamRelease(id))
-
-        setupKeyButton(fragment.querySelector('#write'), id => {
-            this._target._putCell(this._getCell(), this._getCellParts())
-            this._jam._jamPlay(id, this._target._selCell())
-            this._target._advance()
-        }, id => this._jam._jamRelease(id))
-
-        setupKeyButton(fragment.querySelector('#writeEffect'), id => {
-            this._target._putCell(this._getCell(), CellPart.effect | CellPart.param)
-            this._jam._jamPlay(id, this._target._selCell())
-        }, id => this._jam._jamRelease(id))
-
-        setupKeyButton(fragment.querySelector('#clear'), id => {
-            this._target._putCell(new Cell(), this._getCellParts())
-            this._jam._jamPlay(id, this._target._selCell())
-            this._target._advance()
-        }, id => this._jam._jamRelease(id))
-
-        setupKeyButton(fragment.querySelector('#lift'), id => {
-            this._liftCell()
-            this._jam._jamPlay(id, this._getJamCell())
-        }, id => this._jam._jamRelease(id))
-
-        fragment.querySelector('#insert').addEventListener('click', () => this._target._insert(1))
-        fragment.querySelector('#delete').addEventListener('click', () => this._target._delete(1))
-
-        this._pitchEnable.addEventListener('change', () => this._updateEntryParts())
-        this._sampleEnable.addEventListener('change', () => this._updateEntryParts())
-        this._effectEnable.addEventListener('change', () => this._updateEntryParts())
+        this._pitchEnable.addEventListener('change', () => this._target._updateEntryParts())
+        this._sampleEnable.addEventListener('change', () => this._target._updateEntryParts())
+        this._effectEnable.addEventListener('change', () => this._target._updateEntryParts())
 
         this._effectSelect.addEventListener('input', () => {
             this._param0Select.selectedIndex = this._param1Select.selectedIndex = 0
-            this._updateCell()
+            this._target._updateCell()
         })
-        this._param0Select.addEventListener('input', () => this._updateCell())
-        this._param1Select.addEventListener('input', () => this._updateCell())
+        this._param0Select.addEventListener('input', () => this._target._updateCell())
+        this._param1Select.addEventListener('input', () => this._target._updateCell())
 
         new KeyPad(this._sampleList, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement == this._sampleList) {
@@ -93,12 +63,15 @@ class CellEntryElement extends HTMLElement {
                 this._sampleList.scrollBy({left: e.detail * width * .75, behavior: 'smooth'})
             })
 
+        setupKeyButton(fragment.querySelector('#writeEffect'), id => {
+            this._target._putCell(this._getCell(), CellPart.effect | CellPart.param)
+            this._jam._jamPlay(id, this._target._selCell())
+        }, id => this._jam._jamRelease(id))
+
         this.style.display = 'contents'
         this.appendChild(fragment)
 
         this._piano._target = this
-        this._updateCell()
-        toggleCellParts(this._entryCell, this._getCellParts())
     }
 
     /**
@@ -145,17 +118,8 @@ class CellEntryElement extends HTMLElement {
         return parts
     }
 
-    _updateEntryParts() {
-        this._target._updateEntryParts()
-        toggleCellParts(this._entryCell, this._getCellParts())
-    }
-
     _pitchChanged() {
-        this._updateCell()
-    }
-
-    _updateCell() {
-        setCellContents(this._entryCell, this._getCell())
+        this._target._updateCell()
     }
 
     /**
@@ -191,11 +155,13 @@ class CellEntryElement extends HTMLElement {
         if (this._viewSamples[s]) {
             selectRadioButton(this._sampleInput, s.toString())
         }
-        this._updateCell()
+        this._target._updateCell()
     }
 
-    _liftCell() {
-        let cell = this._target._selCell()
+    /**
+     * @param {Readonly<Cell>} cell
+     */
+    _liftCell(cell) {
         if (this._pitchEnable.checked && cell.pitch >= 0) {
             this._piano._setPitch(cell.pitch)
         }
@@ -207,7 +173,7 @@ class CellEntryElement extends HTMLElement {
             this._param0Select.selectedIndex = cell.param0
             this._param1Select.selectedIndex = cell.param1
         }
-        this._updateCell()
+        this._target._updateCell()
     }
 }
 window.customElements.define('cell-entry', CellEntryElement)

@@ -21,10 +21,8 @@ interface PatternTableTarget {
 
 interface CellEntryTarget {
     _putCell(cell: Readonly<Cell>, parts: CellPart): void
-    _insert(count: number): void
-    _delete(count: number): void
+    _updateCell(): void
     _selCell(): Readonly<Cell>
-    _advance(): void
     _updateEntryParts(): void
 }
 

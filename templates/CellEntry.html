@@ -1,111 +1,85 @@
 <template id="cellEntry">
-  <div class="vflex">
+  <div class="properties-grid">
+    <label class="label-button">
+      <input id="pitchEnable" type="checkbox" checked>
+      <span>P</span>
+    </label>
+    <piano-keyboard></piano-keyboard>
+
+    <label class="label-button">
+      <input id="sampleEnable" type="checkbox" checked>
+      <span>I</span>
+    </label>
     <div class="hflex">
-      <button id="lift">
-        <inline-svg class="icon" src="eyedropper.svg"></inline-svg>
-      </button>
-      <div class="flex-grow"></div>
-      <span id="entryCell" class="pattern-cell">
-        <span id="pitch" class="cell-pitch"></span>
-        <span id="inst" class="cell-inst"></span>
-        <span id="effect" class="cell-effect"></span>
-      </span>
-      <div class="flex-grow"></div>
-      <button id="write">
-        <inline-svg class="icon" src="pencil.svg"></inline-svg>
-      </button>
-      <button id="clear">
-        <inline-svg class="icon" src="eraser.svg"></inline-svg>
-      </button>
-      <button id="insert">
-        <inline-svg class="icon" src="arrow-expand-down.svg"></inline-svg>
-      </button>
-      <button id="delete">
-        <inline-svg class="icon" src="backspace-reverse-outline.svg"></inline-svg>
-      </button>
+      <button id="sampleLeft">&lt;</button>
+      <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
+      <button id="sampleRight">&gt;</button>
     </div>
-    <div class="properties-grid">
-      <label class="label-button">
-        <input id="pitchEnable" type="checkbox" checked>
-        <span>P</span>
-      </label>
-      <piano-keyboard></piano-keyboard>
 
-      <label class="label-button">
-        <input id="sampleEnable" type="checkbox" checked>
-        <span>I</span>
-      </label>
-      <div class="hflex">
-        <button id="sampleLeft">&lt;</button>
-        <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
-        <button id="sampleRight">&gt;</button>
-      </div>
+    <label class="label-button">
+      <input id="effectEnable" type="checkbox">
+      <span>E</span>
+    </label>
+    <div class="hflex">
+      <select id="effectSelect">
+        <option>0: Arpeggio</option>
+        <option>1: Port Up</option>
+        <option>2: Port Down</option>
+        <option>3: Tone Port</option>
+        <option>4: Vibrato</option>
+        <option>5: Volslide+Port</option>
+        <option>6: Volslide+Vib</option>
+        <option>7: Tremolo</option>
+        <option>8: Panning</option>
+        <option>9: Offset</option>
+        <option>A: Volume Slide</option>
+        <option>B: Position Jump</option>
+        <option selected>C: Volume</option>
+        <option>D: Pattern Break</option>
+        <option>E: Extended</option>
+        <option>F: Tempo</option>
+      </select>
+      <select id="param0Select">
+        <option>0</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+        <option>D</option>
+        <option>E</option>
+        <option>F</option>
+      </select>
+      <select id="param1Select">
+        <option>0</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+        <option>D</option>
+        <option>E</option>
+        <option>F</option>
+      </select>
 
-      <label class="label-button">
-        <input id="effectEnable" type="checkbox">
-        <span>E</span>
-      </label>
-      <div class="hflex">
-        <select id="effectSelect">
-          <option>0: Arpeggio</option>
-          <option>1: Port Up</option>
-          <option>2: Port Down</option>
-          <option>3: Tone Port</option>
-          <option>4: Vibrato</option>
-          <option>5: Volslide+Port</option>
-          <option>6: Volslide+Vib</option>
-          <option>7: Tremolo</option>
-          <option>8: Panning</option>
-          <option>9: Offset</option>
-          <option>A: Volume Slide</option>
-          <option>B: Position Jump</option>
-          <option selected>C: Volume</option>
-          <option>D: Pattern Break</option>
-          <option>E: Extended</option>
-          <option>F: Tempo</option>
-        </select>
-        <select id="param0Select">
-          <option>0</option>
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-          <option>5</option>
-          <option>6</option>
-          <option>7</option>
-          <option>8</option>
-          <option>9</option>
-          <option>A</option>
-          <option>B</option>
-          <option>C</option>
-          <option>D</option>
-          <option>E</option>
-          <option>F</option>
-        </select>
-        <select id="param1Select">
-          <option>0</option>
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-          <option>5</option>
-          <option>6</option>
-          <option>7</option>
-          <option>8</option>
-          <option>9</option>
-          <option>A</option>
-          <option>B</option>
-          <option>C</option>
-          <option>D</option>
-          <option>E</option>
-          <option>F</option>
-        </select>
-
-        <div class="flex-grow"></div>
-        <button id="writeEffect">
-          <inline-svg class="icon" src="keyboard-return.svg"></inline-svg>
-        </button>
-      </div>
+      <div class="flex-grow"></div>
+      <button id="writeEffect">
+        <inline-svg class="icon" src="keyboard-return.svg"></inline-svg>
+      </button>
     </div>
   </div>
 </template>
