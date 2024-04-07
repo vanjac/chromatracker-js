@@ -222,15 +222,20 @@ class SampleEditElement extends HTMLElement {
      * @param {number[]} positions
      */
     _setPlayPos(positions) {
-        for (let mark of this._playMarks) {
-            mark.remove()
+        while (this._playMarks.length > positions.length) {
+            this._playMarks.pop().remove()
         }
-        for (let pos of positions) {
-            if (pos > this._viewSample.wave.length) { continue }
+        while (this._playMarks.length < positions.length) {
             let mark = this._waveContainer.appendChild(createElem('div'))
-            mark.classList.add('wave-mark', 'wave-loop')
-            this._setMarkPos(mark, this._viewSample, pos)
+            mark.classList.add('wave-mark', 'wave-play-mark')
             this._playMarks.push(mark)
+        }
+        for (let i = 0; i < positions.length; i++) {
+            let visible = positions[i] <= this._viewSample.wave.length
+            this._playMarks[i].classList.toggle('hide', !visible)
+            if (visible) {
+                this._setMarkPos(this._playMarks[i], this._viewSample, positions[i])
+            }
         }
     }
 
