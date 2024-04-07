@@ -1,11 +1,8 @@
 // Interfaces between elements
 
 interface JamTarget {
-    _jamPlay(id: number, cell: Readonly<Cell>): void
+    _jamPlay(id: number, cell: Readonly<Cell>, options?: {useChannel?: boolean}): void
     _jamRelease(id: number): void
-    // event helpers (TODO: remove)
-    _jamDown(cell: Readonly<Cell>, e?: Event, useChannel?: boolean): void
-    _jamUp(e?: Event): void
 }
 
 interface ModuleEditTarget {

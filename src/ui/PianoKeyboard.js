@@ -7,6 +7,7 @@ class PianoKeyboardElement extends HTMLElement {
         this._target = null
         /** @type {JamTarget} */
         this._jam = null
+        this._useChannel = true
     }
 
     connectedCallback() {
@@ -27,7 +28,7 @@ class PianoKeyboardElement extends HTMLElement {
                 let input = elem.parentElement.querySelector('input')
                 selectRadioButton(this._pitchInput, input.value)
                 this._target._pitchChanged()
-                this._jam._jamPlay(id, this._target._getJamCell())
+                this._jam._jamPlay(id, this._target._getJamCell(), {useChannel: this._useChannel})
             }
         }, id => this._jam._jamRelease(id))
         fragment.querySelector('#pianoLeft').addEventListener('click',

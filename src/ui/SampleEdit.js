@@ -162,6 +162,7 @@ class SampleEditElement extends HTMLElement {
 
         this._piano._target = this
         this._piano._jam = this._target
+        this._piano._useChannel = false
         this._piano._scrollToSelPitch()
     }
 
@@ -304,7 +305,7 @@ class SampleEditElement extends HTMLElement {
      * @param {(sample: Sample) => void} mutator
      * @param {string} combineTag
      */
-    _changeSample(mutator, combineTag, dirty=false) {
+    _changeSample(mutator, combineTag, dirty = false) {
         let newSample = Object.assign(new Sample(), this._viewSample)
         mutator(newSample)
         let immSample = Object.freeze(newSample)

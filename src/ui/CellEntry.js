@@ -1,30 +1,5 @@
 'use strict'
 
-// TODO: remove
-/**
- * @param {Element} elem
- * @param {(ev: Event) => any} handler
- */
-function addPressEvent(elem, handler) {
-    elem.addEventListener('mousedown', handler)
-    elem.addEventListener('touchstart', e => {
-        e.preventDefault()
-        handler(e)
-    })
-}
-
-/**
- * @param {Element} elem
- * @param {(ev: Event) => any} handler
- */
-function addReleaseEvent(elem, handler) {
-    elem.addEventListener('mouseup', handler)
-    elem.addEventListener('touchend', e => {
-        e.preventDefault()
-        handler(e)
-    })
-}
-
 /**
  * @implements {PianoKeyboardTarget}
  */
@@ -60,38 +35,31 @@ class CellEntryElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._param1Select = fragment.querySelector('#param1Select')
 
-        addPressEvent(this._entryCell, e => this._jam._jamDown(this._getJamCell(), e))
-        addReleaseEvent(this._entryCell, e => this._jam._jamUp(e))
+        setupKeyButton(this._entryCell,
+            id => this._jam._jamPlay(id, this._getJamCell()),
+            id => this._jam._jamRelease(id))
 
-        let writeButton = fragment.querySelector('#write')
-        addPressEvent(writeButton, e => {
+        setupKeyButton(fragment.querySelector('#write'), id => {
             this._target._putCell(this._getCell(), this._getCellParts())
-            this._jam._jamDown(this._target._selCell(), e)
+            this._jam._jamPlay(id, this._target._selCell())
             this._target._advance()
-        })
-        addReleaseEvent(writeButton, e => this._jam._jamUp(e))
+        }, id => this._jam._jamRelease(id))
 
-        let writeEffectButton = fragment.querySelector('#writeEffect')
-        addPressEvent(writeEffectButton, e => {
+        setupKeyButton(fragment.querySelector('#writeEffect'), id => {
             this._target._putCell(this._getCell(), CellPart.effect | CellPart.param)
-            this._jam._jamDown(this._target._selCell(), e)
-        })
-        addReleaseEvent(writeEffectButton, e => this._jam._jamUp(e))
+            this._jam._jamPlay(id, this._target._selCell())
+        }, id => this._jam._jamRelease(id))
 
-        let clearButton = fragment.querySelector('#clear')
-        addPressEvent(clearButton, e => {
+        setupKeyButton(fragment.querySelector('#clear'), id => {
             this._target._putCell(new Cell(), this._getCellParts())
-            this._jam._jamDown(this._target._selCell(), e)
+            this._jam._jamPlay(id, this._target._selCell())
             this._target._advance()
-        })
-        addReleaseEvent(clearButton, e => this._jam._jamUp(e))
+        }, id => this._jam._jamRelease(id))
 
-        let liftButton = fragment.querySelector('#lift')
-        addPressEvent(liftButton, e => {
+        setupKeyButton(fragment.querySelector('#lift'), id => {
             this._liftCell()
-            this._jam._jamDown(this._getJamCell(), e)
-        })
-        addReleaseEvent(liftButton, e => this._jam._jamUp(e))
+            this._jam._jamPlay(id, this._getJamCell())
+        }, id => this._jam._jamRelease(id))
 
         fragment.querySelector('#insert').addEventListener('click', () => this._target._insert(1))
         fragment.querySelector('#delete').addEventListener('click', () => this._target._delete(1))

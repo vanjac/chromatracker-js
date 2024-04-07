@@ -110,19 +110,12 @@ class PatternTableElement extends HTMLElement {
                 setCellContents(cellFrag, cell)
 
                 let td = cellFrag.querySelector('td')
-                /**
-                 * @param {Event} e
-                 */
-                let pressEvent = e => {
+                setupKeyButton(td, id => {
                     this._selRow = row
                     this._selChannel = c
                     this._updateSelCell()
-                    this._target._jamDown(cell, e)
-                }
-                td.addEventListener('mousedown', pressEvent)
-                td.addEventListener('touchstart', pressEvent)
-                td.addEventListener('mouseup', e => this._target._jamUp(e))
-                td.addEventListener('touchend', e => this._target._jamUp(e))
+                    this._target._jamPlay(id, cell)
+                }, id => this._target._jamRelease(id), {blockScroll: false})
 
                 tr.appendChild(cellFrag)
             }
