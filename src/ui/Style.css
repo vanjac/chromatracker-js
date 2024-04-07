@@ -139,6 +139,7 @@ select:active,
     width: var(--line-height);
     height: var(--line-height);
     fill: currentColor;
+    vertical-align: top;
 }
 
 label {
