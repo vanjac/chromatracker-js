@@ -21,7 +21,6 @@ PlaybackState.prototype = {
 /**
  * @implements {JamTarget}
  * @implements {ModuleEditTarget}
- * @implements {SequenceEditTarget}
  * @implements {PatternTableTarget}
  * @implements {FileToolbarTarget}
  * @implements {PlaybackControlsTarget}
@@ -58,7 +57,6 @@ class TrackerMainElement extends HTMLElement {
         this._moduleProperties = fragment.querySelector('module-properties')
         this._playbackControls = fragment.querySelector('playback-controls')
         this._playbackStatus = fragment.querySelector('playback-status')
-        this._sequenceEdit = fragment.querySelector('sequence-edit')
         this._patternEdit = fragment.querySelector('pattern-edit')
         this._samplesList = fragment.querySelector('samples-list')
         this._errors = fragment.querySelector('#errors')
@@ -90,12 +88,8 @@ class TrackerMainElement extends HTMLElement {
         this._fileToolbar._target = this
         this._moduleProperties._target = this
         this._playbackControls._target = this
-        this._sequenceEdit._target = this
         this._patternEdit._setTarget(this)
         this._samplesList._target = this
-
-        this._patternEdit._onChange = pattern => (
-            this._changeModule(module => editSetPattern(module, this._selPattern(), pattern)))
 
         window.onbeforeunload = () => (this._unsavedChangeCount ? 'You have unsaved changes' : null)
         window.onerror = (message, source, line) => {
@@ -111,7 +105,6 @@ class TrackerMainElement extends HTMLElement {
         this._undoCombineTag = ''
         this._unsavedChangeCount = 0
 
-        this._sequenceEdit._setSelPos(0)
         this._refreshModule()
         this._patternEdit._resetState()
         this._samplesList._setSelSample(1)
@@ -168,7 +161,7 @@ class TrackerMainElement extends HTMLElement {
             this._playback.speed = this._playbackStatus._getSpeed()
         }
         if (restorePos) {
-            this._playback.pos = this._selPos()
+            this._playback.pos = this._patternEdit._selPos()
         }
         if (restoreRow) {
             this._playback.row = this._patternEdit._selRow()
@@ -311,43 +304,22 @@ class TrackerMainElement extends HTMLElement {
 
                 this._playbackStatus._setTempoSpeed(curState.tempo, curState.speed)
                 if (this._playbackControls._getFollow()) {
-                    this._sequenceEdit._setSelPos(curState.pos)
-                    this._refreshPattern()
+                    this._patternEdit._setSelPos(curState.pos)
                     this._patternEdit._setSelCell(
                         this._patternEdit._selChannel(), curState.row, true)
                 }
-                if (this._selPattern() == this._module.sequence[curState.pos]) {
-                    this._patternEdit._setPlaybackRow(curState.row)
-                } else {
-                    this._patternEdit._setPlaybackRow(-1)
-                }
+                this._patternEdit._setPlaybackPos(curState.pos, curState.row)
             }
             this._samplesList._setChannelStates(this._playback, curState.channels, curTime)
         }
     }
 
-    _selPos() {
-        return this._sequenceEdit._selPos
-    }
-
-    _selPattern() {
-        return this._module.sequence[this._selPos()]
-    }
-
     _refreshModule() {
         console.groupCollapsed('refresh')
         this._moduleProperties._setModule(this._module)
-        this._sequenceEdit._setSequence(this._module.sequence)
-        this._sequenceEdit._setPatterns(this._module.patterns)
-        this._patternEdit._setNumChannels(this._module.numChannels)
-        this._refreshPattern()
-        this._patternEdit._setSamples(this._module.samples)
+        this._patternEdit._setModule(this._module)
         this._samplesList._setSamples(this._module.samples)
         console.groupEnd()
-    }
-
-    _refreshPattern() {
-        this._patternEdit._setPattern(this._module.patterns[this._selPattern()])
     }
 
     /**

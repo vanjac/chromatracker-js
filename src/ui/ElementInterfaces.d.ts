@@ -11,10 +11,6 @@ interface ModuleEditTarget {
     _clearUndoCombine(tag: string): void
 }
 
-interface SequenceEditTarget {
-    _refreshPattern(): void
-}
-
 interface PatternTableTarget {
     _setMute(c: number, mute: boolean): void
 }

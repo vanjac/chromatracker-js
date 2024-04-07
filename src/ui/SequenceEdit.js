@@ -3,12 +3,14 @@
 class SequenceEditElement extends HTMLElement {
     constructor() {
         super()
-        /** @type {SequenceEditTarget & ModuleEditTarget} */
+        /** @type {ModuleEditTarget} */
         this._target = null
         this._selPos = 0
         /** @type {readonly number[]} */
         this._viewSequence = null
         this._viewNumPatterns = 0
+        /** @type {() => void} */
+        this._onSelect = null
     }
 
     connectedCallback() {
@@ -58,7 +60,7 @@ class SequenceEditElement extends HTMLElement {
             this._sequenceList.appendChild(label)
             label.addEventListener('change', () => {
                 this._selPos = i
-                this._target._refreshPattern()
+                this._onSelect()
                 this._updateSel()
             })
             this._sequenceButtons.push(label)
