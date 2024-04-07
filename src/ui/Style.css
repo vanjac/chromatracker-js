@@ -213,6 +213,7 @@ label {
 th, .pattern-cell {
     border: 1px solid var(--color-fg);
     white-space: nowrap;
+    box-sizing: content-box;
 }
 table {
     font-family: monospace;
@@ -268,6 +269,7 @@ td,
 .cell-inst {
     display: inline-block;
     vertical-align: top;
+    box-sizing: content-box;
 }
 .cell-pitch, .cell-effect {
     width: 3ch;
