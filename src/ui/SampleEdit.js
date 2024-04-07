@@ -394,18 +394,19 @@ class SampleEditElement extends HTMLElement {
      * @param {Readonly<Int8Array>} wave
      */
     _createSamplePreview(wave) {
-        let numBlocks = this._wavePreview.width
+        let {width, height} = this._wavePreview
+        let numBlocks = width
         let blockPerFrame = numBlocks / wave.length
 
         let ctx = this._wavePreview.getContext('2d')
         // 'currentColor' doesn't work in Chrome or Safari
         ctx.strokeStyle = window.getComputedStyle(this._wavePreview).getPropertyValue('--color-fg')
-        ctx.clearRect(0, 0, this._wavePreview.width, this._wavePreview.height)
+        ctx.clearRect(0, 0, width, height)
 
         /**
          * @param {number} amp
          */
-        let ampYPos = amp => this._wavePreview.height * ((127 - amp) / 256.0)
+        let ampYPos = amp => height * ((127 - amp) / 256.0)
 
         ctx.beginPath()
         let min = 127
