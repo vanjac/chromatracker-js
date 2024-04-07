@@ -730,6 +730,7 @@ function getSamplePredictedPos(channel, time) {
     if (!channel.sample || !channel.sourceSample) { return 0 }
 
     let timeDiff = time - channel.samplePredictTime
+    if (timeDiff < 0) { return channel.samplePredictPos }
     let rate = periodToRate(channel.scheduledPeriod)
     // TODO: use detune (arpeggios)
     let pos = Math.floor(channel.samplePredictPos + rate * baseRate * timeDiff)

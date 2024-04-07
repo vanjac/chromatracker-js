@@ -155,6 +155,7 @@ class SampleEditElement extends HTMLElement {
         /** @type {HTMLInputElement} */
         this._sampleRateInput = fragment.querySelector('#sampleRate')
 
+        this._jamCell = fragment.querySelector('#jamCell')
         this._piano = fragment.querySelector('piano-keyboard')
 
         this.style.display = 'contents'
@@ -175,6 +176,7 @@ class SampleEditElement extends HTMLElement {
      */
     _setIndex(index) {
         this._index = index
+        this._updateJamCell()
     }
 
     /**
@@ -290,6 +292,8 @@ class SampleEditElement extends HTMLElement {
             let waveLen = this._viewSample.wave.length
             this._selectRange.style.width = (100 * this._selLen() / waveLen) + '%'
         }
+
+        this._updateJamCell()
     }
 
     /**
@@ -363,6 +367,27 @@ class SampleEditElement extends HTMLElement {
         let waveRect = this._wavePreview.getBoundingClientRect()
         let pos = (clientX - waveRect.left) * this._viewSample.wave.length / waveRect.width
         return clamp(Math.round(pos), 0, this._viewSample.wave.length)
+    }
+
+    _pitchChanged() {}
+
+    _getJamCell() {
+        let cell = new Cell()
+        cell.pitch = this._piano._getPitch()
+        cell.inst = this._index
+        if (this._anySelected()) {
+            let offset = Math.min(255, Math.floor(this._selMin() / 256))
+            if (offset > 0) {
+                cell.effect = Effect.SampleOffset
+                cell.param0 = offset >> 4
+                cell.param1 = offset & 0xf
+            }
+        }
+        return cell
+    }
+
+    _updateJamCell() {
+        setCellContents(this._jamCell, this._getJamCell())
     }
 
     /**
@@ -548,14 +573,6 @@ class SampleEditElement extends HTMLElement {
                 .then(() => closeDialog(waitDialog))
                 .catch(() => closeDialog(waitDialog))
         }
-    }
-
-    /* PianoKeyboardTarget */
-
-    _pitchChanged() {}
-
-    _getJamCell() {
-        return Object.assign(new Cell(), {pitch: this._piano._getPitch(), inst: this._index})
     }
 }
 window.customElements.define('sample-edit', SampleEditElement)
