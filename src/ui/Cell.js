@@ -37,9 +37,9 @@ function cellEffectString(cell) {
  * @param {Readonly<Cell>} cell
  */
 function setCellContents(elem, cell) {
-    elem.querySelector('#pitch').textContent = cellPitchString(cell.pitch)
-    elem.querySelector('#inst').textContent = cellInstString(cell.inst)
-    elem.querySelector('#effect').textContent = cellEffectString(cell)
+    elem.querySelector('#pitch').childNodes[0].nodeValue = cellPitchString(cell.pitch)
+    elem.querySelector('#inst').childNodes[0].nodeValue = cellInstString(cell.inst)
+    elem.querySelector('#effect').childNodes[0].nodeValue = cellEffectString(cell)
 }
 
 /**

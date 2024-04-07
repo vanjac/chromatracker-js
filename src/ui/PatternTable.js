@@ -10,6 +10,7 @@ class PatternTableElement extends HTMLElement {
         /** @type {CellPart} */
         this._viewEntryParts = CellPart.none
         this._viewNumChannels = 0
+        this._viewNumRows = 0
         /** @type {Readonly<Pattern>} */
         this._viewPattern = null
     }
@@ -71,30 +72,41 @@ class PatternTableElement extends HTMLElement {
         console.log('update pattern')
         this._viewPattern = pattern
 
-        this._tbody.textContent = ''
-        let tableFrag = document.createDocumentFragment()
-        for (let row = 0; row < pattern[0].length; row++) {
-            let tr = tableFrag.appendChild(createElem('tr'))
-            let th = createElem('th', {textContent: row.toString()})
-            th.classList.add('pattern-row-head')
-            tr.appendChild(th)
-
-            for (let c = 0; c < pattern.length; c++) {
-                let cell = pattern[c][row]
-                let cellFrag = templates.cellTemplate.cloneNode(true)
-                setCellContents(cellFrag, cell)
-
-                let td = cellFrag.querySelector('td')
-                setupKeyButton(td, id => {
-                    this._setSelCell(c, row)
-                    this._target._jamPlay(id, cell)
-                }, id => this._target._jamRelease(id), {blockScroll: false})
-
-                tr.appendChild(cellFrag)
+        if (pattern[0].length == this._viewNumRows) {
+            for (let row = 0; row < pattern[0].length; row++) {
+                let tr = this._tbody.children[row]
+                for (let c = 0; c < pattern.length; c++) {
+                    let td = tr.children[c + 1]
+                    setCellContents(td, pattern[c][row])
+                }
             }
+        } else {
+            this._viewNumRows = pattern[0].length
+            this._tbody.textContent = ''
+            let tableFrag = document.createDocumentFragment()
+            for (let row = 0; row < pattern[0].length; row++) {
+                let tr = tableFrag.appendChild(createElem('tr'))
+                let th = createElem('th', {textContent: row.toString()})
+                th.classList.add('pattern-row-head')
+                tr.appendChild(th)
+
+                for (let c = 0; c < pattern.length; c++) {
+                    let cell = pattern[c][row]
+                    let cellFrag = templates.cellTemplate.cloneNode(true)
+                    setCellContents(cellFrag, cell)
+
+                    let td = cellFrag.querySelector('td')
+                    setupKeyButton(td, id => {
+                        this._setSelCell(c, row)
+                        this._target._jamPlay(id, this._viewPattern[c][row])
+                    }, id => this._target._jamRelease(id), {blockScroll: false})
+
+                    tr.appendChild(cellFrag)
+                }
+            }
+            this._tbody.appendChild(tableFrag)
+            this._setSelCell(this._selChannel, this._selRow)
         }
-        this._tbody.appendChild(tableFrag)
-        this._setSelCell(this._selChannel, this._selRow)
     }
 
     /**
