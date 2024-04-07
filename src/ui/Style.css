@@ -216,16 +216,20 @@ th, .pattern-cell {
     box-sizing: content-box;
 }
 table {
-    font-family: monospace;
     border-collapse: collapse;
     table-layout: fixed;
     width: 0;
+}
+table,
+.pattern-cell {
+    font-family: monospace;
 }
 /* https://issues.chromium.org/issues/40511425 */
 th {
     position: sticky;
     position: -webkit-sticky;
     background-color: var(--color-bg);
+    z-index: 1;
 }
 thead th {
     top: 0;
