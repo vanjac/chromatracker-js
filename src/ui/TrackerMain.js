@@ -59,7 +59,7 @@ class TrackerMainElement extends HTMLElement {
         this._playbackControls = fragment.querySelector('playback-controls')
         this._playbackStatus = fragment.querySelector('playback-status')
         this._sequenceEdit = fragment.querySelector('sequence-edit')
-        this._patternTable = fragment.querySelector('pattern-table')
+        this._patternEdit = fragment.querySelector('pattern-edit')
         this._samplesList = fragment.querySelector('samples-list')
         this._errors = fragment.querySelector('#errors')
 
@@ -74,7 +74,7 @@ class TrackerMainElement extends HTMLElement {
                         element.classList.toggle('hide', element.id != tabName)
                     }
                     if (tabName == 'sequence') {
-                        this._patternTable._onVisible()
+                        this._patternEdit._onVisible()
                     } else if (tabName == 'samples') {
                         this._samplesList._onVisible()
                     }
@@ -91,10 +91,10 @@ class TrackerMainElement extends HTMLElement {
         this._moduleProperties._target = this
         this._playbackControls._target = this
         this._sequenceEdit._target = this
-        this._patternTable._setTarget(this)
+        this._patternEdit._setTarget(this)
         this._samplesList._target = this
 
-        this._patternTable._onChange = pattern => (
+        this._patternEdit._onChange = pattern => (
             this._changeModule(module => editSetPattern(module, this._selPattern(), pattern)))
 
         window.onbeforeunload = () => (this._unsavedChangeCount ? 'You have unsaved changes' : null)
@@ -112,9 +112,8 @@ class TrackerMainElement extends HTMLElement {
         this._unsavedChangeCount = 0
 
         this._sequenceEdit._setSelPos(0)
-        this._patternTable._resetState()
         this._refreshModule()
-        this._patternTable._scrollToSelCell()
+        this._patternEdit._resetState()
         this._samplesList._setSelSample(1)
         this._playbackStatus._setTempoSpeed(defaultTempo, defaultSpeed)
     }
@@ -136,7 +135,7 @@ class TrackerMainElement extends HTMLElement {
             console.log(mod)
             this._module = mod
             this._resetEditorState()
-            this._resetPlayback(false)
+            this._resetPlayback()
         })
     }
 
@@ -146,9 +145,8 @@ class TrackerMainElement extends HTMLElement {
 
     /**
      * Must be called as result of user interaction
-     * @param {boolean} restoreSpeed
      */
-    _resetPlayback(restoreSpeed) {
+    _resetPlayback({restoreSpeed = false, restorePos = false, restoreRow = false} = {}) {
         this._pause()
         if (!this._context) {
             // @ts-ignore
@@ -161,7 +159,7 @@ class TrackerMainElement extends HTMLElement {
         this._playback.time += playbackDelay // avoid "catching up"
 
         for (let c = 0; c < this._module.numChannels; c++) {
-            if (this._patternTable._isChannelMuted(c)) {
+            if (this._patternEdit._isChannelMuted(c)) {
                 setChannelMute(this._playback, c, true)
             }
         }
@@ -169,15 +167,20 @@ class TrackerMainElement extends HTMLElement {
             this._playback.tempo = this._playbackStatus._getTempo()
             this._playback.speed = this._playbackStatus._getSpeed()
         }
+        if (restorePos) {
+            this._playback.pos = this._selPos()
+        }
+        if (restoreRow) {
+            this._playback.row = this._patternEdit._selRow()
+        }
 
         this._updatePlaySettings()
-        return this._playback
     }
 
     // Must be called as result of user interaction
     _enablePlayback() {
         if (!this._playback) {
-            this._resetPlayback(false)
+            this._resetPlayback()
         } else if (this._context.state != 'running') {
             this._context.resume()
         }
@@ -251,7 +254,8 @@ class TrackerMainElement extends HTMLElement {
     _jamPlay(id, cell, {useChannel = true} = {}) {
         this._enablePlayback()
         this._enableAnimation()
-        jamPlay(this._playback, id, useChannel ? this._selChannel() : -1, cell)
+        let channel = useChannel ? this._patternEdit._selChannel() : -1
+        jamPlay(this._playback, id, channel, cell)
     }
 
     /**
@@ -308,15 +312,14 @@ class TrackerMainElement extends HTMLElement {
                 this._playbackStatus._setTempoSpeed(curState.tempo, curState.speed)
                 if (this._playbackControls._getFollow()) {
                     this._sequenceEdit._setSelPos(curState.pos)
-                    this._patternTable._selRow = curState.row
                     this._refreshPattern()
-                    this._patternTable._updateSelCell()
-                    this._patternTable._scrollToSelCell()
+                    this._patternEdit._setSelCell(
+                        this._patternEdit._selChannel(), curState.row, true)
                 }
                 if (this._selPattern() == this._module.sequence[curState.pos]) {
-                    this._patternTable._setPlaybackRow(curState.row)
+                    this._patternEdit._setPlaybackRow(curState.row)
                 } else {
-                    this._patternTable._setPlaybackRow(-1)
+                    this._patternEdit._setPlaybackRow(-1)
                 }
             }
             this._samplesList._setChannelStates(this._playback, curState.channels, curTime)
@@ -325,14 +328,6 @@ class TrackerMainElement extends HTMLElement {
 
     _selPos() {
         return this._sequenceEdit._selPos
-    }
-
-    _selRow() {
-        return this._patternTable._selRow
-    }
-
-    _selChannel() {
-        return this._patternTable._selChannel
     }
 
     _selPattern() {
@@ -344,15 +339,15 @@ class TrackerMainElement extends HTMLElement {
         this._moduleProperties._setModule(this._module)
         this._sequenceEdit._setSequence(this._module.sequence)
         this._sequenceEdit._setPatterns(this._module.patterns)
-        this._patternTable._setNumChannels(this._module.numChannels)
+        this._patternEdit._setNumChannels(this._module.numChannels)
         this._refreshPattern()
-        this._patternTable._setSamples(this._module.samples)
+        this._patternEdit._setSamples(this._module.samples)
         this._samplesList._setSamples(this._module.samples)
         console.groupEnd()
     }
 
     _refreshPattern() {
-        this._patternTable._setPattern(this._module.patterns[this._selPattern()])
+        this._patternEdit._setPattern(this._module.patterns[this._selPattern()])
     }
 
     /**

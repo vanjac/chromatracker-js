@@ -1,17 +1,14 @@
 'use strict'
 
-/**
- * @implements {CellEntryTarget}
- */
 class PatternTableElement extends HTMLElement {
     constructor() {
         super()
         /** @type {PatternTableTarget & JamTarget} */
         this._target = null
-        /** @type {(pattern: Readonly<Pattern>) => void} */
-        this._onChange = null
         this._selRow = 0
         this._selChannel = 0
+        /** @type {CellPart} */
+        this._viewEntryParts = CellPart.none
         this._viewNumChannels = 0
         /** @type {Readonly<Pattern>} */
         this._viewPattern = null
@@ -19,8 +16,6 @@ class PatternTableElement extends HTMLElement {
 
     connectedCallback() {
         let fragment = templates.patternTable.cloneNode(true)
-
-        this._cellEntry = fragment.querySelector('cell-entry')
 
         this._patternScroll = fragment.querySelector('#patternScroll')
         this._theadRow = fragment.querySelector('tr')
@@ -30,26 +25,6 @@ class PatternTableElement extends HTMLElement {
 
         this.style.display = 'contents'
         this.appendChild(fragment)
-
-        this._cellEntry._target = this
-    }
-
-    _onVisible() {
-        this._cellEntry._onVisible()
-    }
-
-    /**
-     * @param {PatternTableTarget & JamTarget} target
-     */
-    _setTarget(target) {
-        this._target = target
-        this._cellEntry._setJamTarget(target)
-    }
-
-    _resetState() {
-        this._selRow = 0
-        this._selChannel = 0
-        this._cellEntry._setSelSample(1)
     }
 
     /**
@@ -111,9 +86,7 @@ class PatternTableElement extends HTMLElement {
 
                 let td = cellFrag.querySelector('td')
                 setupKeyButton(td, id => {
-                    this._selRow = row
-                    this._selChannel = c
-                    this._updateSelCell()
+                    this._setSelCell(c, row)
                     this._target._jamPlay(id, cell)
                 }, id => this._target._jamRelease(id), {blockScroll: false})
 
@@ -121,46 +94,17 @@ class PatternTableElement extends HTMLElement {
             }
         }
         this._tbody.appendChild(tableFrag)
-        this._updateSelCell()
+        this._setSelCell(this._selChannel, this._selRow)
     }
 
     /**
-     * @param {readonly Readonly<Sample>[]} samples
+     * @param {number} channel
+     * @param {number} row
      */
-    _setSamples(samples) {
-        this._cellEntry._setSamples(samples)
-    }
+    _setSelCell(channel, row) {
+        this._selChannel = channel
+        this._selRow = row
 
-    _selCell() {
-        return this._viewPattern[this._selChannel][this._selRow]
-    }
-
-    /**
-     * @param {Readonly<Cell>} cell
-     * @param {CellPart} parts
-     */
-    _putCell(cell, parts) {
-        this._onChange(
-            editPatternPutCell(this._viewPattern, this._selChannel, this._selRow, cell, parts))
-    }
-
-    /**
-     * @param {number} count
-     */
-    _insert(count) {
-        this._onChange(
-            editPatternChannelInsert(this._viewPattern, this._selChannel, this._selRow, count))
-    }
-
-    /**
-     * @param {number} count
-     */
-    _delete(count) {
-        this._onChange(
-            editPatternChannelDelete(this._viewPattern, this._selChannel, this._selRow, count))
-    }
-
-    _updateSelCell() {
         let cell = this._tbody.querySelector('.sel-cell')
         if (cell) {
             cell.classList.remove('sel-cell')
@@ -171,14 +115,18 @@ class PatternTableElement extends HTMLElement {
         if (this._selRow >= 0 && this._selChannel >= 0) {
             let cell = this._tbody.children[this._selRow].children[this._selChannel + 1]
             cell.classList.add('sel-cell')
-            toggleCellParts(cell, this._cellEntry._getCellParts())
+            toggleCellParts(cell, this._viewEntryParts)
         }
     }
 
-    _updateEntryParts() {
+    /**
+     * @param {CellPart} parts
+     */
+    _setEntryParts(parts) {
+        this._viewEntryParts = parts
         let selCell = this._tbody.querySelector('.sel-cell')
         if (selCell) {
-            toggleCellParts(selCell, this._cellEntry._getCellParts())
+            toggleCellParts(selCell, parts)
         }
     }
 
@@ -201,13 +149,6 @@ class PatternTableElement extends HTMLElement {
         let centerY = this._patternScroll.clientHeight / 2
         let scrollAmount = (childRect.top - parentRect.top) - centerY
         this._patternScroll.scrollBy({top: scrollAmount, behavior: 'instant'})
-    }
-
-    _advance() {
-        this._selRow++
-        this._selRow %= this._viewPattern[0].length
-        this._updateSelCell()
-        this._scrollToSelCell()
     }
 
     /**

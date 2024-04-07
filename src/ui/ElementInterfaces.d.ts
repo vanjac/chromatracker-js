@@ -40,12 +40,11 @@ interface FileToolbarTarget {
 }
 
 interface PlaybackControlsTarget {
-    _resetPlayback(restoreSpeed: boolean): Playback
+    _resetPlayback(options?: {restoreSpeed?: boolean, restorePos?: boolean, restoreRow?: boolean})
+        : void
     _play(): void
     _pause(): void
     _updatePlaySettings(): void
-    _selPos(): number
-    _selRow(): number
     _undo(): void
 }
 
@@ -59,6 +58,7 @@ interface HTMLElementTagNameMap {
     'filter-effect': FilterEffectElement
     'input-dialog': InputDialogElement
     'module-properties': ModulePropertiesElement
+    'pattern-edit': PatternEditElement
     'pattern-table': PatternTableElement
     'piano-keyboard': PianoKeyboardElement
     'playback-controls': PlaybackControlsElement

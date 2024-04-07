@@ -18,18 +18,15 @@ class PlaybackControlsElement extends HTMLElement {
         this._followInput = fragment.querySelector('#follow')
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
-            this._target._resetPlayback(false)
+            this._target._resetPlayback()
             this._target._play()
         })
         fragment.querySelector('#playPattern').addEventListener('click', () => {
-            let playback = this._target._resetPlayback(true)
-            playback.pos = this._target._selPos()
+            this._target._resetPlayback({restoreSpeed: true, restorePos: true})
             this._target._play()
         })
         this._playRowButton.addEventListener('click', () => {
-            let playback = this._target._resetPlayback(true)
-            playback.pos = this._target._selPos()
-            playback.row = this._target._selRow()
+            this._target._resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})
             this._target._play()
         })
         this._pauseButton.addEventListener('click', () => this._target._pause())
