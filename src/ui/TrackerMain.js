@@ -26,7 +26,7 @@ PlaybackState.prototype = {
  * @implements {FileToolbarTarget}
  * @implements {PlaybackControlsTarget}
  */
-class AppMainElement extends HTMLElement {
+class TrackerMainElement extends HTMLElement {
     constructor() {
         super()
 
@@ -52,7 +52,7 @@ class AppMainElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.appMain.cloneNode(true)
+        let fragment = templates.trackerMain.cloneNode(true)
 
         /** @type {FileToolbarElement} */
         this._fileToolbar = fragment.querySelector('file-toolbar')
@@ -444,4 +444,4 @@ class AppMainElement extends HTMLElement {
         }
     }
 }
-window.customElements.define('app-main', AppMainElement)
+window.customElements.define('tracker-main', TrackerMainElement)
