@@ -130,7 +130,7 @@ class FilterEffectElement extends FormDialogElement {
         this._onComplete({
             type: /** @type {BiquadFilterType} */(this._typeInput.value),
             freqStart: this._freqStartInput.valueAsNumber,
-            freqEnd: this._freqEndInput.valueAsNumber,
+            freqEnd: this._envelopeEnableInput.checked ? this._freqEndInput.valueAsNumber : null,
             q: this._qInput.valueAsNumber,
             gain: this._gainInput.valueAsNumber,
             dither: this._ditherInput.checked
