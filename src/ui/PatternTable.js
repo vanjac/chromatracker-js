@@ -71,14 +71,15 @@ class PatternTableElement extends HTMLElement {
             return
         }
         console.log('update pattern')
-        this._viewPattern = pattern
 
         if (pattern[0].length == this._viewNumRows) {
-            for (let row = 0; row < pattern[0].length; row++) {
-                let tr = this._tbody.children[row]
-                for (let c = 0; c < pattern.length; c++) {
-                    let td = tr.children[c + 1]
-                    setCellContents(td, pattern[c][row])
+            for (let [c, channel] of pattern.entries()) {
+                if (channel != this._viewPattern[c]) {
+                    for (let [row, cell] of channel.entries()) {
+                        if (cell != this._viewPattern[c][row]) {
+                            setCellContents(this._tbody.children[row].children[c + 1], cell)
+                        }
+                    }
                 }
             }
         } else {
@@ -108,6 +109,7 @@ class PatternTableElement extends HTMLElement {
             this._tbody.appendChild(tableFrag)
             this._setSelCell(this._selChannel, this._selRow)
         }
+        this._viewPattern = pattern
     }
 
     /**
