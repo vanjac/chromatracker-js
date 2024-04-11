@@ -14,6 +14,16 @@ function immSplice(array, start, deleteCount, ...items) {
 }
 
 /**
+ * @template T
+ * @param {readonly T[]} array
+ * @param {number} index
+ * @param {(item: T) => T} callback
+ */
+function changeItem(array, index, callback) {
+    return immSplice(array, index, 1, callback(array[index]))
+}
+
+/**
  * @template {{}} T
  * @param {T} target
  * @param {Partial<T>[]} sources

@@ -34,7 +34,7 @@ class PatternEditElement extends HTMLElement {
         }, id => this._target._jamRelease(id))
 
         setupKeyButton(fragment.querySelector('#clear'), id => {
-            this._putCell(new Cell(), this._cellEntry._getCellParts())
+            this._putCell(emptyCell, this._cellEntry._getCellParts())
             this._target._jamPlay(id, this._selCell())
             this._advance()
         }, id => this._target._jamRelease(id))
@@ -152,10 +152,8 @@ class PatternEditElement extends HTMLElement {
      * @param {(pattern: Readonly<Pattern>) => Readonly<Pattern>} callback
      */
     _changePattern(callback) {
-        this._target._changeModule(module => {
-            let pattern = callback(module.patterns[module.sequence[this._selPos()]])
-            return editSetPattern(module, this._selPatternNum(), pattern)
-        })
+        this._target._changeModule(
+            module => editChangePattern(module, module.sequence[this._selPos()], callback))
     }
 
     /**

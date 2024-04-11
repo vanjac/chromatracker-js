@@ -31,10 +31,10 @@ function expandPatterns(module, idx) {
 /**
  * @param {Readonly<Module>} module
  * @param {number} p
- * @param {Readonly<Pattern>} pattern
+ * @param {(pattern: Readonly<Pattern>) => Readonly<Pattern>} callback
  */
-function editSetPattern(module, p, pattern) {
-    let patterns = immSplice(module.patterns, p, 1, pattern)
+function editChangePattern(module, p, callback) {
+    let patterns = changeItem(module.patterns, p, callback)
     return freezeAssign(new Module(), module, {patterns})
 }
 
@@ -55,9 +55,9 @@ function editClonePattern(module, pat) {
  * @param {CellPart} parts
  */
 function editPatternPutCell(pattern, c, r, cell, parts) {
-    let newCell = cellApply(pattern[c][r], cell, parts)
-    let channel = immSplice(pattern[c], r, 1, Object.freeze(newCell))
-    return immSplice(pattern, c, 1, channel)
+    return changeItem(pattern, c, channel =>
+        changeItem(channel, r, dest =>
+            Object.freeze(cellApply(dest, cell, parts))))
 }
 
 /**
@@ -67,10 +67,12 @@ function editPatternPutCell(pattern, c, r, cell, parts) {
  * @param {number} count
  */
 function editPatternChannelInsert(pattern, c, r, count) {
-    let channel = [...pattern[c]]
-    channel.copyWithin(r + count, r, channel.length - count + 1)
-    channel.fill(emptyCell, r, r + count)
-    return immSplice(pattern, c, 1, Object.freeze(channel))
+    return changeItem(pattern, c, channel => {
+        let newChannel = [...channel]
+        newChannel.copyWithin(r + count, r, channel.length - count + 1)
+        newChannel.fill(emptyCell, r, r + count)
+        return Object.freeze(newChannel)
+    })
 }
 
 /**
@@ -80,8 +82,10 @@ function editPatternChannelInsert(pattern, c, r, count) {
  * @param {number} count
  */
 function editPatternChannelDelete(pattern, c, r, count) {
-    let channel = [...pattern[c]]
-    channel.copyWithin(r, r + count, channel.length)
-    channel.fill(emptyCell, channel.length - count, channel.length)
-    return immSplice(pattern, c, 1, Object.freeze(channel))
+    return changeItem(pattern, c, channel => {
+        let newChannel = [...channel]
+        newChannel.copyWithin(r, r + count, channel.length)
+        newChannel.fill(emptyCell, channel.length - count, channel.length)
+        return Object.freeze(newChannel)
+    })
 }
