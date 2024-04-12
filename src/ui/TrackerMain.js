@@ -338,10 +338,12 @@ class TrackerMainElement extends HTMLElement {
      */
     _changeModule(callback, {refresh = true, combineTag = ''} = {}) {
         let newMod = callback(this._module)
-        this._pushUndo(combineTag)
-        this._setModule(newMod)
-        if (refresh) {
-            this._refreshModule()
+        if (newMod != this._module) {
+            this._pushUndo(combineTag)
+            this._setModule(newMod)
+            if (refresh) {
+                this._refreshModule()
+            }
         }
     }
 
