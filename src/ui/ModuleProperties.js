@@ -107,14 +107,16 @@ class ModulePropertiesElement extends HTMLElement {
                 try {
                     result = runUserScript(script, {module})
                 } catch (e) {
-                    openAlertDialog(String(e), 'Script Error')
+                    let errorStr = 'Unknown error'
+                    try { errorStr = String(e) } catch (_) {}
+                    openAlertDialog(errorStr, 'Script Error')
                     return module
                 }
                 if (result instanceof Module) {
                     return result
                 } else {
                     if (result !== undefined) {
-                        openAlertDialog(String(result), 'Script Result')
+                        openAlertDialog(JSON.stringify(result), 'Script Result')
                     }
                     return module
                 }
