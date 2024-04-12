@@ -52,7 +52,7 @@ function runUserScript(script, args) {
     scriptHead += 'void(0);' // completion value if script is empty
     scriptHead += '{{' // wrap script in block statement to allow redefining variables
     // hidden variables (in dead zone)
-    let scriptTail = '}let global}let globalThis'
+    let scriptTail = '\n}let global}let globalThis'
     for (let o = globalThis; o && o != Object.prototype; o = Object.getPrototypeOf(o)) {
         for (let key of Object.keys(o)) {
             let prop = Object.getOwnPropertyDescriptor(o, key)
