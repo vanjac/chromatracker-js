@@ -43,6 +43,9 @@ window.customElements.define('script-dialog', ScriptDialogElement)
  * @param {Record<string, any>} args
  */
 function runUserScript(script, args) {
+    // check for syntax errors when evaluated as a function
+    new Function(script)
+
     let scriptHead = "'use strict';"
     // script argument variables
     scriptHead += `let {${Object.keys(args).join(',')}}=global.scriptArgs;`
