@@ -116,7 +116,13 @@ class ModulePropertiesElement extends HTMLElement {
                     return result
                 } else {
                     if (result !== undefined) {
-                        openAlertDialog(JSON.stringify(result), 'Script Result')
+                        let resultStr
+                        try {
+                            resultStr = JSON.stringify(result)
+                        } catch (_) {
+                            resultStr = result.toString ? result.toString() : 'Unknown value'
+                        }
+                        openAlertDialog(resultStr, 'Script Result')
                     }
                     return module
                 }
