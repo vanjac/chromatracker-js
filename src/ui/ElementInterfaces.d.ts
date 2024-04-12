@@ -60,5 +60,6 @@ interface HTMLElementTagNameMap {
     'sample-edit': SampleEditElement
     'samples-list': SamplesListElement
     'sequence-edit': SequenceEditElement
+    'script-dialog': ScriptDialogElement
     'wait-dialog': WaitDialogElement
 }

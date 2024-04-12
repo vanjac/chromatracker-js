@@ -8,4 +8,8 @@ let global = {
     // Effect parameters
     lastResampleSemitones: 12,
     lastLoopRepeat: 2,
+    /** @type {Record<string, string>} */
+    scriptFormData: {__proto__: null},
+    /** @type {Record<string, any>} */
+    scriptArgs: null
 }

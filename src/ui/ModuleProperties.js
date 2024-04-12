@@ -51,6 +51,8 @@ class ModulePropertiesElement extends HTMLElement {
         fragment.querySelector('#patternZap').addEventListener('click',
             () => this._target._changeModule(module => editPatternZap(module)))
 
+        fragment.querySelector('#script').addEventListener('click', () => this._runScript())
+
         this.style.display = 'contents'
         this.appendChild(fragment)
     }
@@ -94,6 +96,30 @@ class ModulePropertiesElement extends HTMLElement {
         this._fileSizeOutput.value = formatFileSize(fileSize)
 
         this._viewModule = module
+    }
+
+    _runScript() {
+        let _info = '(module: Readonly<Module>) => Readonly<Module>'
+        let dialog = openDialog(createElem('script-dialog', {_info}), {dismissable: true})
+        dialog._onComplete = script => {
+            this._target._changeModule(module => {
+                let result
+                try {
+                    result = runUserScript(script, {module})
+                } catch (e) {
+                    openAlertDialog(String(e), 'Script Error')
+                    return module
+                }
+                if (result instanceof Module) {
+                    return result
+                } else {
+                    if (result !== undefined) {
+                        openAlertDialog(String(result), 'Script Result')
+                    }
+                    return module
+                }
+            })
+        }
     }
 }
 window.customElements.define('module-properties', ModulePropertiesElement)

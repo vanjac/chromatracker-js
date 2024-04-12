@@ -69,6 +69,11 @@ input:disabled {
     width: 80pt;
 }
 
+textarea {
+    font-family: monospace;
+    white-space: pre;
+}
+
 /* Buttons */
 
 .label-button {
