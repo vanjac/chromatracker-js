@@ -61,9 +61,9 @@ function runUserScript(script, args) {
     }
 
     global.scriptArgs = args
-    let evalFn = eval // indirect eval
+    let indirectEval = eval
     try {
-        return evalFn(scriptHead + script + scriptTail)
+        return indirectEval(scriptHead + script + scriptTail)
     } finally {
         global.scriptArgs = null
     }
