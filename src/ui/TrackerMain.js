@@ -83,6 +83,17 @@ class TrackerMainElement extends HTMLElement {
 
         fragment.querySelector('#version').textContent = this.getAttribute('data-version')
 
+        this.addEventListener('contextmenu', () => cliResetSel(), {capture: true})
+        this.addEventListener('contextmenu', e => {
+            if (e.altKey) {
+                e.preventDefault()
+                cliAddSelProp('module', Module, this._module,
+                    module => this._changeModule(_ => module))
+                let dialog = openDialog(createElem('cli-dialog'), {dismissable: true})
+                cliBeginSel(() => closeDialog(dialog))
+            }
+        })
+
         this.style.display = 'contents'
         this.appendChild(fragment)
 

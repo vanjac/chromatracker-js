@@ -42,6 +42,7 @@ function cliAddSelProp(name, type, value, setter) {
             }
         }
     })
+    console.log(`sel.${name} = `, value)
 }
 
 /**
@@ -50,12 +51,16 @@ function cliAddSelProp(name, type, value, setter) {
 function cliBeginSel(onEnd) {
     cliState.onSelEnd = onEnd
     Object.seal(cliState.sel)
-    for (let key in cliState.sel) {
-        console.log(`sel.${key} = `, cliState.sel[key])
-    }
+    console.log('Ready:')
 }
 
 function cliEndSel() {
+    console.log('Accepted')
     cliState.onSelEnd()
+    cliResetSel()
+}
+
+function cliCancelSel() {
+    console.log('Cancelled')
     cliResetSel()
 }

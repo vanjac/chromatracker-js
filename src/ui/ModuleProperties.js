@@ -51,8 +51,6 @@ class ModulePropertiesElement extends HTMLElement {
         fragment.querySelector('#patternZap').addEventListener('click',
             () => this._target._changeModule(module => editPatternZap(module)))
 
-        fragment.querySelector('#script').addEventListener('click', () => this._runScript())
-
         this.style.display = 'contents'
         this.appendChild(fragment)
     }
@@ -96,13 +94,6 @@ class ModulePropertiesElement extends HTMLElement {
         this._fileSizeOutput.value = formatFileSize(fileSize)
 
         this._viewModule = module
-    }
-
-    _runScript() {
-        let dialog = openDialog(createElem('cli-dialog'), {dismissable: true})
-        cliAddSelProp('module', Module, this._viewModule,
-            module => this._target._changeModule(_ => module))
-        cliBeginSel(() => closeDialog(dialog))
     }
 }
 window.customElements.define('module-properties', ModulePropertiesElement)
