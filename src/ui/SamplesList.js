@@ -59,7 +59,7 @@ class SamplesListElement extends HTMLElement {
         if (samples == this._viewSamples) {
             return
         }
-        console.log('update samples list')
+        console.debug('update samples list')
         this._viewSamples = samples
 
         let selSample = this._getSelSample()

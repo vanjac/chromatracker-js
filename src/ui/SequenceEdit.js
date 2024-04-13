@@ -43,7 +43,7 @@ class SequenceEditElement extends HTMLElement {
         if (sequence == this._viewSequence) {
             return
         }
-        console.log('update sequence')
+        console.debug('update sequence')
         this._viewSequence = sequence
 
         if (this._selPos >= sequence.length) {
@@ -78,7 +78,7 @@ class SequenceEditElement extends HTMLElement {
         if (patterns.length == this._viewNumPatterns) {
             return
         }
-        console.log('update num patterns')
+        console.debug('update num patterns')
         this._viewNumPatterns = patterns.length
 
         this._select.textContent = ''

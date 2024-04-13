@@ -35,7 +35,7 @@ class PatternTableElement extends HTMLElement {
         if (numChannels == this._viewNumChannels) {
             return
         }
-        console.log('update pattern channels')
+        console.debug('update pattern channels')
         this._viewNumChannels = numChannels
         this._viewNumRows = 0
 
@@ -70,7 +70,7 @@ class PatternTableElement extends HTMLElement {
         if (pattern == this._viewPattern) {
             return
         }
-        console.log('update pattern')
+        console.debug('update pattern')
 
         if (pattern[0].length == this._viewNumRows) {
             for (let [c, channel] of pattern.entries()) {

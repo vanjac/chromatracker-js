@@ -54,7 +54,7 @@ class FileToolbarElement extends HTMLElement {
     _saveFile() {
         let blob = new Blob([writeModule(this._target._module)], {type: 'application/octet-stream'})
         let url = URL.createObjectURL(blob)
-        console.log(url)
+        console.info(url)
         window.open(url)
         this._target._moduleSaved()
     }

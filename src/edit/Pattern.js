@@ -22,7 +22,7 @@ function expandPatterns(module, idx) {
     }
     let newPatterns = [...module.patterns]
     while (idx >= newPatterns.length) {
-        console.log('Make new pattern')
+        console.debug('Make new pattern')
         newPatterns.push(createPattern(module.numChannels))
     }
     return Object.freeze(newPatterns)

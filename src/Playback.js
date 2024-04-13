@@ -125,7 +125,7 @@ function setPlaybackModule(playback, mod) {
     playback.mod = mod
 
     if (playback.channels.length != mod.numChannels) {
-        console.log('update playback channels')
+        console.debug('update playback channels')
         for (let channel of playback.channels) {
             disconnectChannel(channel)
         }
@@ -139,7 +139,7 @@ function setPlaybackModule(playback, mod) {
     }
 
     if (playback.modSamples != mod.samples) {
-        console.log('update playback sample list')
+        console.debug('update playback sample list')
         playback.modSamples = mod.samples
 
         playback.samples.length = mod.samples.length
@@ -147,7 +147,7 @@ function setPlaybackModule(playback, mod) {
             let sample = mod.samples[i]
             let sp = playback.samples[i]
             if (sample && (!sp || sp.wave != sample.wave)) {
-                console.log('update playback sample')
+                console.debug('update playback sample')
                 playback.samples[i] = createSamplePlayback(playback.ctx, sample)
             } else if (!sample) {
                 playback.samples[i] = null

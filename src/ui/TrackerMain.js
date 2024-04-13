@@ -126,7 +126,7 @@ class TrackerMainElement extends HTMLElement {
      */
     _moduleLoaded(mod) {
         this._askUnsavedChanges().then(() => {
-            console.log(mod)
+            console.info(mod)
             this._module = mod
             this._resetEditorState()
             this._resetPlayback()
@@ -264,14 +264,14 @@ class TrackerMainElement extends HTMLElement {
 
     _enableAnimation() {
         if (!this._animHandle) {
-            console.log('enable animation')
+            console.debug('enable animation')
             this._animHandle = window.requestAnimationFrame(() => this._frameUpdateCallback())
         }
     }
 
     _disableAnimation() {
         if (this._animHandle) {
-            console.log('disable animation')
+            console.debug('disable animation')
             this._frameUpdate() // clear frame
             window.cancelAnimationFrame(this._animHandle)
             this._animHandle = 0
@@ -316,11 +316,11 @@ class TrackerMainElement extends HTMLElement {
     }
 
     _refreshModule() {
-        console.groupCollapsed('refresh')
+        console.debug('=== begin refresh ===')
         this._moduleProperties._setModule(this._module)
         this._patternEdit._setModule(this._module)
         this._samplesList._setSamples(this._module.samples)
-        console.groupEnd()
+        console.debug('===  end refresh  ===')
     }
 
     /**
@@ -376,7 +376,7 @@ class TrackerMainElement extends HTMLElement {
             this._refreshModule()
             this._unsavedChangeCount--
             this._undoCombineTag = ''
-            console.log(this._module)
+            console.info(this._module)
         }
     }
 }

@@ -187,7 +187,7 @@ class SampleEditElement extends HTMLElement {
             return
         }
 
-        console.log('update sample')
+        console.debug('update sample')
 
         this._nameInput.value = sample.name
 

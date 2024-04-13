@@ -130,7 +130,7 @@ class CellEntryElement extends HTMLElement {
         if (samples == this._viewSamples) {
             return
         }
-        console.log('update entry samples')
+        console.debug('update entry samples')
         this._viewSamples = samples
 
         let selSample = Number(getRadioButtonValue(this._sampleInput, '1'))

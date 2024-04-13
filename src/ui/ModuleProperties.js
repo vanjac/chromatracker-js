@@ -66,26 +66,26 @@ class ModulePropertiesElement extends HTMLElement {
         }
 
         if (!this._viewModule || module.name != this._titleInput.value) {
-            console.log('update title')
+            console.debug('update title')
             this._titleInput.value = module.name
         }
         if (!this._viewModule || module.numChannels != this._viewModule.numChannels) {
-            console.log('update channel count')
+            console.debug('update channel count')
             this._channelCountOutput.value = module.numChannels.toString()
         }
         if (!this._viewModule || module.samples != this._viewModule.samples) {
-            console.log('update sample count')
+            console.debug('update sample count')
             let sampleCount = module.samples.reduce(
                 (count, item) => (item ? (count + 1) : count), 0)
             this._sampleCountOutput.value = sampleCount.toString()
             this._viewSamplesSize = calcModSamplesSize(module.samples)
         }
         if (!this._viewModule || module.patterns != this._viewModule.patterns) {
-            console.log('update pattern count')
+            console.debug('update pattern count')
             this._patternCountOutput.value = module.patterns.length.toString()
         }
         if (!this._viewModule || module.sequence != this._viewModule.sequence) {
-            console.log('update sequence count')
+            console.debug('update sequence count')
             this._sequenceCountOutput.value = module.sequence.length.toString()
         }
         if (!this._viewModule || module.sequence != this._viewModule.sequence
