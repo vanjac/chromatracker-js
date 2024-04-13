@@ -51,15 +51,15 @@ class SampleEditElement extends HTMLElement {
 
         this._waveEditBox.addEventListener('mousedown', /** @param {MouseEventInit} e */ e => {
             if (e.button == 0) {
-                this._selectA = this._selectB = this._mouseToWavePos(e.clientX)
-                this._updateSelection()
+                let pos = this._mouseToWavePos(e.clientX)
+                this._setSel(pos, pos)
             }
         })
         this._waveEditBox.addEventListener('touchstart',
             /** @param {TouchEventInit & Event} e */ e => {
                 e.preventDefault()
-                this._selectA = this._selectB = this._mouseToWavePos(e.changedTouches[0].clientX)
-                this._updateSelection()
+                let pos = this._mouseToWavePos(e.changedTouches[0].clientX)
+                this._setSel(pos, pos)
             })
         this._waveEditBox.addEventListener('mousemove', /** @param {MouseEventInit} e */ e => {
             if (e.buttons & 1) {
@@ -78,6 +78,8 @@ class SampleEditElement extends HTMLElement {
             // slice for safety (can't be frozen)
             cliAddSelProp('wave', Int8Array, this._viewSample.wave.slice(start, end),
                 wave => this._replace(start, end, wave))
+            cliAddSelProp('wavestart', 'number', start, start => this._setSel(start, end))
+            cliAddSelProp('waveend', 'number', end, end => this._setSel(start, end))
         })
 
         /** @type {HTMLInputElement} */
@@ -272,9 +274,16 @@ class SampleEditElement extends HTMLElement {
     /**
      * @returns {[number, number]}
      */
+    _sel() {
+        return [this._selMin(), this._selMax()]
+    }
+
+    /**
+     * @returns {[number, number]}
+     */
     _selOrAll() {
         if (this._anySelected()) {
-            return [this._selMin(), this._selMax()]
+            return this._sel()
         } else {
             return [0, this._viewSample.wave.length]
         }
@@ -285,7 +294,7 @@ class SampleEditElement extends HTMLElement {
      */
     _selRangeOrAll() {
         if (this._rangeSelected()) {
-            return [this._selMin(), this._selMax()]
+            return this._sel()
         } else {
             return [0, this._viewSample.wave.length]
         }
@@ -466,30 +475,34 @@ class SampleEditElement extends HTMLElement {
         this._changeSample(sample => sample.loopStart = sample.loopEnd = 0, '', true)
     }
 
-    _selectAll() {
-        this._selectA = 0
-        this._selectB = this._viewSample.wave.length
+    /**
+     * @param {number} a
+     * @param {number} b
+     */
+    _setSel(a, b) {
+        this._selectA = a
+        this._selectB = b
         this._updateSelection()
     }
 
+    _selectAll() {
+        this._setSel(0, this._viewSample.wave.length)
+    }
+
     _selectNone() {
-        this._selectA = this._selectB = -1
-        this._updateSelection()
+        this._setSel(-1, -1)
     }
 
     _selectLoop() {
         if (this._viewSample.hasLoop()) {
-            this._selectA = this._viewSample.loopStart
-            this._selectB = this._viewSample.loopEnd
-            this._updateSelection()
+            this._setSel(this._viewSample.loopStart, this._viewSample.loopEnd)
         }
     }
 
     _trim() {
         if (this._rangeSelected()) {
             this._onChange(editSampleTrim(this._viewSample, this._selMin(), this._selMax()), '')
-            this._selectA = this._selectB = -1
-            this._updateSelection()
+            this._selectNone()
         }
     }
 
@@ -501,9 +514,9 @@ class SampleEditElement extends HTMLElement {
     _cut() {
         if (this._rangeSelected()) {
             this._copy()
-            this._onChange(editSampleDelete(this._viewSample, this._selMin(), this._selMax()), '')
-            this._selectA = this._selectB = this._selMin()
-            this._updateSelection()
+            let [start, end] = this._sel()
+            this._onChange(editSampleDelete(this._viewSample, start, end), '')
+            this._setSel(start, start)
         }
     }
 
@@ -514,8 +527,8 @@ class SampleEditElement extends HTMLElement {
      */
     _replace(start, end, wave) {
         this._onChange(editSampleSplice(this._viewSample, start, end, wave), '')
-        this._selectA = this._selectB = start + wave.length
-        this._updateSelection()
+        let newEnd = start + wave.length
+        this._setSel(newEnd, newEnd)
     }
 
     _paste() {
@@ -571,9 +584,7 @@ class SampleEditElement extends HTMLElement {
             let newWave = editSampleEffectSplice(this._viewSample, start, end, length, waveResample)
             this._onChange(newWave, '')
             if (this._rangeSelected()) {
-                this._selectA = start
-                this._selectB = start + length
-                this._updateSelection()
+                this._setSel(start, start + length)
             }
             global.lastResampleSemitones = semitones
         })
