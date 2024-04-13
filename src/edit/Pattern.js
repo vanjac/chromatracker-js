@@ -96,10 +96,12 @@ function editPatternPutCell(pattern, c, r, cell, parts) {
  */
 function editPatternWrite(dest, cStart, rStart, src, parts) {
     let mutPat = [...dest]
-    for (let c = 0; c < src.length; c++) {
+    let cSize = Math.min(src.length, dest.length - cStart)
+    for (let c = 0; c < cSize; c++) {
         let srcChan = src[c]
         let mutChan = [...mutPat[c + cStart]]
-        for (let r = 0; r < srcChan.length; r++) {
+        let rSize = Math.min(srcChan.length, mutChan.length - rStart)
+        for (let r = 0; r < rSize; r++) {
             mutChan[r + rStart] = Object.freeze(cellApply(mutChan[r + rStart], srcChan[r], parts))
         }
         mutPat[c + cStart] = Object.freeze(mutChan)

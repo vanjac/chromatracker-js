@@ -25,8 +25,19 @@ class PatternEditElement extends HTMLElement {
         this._tempoInput = fragment.querySelector('#tempo')
         /** @type {HTMLInputElement} */
         this._speedInput = fragment.querySelector('#speed')
-
+        /** @type {HTMLInputElement} */
+        this._selectInput = fragment.querySelector('#select')
+        this._selectTools = fragment.querySelector('#selectTools')
         this._entryCell = fragment.querySelector('#entryCell')
+
+        this._selectInput.addEventListener('change', () => {
+            this._selectTools.classList.toggle('hide', !this._selectInput.checked)
+            if (this._selectInput.checked) {
+                this._patternTable._setMark()
+            } else {
+                this._patternTable._clearMark()
+            }
+        })
 
         setupKeyButton(this._entryCell,
             id => this._target._jamPlay(id, this._cellEntry._getJamCell()),
@@ -49,6 +60,9 @@ class PatternEditElement extends HTMLElement {
             this._target._jamPlay(id, this._cellEntry._getJamCell())
         }, id => this._target._jamRelease(id))
 
+        fragment.querySelector('#cut').addEventListener('click', () => this._cut())
+        fragment.querySelector('#copy').addEventListener('click', () => this._copy())
+        fragment.querySelector('#paste').addEventListener('click', () => this._paste())
         fragment.querySelector('#insert').addEventListener('click', () => this._insert(1))
         fragment.querySelector('#delete').addEventListener('click', () => this._delete(1))
 
@@ -83,6 +97,8 @@ class PatternEditElement extends HTMLElement {
     _resetState() {
         this._setSelPos(0)
         this._patternTable._setSelCell(0, 0, true)
+        this._selectInput.checked = false
+        this._selectTools.classList.add('hide')
         this._patternTable._scrollToSelCell()
         this._cellEntry._setSelSample(1)
         this._setTempoSpeed(defaultTempo, defaultSpeed)
@@ -194,6 +210,31 @@ class PatternEditElement extends HTMLElement {
     _delete(count) {
         let [channel, row] = this._selCellPos()
         this._changePattern(pattern => editPatternChannelDelete(pattern, channel, row, count))
+    }
+
+    /** @private */
+    _cut() {
+        this._copy()
+        let [minChannel, maxChannel] = this._patternTable._channelRange()
+        let [minRow, maxRow] = this._patternTable._rowRange()
+        let parts = this._cellEntry._getCellParts()
+        this._changePattern(pattern => editPatternFill(
+            pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, emptyCell, parts))
+    }
+
+    /** @private */
+    _copy() {
+        let [minChannel, maxChannel] = this._patternTable._channelRange()
+        let [minRow, maxRow] = this._patternTable._rowRange()
+        global.patternClipboard = patternSlice(
+            this._selPattern(), minChannel, maxChannel + 1, minRow, maxRow + 1)
+    }
+
+    /** @private */
+    _paste() {
+        let [channel, row] = this._selCellPos()
+        this._changePattern(pattern => editPatternWrite(
+            pattern, channel, row, global.patternClipboard, this._cellEntry._getCellParts()))
     }
 
     _updateCell() {

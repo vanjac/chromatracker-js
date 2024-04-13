@@ -132,6 +132,28 @@ class PatternTableElement extends HTMLElement {
     }
 
     /**
+     * @returns {[number, number]}
+     */
+    _channelRange() {
+        if (this._markChannel < 0 || this._markRow < 0) {
+            return [this._selChannel, this._selChannel]
+        } else {
+            return minMax(this._selChannel, this._markChannel)
+        }
+    }
+
+    /**
+     * @returns {[number, number]}
+     */
+    _rowRange() {
+        if (this._markChannel < 0 || this._markRow < 0) {
+            return [this._selRow, this._selRow]
+        } else {
+            return minMax(this._selRow, this._markRow)
+        }
+    }
+
+    /**
      * @param {number} channel
      * @param {number} row
      */
