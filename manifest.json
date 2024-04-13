@@ -5,8 +5,8 @@
     "scope": ".",
     "icons": [
         {
-            "src": "assets/playlist-play.svg",
-            "sizes": "any"
+            "src": "https://chroma.zone/share/icon256.png",
+            "sizes": "256x256"
         }
     ]
 }
