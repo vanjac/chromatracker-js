@@ -118,6 +118,7 @@ class TrackerMainElement extends HTMLElement {
         this._refreshModule()
     }
 
+    /** @private */
     _resetEditorState() {
         this._undoStack = []
         this._undoCombineTag = ''
@@ -129,6 +130,7 @@ class TrackerMainElement extends HTMLElement {
         this._playbackStatus._setTempoSpeed(defaultTempo, defaultSpeed)
     }
 
+    /** @private */
     _askUnsavedChanges() {
         if (this._unsavedChangeCount) {
             let message = 'You will lose your unsaved changes. Continue?'
@@ -188,7 +190,10 @@ class TrackerMainElement extends HTMLElement {
         this._updatePlaySettings()
     }
 
-    // Must be called as result of user interaction
+    /**
+     * Must be called as result of user interaction
+     * @private
+     */
     _enablePlayback() {
         if (!this._playback) {
             this._resetPlayback()
@@ -225,6 +230,7 @@ class TrackerMainElement extends HTMLElement {
         return !!this._intervalHandle
     }
 
+    /** @private */
     _processPlayback() {
         while (this._queuedTime < this._context.currentTime + playbackQueueTime) {
             let {pos, row, tick, time} = this._playback
@@ -279,6 +285,7 @@ class TrackerMainElement extends HTMLElement {
         }
     }
 
+    /** @private */
     _enableAnimation() {
         if (!this._animHandle) {
             console.debug('enable animation')
@@ -286,6 +293,7 @@ class TrackerMainElement extends HTMLElement {
         }
     }
 
+    /** @private */
     _disableAnimation() {
         if (this._animHandle) {
             console.debug('disable animation')
@@ -295,11 +303,13 @@ class TrackerMainElement extends HTMLElement {
         }
     }
 
+    /** @private */
     _frameUpdateCallback() {
         this._animHandle = window.requestAnimationFrame(() => this._frameUpdateCallback())
         this._frameUpdate()
     }
 
+    /** @private */
     _frameUpdate() {
         let curTime = this._context.currentTime
         if (this._context.outputLatency) { // if supported
@@ -332,6 +342,7 @@ class TrackerMainElement extends HTMLElement {
         }
     }
 
+    /** @private */
     _refreshModule() {
         console.debug('=== begin refresh ===')
         this._moduleProperties._setModule(this._module)
@@ -341,6 +352,7 @@ class TrackerMainElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {Readonly<Module>} mod
      */
     _setModule(mod) {
@@ -365,6 +377,7 @@ class TrackerMainElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {string} combineTag
      */
     _pushUndo(combineTag) {

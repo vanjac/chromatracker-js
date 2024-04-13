@@ -47,6 +47,7 @@ class PianoKeyboardElement extends HTMLElement {
         this.appendChild(fragment)
     }
 
+    /** @private */
     _createPiano() {
         let blackKeys = this._piano.querySelector('#blackKeys')
         let whiteKeys = this._piano.querySelector('#whiteKeys')

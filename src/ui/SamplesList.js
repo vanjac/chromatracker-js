@@ -35,6 +35,7 @@ class SamplesListElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {number} idx
      */
     _createSampleEdit(idx) {
@@ -47,6 +48,7 @@ class SamplesListElement extends HTMLElement {
         this._sampleEdit._setSample(this._viewSamples[idx])
     }
 
+    /** @private */
     _destroySampleEdit() {
         this._sampleEditContainer.textContent = ''
         this._sampleEdit = null
@@ -115,6 +117,7 @@ class SamplesListElement extends HTMLElement {
         }
     }
 
+    /** @private */
     _addSample() {
         let selSample = this._getSelSample()
         this._target._changeModule(module => {
@@ -125,6 +128,7 @@ class SamplesListElement extends HTMLElement {
         this._setSelSample(selSample)
     }
 
+    /** @private */
     _deleteSample() {
         let idx = this._getSelSample()
         let selIdx = this._viewSamples.findIndex((sample, i) => i > idx && sample)

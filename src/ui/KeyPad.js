@@ -85,6 +85,7 @@ class KeyPad {
     }
 
     /**
+     * @private
      * @param {number} id
      * @param {number} x
      * @param {number} y
@@ -102,6 +103,7 @@ class KeyPad {
     }
 
     /**
+     * @private
      * @param {number} id
      */
     release(id) {

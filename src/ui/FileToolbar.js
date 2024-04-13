@@ -38,6 +38,7 @@ class FileToolbarElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {Blob} blob
      */
     _readModuleBlob(blob) {
@@ -51,6 +52,7 @@ class FileToolbarElement extends HTMLElement {
         reader.readAsArrayBuffer(blob)
     }
 
+    /** @private */
     _saveFile() {
         let blob = new Blob([writeModule(this._target._module)], {type: 'application/octet-stream'})
         let url = URL.createObjectURL(blob)

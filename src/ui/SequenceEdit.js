@@ -98,6 +98,7 @@ class SequenceEditElement extends HTMLElement {
         this._select.selectedIndex = this._viewSequence[this._selPos]
     }
 
+    /** @private */
     _updateSel() {
         let button = this._sequenceButtons[this._selPos]
         button.after(this._select)
@@ -119,18 +120,21 @@ class SequenceEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {number} p
      */
     _seqSet(p) {
         this._target._changeModule(module => editSetPos(module, this._selPos, p))
     }
 
+    /** @private */
     _seqInsSame() {
         this._selPos++
         this._target._changeModule(module =>
             editInsPos(module, this._selPos, module.sequence[this._selPos - 1]))
     }
 
+    /** @private */
     _seqInsClone() {
         this._selPos++
         this._target._changeModule(module => {
@@ -139,6 +143,7 @@ class SequenceEditElement extends HTMLElement {
         })
     }
 
+    /** @private */
     _seqDel() {
         if (this._viewSequence.length == 1) {
             return

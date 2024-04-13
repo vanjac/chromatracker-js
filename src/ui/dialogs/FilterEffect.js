@@ -77,6 +77,7 @@ class FilterEffectElement extends FormDialogElement {
         this.appendChild(fragment)
     }
 
+    /** @private */
     _updateFilterType() {
         let [useQ, useGain] = {
             lowpass:   [true, false],
@@ -93,10 +94,12 @@ class FilterEffectElement extends FormDialogElement {
         this._gainInput.disabled = !useGain
     }
 
+    /** @private */
     _updateEnvelopeEnabled() {
         this._freqEndInput.disabled = !this._envelopeEnableInput.checked
     }
 
+    /** @private */
     _updateGraph() {
         this._filter.type = /** @type {BiquadFilterType} */(this._typeInput.value)
         this._filter.frequency.value = this._freqStartInput.valueAsNumber || 0

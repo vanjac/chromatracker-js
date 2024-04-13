@@ -13,6 +13,7 @@ class CellEntryElement extends HTMLElement {
         /** @type {readonly Readonly<Sample>[]} */
         this._viewSamples = null
     }
+
     connectedCallback() {
         let fragment = templates.cellEntry.cloneNode(true)
 

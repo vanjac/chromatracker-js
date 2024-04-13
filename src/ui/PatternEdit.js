@@ -98,6 +98,7 @@ class PatternEditElement extends HTMLElement {
         }
     }
 
+    /** @private */
     _refreshPattern() {
         this._patternTable._setPattern(this._selPattern())
     }
@@ -134,6 +135,7 @@ class PatternEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @returns {[number, number]}
      */
     _selCellPos() {
@@ -153,6 +155,7 @@ class PatternEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {(pattern: Readonly<Pattern>) => Readonly<Pattern>} callback
      */
     _changePattern(callback) {
@@ -170,6 +173,7 @@ class PatternEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {number} count
      */
     _insert(count) {
@@ -178,6 +182,7 @@ class PatternEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {number} count
      */
     _delete(count) {
@@ -207,6 +212,7 @@ class PatternEditElement extends HTMLElement {
         }
     }
 
+    /** @private */
     _advance() {
         let {_selChannel, _selRow} = this._patternTable
         _selRow++

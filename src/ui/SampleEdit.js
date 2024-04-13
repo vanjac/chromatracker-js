@@ -257,23 +257,28 @@ class SampleEditElement extends HTMLElement {
         }
     }
 
+    /** @private */
     _selMin() {
         return Math.min(this._selectA, this._selectB)
     }
 
+    /** @private */
     _selMax() {
         return Math.max(this._selectA, this._selectB)
     }
 
+    /** @private */
     _anySelected() {
         return this._selectA >= 0 && this._selectB >= 0
     }
 
+    /** @private */
     _rangeSelected() {
         return this._anySelected() && this._selectA != this._selectB
     }
 
     /**
+     * @private
      * @returns {[number, number]}
      */
     _sel() {
@@ -281,6 +286,7 @@ class SampleEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @returns {[number, number]}
      */
     _selOrAll() {
@@ -292,6 +298,7 @@ class SampleEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @returns {[number, number]}
      */
     _selRangeOrAll() {
@@ -302,10 +309,12 @@ class SampleEditElement extends HTMLElement {
         }
     }
 
+    /** @private */
     _selLen() {
         return Math.abs(this._selectA - this._selectB)
     }
 
+    /** @private */
     _updateSelection() {
         this._selectMarkA.classList.toggle('hide', this._selectA < 0)
         if (this._selectA >= 0) {
@@ -327,6 +336,7 @@ class SampleEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {HTMLElement} mark
      * @param {Readonly<Sample>} sample
      * @param {number} pos
@@ -337,6 +347,7 @@ class SampleEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {(sample: Sample) => void} mutator
      * @param {string} combineTag
      */
@@ -351,6 +362,7 @@ class SampleEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {File} file
      */
     _readAudioFile(file) {
@@ -392,6 +404,7 @@ class SampleEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {number} clientX
      */
     _mouseToWavePos(clientX) {
@@ -417,11 +430,13 @@ class SampleEditElement extends HTMLElement {
         return cell
     }
 
+    /** @private */
     _updateJamCell() {
         setCellContents(this._jamCell, this._getJamCell())
     }
 
     /**
+     * @private
      * @param {Readonly<Int8Array>} wave
      */
     _createSamplePreview(wave) {
@@ -468,11 +483,13 @@ class SampleEditElement extends HTMLElement {
         ctx.stroke()
     }
 
+    /** @private */
     _loopSelection() {
         this._changeSample(sample => [sample.loopStart, sample.loopEnd] = this._selRangeOrAll(),
             '', true)
     }
 
+    /** @private */
     _clearLoop() {
         this._changeSample(sample => sample.loopStart = sample.loopEnd = 0, '', true)
     }
@@ -487,20 +504,24 @@ class SampleEditElement extends HTMLElement {
         this._updateSelection()
     }
 
+    /** @private */
     _selectAll() {
         this._setSel(0, this._viewSample.wave.length)
     }
 
+    /** @private */
     _selectNone() {
         this._setSel(-1, -1)
     }
 
+    /** @private */
     _selectLoop() {
         if (this._viewSample.hasLoop()) {
             this._setSel(this._viewSample.loopStart, this._viewSample.loopEnd)
         }
     }
 
+    /** @private */
     _trim() {
         if (this._rangeSelected()) {
             this._onChange(editSampleTrim(this._viewSample, this._selMin(), this._selMax()), '')
@@ -508,11 +529,13 @@ class SampleEditElement extends HTMLElement {
         }
     }
 
+    /** @private */
     _copy() {
         let [start, end] = this._selRangeOrAll()
         global.audioClipboard = this._viewSample.wave.subarray(start, end)
     }
 
+    /** @private */
     _cut() {
         if (this._rangeSelected()) {
             this._copy()
@@ -523,6 +546,7 @@ class SampleEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {number} start
      * @param {number} end
      * @param {Readonly<Int8Array>} wave
@@ -533,11 +557,13 @@ class SampleEditElement extends HTMLElement {
         this._setSel(newEnd, newEnd)
     }
 
+    /** @private */
     _paste() {
         let [start, end] = this._selOrAll()
         this._replace(start, end, global.audioClipboard)
     }
 
+    /** @private */
     _loopRepeat() {
         if (!this._viewSample.hasLoop()) {
             return
@@ -556,6 +582,7 @@ class SampleEditElement extends HTMLElement {
         })
     }
 
+    /** @private */
     _loopPingPong() {
         if (!this._viewSample.hasLoop()) {
             return
@@ -567,6 +594,7 @@ class SampleEditElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
      */
     _applyEffect(effect) {
@@ -574,11 +602,13 @@ class SampleEditElement extends HTMLElement {
         this._onChange(editSampleEffect(this._viewSample, start, end, effect), '')
     }
 
+    /** @private */
     _amplify() {
         let dialog = openDialog(createElem('amplify-effect'), {dismissable: true})
         dialog._onComplete = params => this._applyEffect(waveAmplify.bind(null, params))
     }
 
+    /** @private */
     _resample() {
         openInputDialog('Semitones:', 'Resample', global.lastResampleSemitones).then(semitones => {
             let [start, end] = this._selRangeOrAll()
@@ -592,6 +622,7 @@ class SampleEditElement extends HTMLElement {
         })
     }
 
+    /** @private */
     _filter() {
         let dialog = openDialog(createElem('filter-effect'), {dismissable: true})
         dialog._onComplete = params => {
