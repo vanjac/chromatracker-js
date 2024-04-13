@@ -2,21 +2,31 @@
 
 const cliState = {
     /** @type {any} */
-    sel: {__proto__: null},
+    sel: null,
+    /** @type {any} */
+    selProxy: null,
     onSelEnd: () => {},
 }
+
+function cliResetSel() {
+    cliState.sel = {__proto__: null}
+    cliState.selProxy = new Proxy(cliState.sel, {
+        defineProperty() {
+            // Custom error since console isn't in strict mode
+            console.error('Property does not exist')
+            return false
+        },
+    })
+    cliState.onSelEnd = () => {}
+}
+cliResetSel()
 
 Object.defineProperty(globalThis, 'sel', {
     configurable: false,
     enumerable: true,
-    get: () => cliState.sel,
+    get: () => cliState.selProxy,
     set: _ => {console.error('Not allowed')}
 })
-
-function cliResetSel() {
-    cliState.sel = {__proto__: null}
-    cliState.onSelEnd = () => {}
-}
 
 /**
  * @template T
@@ -32,7 +42,7 @@ function cliAddSelProp(name, type, value, setter) {
         get: () => value,
         set: value => {
             if (!Object.isSealed(cliState.sel)) {
-                console.error('Not available')
+                console.error('Modification is not enabled')
             } else if (typeof type == 'function' && !(value instanceof type)) {
                 console.error('Invalid type, must be ' + type.name)
             } else if (typeof type == 'string' && typeof value != type) {
