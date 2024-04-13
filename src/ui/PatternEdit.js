@@ -27,11 +27,13 @@ class PatternEditElement extends HTMLElement {
         this._speedInput = fragment.querySelector('#speed')
         /** @type {HTMLInputElement} */
         this._selectInput = fragment.querySelector('#select')
+        this._playbackStatus = fragment.querySelector('#playbackStatus')
         this._selectTools = fragment.querySelector('#selectTools')
         this._entryCell = fragment.querySelector('#entryCell')
 
         this._selectInput.addEventListener('change', () => {
             this._selectTools.classList.toggle('hide', !this._selectInput.checked)
+            this._playbackStatus.classList.toggle('hide', this._selectInput.checked)
             if (this._selectInput.checked) {
                 this._patternTable._setMark()
             } else {
@@ -99,6 +101,7 @@ class PatternEditElement extends HTMLElement {
         this._patternTable._setSelCell(0, 0, true)
         this._selectInput.checked = false
         this._selectTools.classList.add('hide')
+        this._playbackStatus.classList.remove('hide')
         this._patternTable._scrollToSelCell()
         this._cellEntry._setSelSample(1)
         this._setTempoSpeed(defaultTempo, defaultSpeed)

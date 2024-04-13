@@ -304,15 +304,6 @@ td,
     height: 50%;
 }
 
-/* pattern edit */
-
-.tempo-input {
-    width: 40pt;
-}
-.speed-input {
-    width: 32pt;
-}
-
 /* cell entry */
 
 .keypad-key {
