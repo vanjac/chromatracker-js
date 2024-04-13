@@ -53,7 +53,7 @@ function cliAddSelProp(name, type, value, setter) {
             }
         }
     })
-    console.log(`sel.${name} = `, value)
+    console.log(`sel.${name} =`, value)
 }
 
 /**
