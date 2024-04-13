@@ -57,7 +57,6 @@ interface HTMLElementTagNameMap {
     'pattern-table': PatternTableElement
     'piano-keyboard': PianoKeyboardElement
     'playback-controls': PlaybackControlsElement
-    'playback-status': PlaybackStatusElement
     'sample-edit': SampleEditElement
     'samples-list': SamplesListElement
     'sequence-edit': SequenceEditElement

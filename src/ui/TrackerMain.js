@@ -56,7 +56,6 @@ class TrackerMainElement extends HTMLElement {
         this._fileToolbar = fragment.querySelector('file-toolbar')
         this._moduleProperties = fragment.querySelector('module-properties')
         this._playbackControls = fragment.querySelector('playback-controls')
-        this._playbackStatus = fragment.querySelector('playback-status')
         this._patternEdit = fragment.querySelector('pattern-edit')
         this._samplesList = fragment.querySelector('samples-list')
         this._errors = fragment.querySelector('#errors')
@@ -127,7 +126,6 @@ class TrackerMainElement extends HTMLElement {
         this._refreshModule()
         this._patternEdit._resetState()
         this._samplesList._setSelSample(1)
-        this._playbackStatus._setTempoSpeed(defaultTempo, defaultSpeed)
     }
 
     /** @private */
@@ -177,8 +175,8 @@ class TrackerMainElement extends HTMLElement {
             }
         }
         if (restoreSpeed) {
-            this._playback.tempo = this._playbackStatus._getTempo()
-            this._playback.speed = this._playbackStatus._getSpeed()
+            this._playback.tempo = this._patternEdit._getTempo()
+            this._playback.speed = this._patternEdit._getSpeed()
         }
         if (restorePos) {
             this._playback.pos = this._patternEdit._selPos()
@@ -330,7 +328,7 @@ class TrackerMainElement extends HTMLElement {
             if (curState != this._viewState) {
                 this._viewState = curState
 
-                this._playbackStatus._setTempoSpeed(curState.tempo, curState.speed)
+                this._patternEdit._setTempoSpeed(curState.tempo, curState.speed)
                 if (this._playbackControls._getFollow()) {
                     this._patternEdit._setSelPos(curState.pos)
                     this._patternEdit._setSelCell(

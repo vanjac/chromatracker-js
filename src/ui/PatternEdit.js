@@ -21,6 +21,11 @@ class PatternEditElement extends HTMLElement {
         this._patternTable = fragment.querySelector('pattern-table')
         this._cellEntry = fragment.querySelector('cell-entry')
 
+        /** @type {HTMLInputElement} */
+        this._tempoInput = fragment.querySelector('#tempo')
+        /** @type {HTMLInputElement} */
+        this._speedInput = fragment.querySelector('#speed')
+
         this._entryCell = fragment.querySelector('#entryCell')
 
         setupKeyButton(this._entryCell,
@@ -80,6 +85,7 @@ class PatternEditElement extends HTMLElement {
         this._patternTable._setSelCell(0, 0, true)
         this._patternTable._scrollToSelCell()
         this._cellEntry._setSelSample(1)
+        this._setTempoSpeed(defaultTempo, defaultSpeed)
     }
 
     /**
@@ -226,6 +232,23 @@ class PatternEditElement extends HTMLElement {
      */
     _isChannelMuted(channel) {
         return this._patternTable._isChannelMuted(channel)
+    }
+
+    _getTempo() {
+        return this._tempoInput.valueAsNumber
+    }
+
+    _getSpeed() {
+        return this._speedInput.valueAsNumber
+    }
+
+    /**
+     * @param {number} tempo
+     * @param {number} speed
+     */
+    _setTempoSpeed(tempo, speed) {
+        this._tempoInput.valueAsNumber = tempo
+        this._speedInput.valueAsNumber = speed
     }
 }
 window.customElements.define('pattern-edit', PatternEditElement)
