@@ -35,7 +35,7 @@ function cliAddSelProp(name, type, value, setter) {
                 console.error('Not available')
             } else if (typeof type == 'function' && !(value instanceof type)) {
                 console.error('Invalid type, must be ' + type.name)
-            } else if (typeof type == 'string' && (typeof value) != type) {
+            } else if (typeof type == 'string' && typeof value != type) {
                 console.error('Invalid type, must be ' + type)
             } else {
                 setter(/** @type {T} */(value))
