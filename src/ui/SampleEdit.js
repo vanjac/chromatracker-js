@@ -277,12 +277,9 @@ class SampleEditElement extends HTMLElement {
         return this._anySelected() && this._selectA != this._selectB
     }
 
-    /**
-     * @private
-     * @returns {[number, number]}
-     */
+    /** @private */
     _sel() {
-        return [this._selMin(), this._selMax()]
+        return minMax(this._selectA, this._selectB)
     }
 
     /**

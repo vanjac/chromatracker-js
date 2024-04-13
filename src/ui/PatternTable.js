@@ -7,8 +7,10 @@ class PatternTableElement extends HTMLElement {
         this._target = null
         /** @param {Readonly<Pattern>} pattern */
         this._onChange = pattern => {}
-        this._selRow = 0
         this._selChannel = 0
+        this._selRow = 0
+        this._markChannel = -1
+        this._markRow = -1
         /** @type {CellPart} */
         this._viewEntryParts = CellPart.none
         this._viewNumChannels = 0
@@ -133,21 +135,52 @@ class PatternTableElement extends HTMLElement {
      * @param {number} channel
      * @param {number} row
      */
-    _setSelCell(channel, row) {
+    _setSelCell(channel, row, clearMark = false) {
         this._selChannel = channel
         this._selRow = row
+        if (clearMark) {
+            this._markChannel = this._markRow = -1
+        }
+        this._updateSelection()
+    }
 
-        let cell = this._tbody.querySelector('.sel-cell')
-        if (cell) {
+    _setMark() {
+        this._markChannel = this._selChannel
+        this._markRow = this._selRow
+    }
+
+    _clearMark() {
+        this._markChannel = this._markRow = -1
+        this._updateSelection()
+    }
+
+    /** @private */
+    _updateSelection() {
+        for (let cell of this._tbody.querySelectorAll('.sel-cell')) {
             cell.classList.remove('sel-cell')
             cell.classList.remove('sel-pitch')
             cell.classList.remove('sel-inst')
             cell.classList.remove('sel-effect')
         }
         if (this._selRow >= 0 && this._selChannel >= 0) {
-            let cell = this._tbody.children[this._selRow].children[this._selChannel + 1]
-            cell.classList.add('sel-cell')
-            toggleCellParts(cell, this._viewEntryParts)
+            let selTr = this._tbody.children[this._selRow]
+            let selCell = selTr && selTr.children[this._selChannel + 1]
+            if (selCell) { toggleCellParts(selCell, this._viewEntryParts) }
+
+            if (this._markChannel < 0 || this._markRow < 0) {
+                if (selCell) { selCell.classList.add('sel-cell') }
+            } else {
+                let [minChannel, maxChannel] = minMax(this._selChannel, this._markChannel)
+                let [minRow, maxRow] = minMax(this._selRow, this._markRow)
+                for (let row = minRow; row <= maxRow; row++) {
+                    let tr = this._tbody.children[row]
+                    if (!tr) { continue }
+                    for (let channel = minChannel; channel <= maxChannel; channel++) {
+                        let cell = tr.children[channel + 1]
+                        if (cell) { cell.classList.add('sel-cell') }
+                    }
+                }
+            }
         }
     }
 

@@ -10,6 +10,15 @@ function clamp(value, min, max) {
 }
 
 /**
+ * @param {number} a
+ * @param {number} b
+ * @returns {[number, number]}
+ */
+function minMax(a, b) {
+    return (a < b) ? [a, b] : [b, a]
+}
+
+/**
  * @param {number} numberOfChannels Number of channels between 1 and 10
  * @param {number} length Buffer size, must be positive
  * @param {number} sampleRate Sample rate, must be between 44100 and 96000 Hz.

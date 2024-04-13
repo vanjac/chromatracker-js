@@ -77,7 +77,7 @@ class PatternEditElement extends HTMLElement {
 
     _resetState() {
         this._setSelPos(0)
-        this._patternTable._setSelCell(0, 0)
+        this._patternTable._setSelCell(0, 0, true)
         this._patternTable._scrollToSelCell()
         this._cellEntry._setSelSample(1)
     }
