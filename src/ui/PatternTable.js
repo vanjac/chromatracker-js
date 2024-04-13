@@ -5,6 +5,8 @@ class PatternTableElement extends HTMLElement {
         super()
         /** @type {PatternTableTarget & JamTarget} */
         this._target = null
+        /** @param {Readonly<Pattern>} pattern */
+        this._onChange = pattern => {}
         this._selRow = 0
         this._selChannel = 0
         /** @type {CellPart} */
@@ -23,6 +25,10 @@ class PatternTableElement extends HTMLElement {
         this._tbody = fragment.querySelector('tbody')
         /** @type {HTMLInputElement[]} */
         this._muteInputs = []
+
+        this.addEventListener('contextmenu', () => {
+            cliAddSelProp('pattern', Array, this._viewPattern, this._onChange)
+        })
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -102,6 +108,12 @@ class PatternTableElement extends HTMLElement {
                         this._setSelCell(c, row)
                         this._target._jamPlay(id, this._viewPattern[c][row])
                     }, id => this._target._jamRelease(id), {blockScroll: false})
+                    td.addEventListener('contextmenu', () => {
+                        cliAddSelProp('cell', Cell, this._viewPattern[c][row], cell => {
+                            this._onChange(editPatternPutCell(
+                                this._viewPattern, c, row, cell, CellPart.all))
+                        })
+                    })
 
                     tr.appendChild(cellFrag)
                 }

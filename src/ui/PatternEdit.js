@@ -51,6 +51,7 @@ class PatternEditElement extends HTMLElement {
         this.appendChild(fragment)
 
         this._sequenceEdit._onSelect = () => this._refreshPattern()
+        this._patternTable._onChange = pattern => this._changePattern(_ => pattern)
         this._cellEntry._target = this
         this._updateCell()
         this._updateEntryParts()
