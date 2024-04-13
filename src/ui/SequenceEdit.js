@@ -9,8 +9,7 @@ class SequenceEditElement extends HTMLElement {
         /** @type {readonly number[]} */
         this._viewSequence = null
         this._viewNumPatterns = 0
-        /** @type {() => void} */
-        this._onSelect = null
+        this._onSelect = () => {}
     }
 
     connectedCallback() {

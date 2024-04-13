@@ -5,8 +5,8 @@ const amplifyEffectInputs = ['amp', 'dither']
 class AmplifyEffectElement extends FormDialogElement {
     constructor() {
         super()
-        /** @type {(params: {amount: number, dithering: boolean}) => void} */
-        this._onComplete = null
+        /** @param {{amount: number, dithering: boolean}} params */
+        this._onComplete = ({amount, dithering}) => {}
     }
 
     connectedCallback() {

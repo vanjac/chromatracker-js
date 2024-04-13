@@ -8,8 +8,11 @@ class SampleEditElement extends HTMLElement {
         super()
         /** @type {ModuleEditTarget & JamTarget} */
         this._target = null
-        /** @type {(sample: Readonly<Sample>, combineTag: string) => void} */
-        this._onChange = null
+        /**
+         * @param {Readonly<Sample>} sample
+         * @param {string} combineTag
+         */
+        this._onChange = (sample, combineTag) => {}
 
         this._selectA = -1
         this._selectB = -1

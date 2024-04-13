@@ -3,7 +3,6 @@
 const cliState = {
     /** @type {any} */
     sel: {__proto__: null},
-    /** @returns {void} */
     onSelEnd: () => {},
 }
 

@@ -29,8 +29,8 @@ const graphFreq = new Float32Array(numGraphFreq)
 class FilterEffectElement extends FormDialogElement {
     constructor() {
         super()
-        /** @type {(params: FilterEffectParams) => void} */
-        this._onComplete = null
+        /** @param {FilterEffectParams} params */
+        this._onComplete = params => {}
     }
 
     connectedCallback() {

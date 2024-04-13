@@ -35,10 +35,8 @@ class ConfirmDialogElement extends FormDialogElement {
         super()
         this._title = ''
         this._message = ''
-        /** @type {() => void} */
-        this._onConfirm = null
-        /** @type {() => void} */
-        this._onCancel = null
+        this._onConfirm = () => {}
+        this._onCancel = () => {}
     }
 
     connectedCallback() {
@@ -94,10 +92,9 @@ class InputDialogElement extends FormDialogElement {
         this._title = ''
         this._prompt = ''
         this._defaultValue = 0
-        /** @type {(value: number) => void} */
-        this._onConfirm = null
-        /** @type {() => void} */
-        this._onCancel = null
+        /** @param {number} value */
+        this._onConfirm = value => {}
+        this._onCancel = () => {}
     }
 
     connectedCallback() {
