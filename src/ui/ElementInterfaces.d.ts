@@ -47,6 +47,7 @@ interface HTMLElementTagNameMap {
     'alert-dialog': AlertDialogElement
     'amplify-effect': AmplifyEffectElement
     'cell-entry': CellEntryElement
+    'cli-dialog': CLIDialogElement
     'confirm-dialog': ConfirmDialogElement
     'file-toolbar': FileToolbarElement
     'filter-effect': FilterEffectElement
@@ -60,6 +61,5 @@ interface HTMLElementTagNameMap {
     'sample-edit': SampleEditElement
     'samples-list': SamplesListElement
     'sequence-edit': SequenceEditElement
-    'script-dialog': ScriptDialogElement
     'wait-dialog': WaitDialogElement
 }

@@ -99,35 +99,10 @@ class ModulePropertiesElement extends HTMLElement {
     }
 
     _runScript() {
-        let _info = '(module: Readonly<Module>) => Readonly<Module>'
-        let dialog = openDialog(createElem('script-dialog', {_info}), {dismissable: true})
-        dialog._onComplete = script => {
-            this._target._changeModule(module => {
-                let result
-                try {
-                    result = runUserScript(script, {module})
-                } catch (e) {
-                    let errorStr = 'Unknown error'
-                    try { errorStr = String(e) } catch (_) {}
-                    openAlertDialog(errorStr, 'Script Error')
-                    return module
-                }
-                if (result instanceof Module) {
-                    return result
-                } else {
-                    if (result !== undefined) {
-                        let resultStr
-                        try {
-                            resultStr = JSON.stringify(result)
-                        } catch (_) {
-                            resultStr = result.toString ? result.toString() : 'Unknown value'
-                        }
-                        openAlertDialog(resultStr, 'Script Result')
-                    }
-                    return module
-                }
-            })
-        }
+        let dialog = openDialog(createElem('cli-dialog'), {dismissable: true})
+        cliAddSelProp('module', Module, this._viewModule,
+            module => this._target._changeModule(_ => module))
+        cliBeginSel(() => closeDialog(dialog))
     }
 }
 window.customElements.define('module-properties', ModulePropertiesElement)
