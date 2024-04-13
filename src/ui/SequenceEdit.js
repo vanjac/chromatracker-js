@@ -35,10 +35,6 @@ class SequenceEditElement extends HTMLElement {
                 num => this._target._changeModule(module => editSetPos(module, this._selPos, num)))
         })
 
-        this.addEventListener('contextmenu', () => {
-            cliAddSelProp('seqpos', 'number', this._selPos, pos => this._setSelPos(pos))
-        })
-
         this.style.display = 'contents'
         this.appendChild(fragment)
     }

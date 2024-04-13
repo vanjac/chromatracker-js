@@ -47,6 +47,10 @@ class PatternEditElement extends HTMLElement {
         fragment.querySelector('#insert').addEventListener('click', () => this._insert(1))
         fragment.querySelector('#delete').addEventListener('click', () => this._delete(1))
 
+        this.addEventListener('contextmenu', () => {
+            cliAddSelProp('seqpos', 'number', this._selPos(), pos => this._setSelPos(pos))
+        })
+
         this.style.display = 'contents'
         this.appendChild(fragment)
 
@@ -72,8 +76,7 @@ class PatternEditElement extends HTMLElement {
     }
 
     _resetState() {
-        this._sequenceEdit._setSelPos(0)
-        this._refreshPattern()
+        this._setSelPos(0)
         this._patternTable._setSelCell(0, 0)
         this._patternTable._scrollToSelCell()
         this._cellEntry._setSelSample(1)
