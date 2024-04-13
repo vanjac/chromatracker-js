@@ -30,6 +30,10 @@ class SequenceEditElement extends HTMLElement {
         fragment.querySelector('#seqDel').addEventListener('click', () => this._seqDel())
 
         this._select.addEventListener('input', () => this._seqSet(this._select.selectedIndex))
+        this._select.addEventListener('contextmenu', () => {
+            cliAddSelProp('pos', 'number', this._viewSequence[this._selPos],
+                num => this._target._changeModule(module => editSetPos(module, this._selPos, num)))
+        })
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -62,6 +66,10 @@ class SequenceEditElement extends HTMLElement {
                 this._selPos = i
                 this._onSelect()
                 this._updateSel()
+            })
+            label.addEventListener('contextmenu', () => {
+                cliAddSelProp('pos', 'number', this._viewSequence[i],
+                    num => this._target._changeModule(module => editSetPos(module, i, num)))
             })
             this._sequenceButtons.push(label)
         }

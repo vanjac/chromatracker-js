@@ -386,7 +386,7 @@ class TrackerMainElement extends HTMLElement {
             this._refreshModule()
             this._unsavedChangeCount--
             this._undoCombineTag = ''
-            console.info(this._module)
+            console.log('Undo:', this._module)
         }
     }
 }

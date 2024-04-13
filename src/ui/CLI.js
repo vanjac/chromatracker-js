@@ -21,7 +21,7 @@ function cliResetSel() {
 /**
  * @template T
  * @param {string} name
- * @param {function} type,
+ * @param {function | string} type,
  * @param {T} value
  * @param {(value: T) => void} setter
  */
@@ -33,8 +33,10 @@ function cliAddSelProp(name, type, value, setter) {
         set: value => {
             if (!Object.isSealed(cliState.sel)) {
                 console.error('Not available')
-            } else if (!(value instanceof type)) {
+            } else if (typeof type == 'function' && !(value instanceof type)) {
                 console.error('Invalid type, must be ' + type.name)
+            } else if (typeof type == 'string' && (typeof value) != type) {
+                console.error('Invalid type, must be ' + type)
             } else {
                 setter(/** @type {T} */(value))
                 cliEndSel()
