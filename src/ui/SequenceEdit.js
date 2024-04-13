@@ -31,8 +31,12 @@ class SequenceEditElement extends HTMLElement {
 
         this._select.addEventListener('input', () => this._seqSet(this._select.selectedIndex))
         this._select.addEventListener('contextmenu', () => {
-            cliAddSelProp('pos', 'number', this._viewSequence[this._selPos],
+            cliAddSelProp('patnum', 'number', this._viewSequence[this._selPos],
                 num => this._target._changeModule(module => editSetPos(module, this._selPos, num)))
+        })
+
+        this.addEventListener('contextmenu', () => {
+            cliAddSelProp('seqpos', 'number', this._selPos, pos => this._setSelPos(pos))
         })
 
         this.style.display = 'contents'
@@ -58,8 +62,8 @@ class SequenceEditElement extends HTMLElement {
         }
         this._sequenceButtons = []
 
-        for (let [i, pos] of sequence.entries()) {
-            let label = makeRadioButton('sequence', i.toString(), pos.toString())
+        for (let [i, num] of sequence.entries()) {
+            let label = makeRadioButton('sequence', i.toString(), num.toString())
             label.classList.add('seq-button')
             this._sequenceList.appendChild(label)
             label.addEventListener('change', () => {
@@ -68,7 +72,9 @@ class SequenceEditElement extends HTMLElement {
                 this._updateSel()
             })
             label.addEventListener('contextmenu', () => {
-                cliAddSelProp('pos', 'number', this._viewSequence[i],
+                this._setSelPos(i)
+                this._onSelect()
+                cliAddSelProp('patnum', 'number', this._viewSequence[i],
                     num => this._target._changeModule(module => editSetPos(module, i, num)))
             })
             this._sequenceButtons.push(label)

@@ -83,7 +83,10 @@ class TrackerMainElement extends HTMLElement {
 
         fragment.querySelector('#version').textContent = this.getAttribute('data-version')
 
-        this.addEventListener('contextmenu', () => cliResetSel(), {capture: true})
+        this.addEventListener('contextmenu', () => {
+            console.log('Selected:')
+            cliResetSel()
+        }, {capture: true})
         this.addEventListener('contextmenu', e => {
             e.preventDefault()
             cliAddSelProp('module', Module, this._module,
@@ -137,7 +140,7 @@ class TrackerMainElement extends HTMLElement {
      */
     _moduleLoaded(mod) {
         this._askUnsavedChanges().then(() => {
-            console.info(mod)
+            console.log('Loaded module:', mod)
             this._module = mod
             this._resetEditorState()
             this._resetPlayback()
