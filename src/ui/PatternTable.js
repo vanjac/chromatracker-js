@@ -27,7 +27,8 @@ class PatternTableElement extends HTMLElement {
         this._muteInputs = []
 
         this.addEventListener('contextmenu', () => {
-            cliAddSelProp('pattern', Array, this._viewPattern, this._onChange)
+            cliAddSelProp('pattern', Array, this._viewPattern,
+                pattern => this._onChange(Object.freeze(pattern)))
         })
 
         this.style.display = 'contents'

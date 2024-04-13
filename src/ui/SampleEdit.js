@@ -73,6 +73,12 @@ class SampleEditElement extends HTMLElement {
                 this._selectB = this._mouseToWavePos(e.changedTouches[0].clientX)
                 this._updateSelection()
             })
+        this._waveEditBox.addEventListener('contextmenu', () => {
+            let [start, end] = this._selRangeOrAll()
+            // slice for safety (can't be frozen)
+            cliAddSelProp('wave', Int8Array, this._viewSample.wave.slice(start, end),
+                wave => this._replace(start, end, wave))
+        })
 
         /** @type {HTMLInputElement} */
         this._loopStartInput = fragment.querySelector('#loopStart')
@@ -160,6 +166,11 @@ class SampleEditElement extends HTMLElement {
 
         this._jamCell = fragment.querySelector('#jamCell')
         this._piano = fragment.querySelector('piano-keyboard')
+
+        this.addEventListener('contextmenu', () => {
+            cliAddSelProp('sample', Sample, this._viewSample,
+                sample => this._onChange(Object.freeze(sample), ''))
+        })
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -496,12 +507,20 @@ class SampleEditElement extends HTMLElement {
         }
     }
 
+    /**
+     * @param {number} start
+     * @param {number} end
+     * @param {Readonly<Int8Array>} wave
+     */
+    _replace(start, end, wave) {
+        this._onChange(editSampleSplice(this._viewSample, start, end, wave), '')
+        this._selectA = this._selectB = start + wave.length
+        this._updateSelection()
+    }
+
     _paste() {
         let [start, end] = this._selOrAll()
-        this._onChange(editSampleSplice(
-            this._viewSample, start, end, global.audioClipboard), '')
-        this._selectA = this._selectB = start + global.audioClipboard.length
-        this._updateSelection()
+        this._replace(start, end, global.audioClipboard)
     }
 
     _loopRepeat() {
