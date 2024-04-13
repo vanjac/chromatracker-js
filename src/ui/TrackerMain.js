@@ -92,6 +92,7 @@ class TrackerMainElement extends HTMLElement {
             cliAddSelProp('module', Module, this._module,
                 module => this._changeModule(_ => Object.freeze(module)))
             if (e.altKey) {
+                this._pause()
                 let dialog = openDialog(createElem('cli-dialog'), {dismissable: true})
                 cliBeginSel(() => closeDialog(dialog))
             }
