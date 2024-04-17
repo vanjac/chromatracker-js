@@ -96,7 +96,7 @@ function readWavFile(buf) {
 
         let error = 0
         for (let i = 0; i < numFrames; i++) {
-            [wave[i], error] = dither(getSampleValue(i) / maxAmp, error)
+            ;[wave[i], error] = dither(getSampleValue(i) / maxAmp, error)
         }
     }
 

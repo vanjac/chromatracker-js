@@ -9,7 +9,8 @@
         "curly": "error",
         "strict": ["error", "global"],
         // Deprecated stylistic rules (TODO)
-        "semi": ["error", "never"],
+        "semi": ["error", "never", {"beforeStatementContinuationChars": "always"} ],
+        "no-extra-semi": "off",
         // TypeScript handles these:
         "no-undef": "off",
         "no-unused-vars": "off",

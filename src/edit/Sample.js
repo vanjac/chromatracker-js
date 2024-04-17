@@ -133,7 +133,7 @@ function waveAmplify({amount, dithering}, src, dst) {
     let ditherFn = dithering ? dither : dontDither
     let error = 0
     for (let i = 0; i < dst.length; i++) {
-        [dst[i], error] = ditherFn(src[i] * amount, error)
+        ;[dst[i], error] = ditherFn(src[i] * amount, error)
     }
 }
 
@@ -209,7 +209,7 @@ function editSampleNodeEffect(sample, start, end, dithering, createNode) {
             let ditherFn = dithering ? dither : dontDither
             let error = 0
             for (let i = 0; i < renderData.length; i++) {
-                [wave[start + i], error] = ditherFn(renderData[i] * 128.0, error)
+                ;[wave[start + i], error] = ditherFn(renderData[i] * 128.0, error)
             }
             resolve(freezeAssign(new Sample(), sample, {wave}))
         }
