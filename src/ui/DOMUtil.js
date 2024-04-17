@@ -9,20 +9,22 @@ for (let template of document.querySelectorAll('template')) {
 }
 Object.freeze(templates)
 
+const dom = new function() { // namespace
+
 /**
  * @template {keyof HTMLElementTagNameMap} K
  * @param {K} tagName
  * @param {Partial<HTMLElementTagNameMap[K]>} properties
  * @returns {HTMLElementTagNameMap[K]}
  */
-function createElem(tagName, properties = {}) {
+this.createElem = function(tagName, properties = {}) {
     return Object.assign(document.createElement(tagName), properties)
 }
 
 /**
  * @param {HTMLFormElement} form
  */
-function disableFormSubmit(form) {
+this.disableFormSubmit = function(form) {
     form.addEventListener('submit', e => e.preventDefault())
 }
 
@@ -30,7 +32,7 @@ function disableFormSubmit(form) {
  * @param {NamedFormItem} namedItem
  * @param {string} value
  */
-function selectRadioButton(namedItem, value) {
+this.selectRadioButton = function(namedItem, value) {
     if (namedItem instanceof RadioNodeList) {
         namedItem.value = value
     } else if (namedItem instanceof HTMLInputElement) { // only one radio button
@@ -42,7 +44,7 @@ function selectRadioButton(namedItem, value) {
  * @param {NamedFormItem} namedItem
  * @param {string} defaultValue
  */
-function getRadioButtonValue(namedItem, defaultValue) {
+this.getRadioButtonValue = function(namedItem, defaultValue) {
     if (namedItem instanceof RadioNodeList) {
         return namedItem.value || defaultValue
     } else if (namedItem instanceof HTMLInputElement) {
@@ -56,7 +58,7 @@ function getRadioButtonValue(namedItem, defaultValue) {
  * @param {HTMLSelectElement} menu
  * @param {(value: string) => void} listener
  */
-function addMenuListener(menu, listener) {
+this.addMenuListener = function(menu, listener) {
     menu.addEventListener('change', () => {
         listener(menu.value)
         menu.selectedIndex = 0 // restore menu title
@@ -68,7 +70,7 @@ function addMenuListener(menu, listener) {
  * @param {string[]} names
  * @param {Record<string, string>} record
  */
-function saveFormData(form, names, record) {
+this.saveFormData = function(form, names, record) {
     for (let name of names) {
         let elem = form.elements.namedItem(name)
         if (elem instanceof HTMLInputElement && elem.type == 'checkbox') {
@@ -84,7 +86,7 @@ function saveFormData(form, names, record) {
  * @param {string[]} names
  * @param {Record<string, string>} record
  */
-function restoreFormData(form, names, record) {
+this.restoreFormData = function(form, names, record) {
     for (let name of names) {
         let value = record[name]
         if (value != null) {
@@ -97,3 +99,5 @@ function restoreFormData(form, names, record) {
         }
     }
 }
+
+} // namespace dom

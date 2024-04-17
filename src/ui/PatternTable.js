@@ -56,14 +56,14 @@ class PatternTableElement extends HTMLElement {
         let newMuteInputs = []
         let rowFrag = document.createDocumentFragment()
 
-        let cornerHead = createElem('th')
+        let cornerHead = dom.createElem('th')
         cornerHead.classList.add('pattern-row-head')
         rowFrag.appendChild(cornerHead)
         for (let c = 0; c < numChannels; c++) {
-            let th = rowFrag.appendChild(createElem('th'))
+            let th = rowFrag.appendChild(dom.createElem('th'))
             th.classList.add('pattern-col-head')
-            let label = th.appendChild(createElem('label'))
-            let input = label.appendChild(createElem('input', {type: 'checkbox'}))
+            let label = th.appendChild(dom.createElem('label'))
+            let input = label.appendChild(dom.createElem('input', {type: 'checkbox'}))
             if (!this._muteInputs[c] || this._muteInputs[c].checked) {
                 input.checked = true
             }
@@ -100,8 +100,8 @@ class PatternTableElement extends HTMLElement {
             this._tbody.textContent = ''
             let tableFrag = document.createDocumentFragment()
             for (let row = 0; row < pattern[0].length; row++) {
-                let tr = tableFrag.appendChild(createElem('tr'))
-                let th = createElem('th', {textContent: row.toString()})
+                let tr = tableFrag.appendChild(dom.createElem('tr'))
+                let th = dom.createElem('th', {textContent: row.toString()})
                 th.classList.add('pattern-row-head')
                 tr.appendChild(th)
 

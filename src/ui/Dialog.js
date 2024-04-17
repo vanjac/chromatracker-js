@@ -15,7 +15,7 @@ const focusableSelector = [
 function openDialog(dialog, {dismissable = false} = {}) {
     let body = document.querySelector('body')
 
-    let container = createElem('div', {tabIndex: -1})
+    let container = dom.createElem('div', {tabIndex: -1})
     container.classList.add('dialog-container')
     body.append(container)
 

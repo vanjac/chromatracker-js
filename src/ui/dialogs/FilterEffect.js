@@ -55,7 +55,7 @@ class FilterEffectElement extends FormDialogElement {
         this._graph = fragment.querySelector('#graph')
 
         this._initForm(this._form)
-        restoreFormData(this._form, this._inputNames(), global.effectFormData)
+        dom.restoreFormData(this._form, this._inputNames(), global.effectFormData)
 
         this._context = createOfflineAudioContext()
         this._filter = this._context.createBiquadFilter()
@@ -142,7 +142,7 @@ class FilterEffectElement extends FormDialogElement {
             gain: this._gainInput.valueAsNumber,
             dither: this._ditherInput.checked
         })
-        saveFormData(this._form, this._inputNames(), global.effectFormData)
+        dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
         closeDialog(this)
     }
 }

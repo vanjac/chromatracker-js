@@ -99,14 +99,14 @@ class SampleEditElement extends HTMLElement {
         this._loopEndInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample loop end'))
 
-        addMenuListener(fragment.querySelector('#selectMenu'), value => {
+        dom.addMenuListener(fragment.querySelector('#selectMenu'), value => {
             switch (value) {
                 case 'all': this._selectAll(); break
                 case 'none': this._selectNone(); break
                 case 'loop': this._selectLoop(); break
             }
         })
-        addMenuListener(fragment.querySelector('#editMenu'), value => {
+        dom.addMenuListener(fragment.querySelector('#editMenu'), value => {
             switch (value) {
                 case 'trim': this._trim(); break
                 case 'cut': this._cut(); break
@@ -114,7 +114,7 @@ class SampleEditElement extends HTMLElement {
                 case 'paste': this._paste(); break
             }
         })
-        addMenuListener(fragment.querySelector('#loopMenu'), value => {
+        dom.addMenuListener(fragment.querySelector('#loopMenu'), value => {
             switch (value) {
                 case 'set': this._loopSelection(); break
                 case 'clear': this._clearLoop(); break
@@ -122,7 +122,7 @@ class SampleEditElement extends HTMLElement {
                 case 'pingpong': this._loopPingPong(); break
             }
         })
-        addMenuListener(fragment.querySelector('#effectMenu'), value => {
+        dom.addMenuListener(fragment.querySelector('#effectMenu'), value => {
             switch (value) {
                 case 'amplify': this._amplify(); break
                 case 'fadeIn': this._applyEffect(edit.wave.fade.bind(edit.wave, 0, 1, 2)); break
@@ -244,7 +244,7 @@ class SampleEditElement extends HTMLElement {
             this._playMarks.pop().remove()
         }
         while (this._playMarks.length < positions.length) {
-            let mark = this._waveContainer.appendChild(createElem('div'))
+            let mark = this._waveContainer.appendChild(dom.createElem('div'))
             mark.classList.add('wave-mark', 'wave-play-mark')
             this._playMarks.push(mark)
         }
@@ -380,7 +380,7 @@ class SampleEditElement extends HTMLElement {
                         if (error instanceof Error) { openAlertDialog(error.message) }
                     }
                 } else {
-                    let dialog = openDialog(createElem('wait-dialog'))
+                    let dialog = openDialog(dom.createElem('wait-dialog'))
                     let promise = fileio.audio.read(
                         reader.result, this._sampleRateInput.valueAsNumber)
                     promise.then(({wave, volume}) => {
@@ -602,7 +602,7 @@ class SampleEditElement extends HTMLElement {
 
     /** @private */
     _amplify() {
-        let dialog = openDialog(createElem('amplify-effect'), {dismissable: true})
+        let dialog = openDialog(dom.createElem('amplify-effect'), {dismissable: true})
         dialog._onComplete = params => this._applyEffect(edit.wave.amplify.bind(edit.wave, params))
     }
 
@@ -623,10 +623,10 @@ class SampleEditElement extends HTMLElement {
 
     /** @private */
     _filter() {
-        let dialog = openDialog(createElem('filter-effect'), {dismissable: true})
+        let dialog = openDialog(dom.createElem('filter-effect'), {dismissable: true})
         dialog._onComplete = params => {
             let [start, end] = this._selRangeOrAll()
-            let waitDialog = openDialog(createElem('wait-dialog'))
+            let waitDialog = openDialog(dom.createElem('wait-dialog'))
             edit.sample.applyNode(this._viewSample, start, end, params.dither,
                 ctx => {
                     let node = ctx.createBiquadFilter()

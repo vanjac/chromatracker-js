@@ -46,7 +46,7 @@ class CellEntryElement extends HTMLElement {
         this._param0Select.addEventListener('input', () => this._target._updateCell())
         this._param1Select.addEventListener('input', () => this._target._updateCell())
 
-        disableFormSubmit(this._sampleList)
+        dom.disableFormSubmit(this._sampleList)
         new KeyPad(this._sampleList, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement == this._sampleList) {
                 let input = elem.parentElement.querySelector('input')
@@ -91,7 +91,7 @@ class CellEntryElement extends HTMLElement {
     _getCell() {
         let cell = new Cell()
         cell.pitch = this._piano._getPitch()
-        cell.inst = Number(getRadioButtonValue(this._sampleInput, '0'))
+        cell.inst = Number(dom.getRadioButtonValue(this._sampleInput, '0'))
         cell.effect = this._effectSelect.selectedIndex
         cell.param0 = this._param0Select.selectedIndex
         cell.param1 = this._param1Select.selectedIndex
@@ -134,7 +134,7 @@ class CellEntryElement extends HTMLElement {
         console.debug('update entry samples')
         this._viewSamples = samples
 
-        let selSample = Number(getRadioButtonValue(this._sampleInput, '1'))
+        let selSample = Number(dom.getRadioButtonValue(this._sampleInput, '1'))
 
         this._sampleList.textContent = ''
         for (let [i, sample] of samples.entries()) {
@@ -155,7 +155,7 @@ class CellEntryElement extends HTMLElement {
      */
     _setSelSample(s) {
         if (this._viewSamples[s]) {
-            selectRadioButton(this._sampleInput, s.toString())
+            dom.selectRadioButton(this._sampleInput, s.toString())
         }
         this._target._updateCell()
     }
@@ -168,7 +168,7 @@ class CellEntryElement extends HTMLElement {
             this._piano._setPitch(cell.pitch)
         }
         if (this._sampleEnable.checked && cell.inst) {
-            selectRadioButton(this._sampleInput, cell.inst.toString())
+            dom.selectRadioButton(this._sampleInput, cell.inst.toString())
         }
         if (this._effectEnable.checked) {
             this._effectSelect.selectedIndex = cell.effect

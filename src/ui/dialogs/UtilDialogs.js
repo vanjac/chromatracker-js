@@ -27,7 +27,7 @@ window.customElements.define('alert-dialog', AlertDialogElement)
  * @param {string} title
  */
 function openAlertDialog(message, title = 'Error') {
-    return openDialog(createElem('alert-dialog', {_message: message, _title: title}))
+    return openDialog(dom.createElem('alert-dialog', {_message: message, _title: title}))
 }
 
 class ConfirmDialogElement extends FormDialogElement {
@@ -79,7 +79,7 @@ window.customElements.define('confirm-dialog', ConfirmDialogElement)
  */
 function openConfirmDialog(message, title = '') {
     return new Promise((resolve, reject) => {
-        let dialog = createElem('confirm-dialog', {_message: message, _title: title})
+        let dialog = dom.createElem('confirm-dialog', {_message: message, _title: title})
         dialog._onConfirm = resolve
         dialog._onCancel = reject
         openDialog(dialog)
@@ -143,7 +143,7 @@ window.customElements.define('input-dialog', InputDialogElement)
  */
 function openInputDialog(prompt, title = '', defaultValue = 0) {
     return new Promise((resolve, reject) => {
-        let dialog = createElem('input-dialog', {_prompt: prompt, _title: title})
+        let dialog = dom.createElem('input-dialog', {_prompt: prompt, _title: title})
         dialog._defaultValue = defaultValue
         dialog._onConfirm = resolve
         dialog._onCancel = reject

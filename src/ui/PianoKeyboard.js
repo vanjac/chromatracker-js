@@ -22,12 +22,12 @@ class PianoKeyboardElement extends HTMLElement {
         this._pianoKeys = []
         this._createPiano()
 
-        disableFormSubmit(this._piano)
+        dom.disableFormSubmit(this._piano)
         new KeyPad(this._piano, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement
                     && elem.parentElement.parentElement.parentElement == this._piano) {
                 let input = elem.parentElement.querySelector('input')
-                selectRadioButton(this._pitchInput, input.value)
+                dom.selectRadioButton(this._pitchInput, input.value)
                 this._target._pitchChanged()
                 this._jam._jamPlay(id, this._target._getJamCell(), {useChannel: this._useChannel})
             }
@@ -66,27 +66,27 @@ class PianoKeyboardElement extends HTMLElement {
             this._pianoKeys.push(label)
 
             if ([3, 10].includes(note)) {
-                let space = blackKeys.appendChild(createElem('div'))
+                let space = blackKeys.appendChild(dom.createElem('div'))
                 space.classList.add('keypad-key')
             }
         }
         this._pitchInput = this._piano.elements.namedItem('pitch')
-        selectRadioButton(this._pitchInput, '36')
+        dom.selectRadioButton(this._pitchInput, '36')
     }
 
     _getPitch() {
-        return Number(getRadioButtonValue(this._pitchInput, '36'))
+        return Number(dom.getRadioButtonValue(this._pitchInput, '36'))
     }
 
     /**
      * @param {number} pitch
      */
     _setPitch(pitch) {
-        selectRadioButton(this._pitchInput, pitch.toString())
+        dom.selectRadioButton(this._pitchInput, pitch.toString())
     }
 
     _scrollToSelPitch() {
-        let selPitch = Number(getRadioButtonValue(this._pitchInput, '0'))
+        let selPitch = Number(dom.getRadioButtonValue(this._pitchInput, '0'))
         selPitch -= (selPitch % 12)
         let parentRect = this._piano.getBoundingClientRect()
         let childRect = this._pianoKeys[selPitch].getBoundingClientRect()

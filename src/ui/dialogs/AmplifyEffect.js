@@ -17,7 +17,7 @@ class AmplifyEffectElement extends FormDialogElement {
         this._ditherInput = fragment.querySelector('#dither')
 
         this._initForm(this._form)
-        restoreFormData(this._form, this._inputNames(), global.effectFormData)
+        dom.restoreFormData(this._form, this._inputNames(), global.effectFormData)
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -33,7 +33,7 @@ class AmplifyEffectElement extends FormDialogElement {
             amount: this._amountInput.valueAsNumber,
             dithering: this._ditherInput.checked
         })
-        saveFormData(this._form, this._inputNames(), global.effectFormData)
+        dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
         closeDialog(this)
     }
 }

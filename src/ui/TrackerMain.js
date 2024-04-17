@@ -65,7 +65,7 @@ class TrackerMainElement extends HTMLElement {
 
         /** @type {HTMLFormElement} */
         let tabForm = fragment.querySelector('#appTabs')
-        disableFormSubmit(tabForm)
+        dom.disableFormSubmit(tabForm)
         let tabBody = fragment.querySelector('#appTabBody')
         for (let tabButton of tabForm.elements) {
             if (tabButton instanceof HTMLInputElement) {
@@ -96,7 +96,7 @@ class TrackerMainElement extends HTMLElement {
                 e.preventDefault()
                 if (e.altKey) {
                     this._pause()
-                    let dialog = openDialog(createElem('cli-dialog'), {dismissable: true})
+                    let dialog = openDialog(dom.createElem('cli-dialog'), {dismissable: true})
                     cli.beginSel(() => closeDialog(dialog))
                 }
             }

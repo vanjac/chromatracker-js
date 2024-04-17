@@ -24,7 +24,7 @@ class SequenceEditElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._select = fragment.querySelector('#patternSelect')
 
-        disableFormSubmit(this._sequenceList)
+        dom.disableFormSubmit(this._sequenceList)
         fragment.querySelector('#seqInsSame').addEventListener('click', () => this._seqInsSame())
         fragment.querySelector('#seqInsClone').addEventListener('click', () => this._seqInsClone())
         fragment.querySelector('#seqDel').addEventListener('click', () => this._seqDel())
@@ -77,7 +77,7 @@ class SequenceEditElement extends HTMLElement {
             this._sequenceButtons.push(label)
         }
         this._sequenceInput = this._sequenceList.elements.namedItem('sequence')
-        selectRadioButton(this._sequenceInput, this._selPos.toString())
+        dom.selectRadioButton(this._sequenceInput, this._selPos.toString())
         this._updateSel()
     }
 
@@ -94,7 +94,7 @@ class SequenceEditElement extends HTMLElement {
         this._select.textContent = ''
         // last option = create pattern
         for (let i = 0; i < patterns.length + 1; i++) {
-            this._select.appendChild(createElem('option', {textContent: i.toString()}))
+            this._select.appendChild(dom.createElem('option', {textContent: i.toString()}))
         }
         this._select.selectedIndex = this._viewSequence[this._selPos]
     }
@@ -115,7 +115,7 @@ class SequenceEditElement extends HTMLElement {
     _setSelPos(pos) {
         if (pos != this._selPos && pos < this._viewSequence.length) {
             this._selPos = pos
-            selectRadioButton(this._sequenceInput, pos.toString())
+            dom.selectRadioButton(this._sequenceInput, pos.toString())
             this._updateSel()
         }
     }
