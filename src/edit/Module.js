@@ -1,7 +1,6 @@
 'use strict'
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-edit.module = new function() {
+edit.module = new function() { // namespace
 
 /** @readonly */
 this.defaultNew = freezeAssign(new Module(), {

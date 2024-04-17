@@ -1,7 +1,6 @@
 'use strict'
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-edit.pattern = new function() {
+edit.pattern = new function() { // namespace
 
 /** @type {Readonly<PatternChannel>} */
 const defaultNewChannel = Object.freeze(Array(numRows).fill(emptyCell))

@@ -1,7 +1,6 @@
 'use strict'
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-edit.wave = new function() {
+edit.wave = new function() { // namespace
 
 const ditherScale = 0.5
 const errorScale = 0.8

@@ -1,7 +1,6 @@
 'use strict'
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-edit.sequence = new function() {
+edit.sequence = new function() { // namespace
 
 /**
  * @param {Readonly<Module>} module
