@@ -25,7 +25,7 @@ this.createMissing = function(module, idx) {
     let newPatterns = [...module.patterns]
     while (idx >= newPatterns.length) {
         console.debug('Make new pattern')
-        newPatterns.push(edit.pattern.create(module.numChannels))
+        newPatterns.push(this.create(module.numChannels))
     }
     return Object.freeze(newPatterns)
 }

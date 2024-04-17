@@ -125,9 +125,9 @@ class SampleEditElement extends HTMLElement {
         addMenuListener(fragment.querySelector('#effectMenu'), value => {
             switch (value) {
                 case 'amplify': this._amplify(); break
-                case 'fadeIn': this._applyEffect(edit.wave.fade.bind(null, 0, 1, 2)); break
-                case 'fadeOut': this._applyEffect(edit.wave.fade.bind(null, 1, 0, 2)); break
-                case 'reverse': this._applyEffect(edit.wave.reverse); break
+                case 'fadeIn': this._applyEffect(edit.wave.fade.bind(edit.wave, 0, 1, 2)); break
+                case 'fadeOut': this._applyEffect(edit.wave.fade.bind(edit.wave, 1, 0, 2)); break
+                case 'reverse': this._applyEffect(edit.wave.reverse.bind(edit.wave)); break
                 case 'resample': this._resample(); break
                 case 'filter': this._filter(); break
             }
@@ -603,7 +603,7 @@ class SampleEditElement extends HTMLElement {
     /** @private */
     _amplify() {
         let dialog = openDialog(createElem('amplify-effect'), {dismissable: true})
-        dialog._onComplete = params => this._applyEffect(edit.wave.amplify.bind(null, params))
+        dialog._onComplete = params => this._applyEffect(edit.wave.amplify.bind(edit.wave, params))
     }
 
     /** @private */
@@ -612,7 +612,7 @@ class SampleEditElement extends HTMLElement {
             let [start, end] = this._selRangeOrAll()
             let length = (end - start) * (2 ** (-semitones / 12))
             let newWave = edit.sample.spliceEffect(
-                this._viewSample, start, end, length, edit.wave.resample)
+                this._viewSample, start, end, length, edit.wave.resample.bind(edit.wave))
             this._onChange(newWave, '')
             if (this._rangeSelected()) {
                 this._setSel(start, start + length)

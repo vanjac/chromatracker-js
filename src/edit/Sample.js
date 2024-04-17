@@ -63,7 +63,7 @@ this.delete = function(sample, start, end) {
  * @param {Readonly<Int8Array>} insert
  */
 this.splice = function(sample, start, end, insert) {
-    return edit.sample.spliceEffect(sample, start, end, insert.length, (_, dst) => dst.set(insert))
+    return this.spliceEffect(sample, start, end, insert.length, (_, dst) => dst.set(insert))
 }
 
 /**

@@ -33,7 +33,7 @@ this.dontDither = function(s, error) {
  * @param {Int8Array} dst
  */
 this.amplify = function({amount, dithering}, src, dst) {
-    let ditherFn = dithering ? edit.wave.dither : edit.wave.dontDither
+    let ditherFn = dithering ? this.dither : this.dontDither
     let error = 0
     for (let i = 0; i < dst.length; i++) {
         ;[dst[i], error] = ditherFn(src[i] * amount, error)
@@ -54,7 +54,7 @@ this.fade = function(startAmp, endAmp, exp, src, dst) {
     for (let i = 0; i < dst.length; i++) {
         let t = i / dst.length
         let x = (startAmp * (t - 1) + endAmp * t) ** exp
-        ;[dst[i], error] = edit.wave.dither(src[i] * x, error)
+        ;[dst[i], error] = this.dither(src[i] * x, error)
     }
 }
 
