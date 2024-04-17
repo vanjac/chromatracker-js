@@ -628,7 +628,7 @@ class SampleEditElement extends HTMLElement {
             editSampleNodeEffect(this._viewSample, start, end, params.dither,
                 ctx => {
                     let node = ctx.createBiquadFilter()
-                    let factor = ctx.sampleRate / baseRate // TODO!
+                    let factor = ctx.sampleRate / play.baseRate // TODO!
                     node.frequency.setValueAtTime(params.freqStart * factor, 0)
                     if (params.freqEnd != null) {
                         node.frequency.exponentialRampToValueAtTime(

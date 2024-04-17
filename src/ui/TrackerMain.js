@@ -166,12 +166,12 @@ class TrackerMainElement extends HTMLElement {
         } else if (this._context.state != 'running') {
             this._context.resume()
         }
-        this._playback = initPlayback(this._context, this._module)
+        this._playback = play.init(this._context, this._module)
         this._playback.time += playbackDelay // avoid "catching up"
 
         for (let c = 0; c < this._module.numChannels; c++) {
             if (this._patternEdit._isChannelMuted(c)) {
-                setChannelMute(this._playback, c, true)
+                play.setChannelMute(this._playback, c, true)
             }
         }
         if (restoreSpeed) {
@@ -212,7 +212,7 @@ class TrackerMainElement extends HTMLElement {
 
     _pause() {
         if (this._isPlaying()) {
-            stopPlayback(this._playback)
+            play.stop(this._playback)
             window.clearInterval(this._intervalHandle)
             this._queuedStates = []
             this._queuedTime = 0
@@ -232,7 +232,7 @@ class TrackerMainElement extends HTMLElement {
     _processPlayback() {
         while (this._queuedTime < this._context.currentTime + playbackQueueTime) {
             let {pos, row, tick, time} = this._playback
-            processTick(this._playback)
+            play.processTick(this._playback)
             // TODO: pitch slides will be inaccurate
             if (tick == 0) {
                 let {tempo, speed} = this._playback
@@ -258,7 +258,7 @@ class TrackerMainElement extends HTMLElement {
      */
     _setMute(c, mute) {
         if (this._playback) {
-            setChannelMute(this._playback, c, mute)
+            play.setChannelMute(this._playback, c, mute)
         }
     }
 
@@ -270,14 +270,14 @@ class TrackerMainElement extends HTMLElement {
         this._enablePlayback()
         this._enableAnimation()
         let channel = useChannel ? this._patternEdit._selChannel() : -1
-        jamPlay(this._playback, id, channel, cell)
+        play.jamPlay(this._playback, id, channel, cell)
     }
 
     /**
      * @param {number} id
      */
     _jamRelease(id) {
-        jamRelease(this._playback, id)
+        play.jamRelease(this._playback, id)
         if (!this._isPlaying() && this._playback.jamChannels.size == 0) {
             this._disableAnimation()
         }
@@ -356,7 +356,7 @@ class TrackerMainElement extends HTMLElement {
     _setModule(mod) {
         this._module = mod
         if (this._playback) {
-            setPlaybackModule(this._playback, mod)
+            play.setModule(this._playback, mod)
         }
     }
 
