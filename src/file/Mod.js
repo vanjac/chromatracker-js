@@ -24,7 +24,7 @@ this.read = function(buf) {
     let asciiDecode = new TextDecoder('ascii')
 
     let module = new Module()
-    module.name = textDecode.decode(readStringZ(buf, 0, 20))
+    module.name = textDecode.decode(fileio.readStringZ(buf, 0, 20))
 
     let songLen = Math.min(view.getUint8(950), mod.numSongPositions)
     module.restartPos = view.getUint8(951)
@@ -86,7 +86,7 @@ this.read = function(buf) {
             samples.push(null)
             continue
         }
-        sample.name = textDecode.decode(readStringZ(buf, offset, mod.maxSampleNameLength))
+        sample.name = textDecode.decode(fileio.readStringZ(buf, offset, mod.maxSampleNameLength))
         sample.finetune = view.getUint8(offset + 24) & 0xf
         if (sample.finetune >= 8) {
             sample.finetune -= 16 // sign-extend nibble
@@ -119,7 +119,7 @@ this.write = function(module) {
     let view = new DataView(buf)
     let textEncode = new TextEncoder()
 
-    writeU8Array(buf, 0, 20, textEncode.encode(module.name))
+    fileio.writeU8Array(buf, 0, 20, textEncode.encode(module.name))
 
     for (let s = 1; s < mod.numSamples; s++) {
         let offset = s * 30 - 10
@@ -130,7 +130,7 @@ this.write = function(module) {
             continue
         }
         let sample = module.samples[s]
-        writeU8Array(buf, offset, mod.maxSampleNameLength, textEncode.encode(sample.name))
+        fileio.writeU8Array(buf, offset, mod.maxSampleNameLength, textEncode.encode(sample.name))
         view.setUint16(offset + 22, (sample.wave.length / 2) | 0)
         view.setUint8(offset + 24, sample.finetune & 0xf)
         view.setUint8(offset + 25, sample.volume)
@@ -168,7 +168,7 @@ this.write = function(module) {
     } else {
         initials = module.numChannels + 'CH'
     }
-    writeU8Array(buf, 1080, 4, textEncode.encode(initials))
+    fileio.writeU8Array(buf, 1080, 4, textEncode.encode(initials))
 
     let patternSize = module.numChannels * mod.numRows * 4
     for (let p = 0; p < numPatterns; p++) {
@@ -195,7 +195,7 @@ this.write = function(module) {
         }
     }
 
-    writeU8Array(buf, wavePos + 8, trackerInfoSize - 8,
+    fileio.writeU8Array(buf, wavePos + 8, trackerInfoSize - 8,
         textEncode.encode(`ChromaTracker v${version}`))
 
     return buf
