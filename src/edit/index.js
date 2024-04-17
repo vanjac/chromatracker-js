@@ -1,5 +1,7 @@
 'use strict'
 
+const edit = {} // namespace
+
 /**
  * @template T
  * @param {readonly T[]} array

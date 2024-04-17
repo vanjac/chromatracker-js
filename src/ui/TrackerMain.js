@@ -29,7 +29,7 @@ class TrackerMainElement extends HTMLElement {
     constructor() {
         super()
 
-        this._module = defaultNewModule
+        this._module = edit.module.defaultNew
 
         /** @type {Readonly<Module>[]} */
         this._undoStack = []

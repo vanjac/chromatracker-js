@@ -117,7 +117,7 @@ class PatternTableElement extends HTMLElement {
                     }, id => this._target._jamRelease(id), {blockScroll: false})
                     td.addEventListener('contextmenu', () => {
                         cliAddSelProp('cell', Cell, this._viewPattern[c][row], cell => {
-                            this._onChange(editPatternPutCell(
+                            this._onChange(edit.pattern.putCell(
                                 this._viewPattern, c, row, cell, CellPart.all))
                         })
                     })

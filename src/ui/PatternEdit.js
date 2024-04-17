@@ -185,7 +185,7 @@ class PatternEditElement extends HTMLElement {
      */
     _changePattern(callback) {
         this._target._changeModule(
-            module => editChangePattern(module, module.sequence[this._selPos()], callback))
+            module => edit.pattern.change(module, module.sequence[this._selPos()], callback))
     }
 
     /**
@@ -194,7 +194,7 @@ class PatternEditElement extends HTMLElement {
      */
     _putCell(cell, parts) {
         let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => editPatternPutCell(pattern, channel, row, cell, parts))
+        this._changePattern(pattern => edit.pattern.putCell(pattern, channel, row, cell, parts))
     }
 
     /**
@@ -203,7 +203,7 @@ class PatternEditElement extends HTMLElement {
      */
     _insert(count) {
         let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => editPatternChannelInsert(pattern, channel, row, count))
+        this._changePattern(pattern => edit.pattern.channelInsert(pattern, channel, row, count))
     }
 
     /**
@@ -212,7 +212,7 @@ class PatternEditElement extends HTMLElement {
      */
     _delete(count) {
         let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => editPatternChannelDelete(pattern, channel, row, count))
+        this._changePattern(pattern => edit.pattern.channelDelete(pattern, channel, row, count))
     }
 
     /** @private */
@@ -221,7 +221,7 @@ class PatternEditElement extends HTMLElement {
         let [minChannel, maxChannel] = this._patternTable._channelRange()
         let [minRow, maxRow] = this._patternTable._rowRange()
         let parts = this._cellEntry._getCellParts()
-        this._changePattern(pattern => editPatternFill(
+        this._changePattern(pattern => edit.pattern.fill(
             pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, emptyCell, parts))
     }
 
@@ -229,14 +229,14 @@ class PatternEditElement extends HTMLElement {
     _copy() {
         let [minChannel, maxChannel] = this._patternTable._channelRange()
         let [minRow, maxRow] = this._patternTable._rowRange()
-        global.patternClipboard = patternSlice(
+        global.patternClipboard = edit.pattern.slice(
             this._selPattern(), minChannel, maxChannel + 1, minRow, maxRow + 1)
     }
 
     /** @private */
     _paste() {
         let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => editPatternWrite(
+        this._changePattern(pattern => edit.pattern.write(
             pattern, channel, row, global.patternClipboard, this._cellEntry._getCellParts()))
     }
 

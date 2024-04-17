@@ -43,7 +43,8 @@ class SamplesListElement extends HTMLElement {
         this._sampleEdit = createElem('sample-edit', {_target: this._target})
         this._sampleEditContainer.appendChild(this._sampleEdit)
         this._sampleEdit._onChange = (sample, combineTag) => (
-            this._target._changeModule(module => editSetSample(module, idx, sample), {combineTag}))
+            this._target._changeModule(
+                module => edit.sample.update(module, idx, sample), {combineTag}))
         this._sampleEdit._setIndex(idx)
         this._sampleEdit._setSample(this._viewSamples[idx])
     }
@@ -121,7 +122,7 @@ class SamplesListElement extends HTMLElement {
     _addSample() {
         let selSample = this._getSelSample()
         this._target._changeModule(module => {
-            let [newMod, idx] = editAddSample(module)
+            let [newMod, idx] = edit.sample.create(module)
             selSample = idx
             return newMod
         })
@@ -142,7 +143,7 @@ class SamplesListElement extends HTMLElement {
                 }
             }
         }
-        this._target._changeModule(module => editSetSample(module, idx, null))
+        this._target._changeModule(module => edit.sample.update(module, idx, null))
     }
 }
 window.customElements.define('samples-list', SamplesListElement)

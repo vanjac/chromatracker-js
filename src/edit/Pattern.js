@@ -1,14 +1,17 @@
 'use strict'
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+edit.pattern = new function() {
+
 /** @type {Readonly<PatternChannel>} */
-const defaultNewPatternChannel = Object.freeze(Array(numRows).fill(emptyCell))
+const defaultNewChannel = Object.freeze(Array(numRows).fill(emptyCell))
 
 /**
  * @param {number} numChannels
  * @returns {Readonly<Pattern>}
  */
-function createPattern(numChannels) {
-    return Object.freeze(Array(numChannels).fill(defaultNewPatternChannel))
+this.create = function(numChannels) {
+    return Object.freeze(Array(numChannels).fill(defaultNewChannel))
 }
 
 /**
@@ -16,14 +19,14 @@ function createPattern(numChannels) {
  * @param {number} idx
  * @returns {readonly Readonly<Pattern>[]}
  */
-function expandPatterns(module, idx) {
+this.createMissing = function(module, idx) {
     if (idx < module.patterns.length) {
         return module.patterns
     }
     let newPatterns = [...module.patterns]
     while (idx >= newPatterns.length) {
         console.debug('Make new pattern')
-        newPatterns.push(createPattern(module.numChannels))
+        newPatterns.push(edit.pattern.create(module.numChannels))
     }
     return Object.freeze(newPatterns)
 }
@@ -33,7 +36,7 @@ function expandPatterns(module, idx) {
  * @param {number} p
  * @param {(pattern: Readonly<Pattern>) => Readonly<Pattern>} callback
  */
-function editChangePattern(module, p, callback) {
+this.change = function(module, p, callback) {
     let patterns = changeItem(module.patterns, p, callback)
     return freezeAssign(new Module(), module, {patterns})
 }
@@ -42,7 +45,7 @@ function editChangePattern(module, p, callback) {
  * @param {Readonly<Module>} module
  * @param {number} pat
  */
-function editClonePattern(module, pat) {
+this.clone = function(module, pat) {
     let patterns = Object.freeze([...module.patterns, module.patterns[pat]])
     return freezeAssign(new Module(), module, {patterns})
 }
@@ -69,7 +72,7 @@ function cellApply(dest, src, parts) {
  * @param {number} rStart
  * @param {number} rEnd
  */
-function patternSlice(pattern, cStart, cEnd, rStart, rEnd) {
+this.slice = function(pattern, cStart, cEnd, rStart, rEnd) {
     return Object.freeze(pattern.slice(cStart, cEnd).map(
         channel => Object.freeze(channel.slice(rStart, rEnd))))
 }
@@ -81,7 +84,7 @@ function patternSlice(pattern, cStart, cEnd, rStart, rEnd) {
  * @param {Readonly<Cell>} cell
  * @param {CellPart} parts
  */
-function editPatternPutCell(pattern, c, r, cell, parts) {
+this.putCell = function(pattern, c, r, cell, parts) {
     return changeItem(pattern, c, channel =>
         changeItem(channel, r, dest =>
             Object.freeze(cellApply(dest, cell, parts))))
@@ -94,7 +97,7 @@ function editPatternPutCell(pattern, c, r, cell, parts) {
  * @param {Readonly<Pattern>} src
  * @param {CellPart} parts
  */
-function editPatternWrite(dest, cStart, rStart, src, parts) {
+this.write = function(dest, cStart, rStart, src, parts) {
     let mutPat = [...dest]
     let cSize = Math.min(src.length, dest.length - cStart)
     for (let c = 0; c < cSize; c++) {
@@ -118,7 +121,7 @@ function editPatternWrite(dest, cStart, rStart, src, parts) {
  * @param {Readonly<Cell>} cell
  * @param {CellPart} parts
  */
-function editPatternFill(pattern, cStart, cEnd, rStart, rEnd, cell, parts) {
+this.fill = function(pattern, cStart, cEnd, rStart, rEnd, cell, parts) {
     let mutPat = [...pattern]
     for (let c = cStart; c < cEnd; c++) {
         let mutChan = [...mutPat[c]]
@@ -136,7 +139,7 @@ function editPatternFill(pattern, cStart, cEnd, rStart, rEnd, cell, parts) {
  * @param {number} r
  * @param {number} count
  */
-function editPatternChannelInsert(pattern, c, r, count) {
+this.channelInsert = function(pattern, c, r, count) {
     return changeItem(pattern, c, channel => {
         let newChannel = [...channel]
         newChannel.copyWithin(r + count, r, channel.length - count + 1)
@@ -151,7 +154,7 @@ function editPatternChannelInsert(pattern, c, r, count) {
  * @param {number} r
  * @param {number} count
  */
-function editPatternChannelDelete(pattern, c, r, count) {
+this.channelDelete = function(pattern, c, r, count) {
     return changeItem(pattern, c, channel => {
         let newChannel = [...channel]
         newChannel.copyWithin(r, r + count, channel.length)
@@ -159,3 +162,5 @@ function editPatternChannelDelete(pattern, c, r, count) {
         return Object.freeze(newChannel)
     })
 }
+
+} // namespace edit.pattern

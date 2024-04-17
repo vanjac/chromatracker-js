@@ -19,7 +19,7 @@ function readAudioFile(buf, sampleRate) {
             let wave = new Int8Array(data.length)
             let error = 0
             for (let i = 0; i < data.length; i++) {
-                ;[wave[i], error] = dither(data[i] * 127.0 / maxAmp, error)
+                ;[wave[i], error] = edit.wave.dither(data[i] * 127.0 / maxAmp, error)
             }
             resolve(freezeAssign(new Sample(), {wave, volume: Math.round(maxVolume * maxAmp)}))
         }, reject)

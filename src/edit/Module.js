@@ -1,7 +1,11 @@
 'use strict'
 
-const defaultNewModule = freezeAssign(new Module(), {
-    patterns: Object.freeze([createPattern(Module.prototype.numChannels)]),
+////////////////////////////////////////////////////////////////////////////////////////////////////
+edit.module = new function() {
+
+/** @readonly */
+this.defaultNew = freezeAssign(new Module(), {
+    patterns: Object.freeze([edit.pattern.create(Module.prototype.numChannels)]),
     sequence: Object.freeze([0]),
     samples: Object.freeze([null]),
 })
@@ -10,7 +14,7 @@ const defaultNewModule = freezeAssign(new Module(), {
  * @param {Readonly<Module>} module
  * @param {string} name
  */
-function editSetModuleName(module, name) {
+this.setName = function(module, name) {
     return freezeAssign(new Module(), module, {name})
 }
 
@@ -18,7 +22,7 @@ function editSetModuleName(module, name) {
  * @param {Readonly<Module>} module
  * @param {number} count
  */
-function editAddChannels(module, count) {
+this.addChannels = function(module, count) {
     let numChannels = module.numChannels + count
     let patterns = module.patterns.map(pattern => {
         let numRows = pattern[0].length
@@ -33,9 +37,11 @@ function editAddChannels(module, count) {
  * @param {number} index
  * @param {number} count
  */
-function editDelChannels(module, index, count) {
+this.delChannels = function(module, index, count) {
     if (module.numChannels <= count) { return module }
     let numChannels = module.numChannels - count
     let patterns = module.patterns.map(pattern => immSplice(pattern, index, count))
     return freezeAssign(new Module(), module, {numChannels, patterns})
 }
+
+} // namespace edit.module

@@ -27,7 +27,8 @@ class ModulePropertiesElement extends HTMLElement {
         /** @type {HTMLInputElement} */
         this._titleInput = fragment.querySelector('#title')
         this._titleInput.addEventListener('input', () =>
-            this._target._changeModule(module => editSetModuleName(module, this._titleInput.value),
+            this._target._changeModule(
+                module => edit.module.setName(module, this._titleInput.value),
                 {combineTag: 'title'}))
         this._titleInput.addEventListener('change', () => this._target._clearUndoCombine('title'))
 
@@ -43,13 +44,13 @@ class ModulePropertiesElement extends HTMLElement {
         this._fileSizeOutput = fragment.querySelector('#fileSize')
 
         fragment.querySelector('#addChannels').addEventListener('click',
-            () => this._target._changeModule(module => editAddChannels(module, 2)))
+            () => this._target._changeModule(module => edit.module.addChannels(module, 2)))
         fragment.querySelector('#delChannels').addEventListener('click',
             () => this._target._changeModule(
-                module => editDelChannels(module, module.numChannels - 2, 2)))
+                module => edit.module.delChannels(module, module.numChannels - 2, 2)))
 
         fragment.querySelector('#patternZap').addEventListener('click',
-            () => this._target._changeModule(module => editPatternZap(module)))
+            () => this._target._changeModule(module => edit.sequence.zap(module)))
 
         this.style.display = 'contents'
         this.appendChild(fragment)

@@ -32,7 +32,8 @@ class SequenceEditElement extends HTMLElement {
         this._select.addEventListener('input', () => this._seqSet(this._select.selectedIndex))
         this._select.addEventListener('contextmenu', () => {
             cliAddSelProp('patnum', 'number', this._viewSequence[this._selPos],
-                num => this._target._changeModule(module => editSetPos(module, this._selPos, num)))
+                num => this._target._changeModule(
+                    module => edit.sequence.set(module, this._selPos, num)))
         })
 
         this.style.display = 'contents'
@@ -71,7 +72,7 @@ class SequenceEditElement extends HTMLElement {
                 this._setSelPos(i)
                 this._onSelect()
                 cliAddSelProp('patnum', 'number', this._viewSequence[i],
-                    num => this._target._changeModule(module => editSetPos(module, i, num)))
+                    num => this._target._changeModule(module => edit.sequence.set(module, i, num)))
             })
             this._sequenceButtons.push(label)
         }
@@ -124,22 +125,22 @@ class SequenceEditElement extends HTMLElement {
      * @param {number} p
      */
     _seqSet(p) {
-        this._target._changeModule(module => editSetPos(module, this._selPos, p))
+        this._target._changeModule(module => edit.sequence.set(module, this._selPos, p))
     }
 
     /** @private */
     _seqInsSame() {
         this._selPos++
         this._target._changeModule(module =>
-            editInsPos(module, this._selPos, module.sequence[this._selPos - 1]))
+            edit.sequence.insert(module, this._selPos, module.sequence[this._selPos - 1]))
     }
 
     /** @private */
     _seqInsClone() {
         this._selPos++
         this._target._changeModule(module => {
-            module = editClonePattern(module, module.sequence[this._selPos - 1])
-            return editInsPos(module, this._selPos, module.patterns.length - 1)
+            module = edit.pattern.clone(module, module.sequence[this._selPos - 1])
+            return edit.sequence.insert(module, this._selPos, module.patterns.length - 1)
         })
     }
 
@@ -152,7 +153,7 @@ class SequenceEditElement extends HTMLElement {
         if (this._selPos >= this._viewSequence.length - 1) {
             this._selPos--
         }
-        this._target._changeModule(module => editDelPos(module, pos))
+        this._target._changeModule(module => edit.sequence.delete(module, pos))
     }
 }
 window.customElements.define('sequence-edit', SequenceEditElement)
