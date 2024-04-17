@@ -141,7 +141,7 @@ class CellEntryElement extends HTMLElement {
             if (!sample) {
                 continue
             }
-            let label = makeRadioButton('sample', i.toString(), i.toString())
+            let label = ui.util.makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key')
             this._sampleList.appendChild(label)
             setupKeypadKeyEvents(label)

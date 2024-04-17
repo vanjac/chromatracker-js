@@ -60,7 +60,7 @@ class SequenceEditElement extends HTMLElement {
         this._sequenceButtons = []
 
         for (let [i, num] of sequence.entries()) {
-            let label = makeRadioButton('sequence', i.toString(), num.toString())
+            let label = ui.util.makeRadioButton('sequence', i.toString(), num.toString())
             label.classList.add('seq-button')
             this._sequenceList.appendChild(label)
             label.addEventListener('change', () => {

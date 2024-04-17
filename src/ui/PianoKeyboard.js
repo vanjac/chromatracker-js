@@ -57,7 +57,7 @@ class PianoKeyboardElement extends HTMLElement {
             if (note == 0) {
                 noteStr += Math.floor(i / 12)
             }
-            let label = makeRadioButton('pitch', i.toString(), noteStr)
+            let label = ui.util.makeRadioButton('pitch', i.toString(), noteStr)
             label.classList.add('keypad-key')
             let isBlackKey = [1, 3, 6, 8, 10].includes(note)
             label.classList.add(isBlackKey ? 'black-key' : 'white-key')
