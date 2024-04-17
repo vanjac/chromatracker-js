@@ -9,7 +9,7 @@ edit.sample = new function() { // namespace
 this.create = function(module) {
     let emptyIndex = module.samples.findIndex((sample, i) => i != 0 && !sample)
     if (emptyIndex == -1) { emptyIndex = module.samples.length }
-    let samples = immSplice(module.samples, emptyIndex, 1, emptySample)
+    let samples = immSplice(module.samples, emptyIndex, 1, Sample.empty)
     return [freezeAssign(new Module(), module, {samples}), emptyIndex]
 }
 

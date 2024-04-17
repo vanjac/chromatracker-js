@@ -25,7 +25,7 @@ Sample.prototype = {
 
     hasLoop() { return this.loopEnd > this.loopStart },
 }
-const emptySample = Object.freeze(new Sample())
+Sample.empty = Object.freeze(new Sample())
 
 function Cell() {}
 Cell.prototype = {
@@ -41,7 +41,7 @@ Cell.prototype = {
     /** Interpret the parameter hex digits as binary-coded decimal */
     paramDecimal() { return this.param0 * 10 + this.param1 },
 }
-const emptyCell = Object.freeze(new Cell())
+Cell.empty = Object.freeze(new Cell())
 
 /** @enum {number} */
 const CellPart = Object.freeze({

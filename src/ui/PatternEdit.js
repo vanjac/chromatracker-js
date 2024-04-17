@@ -52,7 +52,7 @@ class PatternEditElement extends HTMLElement {
         }, id => this._target._jamRelease(id))
 
         setupKeyButton(fragment.querySelector('#clear'), id => {
-            this._putCell(emptyCell, this._cellEntry._getCellParts())
+            this._putCell(Cell.empty, this._cellEntry._getCellParts())
             this._target._jamPlay(id, this._selCell())
             this._advance()
         }, id => this._target._jamRelease(id))
@@ -222,7 +222,7 @@ class PatternEditElement extends HTMLElement {
         let [minRow, maxRow] = this._patternTable._rowRange()
         let parts = this._cellEntry._getCellParts()
         this._changePattern(pattern => edit.pattern.fill(
-            pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, emptyCell, parts))
+            pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, Cell.empty, parts))
     }
 
     /** @private */

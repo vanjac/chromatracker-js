@@ -25,7 +25,7 @@ this.addChannels = function(module, count) {
     let numChannels = module.numChannels + count
     let patterns = module.patterns.map(pattern => {
         let numRows = pattern[0].length
-        let newChannels = Array(count).fill(Object.freeze(Array(numRows).fill(emptyCell)))
+        let newChannels = Array(count).fill(Object.freeze(Array(numRows).fill(Cell.empty)))
         return Object.freeze(pattern.concat(newChannels))
     })
     return freezeAssign(new Module(), module, {numChannels, patterns})

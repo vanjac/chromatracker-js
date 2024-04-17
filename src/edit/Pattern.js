@@ -3,7 +3,7 @@
 edit.pattern = new function() { // namespace
 
 /** @type {Readonly<PatternChannel>} */
-const defaultNewChannel = Object.freeze(Array(mod.numRows).fill(emptyCell))
+const defaultNewChannel = Object.freeze(Array(mod.numRows).fill(Cell.empty))
 
 /**
  * @param {number} numChannels
@@ -142,7 +142,7 @@ this.channelInsert = function(pattern, c, r, count) {
     return changeItem(pattern, c, channel => {
         let newChannel = [...channel]
         newChannel.copyWithin(r + count, r, channel.length - count + 1)
-        newChannel.fill(emptyCell, r, r + count)
+        newChannel.fill(Cell.empty, r, r + count)
         return Object.freeze(newChannel)
     })
 }
@@ -157,7 +157,7 @@ this.channelDelete = function(pattern, c, r, count) {
     return changeItem(pattern, c, channel => {
         let newChannel = [...channel]
         newChannel.copyWithin(r, r + count, channel.length)
-        newChannel.fill(emptyCell, channel.length - count, channel.length)
+        newChannel.fill(Cell.empty, channel.length - count, channel.length)
         return Object.freeze(newChannel)
     })
 }
