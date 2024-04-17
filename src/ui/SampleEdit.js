@@ -377,7 +377,7 @@ class SampleEditElement extends HTMLElement {
                         let samplePart = {wave, volume, finetune, loopStart, loopEnd, name}
                         this._changeSample(sample => Object.assign(sample, samplePart), '', true)
                     } catch (error) {
-                        if (error instanceof Error) { openAlertDialog(error.message) }
+                        if (error instanceof Error) { AlertDialogElement.open(error.message) }
                     }
                 } else {
                     let dialog = ui.dialog.open(dom.createElem('wait-dialog'))
@@ -393,7 +393,7 @@ class SampleEditElement extends HTMLElement {
                         }, '', true)
                     }).catch(/** @param {DOMException} error */ error => {
                         ui.dialog.close(dialog)
-                        openAlertDialog(`Error reading audio file.\n${error.message}`)
+                        AlertDialogElement.open(`Error reading audio file.\n${error.message}`)
                     })
                 }
             }
@@ -566,7 +566,7 @@ class SampleEditElement extends HTMLElement {
         if (!this._viewSample.hasLoop()) {
             return
         }
-        openInputDialog('Count:', 'Repeat Loop', global.lastLoopRepeat).then(count => {
+        InputDialogElement.open('Count:', 'Repeat Loop', global.lastLoopRepeat).then(count => {
             let {loopStart} = this._viewSample
             let loopWave = this._viewSample.wave.subarray(loopStart, this._viewSample.loopEnd)
             // TODO: this could be much more efficient
@@ -608,7 +608,8 @@ class SampleEditElement extends HTMLElement {
 
     /** @private */
     _resample() {
-        openInputDialog('Semitones:', 'Resample', global.lastResampleSemitones).then(semitones => {
+        let defaultValue = global.lastResampleSemitones
+        InputDialogElement.open('Semitones:', 'Resample', defaultValue).then(semitones => {
             let [start, end] = this._selRangeOrAll()
             let length = (end - start) * (2 ** (-semitones / 12))
             let newWave = edit.sample.spliceEffect(

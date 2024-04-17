@@ -28,7 +28,7 @@ class FileToolbarElement extends HTMLElement {
                 .then(() => ui.dialog.close(dialog))
                 .catch(/** @param {Error} error */ error => {
                     ui.dialog.close(dialog)
-                    openAlertDialog(error.message)
+                    AlertDialogElement.open(error.message)
                 })
         })
         fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile())

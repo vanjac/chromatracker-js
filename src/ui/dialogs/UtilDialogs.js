@@ -26,7 +26,7 @@ window.customElements.define('alert-dialog', AlertDialogElement)
  * @param {string} message
  * @param {string} title
  */
-function openAlertDialog(message, title = 'Error') {
+AlertDialogElement.open = function(message, title = 'Error') {
     return ui.dialog.open(dom.createElem('alert-dialog', {_message: message, _title: title}))
 }
 
@@ -77,7 +77,7 @@ window.customElements.define('confirm-dialog', ConfirmDialogElement)
  * @param {string} title
  * @returns {Promise<void>}
  */
-function openConfirmDialog(message, title = '') {
+ConfirmDialogElement.open = function(message, title = '') {
     return new Promise((resolve, reject) => {
         let dialog = dom.createElem('confirm-dialog', {_message: message, _title: title})
         dialog._onConfirm = resolve
@@ -141,7 +141,7 @@ window.customElements.define('input-dialog', InputDialogElement)
  * @param {number} defaultValue
  * @returns {Promise<number>}
  */
-function openInputDialog(prompt, title = '', defaultValue = 0) {
+InputDialogElement.open = function(prompt, title = '', defaultValue = 0) {
     return new Promise((resolve, reject) => {
         let dialog = dom.createElem('input-dialog', {_prompt: prompt, _title: title})
         dialog._defaultValue = defaultValue

@@ -135,7 +135,7 @@ class TrackerMainElement extends HTMLElement {
     _askUnsavedChanges() {
         if (this._unsavedChangeCount) {
             let message = 'You will lose your unsaved changes. Continue?'
-            return openConfirmDialog(message, 'Unsaved Changes')
+            return ConfirmDialogElement.open(message, 'Unsaved Changes')
         } else {
             return Promise.resolve()
         }
