@@ -1,5 +1,8 @@
 'use strict'
 
+/** @typedef {InstanceType<typeof FilterEffectElement>} FilterEffectElement */
+const FilterEffectElement = (() => { // IIFE
+
 const minGraphFreq = 20
 const maxGraphFreq = 20000
 const numGraphFreq = 64
@@ -143,4 +146,6 @@ class FilterEffectElement extends FormDialogElement {
         closeDialog(this)
     }
 }
+return FilterEffectElement
+})() // IIFE
 window.customElements.define('filter-effect', FilterEffectElement)

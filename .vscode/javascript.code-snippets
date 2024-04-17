@@ -31,4 +31,17 @@
 			""
 		]
 	},
+	"IIFE Class": {
+		"scope": "javascript",
+		"prefix": "iife-class",
+		"description": "Define a class using an IIFE",
+		"body": [
+			"/** @typedef {InstanceType<typeof $1>} $1 */",
+			"const $1 = (() => { // IIFE",
+			"$0",
+			"return $1",
+			"})() // IIFE",
+			""
+		]
+	},
 }

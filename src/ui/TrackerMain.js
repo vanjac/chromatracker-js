@@ -1,5 +1,8 @@
 'use strict'
 
+/** @typedef {InstanceType<typeof TrackerMainElement>} TrackerMainElement */
+const TrackerMainElement = (() => { // IIFE
+
 const playbackQueueTime = 0.5
 const playbackDelay = 0.1
 const processInterval = 200
@@ -408,4 +411,6 @@ class TrackerMainElement extends HTMLElement {
         }
     }
 }
+return TrackerMainElement
+})() // IIFE
 window.customElements.define('tracker-main', TrackerMainElement)
