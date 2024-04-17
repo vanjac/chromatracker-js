@@ -2,7 +2,9 @@
 
 // https://sites.google.com/site/musicgapi/technical-documents/wav-file-format
 
+// internal
 const wavFormatPCM = 1
+// internal
 const wavFormatIEEE = 3
 
 /**
