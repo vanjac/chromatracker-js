@@ -1,11 +1,13 @@
 'use strict'
 
+fileio.audio = new function() { // namespace
+
 /**
  * @param {ArrayBuffer} buf
  * @param {number} sampleRate
  * @returns {Promise<Readonly<Sample>>}
  */
-function readAudioFile(buf, sampleRate) {
+this.read = function(buf, sampleRate) {
     return new Promise((resolve, reject) => {
         let context = createOfflineAudioContext(1, 1, sampleRate)
 
@@ -25,3 +27,5 @@ function readAudioFile(buf, sampleRate) {
         }, reject)
     })
 }
+
+} // namespace file.audio

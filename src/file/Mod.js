@@ -1,12 +1,13 @@
 'use strict'
 
+fileio.mod = new function() { // namespace
+
 // https://eblong.com/zarf/blorb/mod-spec.txt
 // http://lclevy.free.fr/mo3/mod.txt
 
-const version = '0.0.1'
-
-const modHeaderSize = 1084
-const modTrackerInfoSize = 32 // nonstandard!
+/** @readonly */
+this.headerSize = 1084
+const trackerInfoSize = 32 // nonstandard!
 
 /** @type {Map<number, number>} */
 const periodToPitch = new Map()
@@ -17,7 +18,7 @@ for (let p = 0; p < periodTable[8].length; p++) {
 /**
  * @param {ArrayBuffer} buf
  */
-function readModule(buf) {
+this.read = function(buf) {
     let view = new DataView(buf)
     let textDecode = new TextDecoder() // TODO: determine encoding from file
     let asciiDecode = new TextDecoder('ascii')
@@ -44,7 +45,7 @@ function readModule(buf) {
     let patternSize = module.numChannels * numRows * 4
     let patterns = []
     for (let p = 0; p < numPatterns; p++) {
-        let patOff = modHeaderSize + patternSize * p
+        let patOff = this.headerSize + patternSize * p
         /** @type {Pattern} */
         let pat = []
 
@@ -75,7 +76,7 @@ function readModule(buf) {
 
     let samples = []
     samples.push(null) // sample 0 is empty
-    let wavePos = modHeaderSize + patternSize * numPatterns
+    let wavePos = this.headerSize + patternSize * numPatterns
     for (let s = 1; s < numSamples; s++) {
         let offset = s * 30 - 10
         let sample = new Sample()
@@ -113,8 +114,8 @@ function readModule(buf) {
 /**
  * @param {Readonly<Module>} module
  */
-function writeModule(module) {
-    let buf = new ArrayBuffer(calcModFileSize(module))
+this.write = function(module) {
+    let buf = new ArrayBuffer(this.calcSize(module))
     let view = new DataView(buf)
     let textEncode = new TextEncoder()
 
@@ -172,7 +173,7 @@ function writeModule(module) {
     let patternSize = module.numChannels * numRows * 4
     for (let p = 0; p < numPatterns; p++) {
         let pat = module.patterns[p]
-        let patOff = modHeaderSize + patternSize * p
+        let patOff = this.headerSize + patternSize * p
         for (let row = 0; row < numRows; row++) {
             for (let c = 0; c < module.numChannels; c++) {
                 let cell = pat[c][row]
@@ -185,7 +186,7 @@ function writeModule(module) {
         }
     }
 
-    let wavePos = modHeaderSize + patternSize * numPatterns
+    let wavePos = this.headerSize + patternSize * numPatterns
     for (let sample of module.samples) {
         if (sample) {
             let waveArr = new Int8Array(buf, wavePos, sample.wave.length & ~1)
@@ -194,7 +195,7 @@ function writeModule(module) {
         }
     }
 
-    writeU8Array(buf, wavePos + 8, modTrackerInfoSize - 8,
+    writeU8Array(buf, wavePos + 8, trackerInfoSize - 8,
         textEncode.encode(`ChromaTracker v${version}`))
 
     return buf
@@ -203,15 +204,15 @@ function writeModule(module) {
 /**
  * @param {Readonly<Module>} module
  */
-function calcModFileSize(module) {
-    return (modHeaderSize + calcModPatternsSize(module) + calcModSamplesSize(module.samples)
-        + modTrackerInfoSize)
+this.calcSize = function(module) {
+    return (this.headerSize + this.calcPatternsSize(module) + this.calcSamplesSize(module.samples)
+        + trackerInfoSize)
 }
 
 /**
  * @param {Readonly<Module>} module
  */
-function calcModPatternsSize(module) {
+this.calcPatternsSize = function(module) {
     let patternSize = module.numChannels * numRows * 4
     let numPatterns = Math.max(...module.sequence) + 1
     return patternSize * numPatterns
@@ -220,6 +221,8 @@ function calcModPatternsSize(module) {
 /**
  * @param {readonly Readonly<Sample>[]} samples
  */
-function calcModSamplesSize(samples) {
+this.calcSamplesSize = function(samples) {
     return samples.reduce((acc, sample) => (acc + (sample ? (sample.wave.length & ~1) : 0)), 0)
 }
+
+} // namespace fileio.mod

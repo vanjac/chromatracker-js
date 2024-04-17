@@ -369,10 +369,10 @@ class SampleEditElement extends HTMLElement {
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                if (isWavFile(reader.result)) {
+                if (fileio.wav.identify(reader.result)) {
                     try {
                         let {wave, volume, finetune, loopStart, loopEnd}
-                            = readWavFile(reader.result)
+                            = fileio.wav.read(reader.result)
                         /** @type {Partial<Sample>} */
                         let samplePart = {wave, volume, finetune, loopStart, loopEnd, name}
                         this._changeSample(sample => Object.assign(sample, samplePart), '', true)
@@ -381,7 +381,8 @@ class SampleEditElement extends HTMLElement {
                     }
                 } else {
                     let dialog = openDialog(createElem('wait-dialog'))
-                    let promise = readAudioFile(reader.result, this._sampleRateInput.valueAsNumber)
+                    let promise = fileio.audio.read(
+                        reader.result, this._sampleRateInput.valueAsNumber)
                     promise.then(({wave, volume}) => {
                         closeDialog(dialog)
                         this._changeSample(sample => {

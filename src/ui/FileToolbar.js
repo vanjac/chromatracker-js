@@ -45,7 +45,7 @@ class FileToolbarElement extends HTMLElement {
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                let mod = Object.freeze(readModule(reader.result))
+                let mod = Object.freeze(fileio.mod.read(reader.result))
                 this._target._moduleLoaded(mod)
             }
         }
@@ -54,7 +54,8 @@ class FileToolbarElement extends HTMLElement {
 
     /** @private */
     _saveFile() {
-        let blob = new Blob([writeModule(this._target._module)], {type: 'application/octet-stream'})
+        let blob = new Blob([fileio.mod.write(this._target._module)],
+            {type: 'application/octet-stream'})
         let url = URL.createObjectURL(blob)
         console.info(url)
         window.open(url)

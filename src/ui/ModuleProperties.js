@@ -77,7 +77,7 @@ class ModulePropertiesElement extends HTMLElement {
             let sampleCount = module.samples.reduce(
                 (count, item) => (item ? (count + 1) : count), 0)
             this._sampleCountOutput.value = sampleCount.toString()
-            this._viewSamplesSize = calcModSamplesSize(module.samples)
+            this._viewSamplesSize = fileio.mod.calcSamplesSize(module.samples)
         }
         if (!this._viewModule || module.patterns != this._viewModule.patterns) {
             console.debug('update pattern count')
@@ -89,9 +89,9 @@ class ModulePropertiesElement extends HTMLElement {
         }
         if (!this._viewModule || module.sequence != this._viewModule.sequence
                 || module.numChannels != this._viewModule.numChannels) {
-            this._viewPatternsSize = calcModPatternsSize(module)
+            this._viewPatternsSize = fileio.mod.calcPatternsSize(module)
         }
-        let fileSize = modHeaderSize + this._viewPatternsSize + this._viewSamplesSize
+        let fileSize = fileio.mod.headerSize + this._viewPatternsSize + this._viewSamplesSize
         this._fileSizeOutput.value = formatFileSize(fileSize)
 
         this._viewModule = module

@@ -1,10 +1,10 @@
 'use strict'
 
+fileio.wav = new function() { // namespace
+
 // https://sites.google.com/site/musicgapi/technical-documents/wav-file-format
 
-// internal
 const wavFormatPCM = 1
-// internal
 const wavFormatIEEE = 3
 
 /**
@@ -16,7 +16,7 @@ const wavFormatIEEE = 3
 /**
  * @param {ArrayBuffer} buf
  */
-function isWavFile(buf) {
+this.identify = function(buf) {
     if (buf.byteLength < 12) { return false }
     let asciiDecode = new TextDecoder('ascii')
     let fileId = asciiDecode.decode(new DataView(buf, 0, 4))
@@ -28,7 +28,7 @@ function isWavFile(buf) {
 /**
  * @param {ArrayBuffer} buf
  */
-function readWavFile(buf) {
+this.read = function(buf) {
     let view = new DataView(buf)
     let asciiDecode = new TextDecoder('ascii')
 
@@ -120,3 +120,5 @@ function readWavFile(buf) {
 
     return Object.freeze(sample)
 }
+
+} // namespace fileio.wav
