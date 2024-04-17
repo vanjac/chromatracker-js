@@ -1,6 +1,6 @@
 'use strict'
 
-/** @typedef {InstanceType<typeof TrackerMainElement>} TrackerMainElement */
+/** @typedef {InstanceType<typeof TrackerMainElement>} */
 const TrackerMainElement = (() => { // IIFE
 
 const playbackQueueTime = 0.5

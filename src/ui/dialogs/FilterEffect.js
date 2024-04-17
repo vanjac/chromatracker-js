@@ -1,6 +1,6 @@
 'use strict'
 
-/** @typedef {InstanceType<typeof FilterEffectElement>} FilterEffectElement */
+/** @typedef {InstanceType<typeof FilterEffectElement>} */
 const FilterEffectElement = (() => { // IIFE
 
 const minGraphFreq = 20
