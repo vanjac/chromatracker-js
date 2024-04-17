@@ -1,6 +1,8 @@
 'use strict'
 
-const cliState = {
+const cli = new function() { // namespace
+
+const state = {
     /** @type {any} */
     sel: null,
     /** @type {any} */
@@ -8,23 +10,22 @@ const cliState = {
     onSelEnd: () => {},
 }
 
-function cliResetSel() {
-    cliState.sel = {__proto__: null}
-    cliState.selProxy = new Proxy(cliState.sel, {
+this.resetSel = function() {
+    state.sel = {__proto__: null}
+    state.selProxy = new Proxy(state.sel, {
         defineProperty() {
             // Custom error since console isn't in strict mode
             console.error('Property does not exist')
             return false
         },
     })
-    cliState.onSelEnd = () => {}
+    state.onSelEnd = () => {}
 }
-cliResetSel()
 
 Object.defineProperty(globalThis, 'sel', {
     configurable: false,
     enumerable: true,
-    get: () => cliState.selProxy,
+    get: () => state.selProxy,
     set: _ => {console.error('Not allowed')}
 })
 
@@ -35,13 +36,13 @@ Object.defineProperty(globalThis, 'sel', {
  * @param {T} value
  * @param {(value: T) => void} setter
  */
-function cliAddSelProp(name, type, value, setter) {
-    Object.defineProperty(cliState.sel, name, {
+this.addSelProp = function(name, type, value, setter) {
+    Object.defineProperty(state.sel, name, {
         configurable: true,
         enumerable: true,
         get: () => value,
         set: value => {
-            if (!Object.isSealed(cliState.sel)) {
+            if (!Object.isSealed(state.sel)) {
                 console.error('Modification is not enabled')
             } else if (typeof type == 'function' && !(value instanceof type)) {
                 console.error('Invalid type, must be ' + type.name)
@@ -49,7 +50,7 @@ function cliAddSelProp(name, type, value, setter) {
                 console.error('Invalid type, must be ' + type)
             } else {
                 setter(/** @type {T} */(value))
-                cliEndSel()
+                this.endSel()
             }
         }
     })
@@ -59,19 +60,23 @@ function cliAddSelProp(name, type, value, setter) {
 /**
  * @param {() => void} onEnd
  */
-function cliBeginSel(onEnd) {
-    cliState.onSelEnd = onEnd
-    Object.seal(cliState.sel)
+this.beginSel = function(onEnd) {
+    state.onSelEnd = onEnd
+    Object.seal(state.sel)
     console.log('Ready:')
 }
 
-function cliEndSel() {
+this.endSel = function() {
     console.log('Accepted')
-    cliState.onSelEnd()
-    cliResetSel()
+    state.onSelEnd()
+    cli.resetSel()
 }
 
-function cliCancelSel() {
+this.cancelSel = function() {
     console.log('Cancelled')
-    cliResetSel()
+    cli.resetSel()
 }
+
+} // namespace cli
+
+cli.resetSel()

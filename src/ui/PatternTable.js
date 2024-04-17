@@ -29,11 +29,11 @@ class PatternTableElement extends HTMLElement {
         this._muteInputs = []
 
         this.addEventListener('contextmenu', () => {
-            cliAddSelProp('row', 'number', this._selRow,
+            cli.addSelProp('row', 'number', this._selRow,
                 row => this._setSelCell(this._selChannel, row))
-            cliAddSelProp('channel', 'number', this._selChannel,
+            cli.addSelProp('channel', 'number', this._selChannel,
                 channel => this._setSelCell(this._selChannel, channel))
-            cliAddSelProp('pattern', Array, this._viewPattern,
+            cli.addSelProp('pattern', Array, this._viewPattern,
                 pattern => this._onChange(Object.freeze(pattern)))
         })
 
@@ -116,7 +116,7 @@ class PatternTableElement extends HTMLElement {
                         this._target._jamPlay(id, this._viewPattern[c][row])
                     }, id => this._target._jamRelease(id), {blockScroll: false})
                     td.addEventListener('contextmenu', () => {
-                        cliAddSelProp('cell', Cell, this._viewPattern[c][row], cell => {
+                        cli.addSelProp('cell', Cell, this._viewPattern[c][row], cell => {
                             this._onChange(edit.pattern.putCell(
                                 this._viewPattern, c, row, cell, CellPart.all))
                         })

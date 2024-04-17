@@ -76,9 +76,9 @@ class SampleEditElement extends HTMLElement {
         this._waveEditBox.addEventListener('contextmenu', () => {
             let [start, end] = this._selRangeOrAll()
             // slice for safety (can't be frozen)
-            cliAddSelProp('wave', Int8Array, this._viewSample.wave.slice(start, end),
+            cli.addSelProp('wave', Int8Array, this._viewSample.wave.slice(start, end),
                 wave => this._replace(start, end, wave))
-            cliAddSelProp('waverange', Array, [start, end], ([start, end]) => {
+            cli.addSelProp('waverange', Array, [start, end], ([start, end]) => {
                 if (start == null) { start = -1 }
                 this._setSel(start, end != null ? end : start)
             })
@@ -172,7 +172,7 @@ class SampleEditElement extends HTMLElement {
         this._piano = fragment.querySelector('piano-keyboard')
 
         this.addEventListener('contextmenu', () => {
-            cliAddSelProp('sample', Sample, this._viewSample,
+            cli.addSelProp('sample', Sample, this._viewSample,
                 sample => this._onChange(Object.freeze(sample), ''))
         })
 

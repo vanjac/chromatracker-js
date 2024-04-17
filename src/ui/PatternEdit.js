@@ -69,7 +69,7 @@ class PatternEditElement extends HTMLElement {
         fragment.querySelector('#delete').addEventListener('click', () => this._delete(1))
 
         this.addEventListener('contextmenu', () => {
-            cliAddSelProp('seqpos', 'number', this._selPos(), pos => this._setSelPos(pos))
+            cli.addSelProp('seqpos', 'number', this._selPos(), pos => this._setSelPos(pos))
         })
 
         this.style.display = 'contents'

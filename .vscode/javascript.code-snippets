@@ -19,5 +19,16 @@
 			"window.customElements.define('$3', $1Element)",
 			""
 		]
-	}
+	},
+	"Namespace": {
+		"scope": "javascript",
+		"prefix": "namespace",
+		"description": "Define a namespace",
+		"body": [
+			"$1 = new function() { // namespace",
+			"$0",
+			"} // namespace $1",
+			""
+		]
+	},
 }

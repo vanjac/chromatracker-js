@@ -16,7 +16,7 @@ class CLIDialogElement extends FormDialogElement {
      * @override
      */
     _dismiss() {
-        cliCancelSel()
+        cli.cancelSel()
         closeDialog(this)
     }
 }

@@ -31,7 +31,7 @@ class SequenceEditElement extends HTMLElement {
 
         this._select.addEventListener('input', () => this._seqSet(this._select.selectedIndex))
         this._select.addEventListener('contextmenu', () => {
-            cliAddSelProp('patnum', 'number', this._viewSequence[this._selPos],
+            cli.addSelProp('patnum', 'number', this._viewSequence[this._selPos],
                 num => this._target._changeModule(
                     module => edit.sequence.set(module, this._selPos, num)))
         })
@@ -71,7 +71,7 @@ class SequenceEditElement extends HTMLElement {
             label.addEventListener('contextmenu', () => {
                 this._setSelPos(i)
                 this._onSelect()
-                cliAddSelProp('patnum', 'number', this._viewSequence[i],
+                cli.addSelProp('patnum', 'number', this._viewSequence[i],
                     num => this._target._changeModule(module => edit.sequence.set(module, i, num)))
             })
             this._sequenceButtons.push(label)

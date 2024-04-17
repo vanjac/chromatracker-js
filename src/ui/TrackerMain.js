@@ -84,17 +84,17 @@ class TrackerMainElement extends HTMLElement {
 
         this.addEventListener('contextmenu', () => {
             console.log('Selected:')
-            cliResetSel()
+            cli.resetSel()
         }, {capture: true})
         this.addEventListener('contextmenu', e => {
-            cliAddSelProp('module', Module, this._module,
+            cli.addSelProp('module', Module, this._module,
                 module => this._changeModule(_ => Object.freeze(module)))
             if (!(e.target instanceof HTMLInputElement || e.target instanceof HTMLOutputElement)) {
                 e.preventDefault()
                 if (e.altKey) {
                     this._pause()
                     let dialog = openDialog(createElem('cli-dialog'), {dismissable: true})
-                    cliBeginSel(() => closeDialog(dialog))
+                    cli.beginSel(() => closeDialog(dialog))
                 }
             }
         })
