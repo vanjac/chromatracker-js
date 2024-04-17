@@ -241,12 +241,12 @@ class PatternEditElement extends HTMLElement {
     }
 
     _updateCell() {
-        setCellContents(this._entryCell, this._cellEntry._getCell())
+        ui.cell.setContents(this._entryCell, this._cellEntry._getCell())
     }
 
     _updateEntryParts() {
         let parts = this._cellEntry._getCellParts()
-        toggleCellParts(this._entryCell, parts)
+        ui.cell.toggleParts(this._entryCell, parts)
         this._patternTable._setEntryParts(parts)
     }
 

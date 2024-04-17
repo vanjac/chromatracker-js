@@ -1,15 +1,17 @@
 'use strict'
 
+ui.cell = new function() { // namespace
+
 // TODO: make this a custom element?
 
-const noteNames = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-']
-const noteNamesShort = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+this.noteNames = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-']
+this.noteNamesShort = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 /**
  * @param {number} pitch
  */
-function cellPitchString(pitch) {
-    let noteStr = (pitch >= 0) ? noteNames[pitch % 12] : '..'
+this.pitchString = function(pitch) {
+    let noteStr = (pitch >= 0) ? this.noteNames[pitch % 12] : '..'
     let octStr = (pitch >= 0) ? ((pitch / 12) | 0) : '.'
     return noteStr + octStr
 }
@@ -17,14 +19,14 @@ function cellPitchString(pitch) {
 /**
  * @param {number} inst
  */
-function cellInstString(inst) {
+this.instString = function(inst) {
     return inst ? inst.toString().padStart(2, '0') : '..'
 }
 
 /**
  * @param {Readonly<Cell>} cell
  */
-function cellEffectString(cell) {
+this.effectString = function(cell) {
     if (! (cell.effect || cell.param0 || cell.param1)) {
         return '...'
     }
@@ -36,18 +38,20 @@ function cellEffectString(cell) {
  * @param {Element|DocumentFragment} elem
  * @param {Readonly<Cell>} cell
  */
-function setCellContents(elem, cell) {
-    elem.querySelector('#pitch').childNodes[0].nodeValue = cellPitchString(cell.pitch)
-    elem.querySelector('#inst').childNodes[0].nodeValue = cellInstString(cell.inst)
-    elem.querySelector('#effect').childNodes[0].nodeValue = cellEffectString(cell)
+this.setContents = function(elem, cell) {
+    elem.querySelector('#pitch').childNodes[0].nodeValue = this.pitchString(cell.pitch)
+    elem.querySelector('#inst').childNodes[0].nodeValue = this.instString(cell.inst)
+    elem.querySelector('#effect').childNodes[0].nodeValue = this.effectString(cell)
 }
 
 /**
  * @param {Element} elem
  * @param {CellPart} parts
  */
-function toggleCellParts(elem, parts) {
+this.toggleParts = function(elem, parts) {
     elem.classList.toggle('sel-pitch', !!(parts & CellPart.pitch))
     elem.classList.toggle('sel-inst', !!(parts & CellPart.inst))
     elem.classList.toggle('sel-effect', !!(parts & CellPart.effect))
 }
+
+} // namespace ui.cell

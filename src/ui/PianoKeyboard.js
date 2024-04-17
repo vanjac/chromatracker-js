@@ -53,7 +53,7 @@ class PianoKeyboardElement extends HTMLElement {
         let whiteKeys = this._piano.querySelector('#whiteKeys')
         for (let i = 0; i < periodTable[0].length; i++) {
             let note = i % 12
-            let noteStr = noteNamesShort[note]
+            let noteStr = ui.cell.noteNamesShort[note]
             if (note == 0) {
                 noteStr += Math.floor(i / 12)
             }

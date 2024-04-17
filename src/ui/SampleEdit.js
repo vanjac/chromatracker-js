@@ -430,7 +430,7 @@ class SampleEditElement extends HTMLElement {
 
     /** @private */
     _updateJamCell() {
-        setCellContents(this._jamCell, this._getJamCell())
+        ui.cell.setContents(this._jamCell, this._getJamCell())
     }
 
     /**

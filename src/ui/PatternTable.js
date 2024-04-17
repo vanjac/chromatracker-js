@@ -90,7 +90,7 @@ class PatternTableElement extends HTMLElement {
                 if (channel != this._viewPattern[c]) {
                     for (let [row, cell] of channel.entries()) {
                         if (cell != this._viewPattern[c][row]) {
-                            setCellContents(this._tbody.children[row].children[c + 1], cell)
+                            ui.cell.setContents(this._tbody.children[row].children[c + 1], cell)
                         }
                     }
                 }
@@ -108,7 +108,7 @@ class PatternTableElement extends HTMLElement {
                 for (let c = 0; c < pattern.length; c++) {
                     let cell = pattern[c][row]
                     let cellFrag = templates.cellTemplate.cloneNode(true)
-                    setCellContents(cellFrag, cell)
+                    ui.cell.setContents(cellFrag, cell)
 
                     let td = cellFrag.querySelector('td')
                     setupKeyButton(td, id => {
@@ -187,7 +187,7 @@ class PatternTableElement extends HTMLElement {
         if (this._selRow >= 0 && this._selChannel >= 0) {
             let selTr = this._tbody.children[this._selRow]
             let selCell = selTr && selTr.children[this._selChannel + 1]
-            if (selCell) { toggleCellParts(selCell, this._viewEntryParts) }
+            if (selCell) { ui.cell.toggleParts(selCell, this._viewEntryParts) }
 
             if (this._markChannel < 0 || this._markRow < 0) {
                 if (selCell) { selCell.classList.add('sel-cell') }
@@ -217,7 +217,7 @@ class PatternTableElement extends HTMLElement {
         this._viewEntryParts = parts
         let selCell = this._tbody.querySelector('.sel-cell')
         if (selCell) {
-            toggleCellParts(selCell, parts)
+            ui.cell.toggleParts(selCell, parts)
         }
     }
 
