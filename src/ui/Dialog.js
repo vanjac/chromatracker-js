@@ -1,5 +1,37 @@
 'use strict'
 
+class DialogElement extends HTMLElement {
+    disconnectedCallback() {
+        if (this._lastFocused instanceof HTMLElement) {
+            this._lastFocused.focus()
+        }
+    }
+
+    _dismiss() {
+        ui.dialog.close(this)
+    }
+}
+/** @type {Element} */
+DialogElement.prototype._lastFocused = null
+
+class FormDialogElement extends DialogElement {
+    /**
+     * @param {HTMLFormElement} form
+     */
+    _initForm(form) {
+        form.addEventListener('submit', e => {
+            e.preventDefault()
+            this._submit()
+        })
+    }
+
+    _submit() {
+        ui.dialog.close(this)
+    }
+}
+
+ui.dialog = new function() { // namespace
+
 const focusableSelector = [
     'input:not([disabled])',
     'select:not([disabled])',
@@ -12,7 +44,7 @@ const focusableSelector = [
  * @template {DialogElement} T
  * @param {T} dialog
  */
-function openDialog(dialog, {dismissable = false} = {}) {
+this.open = function(dialog, {dismissable = false} = {}) {
     let body = document.querySelector('body')
 
     let container = dom.createElem('div', {tabIndex: -1})
@@ -73,37 +105,9 @@ function openDialog(dialog, {dismissable = false} = {}) {
 /**
  * @param {DialogElement} dialog
  */
-function closeDialog(dialog) {
+this.close = function(dialog) {
     let container = dialog.parentElement
     container.remove()
 }
 
-class DialogElement extends HTMLElement {
-    disconnectedCallback() {
-        if (this._lastFocused instanceof HTMLElement) {
-            this._lastFocused.focus()
-        }
-    }
-
-    _dismiss() {
-        closeDialog(this)
-    }
-}
-/** @type {Element} */
-DialogElement.prototype._lastFocused = null
-
-class FormDialogElement extends DialogElement {
-    /**
-     * @param {HTMLFormElement} form
-     */
-    _initForm(form) {
-        form.addEventListener('submit', e => {
-            e.preventDefault()
-            this._submit()
-        })
-    }
-
-    _submit() {
-        closeDialog(this)
-    }
-}
+} // namespace ui.dialog

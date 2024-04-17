@@ -17,7 +17,7 @@ class CLIDialogElement extends FormDialogElement {
      */
     _dismiss() {
         cli.cancelSel()
-        closeDialog(this)
+        ui.dialog.close(this)
     }
 }
 window.customElements.define('cli-dialog', CLIDialogElement)

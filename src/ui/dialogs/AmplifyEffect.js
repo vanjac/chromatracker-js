@@ -34,7 +34,7 @@ class AmplifyEffectElement extends FormDialogElement {
             dithering: this._ditherInput.checked
         })
         dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
-        closeDialog(this)
+        ui.dialog.close(this)
     }
 }
 window.customElements.define('amplify-effect', AmplifyEffectElement)

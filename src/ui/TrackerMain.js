@@ -96,8 +96,8 @@ class TrackerMainElement extends HTMLElement {
                 e.preventDefault()
                 if (e.altKey) {
                     this._pause()
-                    let dialog = openDialog(dom.createElem('cli-dialog'), {dismissable: true})
-                    cli.beginSel(() => closeDialog(dialog))
+                    let dialog = ui.dialog.open(dom.createElem('cli-dialog'), {dismissable: true})
+                    cli.beginSel(() => ui.dialog.close(dialog))
                 }
             }
         })

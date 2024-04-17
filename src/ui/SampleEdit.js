@@ -380,11 +380,11 @@ class SampleEditElement extends HTMLElement {
                         if (error instanceof Error) { openAlertDialog(error.message) }
                     }
                 } else {
-                    let dialog = openDialog(dom.createElem('wait-dialog'))
+                    let dialog = ui.dialog.open(dom.createElem('wait-dialog'))
                     let promise = fileio.audio.read(
                         reader.result, this._sampleRateInput.valueAsNumber)
                     promise.then(({wave, volume}) => {
-                        closeDialog(dialog)
+                        ui.dialog.close(dialog)
                         this._changeSample(sample => {
                             sample.wave = wave
                             sample.volume = volume
@@ -392,7 +392,7 @@ class SampleEditElement extends HTMLElement {
                             sample.loopStart = sample.loopEnd = 0
                         }, '', true)
                     }).catch(/** @param {DOMException} error */ error => {
-                        closeDialog(dialog)
+                        ui.dialog.close(dialog)
                         openAlertDialog(`Error reading audio file.\n${error.message}`)
                     })
                 }
@@ -602,7 +602,7 @@ class SampleEditElement extends HTMLElement {
 
     /** @private */
     _amplify() {
-        let dialog = openDialog(dom.createElem('amplify-effect'), {dismissable: true})
+        let dialog = ui.dialog.open(dom.createElem('amplify-effect'), {dismissable: true})
         dialog._onComplete = params => this._applyEffect(edit.wave.amplify.bind(edit.wave, params))
     }
 
@@ -623,10 +623,10 @@ class SampleEditElement extends HTMLElement {
 
     /** @private */
     _filter() {
-        let dialog = openDialog(dom.createElem('filter-effect'), {dismissable: true})
+        let dialog = ui.dialog.open(dom.createElem('filter-effect'), {dismissable: true})
         dialog._onComplete = params => {
             let [start, end] = this._selRangeOrAll()
-            let waitDialog = openDialog(dom.createElem('wait-dialog'))
+            let waitDialog = ui.dialog.open(dom.createElem('wait-dialog'))
             edit.sample.applyNode(this._viewSample, start, end, params.dither,
                 ctx => {
                     let node = ctx.createBiquadFilter()
@@ -642,8 +642,8 @@ class SampleEditElement extends HTMLElement {
                     return node
                 })
                 .then(s => this._onChange(s, ''))
-                .then(() => closeDialog(waitDialog))
-                .catch(() => closeDialog(waitDialog))
+                .then(() => ui.dialog.close(waitDialog))
+                .catch(() => ui.dialog.close(waitDialog))
         }
     }
 }

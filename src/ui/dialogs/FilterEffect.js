@@ -143,7 +143,7 @@ class FilterEffectElement extends FormDialogElement {
             dither: this._ditherInput.checked
         })
         dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
-        closeDialog(this)
+        ui.dialog.close(this)
     }
 }
 return FilterEffectElement

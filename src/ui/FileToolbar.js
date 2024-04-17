@@ -21,13 +21,13 @@ class FileToolbarElement extends HTMLElement {
             }
         })
         dom.addMenuListener(fragment.querySelector('#demoMenu'), value => {
-            let dialog = openDialog(dom.createElem('wait-dialog'))
+            let dialog = ui.dialog.open(dom.createElem('wait-dialog'))
             fetch(value)
                 .then(r => r.blob())
                 .then(b => this._readModuleBlob(b))
-                .then(() => closeDialog(dialog))
+                .then(() => ui.dialog.close(dialog))
                 .catch(/** @param {Error} error */ error => {
-                    closeDialog(dialog)
+                    ui.dialog.close(dialog)
                     openAlertDialog(error.message)
                 })
         })
