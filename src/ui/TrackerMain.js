@@ -142,12 +142,12 @@ class TrackerMainElement extends HTMLElement {
     }
 
     /**
-     * @param {Readonly<Module>} mod
+     * @param {Readonly<Module>} module
      */
-    _moduleLoaded(mod) {
+    _moduleLoaded(module) {
         this._askUnsavedChanges().then(() => {
-            console.log('Loaded module:', mod)
-            this._module = mod
+            console.log('Loaded module:', module)
+            this._module = module
             this._resetEditorState()
             this._resetPlayback()
         })
@@ -354,17 +354,17 @@ class TrackerMainElement extends HTMLElement {
 
     /**
      * @private
-     * @param {Readonly<Module>} mod
+     * @param {Readonly<Module>} module
      */
-    _setModule(mod) {
-        this._module = mod
+    _setModule(module) {
+        this._module = module
         if (this._playback) {
-            play.setModule(this._playback, mod)
+            play.setModule(this._playback, module)
         }
     }
 
     /**
-     * @param {(mod: Readonly<Module>) => Readonly<Module>} callback
+     * @param {(module: Readonly<Module>) => Readonly<Module>} callback
      */
     _changeModule(callback, {refresh = true, combineTag = ''} = {}) {
         let newMod = callback(this._module)

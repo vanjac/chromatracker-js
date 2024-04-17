@@ -111,30 +111,30 @@ const minPeriod = 15
 
 /**
  * @param {BaseAudioContext} context
- * @param {Readonly<Module>} mod
+ * @param {Readonly<Module>} module
  */
-this.init = function(context, mod) {
+this.init = function(context, module) {
     let playback = new Playback()
     playback.ctx = context
-    play.setModule(playback, mod)
+    play.setModule(playback, module)
     playback.time = context.currentTime
     return playback
 }
 
 /**
  * @param {Playback} playback
- * @param {Readonly<Module>} mod
+ * @param {Readonly<Module>} module
  */
-this.setModule = function(playback, mod) {
-    playback.mod = mod
+this.setModule = function(playback, module) {
+    playback.mod = module
 
-    if (playback.channels.length != mod.numChannels) {
+    if (playback.channels.length != module.numChannels) {
         console.debug('update playback channels')
         for (let channel of playback.channels) {
             disconnectChannel(channel)
         }
         playback.channels = []
-        for (let c = 0; c < mod.numChannels; c++) {
+        for (let c = 0; c < module.numChannels; c++) {
             let channel = new ChannelPlayback()
             playback.channels.push(channel)
             channel.panning = ((c % 4) == 0 || (c % 4) == 3) ? 64 : 191
@@ -142,13 +142,13 @@ this.setModule = function(playback, mod) {
         }
     }
 
-    if (playback.modSamples != mod.samples) {
+    if (playback.modSamples != module.samples) {
         console.debug('update playback sample list')
-        playback.modSamples = mod.samples
+        playback.modSamples = module.samples
 
-        playback.samples.length = mod.samples.length
-        for (let i = 0; i < mod.samples.length; i++) {
-            let sample = mod.samples[i]
+        playback.samples.length = module.samples.length
+        for (let i = 0; i < module.samples.length; i++) {
+            let sample = module.samples[i]
             let sp = playback.samples[i]
             if (sample && (!sp || sp.wave != sample.wave)) {
                 console.debug('update playback sample')

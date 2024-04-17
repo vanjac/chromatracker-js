@@ -6,7 +6,7 @@ interface JamTarget {
 }
 
 interface ModuleEditTarget {
-    _changeModule(callback: (mod: Readonly<Module>) => Readonly<Module>,
+    _changeModule(callback: (module: Readonly<Module>) => Readonly<Module>,
         options?: {refresh?: boolean, combineTag?: string}): void
     _clearUndoCombine(tag: string): void
 }
@@ -29,7 +29,7 @@ interface PianoKeyboardTarget {
 
 interface FileToolbarTarget {
     readonly _module: Readonly<Module>
-    _moduleLoaded(mod: Readonly<Module>): void
+    _moduleLoaded(module: Readonly<Module>): void
     _moduleSaved(): void
 }
 

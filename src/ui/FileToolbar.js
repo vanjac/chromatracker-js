@@ -45,8 +45,8 @@ class FileToolbarElement extends HTMLElement {
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                let mod = Object.freeze(fileio.mod.read(reader.result))
-                this._target._moduleLoaded(mod)
+                let module = Object.freeze(fileio.mod.read(reader.result))
+                this._target._moduleLoaded(module)
             }
         }
         reader.readAsArrayBuffer(blob)
