@@ -3,7 +3,7 @@
 edit.pattern = new function() { // namespace
 
 /** @type {Readonly<PatternChannel>} */
-const defaultNewChannel = Object.freeze(Array(numRows).fill(emptyCell))
+const defaultNewChannel = Object.freeze(Array(mod.numRows).fill(emptyCell))
 
 /**
  * @param {number} numChannels

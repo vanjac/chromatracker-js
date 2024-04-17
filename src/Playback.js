@@ -23,8 +23,10 @@ Playback.prototype = {
     mod: null,
     /** @type {readonly Readonly<Sample>[]} */
     modSamples: emptyArray,
-    tempo: defaultTempo,
-    speed: defaultSpeed,
+    /** @type {number} */
+    tempo: mod.defaultTempo,
+    /** @type {number} */
+    speed: mod.defaultSpeed,
     pos: 0,
     row: 0,
     tick: 0,
@@ -388,7 +390,7 @@ function processCellFirst(playback, channel, cell) {
             channel.panning = cell.paramByte()
             break
         case Effect.Volume:
-            channel.volume = Math.min(cell.paramByte(), maxVolume)
+            channel.volume = Math.min(cell.paramByte(), mod.maxVolume)
             break
         case Effect.Extended:
             switch (cell.param0) {
@@ -428,7 +430,7 @@ function processCellFirst(playback, channel, cell) {
                     }
                     break
                 case ExtEffect.FineVolumeUp:
-                    channel.volume = Math.min(channel.volume + cell.param1, maxVolume)
+                    channel.volume = Math.min(channel.volume + cell.param1, mod.maxVolume)
                     break
                 case ExtEffect.FineVolumeDown:
                     channel.volume = Math.max(channel.volume - cell.param1, 0)
@@ -509,7 +511,7 @@ function processCellRest(playback, channel, cell) {
             || cell.effect == Effect.VolSlidePort || cell.effect == Effect.VolSlideVib) {
         channel.volume += cell.param0
         channel.volume -= cell.param1
-        channel.volume = clamp(channel.volume, 0, maxVolume)
+        channel.volume = clamp(channel.volume, 0, mod.maxVolume)
     }
 }
 
@@ -524,7 +526,7 @@ function processCellAll(playback, channel, cell) {
     let volume = channel.volume
     if (cell.effect == Effect.Tremolo) {
         volume += calcOscillator(channel.tremolo, -1) * 4
-        volume = clamp(volume, 0, maxVolume)
+        volume = clamp(volume, 0, mod.maxVolume)
     }
     if (volume != channel.scheduledVolume) {
         channel.gain.gain.setTargetAtTime(volumeToGain(volume), playback.time, rampTimeConstant)
@@ -621,7 +623,7 @@ function processCellEnd(playback, channel, cell, pos, row) {
  * @param {number} volume
  */
 function volumeToGain(volume) {
-    return masterGain * volume / maxVolume
+    return masterGain * volume / mod.maxVolume
 }
 
 /**

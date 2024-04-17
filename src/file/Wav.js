@@ -94,7 +94,7 @@ this.read = function(buf) {
         }
         maxAmp = Math.min(maxAmp / 127, 1)
         if (maxAmp == 0) { maxAmp = 1 }
-        sample.volume = Math.round(maxVolume * maxAmp)
+        sample.volume = Math.round(mod.maxVolume * maxAmp)
 
         let error = 0
         for (let i = 0; i < numFrames; i++) {

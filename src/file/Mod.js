@@ -26,12 +26,12 @@ this.read = function(buf) {
     let module = new Module()
     module.name = textDecode.decode(readStringZ(buf, 0, 20))
 
-    let songLen = Math.min(view.getUint8(950), numSongPositions)
+    let songLen = Math.min(view.getUint8(950), mod.numSongPositions)
     module.restartPos = view.getUint8(951)
     if (module.restartPos >= songLen) {
         module.restartPos = 0
     }
-    let seq = Array.from(new Uint8Array(buf, 952, numSongPositions))
+    let seq = Array.from(new Uint8Array(buf, 952, mod.numSongPositions))
     let numPatterns = Math.max(...seq) + 1
     module.sequence = Object.freeze(seq.slice(0, songLen))
 
@@ -42,7 +42,7 @@ this.read = function(buf) {
         module.numChannels = parseInt(chanStr)
     }
 
-    let patternSize = module.numChannels * numRows * 4
+    let patternSize = module.numChannels * mod.numRows * 4
     let patterns = []
     for (let p = 0; p < numPatterns; p++) {
         let patOff = this.headerSize + patternSize * p
@@ -52,7 +52,7 @@ this.read = function(buf) {
         for (let c = 0; c < module.numChannels; c++) {
             /** @type {PatternChannel} */
             let chan = []
-            for (let row = 0; row < numRows; row++) {
+            for (let row = 0; row < mod.numRows; row++) {
                 let cellOff = patOff + (c * 4) + (row * module.numChannels * 4)
                 let cell = new Cell()
 
@@ -77,7 +77,7 @@ this.read = function(buf) {
     let samples = []
     samples.push(null) // sample 0 is empty
     let wavePos = this.headerSize + patternSize * numPatterns
-    for (let s = 1; s < numSamples; s++) {
+    for (let s = 1; s < mod.numSamples; s++) {
         let offset = s * 30 - 10
         let sample = new Sample()
 
@@ -86,12 +86,12 @@ this.read = function(buf) {
             samples.push(null)
             continue
         }
-        sample.name = textDecode.decode(readStringZ(buf, offset, maxSampleNameLength))
+        sample.name = textDecode.decode(readStringZ(buf, offset, mod.maxSampleNameLength))
         sample.finetune = view.getUint8(offset + 24) & 0xf
         if (sample.finetune >= 8) {
             sample.finetune -= 16 // sign-extend nibble
         }
-        sample.volume = Math.min(view.getUint8(offset + 25), maxVolume)
+        sample.volume = Math.min(view.getUint8(offset + 25), mod.maxVolume)
         sample.loopStart = view.getUint16(offset + 26) * 2
         let repLen = view.getUint16(offset + 28)
         if (repLen == 1) {
@@ -121,16 +121,16 @@ this.write = function(module) {
 
     writeU8Array(buf, 0, 20, textEncode.encode(module.name))
 
-    for (let s = 1; s < numSamples; s++) {
+    for (let s = 1; s < mod.numSamples; s++) {
         let offset = s * 30 - 10
         if (s >= module.samples.length || !module.samples[s]) {
             // empty sample
-            view.setUint8(offset + 25, maxVolume)
+            view.setUint8(offset + 25, mod.maxVolume)
             view.setUint16(offset + 28, 1)
             continue
         }
         let sample = module.samples[s]
-        writeU8Array(buf, offset, maxSampleNameLength, textEncode.encode(sample.name))
+        writeU8Array(buf, offset, mod.maxSampleNameLength, textEncode.encode(sample.name))
         view.setUint16(offset + 22, (sample.wave.length / 2) | 0)
         view.setUint8(offset + 24, sample.finetune & 0xf)
         view.setUint8(offset + 25, sample.volume)
@@ -146,7 +146,7 @@ this.write = function(module) {
 
     view.setUint8(950, module.sequence.length)
     view.setUint8(951, module.restartPos)
-    let seqArr = new Uint8Array(buf, 952, numSongPositions)
+    let seqArr = new Uint8Array(buf, 952, mod.numSongPositions)
     seqArr.set(module.sequence)
     let numPatterns = Math.max(...module.sequence) + 1
     // TODO: This could allow saving patterns beyond the highest sequence number.
@@ -170,11 +170,11 @@ this.write = function(module) {
     }
     writeU8Array(buf, 1080, 4, textEncode.encode(initials))
 
-    let patternSize = module.numChannels * numRows * 4
+    let patternSize = module.numChannels * mod.numRows * 4
     for (let p = 0; p < numPatterns; p++) {
         let pat = module.patterns[p]
         let patOff = this.headerSize + patternSize * p
-        for (let row = 0; row < numRows; row++) {
+        for (let row = 0; row < mod.numRows; row++) {
             for (let c = 0; c < module.numChannels; c++) {
                 let cell = pat[c][row]
                 let cellOff = patOff + (c * 4) + (row * module.numChannels * 4)
@@ -213,7 +213,7 @@ this.calcSize = function(module) {
  * @param {Readonly<Module>} module
  */
 this.calcPatternsSize = function(module) {
-    let patternSize = module.numChannels * numRows * 4
+    let patternSize = module.numChannels * mod.numRows * 4
     let numPatterns = Math.max(...module.sequence) + 1
     return patternSize * numPatterns
 }

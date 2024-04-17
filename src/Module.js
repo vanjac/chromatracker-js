@@ -1,13 +1,15 @@
 'use strict'
 
-const numSamples = 32 // 0th sample is empty!
-const numSongPositions = 128
-const numRows = 64
-const maxVolume = 64
-const maxSampleNameLength = 22
-const maxSampleLength = 2 ** 17
-const defaultTempo = 125
-const defaultSpeed = 6
+const mod = Object.freeze({
+    numSamples: 32, // 0th sample is empty!
+    numSongPositions: 128,
+    numRows: 64,
+    maxVolume: 64,
+    maxSampleNameLength: 22,
+    maxSampleLength: 2 ** 17,
+    defaultTempo: 125,
+    defaultSpeed: 6,
+})
 
 const emptyArray = Object.freeze([])
 

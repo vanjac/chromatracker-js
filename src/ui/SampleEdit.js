@@ -364,7 +364,7 @@ class SampleEditElement extends HTMLElement {
      */
     _readAudioFile(file) {
         let name = file.name.replace(/\.[^/.]+$/, '') // remove extension
-        name = name.slice(0, maxSampleNameLength)
+        name = name.slice(0, mod.maxSampleNameLength)
 
         let reader = new FileReader()
         reader.onload = () => {
@@ -456,7 +456,7 @@ class SampleEditElement extends HTMLElement {
         let min = 127
         let max = -128
         for (let i = 0; i < wave.length; i++) {
-            if (i == maxSampleLength) {
+            if (i == mod.maxSampleLength) {
                 ctx.stroke()
                 ctx.strokeStyle = 'red'
                 ctx.beginPath()

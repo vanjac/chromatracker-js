@@ -104,7 +104,7 @@ class PatternEditElement extends HTMLElement {
         this._playbackStatus.classList.remove('hide')
         this._patternTable._scrollToSelCell()
         this._cellEntry._setSelSample(1)
-        this._setTempoSpeed(defaultTempo, defaultSpeed)
+        this._setTempoSpeed(mod.defaultTempo, mod.defaultSpeed)
     }
 
     /**

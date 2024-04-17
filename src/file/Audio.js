@@ -23,7 +23,7 @@ this.read = function(buf, sampleRate) {
             for (let i = 0; i < data.length; i++) {
                 ;[wave[i], error] = edit.wave.dither(data[i] * 127.0 / maxAmp, error)
             }
-            resolve(freezeAssign(new Sample(), {wave, volume: Math.round(maxVolume * maxAmp)}))
+            resolve(freezeAssign(new Sample(), {wave, volume: Math.round(mod.maxVolume * maxAmp)}))
         }, reject)
     })
 }
