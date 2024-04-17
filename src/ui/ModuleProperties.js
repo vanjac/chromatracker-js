@@ -1,15 +1,5 @@
 'use strict'
 
-/**
- * @param {number} size
- */
-function formatFileSize(size) {
-    // https://stackoverflow.com/a/20732091
-    let i = size ? Math.floor(Math.log(size) / Math.log(1024)) : 0
-    let n = size / (1024 ** i)
-    return ((i > 0 && n < 1000) ? n.toPrecision(3) : n) + ' ' + ['bytes', 'kB', 'MB'][i]
-}
-
 class ModulePropertiesElement extends HTMLElement {
     constructor() {
         super()
@@ -92,9 +82,19 @@ class ModulePropertiesElement extends HTMLElement {
             this._viewPatternsSize = fileio.mod.calcPatternsSize(module)
         }
         let fileSize = fileio.mod.headerSize + this._viewPatternsSize + this._viewSamplesSize
-        this._fileSizeOutput.value = formatFileSize(fileSize)
+        this._fileSizeOutput.value = this._formatFileSize(fileSize)
 
         this._viewModule = module
+    }
+
+    /**
+     * @param {number} size
+     */
+    _formatFileSize(size) {
+        // https://stackoverflow.com/a/20732091
+        let i = size ? Math.floor(Math.log(size) / Math.log(1024)) : 0
+        let n = size / (1024 ** i)
+        return ((i > 0 && n < 1000) ? n.toPrecision(3) : n) + ' ' + ['bytes', 'kB', 'MB'][i]
     }
 }
 window.customElements.define('module-properties', ModulePropertiesElement)

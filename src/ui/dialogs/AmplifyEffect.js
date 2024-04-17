@@ -1,7 +1,5 @@
 'use strict'
 
-const amplifyEffectInputs = ['amp', 'dither']
-
 class AmplifyEffectElement extends FormDialogElement {
     constructor() {
         super()
@@ -19,11 +17,13 @@ class AmplifyEffectElement extends FormDialogElement {
         this._ditherInput = fragment.querySelector('#dither')
 
         this._initForm(this._form)
-        restoreFormData(this._form, amplifyEffectInputs, global.effectFormData)
+        restoreFormData(this._form, this._inputNames(), global.effectFormData)
 
         this.style.display = 'contents'
         this.appendChild(fragment)
     }
+
+    _inputNames() { return ['amp', 'dither'] }
 
     /**
      * @override
@@ -33,7 +33,7 @@ class AmplifyEffectElement extends FormDialogElement {
             amount: this._amountInput.valueAsNumber,
             dithering: this._ditherInput.checked
         })
-        saveFormData(this._form, amplifyEffectInputs, global.effectFormData)
+        saveFormData(this._form, this._inputNames(), global.effectFormData)
         closeDialog(this)
     }
 }

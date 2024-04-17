@@ -1,8 +1,5 @@
 'use strict'
 
-const filterEffectInputs =
-    ['filterType', 'freqEnvelope', 'frequency', 'freqEnd', 'q', 'gain', 'dither']
-
 const minGraphFreq = 20
 const maxGraphFreq = 20000
 const numGraphFreq = 64
@@ -55,7 +52,7 @@ class FilterEffectElement extends FormDialogElement {
         this._graph = fragment.querySelector('#graph')
 
         this._initForm(this._form)
-        restoreFormData(this._form, filterEffectInputs, global.effectFormData)
+        restoreFormData(this._form, this._inputNames(), global.effectFormData)
 
         this._context = createOfflineAudioContext()
         this._filter = this._context.createBiquadFilter()
@@ -75,6 +72,10 @@ class FilterEffectElement extends FormDialogElement {
 
         this.style.display = 'contents'
         this.appendChild(fragment)
+    }
+
+    _inputNames() {
+        return ['filterType', 'freqEnvelope', 'frequency', 'freqEnd', 'q', 'gain', 'dither']
     }
 
     /** @private */
@@ -138,7 +139,7 @@ class FilterEffectElement extends FormDialogElement {
             gain: this._gainInput.valueAsNumber,
             dither: this._ditherInput.checked
         })
-        saveFormData(this._form, filterEffectInputs, global.effectFormData)
+        saveFormData(this._form, this._inputNames(), global.effectFormData)
         closeDialog(this)
     }
 }
