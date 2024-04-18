@@ -1,35 +1,5 @@
 'use strict'
 
-/**
- * @param {Element} elem
- * @param {(id: number) => void} onPress
- * @param {(id: number) => void} onRelease
- */
-function setupKeyButton(elem, onPress, onRelease, {blockScroll = true} = {}) {
-    elem.addEventListener('mousedown', () => onPress(-1))
-    elem.addEventListener('touchstart', /** @param {TouchEventInit & Event} e */ e => {
-        if (blockScroll) { e.preventDefault() }
-        for (let touch of e.changedTouches) {
-            onPress(touch.identifier)
-        }
-    })
-    elem.addEventListener('mouseup', () => onRelease(-1))
-    elem.addEventListener('touchend', /** @param {TouchEventInit & Event} e */ e => {
-        e.preventDefault()
-        for (let touch of e.changedTouches) {
-            onRelease(touch.identifier)
-        }
-    })
-}
-
-/**
- * @param {Element} elem
- */
-function setupKeypadKeyEvents(elem) {
-    elem.addEventListener('mousedown', e => e.preventDefault())
-    elem.addEventListener('touchdown', e => e.preventDefault())
-}
-
 class KeyPad {
     /**
      * @param {Element} container
@@ -111,4 +81,34 @@ class KeyPad {
             this.onRelease(id)
         }
     }
+}
+
+/**
+ * @param {Element} elem
+ */
+KeyPad.addKeyEvents = function(elem) {
+    elem.addEventListener('mousedown', e => e.preventDefault())
+    elem.addEventListener('touchdown', e => e.preventDefault())
+}
+
+/**
+ * @param {Element} elem
+ * @param {(id: number) => void} onPress
+ * @param {(id: number) => void} onRelease
+ */
+KeyPad.makeKeyButton = function(elem, onPress, onRelease, {blockScroll = true} = {}) {
+    elem.addEventListener('mousedown', () => onPress(-1))
+    elem.addEventListener('touchstart', /** @param {TouchEventInit & Event} e */ e => {
+        if (blockScroll) { e.preventDefault() }
+        for (let touch of e.changedTouches) {
+            onPress(touch.identifier)
+        }
+    })
+    elem.addEventListener('mouseup', () => onRelease(-1))
+    elem.addEventListener('touchend', /** @param {TouchEventInit & Event} e */ e => {
+        e.preventDefault()
+        for (let touch of e.changedTouches) {
+            onRelease(touch.identifier)
+        }
+    })
 }

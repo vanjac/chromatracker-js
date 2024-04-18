@@ -62,7 +62,7 @@ class PianoKeyboardElement extends HTMLElement {
             let isBlackKey = [1, 3, 6, 8, 10].includes(note)
             label.classList.add(isBlackKey ? 'black-key' : 'white-key')
             ;(isBlackKey ? blackKeys : whiteKeys).appendChild(label)
-            setupKeypadKeyEvents(label)
+            KeyPad.addKeyEvents(label)
             this._pianoKeys.push(label)
 
             if ([3, 10].includes(note)) {

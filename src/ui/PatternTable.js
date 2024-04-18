@@ -111,7 +111,7 @@ class PatternTableElement extends HTMLElement {
                     ui.cell.setContents(cellFrag, cell)
 
                     let td = cellFrag.querySelector('td')
-                    setupKeyButton(td, id => {
+                    KeyPad.makeKeyButton(td, id => {
                         this._setSelCell(c, row)
                         this._target._jamPlay(id, this._viewPattern[c][row])
                     }, id => this._target._jamRelease(id), {blockScroll: false})

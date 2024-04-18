@@ -41,23 +41,23 @@ class PatternEditElement extends HTMLElement {
             }
         })
 
-        setupKeyButton(this._entryCell,
+        KeyPad.makeKeyButton(this._entryCell,
             id => this._target._jamPlay(id, this._cellEntry._getJamCell()),
             id => this._target._jamRelease(id))
 
-        setupKeyButton(fragment.querySelector('#write'), id => {
+        KeyPad.makeKeyButton(fragment.querySelector('#write'), id => {
             this._putCell(this._cellEntry._getCell(), this._cellEntry._getCellParts())
             this._target._jamPlay(id, this._selCell())
             this._advance()
         }, id => this._target._jamRelease(id))
 
-        setupKeyButton(fragment.querySelector('#clear'), id => {
+        KeyPad.makeKeyButton(fragment.querySelector('#clear'), id => {
             this._putCell(Cell.empty, this._cellEntry._getCellParts())
             this._target._jamPlay(id, this._selCell())
             this._advance()
         }, id => this._target._jamRelease(id))
 
-        setupKeyButton(fragment.querySelector('#lift'), id => {
+        KeyPad.makeKeyButton(fragment.querySelector('#lift'), id => {
             this._cellEntry._liftCell(this._selCell())
             this._target._jamPlay(id, this._cellEntry._getJamCell())
         }, id => this._target._jamRelease(id))

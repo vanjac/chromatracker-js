@@ -65,7 +65,7 @@ class CellEntryElement extends HTMLElement {
                 this._sampleList.scrollBy({left: e.detail * width * .75, behavior: 'smooth'})
             })
 
-        setupKeyButton(fragment.querySelector('#writeEffect'), id => {
+        KeyPad.makeKeyButton(fragment.querySelector('#writeEffect'), id => {
             this._target._putCell(this._getCell(), CellPart.effect | CellPart.param)
             this._jam._jamPlay(id, this._target._selCell())
         }, id => this._jam._jamRelease(id))
@@ -144,7 +144,7 @@ class CellEntryElement extends HTMLElement {
             let label = ui.util.makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key')
             this._sampleList.appendChild(label)
-            setupKeypadKeyEvents(label)
+            KeyPad.addKeyEvents(label)
         }
         this._sampleInput = this._sampleList.elements.namedItem('sample')
         this._setSelSample(selSample)
