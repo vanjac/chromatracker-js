@@ -88,6 +88,7 @@ class ModulePropertiesElement extends HTMLElement {
     }
 
     /**
+     * @private
      * @param {number} size
      */
     _formatFileSize(size) {

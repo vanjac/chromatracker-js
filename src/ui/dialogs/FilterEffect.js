@@ -77,6 +77,7 @@ class FilterEffectElement extends FormDialogElement {
         this.appendChild(fragment)
     }
 
+    /** @private */
     _inputNames() {
         return ['filterType', 'freqEnvelope', 'frequency', 'freqEnd', 'q', 'gain', 'dither']
     }

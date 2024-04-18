@@ -23,6 +23,7 @@ class AmplifyEffectElement extends FormDialogElement {
         this.appendChild(fragment)
     }
 
+    /** @private */
     _inputNames() { return ['amp', 'dither'] }
 
     /**
