@@ -52,6 +52,7 @@ body {
 
 .base {
     flex: 1 0 0;
+    overflow: hidden;
     z-index: 0;
     display: flex;
     flex-direction: column;
