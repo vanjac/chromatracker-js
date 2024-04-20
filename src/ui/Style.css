@@ -40,15 +40,21 @@
 
 body {
     display: flex;
-    flex-direction: column;
-    font-family: sans-serif;
 
+    font-family: sans-serif;
     line-height: 1.5;
     --line-height: 1.5em;
 
     background: var(--color-bg);
     color: var(--color-fg);
     accent-color: var(--color-fg-hl);
+}
+
+.base {
+    flex: 1 0 0;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 input {
