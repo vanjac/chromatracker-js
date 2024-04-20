@@ -29,6 +29,7 @@
     <script src="src/ui/CellEntry.js" defer></script>
     <script src="src/ui/CLI.js" defer></script>
     <script src="src/ui/Dialog.js" defer></script>
+    <script src="src/ui/DOMUtil.js" defer></script>
     <script src="src/ui/FileToolbar.js" defer></script>
     <script src="src/ui/GlobalState.js" defer></script>
     <script src="src/ui/InlineSVG.js" defer></script>
@@ -49,16 +50,14 @@
     <script src="src/ui/dialogs/UtilDialogs.js" defer></script>
     <!-- must be loaded last! -->
     <script src="src/ui/TrackerMain.js" defer></script>
-  </head>
-  <body>
 
     <!-- TEMPLATES -->
 
 {{templates}}
     <!-- END TEMPLATES -->
 
-    <script src="src/ui/DOMUtil.js"></script>
-
+  </head>
+  <body>
     <div class="base">
       <tracker-main data-version="{{version}}"></tracker-main>
     </div>
