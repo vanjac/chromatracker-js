@@ -371,11 +371,9 @@ class SampleEditElement extends HTMLElement {
             if (reader.result instanceof ArrayBuffer) {
                 if (fileio.wav.identify(reader.result)) {
                     try {
-                        let {wave, volume, finetune, loopStart, loopEnd}
-                            = fileio.wav.read(reader.result)
-                        /** @type {Partial<Sample>} */
-                        let samplePart = {wave, volume, finetune, loopStart, loopEnd, name}
-                        this._changeSample(sample => Object.assign(sample, samplePart), '', true)
+                        let newSample = fileio.wav.read(reader.result)
+                        newSample.name = name
+                        this._onChange(newSample, '')
                     } catch (error) {
                         if (error instanceof Error) { AlertDialogElement.open(error.message) }
                     }

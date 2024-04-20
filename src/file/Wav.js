@@ -61,6 +61,12 @@ this.read = function(buf) {
 
     let sample = new Sample()
 
+    let xtraChunk = chunks['xtra']
+    if (xtraChunk && xtraChunk.size >= 16) {
+        // https://wiki.openmpt.org/Development:_OpenMPT_Format_Extensions#RIFF_WAVE
+       sample.volume = (view.getUint16(xtraChunk.pos + 6, true) / 4) | 0
+    }
+
     let dataChunk = chunks['data']
     if (!dataChunk) { throw Error('Missing data chunk') }
     let numFrames = Math.floor(dataChunk.size / frameSize)
@@ -94,7 +100,7 @@ this.read = function(buf) {
         }
         maxAmp = Math.min(maxAmp / 127, 1)
         if (maxAmp == 0) { maxAmp = 1 }
-        sample.volume = Math.round(mod.maxVolume * maxAmp)
+        sample.volume = Math.round(sample.volume * maxAmp)
 
         let error = 0
         for (let i = 0; i < numFrames; i++) {
@@ -118,7 +124,7 @@ this.read = function(buf) {
         // TODO: calculate finetune from sample rate
     }
 
-    return Object.freeze(sample)
+    return sample
 }
 
 } // namespace fileio.wav

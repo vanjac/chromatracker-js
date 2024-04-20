@@ -21,7 +21,8 @@ Sample.prototype = {
     loopStart: 0,
     loopEnd: 0,
     finetune: 0, // -8 to 7
-    volume: 64,
+    /** @type {number} */
+    volume: mod.maxVolume,
 
     hasLoop() { return this.loopEnd > this.loopStart },
 }
