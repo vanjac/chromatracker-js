@@ -165,6 +165,8 @@ class SampleEditElement extends HTMLElement {
             }
         })
 
+        fragment.querySelector('#save').addEventListener('click', () => this._saveAudioFile())
+
         /** @type {HTMLInputElement} */
         this._sampleRateInput = fragment.querySelector('#sampleRate')
 
@@ -397,6 +399,12 @@ class SampleEditElement extends HTMLElement {
             }
         }
         reader.readAsArrayBuffer(file)
+    }
+
+    _saveAudioFile() {
+        let blob = new Blob([fileio.wav.write(this._viewSample)],
+            {type: 'application/octet-stream'})
+        fileio.ext.download(blob, (this._viewSample.name || 'sample') + '.wav')
     }
 
     /**

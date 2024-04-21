@@ -104,9 +104,12 @@ const play = new function() { // namespace
 const masterGain = 0.5
 const rampTimeConstant = 0.003
 
-/** @readonly */
-this.baseRate = 16574.27 // rate of C-3
-const basePeriod = periodTable[8][3*12]
+/**
+ * Rate of C-3
+ * @readonly
+ */
+this.baseRate = 16574.27
+const basePeriod = periodTable[8][3*12] // TODO: combine with above, move to MOD constants
 const resampleFactor = 3
 
 const minPeriod = 15
