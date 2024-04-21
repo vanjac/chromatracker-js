@@ -56,9 +56,7 @@ class FileToolbarElement extends HTMLElement {
     _saveFile() {
         let blob = new Blob([fileio.mod.write(this._target._module)],
             {type: 'application/octet-stream'})
-        let url = URL.createObjectURL(blob)
-        console.info(url)
-        window.open(url)
+        fileio.ext.download(blob, (this._target._module.name || 'Untitled') + '.mod')
         this._target._moduleSaved()
     }
 }
