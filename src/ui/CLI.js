@@ -22,7 +22,7 @@ this.resetSel = function() {
     state.onSelEnd = () => {}
 }
 
-Object.defineProperty(globalThis, 'sel', {
+Object.defineProperty(window, 'sel', {
     configurable: false,
     enumerable: true,
     get: () => state.selProxy,
