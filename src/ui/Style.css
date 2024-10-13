@@ -99,7 +99,7 @@ select,
     padding: 5pt 7pt;
     background: var(--color-bg-btn);
     border: 1px solid var(--color-fg);
-    border-radius: 6pt;
+    border-radius: 4pt;
     touch-action: manipulation;
 }
 
@@ -170,7 +170,7 @@ label {
     background: var(--color-bg);
     padding: 12pt;
     border-radius: 8pt;
-    box-shadow: var(--color-fg) 0 0 60pt;
+    box-shadow: var(--color-fg) 0 0 30pt;
 }
 
 .dialog-container {
