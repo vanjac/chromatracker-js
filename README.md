@@ -1,6 +1,6 @@
 This will (eventually) be a web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) tracker with a touch-friendly interface. Currently it's very unfinished!
 
-This shares a name with [a previous project](https://github.com/vanjac/chromatracker) I never finished -- this new iteration of ChromaTracker is more limited in scope.
+This shares a name with [a previous project](https://github.com/vanjac/chromatracker) I attempted -- this new iteration of ChromaTracker is more limited in scope.
 
 Currently implemented:
 

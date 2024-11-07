@@ -10,7 +10,6 @@ ChromaTracker is targeting the following browsers:
     - Same versioning as Chromium
 - Edge latest
 - Firefox Android latest
-    - Currently has audio issues
 - Chrome Android latest
 
 ## Building
