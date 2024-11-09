@@ -4,5 +4,14 @@
     font-weight: 400;
     font-stretch: normal;
     font-style: normal;
-    src: url('IosevkaAileCustom-Regular.woff2') format('woff2');
+    src: url('WOFF2-Unhinted/IosevkaAileCustom-Regular.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Iosevka Fixed Custom Web';
+    font-display: swap;
+    font-weight: 400;
+    font-stretch: normal;
+    font-style: normal;
+    src: url('WOFF2-Unhinted/IosevkaFixedCustom-Regular.woff2') format('woff2');
 }

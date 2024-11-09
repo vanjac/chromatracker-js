@@ -42,6 +42,7 @@ body {
     display: flex;
 
     font-family: 'Iosevka Aile Custom Web', system-ui, sans-serif;
+    font-size: 16px;
     line-height: 1.5;
     --line-height: 1.5em;
 
@@ -236,7 +237,8 @@ table {
 }
 table,
 .pattern-cell {
-    font-family: monospace;
+    font-family: 'Iosevka Fixed Custom Web', monospace;
+    font-size: 14px;
 }
 /* https://issues.chromium.org/issues/40511425 */
 th {
