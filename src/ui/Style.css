@@ -41,7 +41,7 @@
 body {
     display: flex;
 
-    font-family: system-ui, sans-serif;
+    font-family: 'Iosevka Aile Custom Web', system-ui, sans-serif;
     line-height: 1.5;
     --line-height: 1.5em;
 
