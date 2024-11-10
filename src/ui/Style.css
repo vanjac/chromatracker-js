@@ -32,8 +32,9 @@
     display: none;
 }
 
-.vspace {
+hr {
     height: 6pt;
+    border: none;
 }
 
 /* common */
