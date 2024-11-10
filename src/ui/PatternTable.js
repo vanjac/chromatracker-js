@@ -62,15 +62,15 @@ class PatternTableElement extends HTMLElement {
         for (let c = 0; c < numChannels; c++) {
             let th = rowFrag.appendChild(dom.createElem('th'))
             th.classList.add('pattern-col-head')
-            let label = th.appendChild(dom.createElem('label'))
-            let input = label.appendChild(dom.createElem('input', {type: 'checkbox'}))
+            let input = th.appendChild(dom.createElem('input', {type: 'checkbox', id: 'ch' + c}))
             if (!this._muteInputs[c] || this._muteInputs[c].checked) {
                 input.checked = true
             }
             input.addEventListener('change',
                 () => this._target._setMute(c, !input.checked))
-            newMuteInputs.push(input)
-            label.append('Ch ' + (c + 1).toString())
+                newMuteInputs.push(input)
+            let label = th.appendChild(dom.createElem('label', {htmlFor: input.id}))
+            label.textContent = 'Ch ' + (c + 1).toString()
         }
         this._theadRow.appendChild(rowFrag)
         this._muteInputs = newMuteInputs
