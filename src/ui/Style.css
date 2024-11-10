@@ -78,11 +78,19 @@ input:disabled {
 }
 
 textarea {
-    font-family: monospace;
     white-space: pre;
 }
 
-label, output {
+pre,
+code,
+textarea,
+table,
+.pattern-cell {
+    font-family: 'Iosevka Fixed Custom Web', monospace;
+}
+
+label,
+output {
     padding: 0 4pt;
 }
 
@@ -242,7 +250,6 @@ table {
 }
 table,
 .pattern-cell {
-    font-family: 'Iosevka Fixed Custom Web', monospace;
     font-size: 14px;
 }
 /* https://issues.chromium.org/issues/40511425 */
