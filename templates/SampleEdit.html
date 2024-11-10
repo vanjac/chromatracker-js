@@ -1,24 +1,24 @@
 <template id="sampleEdit">
   <div class="vflex flex-grow">
     <div class="properties-grid">
-      <label for="name">Name:&nbsp;</label>
+      <label for="name">Name:</label>
       <div class="hflex">
         <input id="name" maxlength="22" autocomplete="off">
       </div>
 
-      <label for="volume">Volume:&nbsp;</label>
+      <label for="volume">Volume:</label>
       <div class="hflex">
         <input id="volume" type="range" class="flex-grow" min="0" max="64" autocomplete="off">
         <output id="volumeOut" class="small-input"></output>
       </div>
 
-      <label for="finetune">Finetune:&nbsp;</label>
+      <label for="finetune">Finetune:</label>
       <div class="hflex">
         <input id="finetune" type="range" class="flex-grow" min="-8" max="7" autocomplete="off">
         <output id="finetuneOut" class="small-input"></output>
       </div>
 
-      <span class="hflex">Wave file:&nbsp;</span>
+      <label class="hflex" for="file">Wave file:</label>
       <div class="hflex">
         <label class="label-button">
           <input id="file" type="file" accept="audio/*" autocomplete="off">
@@ -27,8 +27,7 @@
         <button id="save">
           <inline-svg class="icon" src="download.svg"></inline-svg>
         </button>
-        &nbsp;
-        <label for="sampleRate">Resample:&nbsp;</label>
+        <label for="sampleRate">Resample:</label>
         <input id="sampleRate" type="number" class="med-input" value="16574.27">
       </div>
     </div>
@@ -44,7 +43,7 @@
       </div>
     </div>
     <div class="vflex">
-      Loop:
+      <label for="loopStart">Loop:</label>
       <input id="loopStart" type="range" min="0" autocomplete="off">
       <input id="loopEnd" type="range" min="0" autocomplete="off">
     </div>

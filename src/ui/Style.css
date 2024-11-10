@@ -82,10 +82,15 @@ textarea {
     white-space: pre;
 }
 
+label, output {
+    padding: 0 4pt;
+}
+
 /* Buttons */
 
 .label-button {
     white-space: nowrap;
+    padding: 0; /* override label */
 }
 .label-button input {
     display: none;
