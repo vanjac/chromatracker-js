@@ -93,7 +93,7 @@ export class TrackerMainElement extends HTMLElement {
             }
         }
 
-        fragment.querySelector('#version').textContent = this.getAttribute('data-version')
+        fragment.querySelector('#version').textContent = document.body.getAttribute('data-version')
 
         this.addEventListener('contextmenu', () => {
             console.log('Selected:')

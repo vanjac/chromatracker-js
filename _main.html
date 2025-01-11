@@ -11,8 +11,7 @@
     <link href="src/ui/Style.css" rel="stylesheet">
     <link href="assets/Font.css" rel="stylesheet">
 
-    <script src="src/ui/WebApp.js" type="module"></script>
-    <script src="src/ui/TrackerMain.js" type="module"></script>
+    <script src="src/Main.js" type="module"></script>
 
     <!-- TEMPLATES -->
 
@@ -20,10 +19,8 @@
     <!-- END TEMPLATES -->
 
   </head>
-  <body>
-    <div class="base">
-      <tracker-main data-version="{{version}}"></tracker-main>
-    </div>
+  <body data-version="{{version}}">
+    <div class="base"></div>
     <a id="downloadLink" hidden></a>
   </body>
 </html>
