@@ -4,8 +4,7 @@ import * as $dom from './DOMUtil.js'
 import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import {ConfirmDialogElement} from './dialogs/UtilDialogs.js'
-import {Cell, emptyArray, Module} from '../Model.js'
-import {freezeAssign} from '../edit/EditUtil.js'
+import {Cell, Module} from '../Model.js'
 import templates from './Templates.js'
 import './FileToolbar.js'
 import './ModuleProperties.js'
@@ -19,17 +18,16 @@ const processInterval = 200
 
 const maxUndo = 100
 
-function PlaybackState() {}
-PlaybackState.prototype = {
-    time: 0,
-    pos: 0,
-    row: 0,
-    tick: 0,
-    tempo: 0,
-    speed: 0,
-    /** @type {readonly Readonly<$play.ChannelState>[]} */
-    channels: emptyArray,
-}
+/**
+ * @typedef {{
+ *      time: number
+ *      pos: number
+ *      row: number
+ *      tempo: number
+ *      speed: number
+ *      channels: readonly Readonly<$play.ChannelState>[]
+ * }} PlaybackState
+ */
 
 /**
  * @implements {JamTarget}
@@ -250,10 +248,8 @@ export class TrackerMainElement extends HTMLElement {
             if (tick == 0) {
                 let {tempo, speed} = this._playback
                 let channels = Object.freeze(this._playback.channels.map(
-                    channel => Object.freeze(new $play.ChannelState(channel))))
-                let state = freezeAssign(new PlaybackState(),
-                    {time, pos, row, tempo, speed, channels})
-                this._queuedStates.push(state)
+                    channel => Object.freeze($play.channelState(channel))))
+                this._queuedStates.push(Object.freeze({time, pos, row, tempo, speed, channels}))
             }
             this._queuedTime = time
         }

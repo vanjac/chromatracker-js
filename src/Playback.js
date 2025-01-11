@@ -18,108 +18,119 @@ const resampleFactor = 3
 
 const minPeriod = 15
 
-export function Playback() {
-    /** @type {SamplePlayback[]} */
-    this.samples = []
-    /** @type {ChannelPlayback[]} */
-    this.channels = []
-    /** @type {Set<AudioBufferSourceNode>} */
-    this.activeSources = new Set() // not including jam
-    /** @type {Map<number, ChannelPlayback>} */
-    this.jamChannels = new Map()
-}
-Playback.prototype = {
-    /** @type {BaseAudioContext} */
-    ctx: null,
-    /** @type {Readonly<Module>} */
-    mod: null,
-    /** @type {readonly Readonly<Sample>[]} */
-    modSamples: emptyArray,
-    /** @type {number} */
-    tempo: mod.defaultTempo,
-    /** @type {number} */
-    speed: mod.defaultSpeed,
-    pos: 0,
-    row: 0,
-    tick: 0,
-    rowDelayCount: 0,
-    time: 0,
-    userPatternLoop: false,
+/** @typedef {ReturnType<playback>} Playback */
+
+function playback() {
+    return {
+        /** @type {BaseAudioContext} */
+        ctx: null,
+        /** @type {Readonly<Module>} */
+        mod: null,
+        /** @type {SamplePlayback[]} */
+        samples: [],
+        /** @type {readonly Readonly<Sample>[]} */
+        modSamples: emptyArray,
+        /** @type {ChannelPlayback[]} */
+        channels: [],
+        /** @type {Set<AudioBufferSourceNode>} */
+        activeSources: new Set(), // not including jam
+        /** @type {Map<number, ChannelPlayback>} */
+        jamChannels: new Map(),
+        /** @type {number} */
+        tempo: mod.defaultTempo,
+        /** @type {number} */
+        speed: mod.defaultSpeed,
+        pos: 0,
+        row: 0,
+        tick: 0,
+        rowDelayCount: 0,
+        time: 0,
+        userPatternLoop: false,
+    }
 }
 
-function SamplePlayback() {}
-SamplePlayback.prototype = {
-    wave: Object.freeze(new Int8Array()),
-    /** @type {AudioBuffer} */
-    buffer: null, // null = empty wave
+/** @typedef {ReturnType<samplePlayback>} SamplePlayback */
+
+function samplePlayback() {
+    return {
+        wave: Object.freeze(new Int8Array()),
+        /** @type {AudioBuffer} */
+        buffer: null, // null = empty wave
+    }
 }
 
-export function ChannelPlayback() {
-    this.vibrato = new OscillatorPlayback()
-    this.tremolo = new OscillatorPlayback()
-}
-ChannelPlayback.prototype = {
-    /** @type {AudioBufferSourceNode} */
-    source: null,
-    /** @type {Sample} */
-    sourceSample: null,
-    /** @type {GainNode} */
-    gain: null,
-    /** @type {StereoPannerNode|PannerNode} */
-    panner: null,
-    sample: 0,
-    sampleOffset: 0,
-    period: 0,
-    scheduledPeriod: -1,
-    scheduledDetune: 0,
-    volume: 0,
-    scheduledVolume: -1,
-    panning: 128,
-    scheduledPanning: -1,
-    portTarget: 0,
-    memPort: 0,     // 3xx, 5xx
-    memOff: 0,      // 9xx
-    patLoopRow: 0,
-    patLoopCount: 0,
+/** @typedef {ReturnType<channelPlayback>} ChannelPlayback */
 
-    samplePredictPos: 0,
-    samplePredictTime: 0,
+function channelPlayback() {
+    return {
+        /** @type {AudioBufferSourceNode} */
+        source: null,
+        /** @type {Sample} */
+        sourceSample: null,
+        /** @type {GainNode} */
+        gain: null,
+        /** @type {StereoPannerNode|PannerNode} */
+        panner: null,
+        sample: 0,
+        sampleOffset: 0,
+        period: 0,
+        scheduledPeriod: -1,
+        scheduledDetune: 0,
+        volume: 0,
+        scheduledVolume: -1,
+        panning: 128,
+        scheduledPanning: -1,
+        portTarget: 0,
+        /** @type {OscillatorPlayback} */
+        vibrato: oscillatorPlayback(),
+        /** @type {OscillatorPlayback} */
+        tremolo: oscillatorPlayback(),
+        memPort: 0,     // 3xx, 5xx
+        memOff: 0,      // 9xx
+        patLoopRow: 0,
+        patLoopCount: 0,
 
-    userMute: false,
+        samplePredictPos: 0,
+        samplePredictTime: 0,
+
+        userMute: false,
+    }
 }
+
+/** @typedef {ReturnType<channelState>} ChannelState */
 
 /**
- * @constructor
  * @param {ChannelPlayback} channel
  */
-export function ChannelState(channel) {
-    this.sourceSample = channel.sourceSample
-    this.sample = channel.sample
-    this.volume = channel.volume
-    this.scheduledPeriod = channel.scheduledPeriod
-    this.samplePredictPos = channel.samplePredictPos
-    this.samplePredictTime = channel.samplePredictTime
+export function channelState(channel) {
+    let {sourceSample, sample, volume, scheduledPeriod, samplePredictPos, samplePredictTime}
+        = channel
+    return {sourceSample, sample, volume, scheduledPeriod, samplePredictPos, samplePredictTime}
 }
 
-function OscillatorPlayback() {}
-OscillatorPlayback.prototype = {
-    waveform: 0,
-    continue: false,
-    speed: 0,
-    depth: 0,
-    tick: 0,
+/** @typedef {ReturnType<oscillatorPlayback>} OscillatorPlayback */
+
+function oscillatorPlayback() {
+    return {
+        waveform: 0,
+        continue: false,
+        speed: 0,
+        depth: 0,
+        tick: 0,
+    }
 }
 
 /**
  * @param {BaseAudioContext} context
  * @param {Readonly<Module>} module
+ * @returns {Playback}
  */
 export function init(context, module) {
-    let playback = new Playback()
-    playback.ctx = context
-    setModule(playback, module)
-    playback.time = context.currentTime
-    return playback
+    let play = playback()
+    play.ctx = context
+    setModule(play, module)
+    play.time = context.currentTime
+    return play
 }
 
 /**
@@ -136,7 +147,7 @@ export function setModule(playback, module) {
         }
         playback.channels = []
         for (let c = 0; c < module.numChannels; c++) {
-            let channel = new ChannelPlayback()
+            let channel = channelPlayback()
             playback.channels.push(channel)
             channel.panning = ((c % 4) == 0 || (c % 4) == 3) ? 64 : 191
             initChannelNodes(playback, channel)
@@ -230,9 +241,10 @@ export function setChannelMute(playback, c, mute) {
 /**
  * @param {BaseAudioContext} ctx
  * @param {Readonly<Sample>} sample
+ * @returns {SamplePlayback}
  */
 function createSamplePlayback(ctx, sample) {
-    let sp = new SamplePlayback()
+    let sp = samplePlayback()
     sp.wave = sample.wave
     if (sample.wave.length) {
         // TODO: support protracker one-shot loops
@@ -758,7 +770,8 @@ export function jamPlay(playback, id, c, cell) {
         return
     }
     // clone channel
-    let jam = new ChannelPlayback()
+    /** @type {ChannelPlayback} */
+    let jam = channelPlayback()
     let channel = playback.channels[c]
     if (channel) {
         let {sample, sampleOffset, period, volume, panning, portTarget, memPort, memOff} = channel

@@ -20,12 +20,3 @@ export function immSplice(array, start, deleteCount, ...items) {
 export function changeItem(array, index, callback) {
     return immSplice(array, index, 1, callback(array[index]))
 }
-
-/**
- * @template {{}} T
- * @param {T} target
- * @param {Partial<T>[]} sources
- */
-export function freezeAssign(target, ...sources) {
-    return Object.freeze(Object.assign(target, ...sources))
-}
