@@ -1,4 +1,4 @@
-'use strict'
+export default null
 
 // Disable pinch to zoom on iOS
 document.addEventListener('touchmove', e => {

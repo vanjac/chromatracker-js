@@ -1,6 +1,10 @@
-'use strict'
+import * as $cli from './CLI.js'
+import * as $dom from './DOMUtil.js'
+import * as $util from './UtilTemplates.js'
+import templates from './Templates.js'
+import './InlineSVG.js'
 
-class SequenceEditElement extends HTMLElement {
+export class SequenceEditElement extends HTMLElement {
     constructor() {
         super()
         /** @type {ModuleEditTarget} */
@@ -24,14 +28,14 @@ class SequenceEditElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._select = fragment.querySelector('#patternSelect')
 
-        dom.disableFormSubmit(this._sequenceList)
+        $dom.disableFormSubmit(this._sequenceList)
         fragment.querySelector('#seqInsSame').addEventListener('click', () => this._seqInsSame())
         fragment.querySelector('#seqInsClone').addEventListener('click', () => this._seqInsClone())
         fragment.querySelector('#seqDel').addEventListener('click', () => this._seqDel())
 
         this._select.addEventListener('input', () => this._seqSet(this._select.selectedIndex))
         this._select.addEventListener('contextmenu', () => {
-            cli.addSelProp('patnum', 'number', this._viewSequence[this._selPos],
+            $cli.addSelProp('patnum', 'number', this._viewSequence[this._selPos],
                 num => this._target._changeModule(
                     module => edit.sequence.set(module, this._selPos, num)))
         })
@@ -60,7 +64,7 @@ class SequenceEditElement extends HTMLElement {
         this._sequenceButtons = []
 
         for (let [i, num] of sequence.entries()) {
-            let label = ui.util.makeRadioButton('sequence', i.toString(), num.toString())
+            let label = $util.makeRadioButton('sequence', i.toString(), num.toString())
             label.classList.add('seq-button')
             this._sequenceList.appendChild(label)
             label.addEventListener('change', () => {
@@ -71,13 +75,13 @@ class SequenceEditElement extends HTMLElement {
             label.addEventListener('contextmenu', () => {
                 this._setSelPos(i)
                 this._onSelect()
-                cli.addSelProp('patnum', 'number', this._viewSequence[i],
+                $cli.addSelProp('patnum', 'number', this._viewSequence[i],
                     num => this._target._changeModule(module => edit.sequence.set(module, i, num)))
             })
             this._sequenceButtons.push(label)
         }
         this._sequenceInput = this._sequenceList.elements.namedItem('sequence')
-        dom.selectRadioButton(this._sequenceInput, this._selPos.toString())
+        $dom.selectRadioButton(this._sequenceInput, this._selPos.toString())
         this._updateSel()
     }
 
@@ -94,7 +98,7 @@ class SequenceEditElement extends HTMLElement {
         this._select.textContent = ''
         // last option = create pattern
         for (let i = 0; i < patterns.length + 1; i++) {
-            this._select.appendChild(dom.createElem('option', {textContent: i.toString()}))
+            this._select.appendChild($dom.createElem('option', {textContent: i.toString()}))
         }
         this._select.selectedIndex = this._viewSequence[this._selPos]
     }
@@ -115,7 +119,7 @@ class SequenceEditElement extends HTMLElement {
     _setSelPos(pos) {
         if (pos != this._selPos && pos < this._viewSequence.length) {
             this._selPos = pos
-            dom.selectRadioButton(this._sequenceInput, pos.toString())
+            $dom.selectRadioButton(this._sequenceInput, pos.toString())
             this._updateSel()
         }
     }

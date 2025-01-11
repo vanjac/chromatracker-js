@@ -1,6 +1,10 @@
-'use strict'
+import * as $dialog from './Dialog.js'
+import * as $dom from './DOMUtil.js'
+import {AlertDialogElement} from './dialogs/UtilDialogs.js'
+import templates from './Templates.js'
+import './InlineSVG.js'
 
-class FileToolbarElement extends HTMLElement {
+export class FileToolbarElement extends HTMLElement {
     constructor() {
         super()
         /** @type {FileToolbarTarget} */
@@ -20,14 +24,14 @@ class FileToolbarElement extends HTMLElement {
                 this._readModuleBlob(fileSelect.files[0])
             }
         })
-        dom.addMenuListener(fragment.querySelector('#demoMenu'), value => {
-            let dialog = ui.dialog.open(dom.createElem('wait-dialog'))
+        $dom.addMenuListener(fragment.querySelector('#demoMenu'), value => {
+            let dialog = $dialog.open($dom.createElem('wait-dialog'))
             window.fetch(value)
                 .then(r => r.blob())
                 .then(b => this._readModuleBlob(b))
-                .then(() => ui.dialog.close(dialog))
+                .then(() => $dialog.close(dialog))
                 .catch(/** @param {Error} error */ error => {
-                    ui.dialog.close(dialog)
+                    $dialog.close(dialog)
                     AlertDialogElement.open(error.message)
                 })
         })

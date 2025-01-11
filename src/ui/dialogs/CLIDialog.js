@@ -1,6 +1,9 @@
-'use strict'
+import * as $cli from '../CLI.js'
+import * as $dialog from '../Dialog.js'
+import {FormDialogElement} from '../Dialog.js'
+import templates from '../Templates.js'
 
-class CLIDialogElement extends FormDialogElement {
+export class CLIDialogElement extends FormDialogElement {
     connectedCallback() {
         let fragment = templates.cliDialog.cloneNode(true)
 
@@ -16,8 +19,8 @@ class CLIDialogElement extends FormDialogElement {
      * @override
      */
     _dismiss() {
-        cli.cancelSel()
-        ui.dialog.close(this)
+        $cli.cancelSel()
+        $dialog.close(this)
     }
 }
 window.customElements.define('cli-dialog', CLIDialogElement)

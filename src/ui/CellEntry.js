@@ -1,9 +1,14 @@
-'use strict'
+import * as $dom from './DOMUtil.js'
+import * as $util from './UtilTemplates.js'
+import {KeyPad} from './KeyPad.js'
+import templates from './Templates.js'
+import './InlineSVG.js'
+import './PianoKeyboard.js'
 
 /**
  * @implements {PianoKeyboardTarget}
  */
-class CellEntryElement extends HTMLElement {
+export class CellEntryElement extends HTMLElement {
     constructor() {
         super()
         /** @type {CellEntryTarget} */
@@ -46,7 +51,7 @@ class CellEntryElement extends HTMLElement {
         this._param0Select.addEventListener('input', () => this._target._updateCell())
         this._param1Select.addEventListener('input', () => this._target._updateCell())
 
-        dom.disableFormSubmit(this._sampleList)
+        $dom.disableFormSubmit(this._sampleList)
         new KeyPad(this._sampleList, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement == this._sampleList) {
                 let input = elem.parentElement.querySelector('input')
@@ -91,7 +96,7 @@ class CellEntryElement extends HTMLElement {
     _getCell() {
         let cell = new Cell()
         cell.pitch = this._piano._getPitch()
-        cell.inst = Number(dom.getRadioButtonValue(this._sampleInput, '0'))
+        cell.inst = Number($dom.getRadioButtonValue(this._sampleInput, '0'))
         cell.effect = this._effectSelect.selectedIndex
         cell.param0 = this._param0Select.selectedIndex
         cell.param1 = this._param1Select.selectedIndex
@@ -134,14 +139,14 @@ class CellEntryElement extends HTMLElement {
         console.debug('update entry samples')
         this._viewSamples = samples
 
-        let selSample = Number(dom.getRadioButtonValue(this._sampleInput, '1'))
+        let selSample = Number($dom.getRadioButtonValue(this._sampleInput, '1'))
 
         this._sampleList.textContent = ''
         for (let [i, sample] of samples.entries()) {
             if (!sample) {
                 continue
             }
-            let label = ui.util.makeRadioButton('sample', i.toString(), i.toString())
+            let label = $util.makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key')
             this._sampleList.appendChild(label)
             KeyPad.addKeyEvents(label)
@@ -155,7 +160,7 @@ class CellEntryElement extends HTMLElement {
      */
     _setSelSample(s) {
         if (this._viewSamples[s]) {
-            dom.selectRadioButton(this._sampleInput, s.toString())
+            $dom.selectRadioButton(this._sampleInput, s.toString())
         }
         this._target._updateCell()
     }
@@ -168,7 +173,7 @@ class CellEntryElement extends HTMLElement {
             this._piano._setPitch(cell.pitch)
         }
         if (this._sampleEnable.checked && cell.inst) {
-            dom.selectRadioButton(this._sampleInput, cell.inst.toString())
+            $dom.selectRadioButton(this._sampleInput, cell.inst.toString())
         }
         if (this._effectEnable.checked) {
             this._effectSelect.selectedIndex = cell.effect

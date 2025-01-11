@@ -1,6 +1,9 @@
-'use strict'
+import * as $dialog from '../Dialog.js'
+import * as $dom from '../DOMUtil.js'
+import {DialogElement, FormDialogElement} from '../Dialog.js'
+import templates from '../Templates.js'
 
-class AlertDialogElement extends FormDialogElement {
+export class AlertDialogElement extends FormDialogElement {
     constructor() {
         super()
         this._title = ''
@@ -27,10 +30,10 @@ window.customElements.define('alert-dialog', AlertDialogElement)
  * @param {string} title
  */
 AlertDialogElement.open = function(message, title = 'Error') {
-    return ui.dialog.open(dom.createElem('alert-dialog', {_message: message, _title: title}))
+    return $dialog.open($dom.createElem('alert-dialog', {_message: message, _title: title}))
 }
 
-class ConfirmDialogElement extends FormDialogElement {
+export class ConfirmDialogElement extends FormDialogElement {
     constructor() {
         super()
         this._title = ''
@@ -59,7 +62,7 @@ class ConfirmDialogElement extends FormDialogElement {
      */
     _submit() {
         if (this._onConfirm) { this._onConfirm() }
-        ui.dialog.close(this)
+        $dialog.close(this)
     }
 
     /**
@@ -79,14 +82,14 @@ window.customElements.define('confirm-dialog', ConfirmDialogElement)
  */
 ConfirmDialogElement.open = function(message, title = '') {
     return new Promise((resolve, reject) => {
-        let dialog = dom.createElem('confirm-dialog', {_message: message, _title: title})
+        let dialog = $dom.createElem('confirm-dialog', {_message: message, _title: title})
         dialog._onConfirm = resolve
         dialog._onCancel = reject
-        ui.dialog.open(dialog)
+        $dialog.open(dialog)
     })
 }
 
-class InputDialogElement extends FormDialogElement {
+export class InputDialogElement extends FormDialogElement {
     constructor() {
         super()
         this._title = ''
@@ -121,7 +124,7 @@ class InputDialogElement extends FormDialogElement {
             this._dismiss()
         } else {
             this._onConfirm(this._input.valueAsNumber)
-            ui.dialog.close(this)
+            $dialog.close(this)
         }
     }
 
@@ -143,16 +146,16 @@ window.customElements.define('input-dialog', InputDialogElement)
  */
 InputDialogElement.open = function(prompt, title = '', defaultValue = 0) {
     return new Promise((resolve, reject) => {
-        let dialog = dom.createElem('input-dialog', {_prompt: prompt, _title: title})
+        let dialog = $dom.createElem('input-dialog', {_prompt: prompt, _title: title})
         dialog._defaultValue = defaultValue
         dialog._onConfirm = resolve
         dialog._onCancel = reject
-        ui.dialog.open(dialog, {dismissable: true})
+        $dialog.open(dialog, {dismissable: true})
     })
 }
 
 
-class WaitDialogElement extends DialogElement {
+export class WaitDialogElement extends DialogElement {
     connectedCallback() {
         let fragment = templates.waitDialog.cloneNode(true)
 

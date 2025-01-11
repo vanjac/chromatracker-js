@@ -4,7 +4,7 @@
 		"prefix": "custom-element",
 		"description": "Define a custom element class",
 		"body": [
-			"class $1Element extends HTMLElement {",
+			"export class $1Element extends HTMLElement {",
 			"    constructor() {",
 			"        super()",
 			"    }",
@@ -17,30 +17,6 @@
 			"    }",
 			"}",
 			"window.customElements.define('$3', $1Element)",
-			""
-		]
-	},
-	"Namespace": {
-		"scope": "javascript",
-		"prefix": "namespace",
-		"description": "Define a namespace",
-		"body": [
-			"$1 = new function() { // namespace",
-			"$0",
-			"} // namespace $1",
-			""
-		]
-	},
-	"IIFE Class": {
-		"scope": "javascript",
-		"prefix": "iife-class",
-		"description": "Define a class using an IIFE",
-		"body": [
-			"/** @typedef {InstanceType<typeof $1>} */",
-			"const $1 = (() => { // IIFE",
-			"$0",
-			"return $1",
-			"})() // IIFE",
 			""
 		]
 	},

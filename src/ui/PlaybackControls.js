@@ -1,6 +1,7 @@
-'use strict'
+import templates from './Templates.js'
+import './InlineSVG.js'
 
-class PlaybackControlsElement extends HTMLElement {
+export class PlaybackControlsElement extends HTMLElement {
     constructor() {
         super()
         /** @type {PlaybackControlsTarget} */

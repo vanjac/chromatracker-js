@@ -3,11 +3,15 @@
         "browser": true,
         "es2017": true
     },
+    "parserOptions": {
+        "sourceType": "module"
+    },
     "extends": "eslint:recommended",
     "rules": {
         "no-var": "error",
         "curly": "error",
         "strict": ["error", "global"],
+		"no-restricted-globals": ["error", "length"],
         // Deprecated stylistic rules (TODO)
         "semi": ["error", "never", {"beforeStatementContinuationChars": "always"} ],
         "no-extra-semi": "off",

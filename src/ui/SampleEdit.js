@@ -1,9 +1,17 @@
-'use strict'
+import * as $cell from './Cell.js'
+import * as $cli from './CLI.js'
+import * as $dialog from './Dialog.js'
+import * as $dom from './DOMUtil.js'
+import {AlertDialogElement, InputDialogElement} from './dialogs/UtilDialogs.js'
+import global from './GlobalState.js'
+import templates from './Templates.js'
+import './InlineSVG.js'
+import './PianoKeyboard.js'
 
 /**
  * @implements {PianoKeyboardTarget}
  */
-class SampleEditElement extends HTMLElement {
+export class SampleEditElement extends HTMLElement {
     constructor() {
         super()
         /** @type {ModuleEditTarget & JamTarget} */
@@ -76,9 +84,9 @@ class SampleEditElement extends HTMLElement {
         this._waveEditBox.addEventListener('contextmenu', () => {
             let [start, end] = this._selRangeOrAll()
             // slice for safety (can't be frozen)
-            cli.addSelProp('wave', Int8Array, this._viewSample.wave.slice(start, end),
+            $cli.addSelProp('wave', Int8Array, this._viewSample.wave.slice(start, end),
                 wave => this._replace(start, end, wave))
-            cli.addSelProp('waverange', Array, [start, end], ([start, end]) => {
+            $cli.addSelProp('waverange', Array, [start, end], ([start, end]) => {
                 if (start == null) { start = -1 }
                 this._setSel(start, end != null ? end : start)
             })
@@ -99,14 +107,14 @@ class SampleEditElement extends HTMLElement {
         this._loopEndInput.addEventListener('change', () =>
             this._target._clearUndoCombine('sample loop end'))
 
-        dom.addMenuListener(fragment.querySelector('#selectMenu'), value => {
+        $dom.addMenuListener(fragment.querySelector('#selectMenu'), value => {
             switch (value) {
                 case 'all': this._selectAll(); break
                 case 'none': this._selectNone(); break
                 case 'loop': this._selectLoop(); break
             }
         })
-        dom.addMenuListener(fragment.querySelector('#editMenu'), value => {
+        $dom.addMenuListener(fragment.querySelector('#editMenu'), value => {
             switch (value) {
                 case 'trim': this._trim(); break
                 case 'cut': this._cut(); break
@@ -114,7 +122,7 @@ class SampleEditElement extends HTMLElement {
                 case 'paste': this._paste(); break
             }
         })
-        dom.addMenuListener(fragment.querySelector('#loopMenu'), value => {
+        $dom.addMenuListener(fragment.querySelector('#loopMenu'), value => {
             switch (value) {
                 case 'set': this._loopSelection(); break
                 case 'clear': this._clearLoop(); break
@@ -122,7 +130,7 @@ class SampleEditElement extends HTMLElement {
                 case 'pingpong': this._loopPingPong(); break
             }
         })
-        dom.addMenuListener(fragment.querySelector('#effectMenu'), value => {
+        $dom.addMenuListener(fragment.querySelector('#effectMenu'), value => {
             switch (value) {
                 case 'amplify': this._amplify(); break
                 case 'fadeIn': this._applyEffect(edit.wave.fade.bind(edit.wave, 0, 1, 2)); break
@@ -174,7 +182,7 @@ class SampleEditElement extends HTMLElement {
         this._piano = fragment.querySelector('piano-keyboard')
 
         this.addEventListener('contextmenu', () => {
-            cli.addSelProp('sample', Sample, this._viewSample,
+            $cli.addSelProp('sample', Sample, this._viewSample,
                 sample => this._onChange(Object.freeze(sample), ''))
         })
 
@@ -246,7 +254,7 @@ class SampleEditElement extends HTMLElement {
             this._playMarks.pop().remove()
         }
         while (this._playMarks.length < positions.length) {
-            let mark = this._waveContainer.appendChild(dom.createElem('div'))
+            let mark = this._waveContainer.appendChild($dom.createElem('div'))
             mark.classList.add('wave-mark', 'wave-play-mark')
             this._playMarks.push(mark)
         }
@@ -380,11 +388,11 @@ class SampleEditElement extends HTMLElement {
                         if (error instanceof Error) { AlertDialogElement.open(error.message) }
                     }
                 } else {
-                    let dialog = ui.dialog.open(dom.createElem('wait-dialog'))
+                    let dialog = $dialog.open($dom.createElem('wait-dialog'))
                     let promise = fileio.audio.read(
                         reader.result, this._sampleRateInput.valueAsNumber)
                     promise.then(({wave, volume}) => {
-                        ui.dialog.close(dialog)
+                        $dialog.close(dialog)
                         this._changeSample(sample => {
                             sample.wave = wave
                             sample.volume = volume
@@ -392,7 +400,7 @@ class SampleEditElement extends HTMLElement {
                             sample.loopStart = sample.loopEnd = 0
                         }, '', true)
                     }).catch(/** @param {DOMException} error */ error => {
-                        ui.dialog.close(dialog)
+                        $dialog.close(dialog)
                         AlertDialogElement.open(`Error reading audio file.\n${error.message}`)
                     })
                 }
@@ -436,7 +444,7 @@ class SampleEditElement extends HTMLElement {
 
     /** @private */
     _updateJamCell() {
-        ui.cell.setContents(this._jamCell, this._getJamCell())
+        $cell.setContents(this._jamCell, this._getJamCell())
     }
 
     /**
@@ -608,7 +616,7 @@ class SampleEditElement extends HTMLElement {
 
     /** @private */
     _amplify() {
-        let dialog = ui.dialog.open(dom.createElem('amplify-effect'), {dismissable: true})
+        let dialog = $dialog.open($dom.createElem('amplify-effect'), {dismissable: true})
         dialog._onComplete = params => this._applyEffect(edit.wave.amplify.bind(edit.wave, params))
     }
 
@@ -630,10 +638,10 @@ class SampleEditElement extends HTMLElement {
 
     /** @private */
     _filter() {
-        let dialog = ui.dialog.open(dom.createElem('filter-effect'), {dismissable: true})
+        let dialog = $dialog.open($dom.createElem('filter-effect'), {dismissable: true})
         dialog._onComplete = params => {
             let [start, end] = this._selRangeOrAll()
-            let waitDialog = ui.dialog.open(dom.createElem('wait-dialog'))
+            let waitDialog = $dialog.open($dom.createElem('wait-dialog'))
             edit.sample.applyNode(this._viewSample, start, end, params.dither,
                 ctx => {
                     let node = ctx.createBiquadFilter()
@@ -649,8 +657,8 @@ class SampleEditElement extends HTMLElement {
                     return node
                 })
                 .then(s => this._onChange(s, ''))
-                .then(() => ui.dialog.close(waitDialog))
-                .catch(() => ui.dialog.close(waitDialog))
+                .then(() => $dialog.close(waitDialog))
+                .catch(() => $dialog.close(waitDialog))
         }
     }
 }

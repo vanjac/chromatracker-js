@@ -1,6 +1,4 @@
-'use strict'
-
-let global = {
+export default {
     /** @type {Readonly<Int8Array>} */
     audioClipboard: new Int8Array(),
     /** @type {Readonly<Pattern>} */

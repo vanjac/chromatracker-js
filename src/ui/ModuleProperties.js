@@ -1,6 +1,7 @@
-'use strict'
+import templates from './Templates.js'
+import './InlineSVG.js'
 
-class ModulePropertiesElement extends HTMLElement {
+export class ModulePropertiesElement extends HTMLElement {
     constructor() {
         super()
         /** @type {ModuleEditTarget} */

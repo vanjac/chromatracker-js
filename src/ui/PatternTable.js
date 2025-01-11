@@ -1,6 +1,10 @@
-'use strict'
+import * as $cell from './Cell.js'
+import * as $cli from './CLI.js'
+import * as $dom from './DOMUtil.js'
+import {KeyPad} from './KeyPad.js'
+import templates from './Templates.js'
 
-class PatternTableElement extends HTMLElement {
+export class PatternTableElement extends HTMLElement {
     constructor() {
         super()
         /** @type {PatternTableTarget & JamTarget} */
@@ -29,11 +33,11 @@ class PatternTableElement extends HTMLElement {
         this._muteInputs = []
 
         this.addEventListener('contextmenu', () => {
-            cli.addSelProp('row', 'number', this._selRow,
+            $cli.addSelProp('row', 'number', this._selRow,
                 row => this._setSelCell(this._selChannel, row))
-            cli.addSelProp('channel', 'number', this._selChannel,
+            $cli.addSelProp('channel', 'number', this._selChannel,
                 channel => this._setSelCell(this._selChannel, channel))
-            cli.addSelProp('pattern', Array, this._viewPattern,
+            $cli.addSelProp('pattern', Array, this._viewPattern,
                 pattern => this._onChange(Object.freeze(pattern)))
         })
 
@@ -56,20 +60,20 @@ class PatternTableElement extends HTMLElement {
         let newMuteInputs = []
         let rowFrag = document.createDocumentFragment()
 
-        let cornerHead = dom.createElem('th')
+        let cornerHead = $dom.createElem('th')
         cornerHead.classList.add('pattern-row-head')
         rowFrag.appendChild(cornerHead)
         for (let c = 0; c < numChannels; c++) {
-            let th = rowFrag.appendChild(dom.createElem('th'))
+            let th = rowFrag.appendChild($dom.createElem('th'))
             th.classList.add('pattern-col-head')
-            let input = th.appendChild(dom.createElem('input', {type: 'checkbox', id: 'ch' + c}))
+            let input = th.appendChild($dom.createElem('input', {type: 'checkbox', id: 'ch' + c}))
             if (!this._muteInputs[c] || this._muteInputs[c].checked) {
                 input.checked = true
             }
             input.addEventListener('change',
                 () => this._target._setMute(c, !input.checked))
                 newMuteInputs.push(input)
-            let label = th.appendChild(dom.createElem('label', {htmlFor: input.id}))
+            let label = th.appendChild($dom.createElem('label', {htmlFor: input.id}))
             label.textContent = 'Ch ' + (c + 1).toString()
         }
         this._theadRow.appendChild(rowFrag)
@@ -90,7 +94,7 @@ class PatternTableElement extends HTMLElement {
                 if (channel != this._viewPattern[c]) {
                     for (let [row, cell] of channel.entries()) {
                         if (cell != this._viewPattern[c][row]) {
-                            ui.cell.setContents(this._tbody.children[row].children[c + 1], cell)
+                            $cell.setContents(this._tbody.children[row].children[c + 1], cell)
                         }
                     }
                 }
@@ -100,15 +104,15 @@ class PatternTableElement extends HTMLElement {
             this._tbody.textContent = ''
             let tableFrag = document.createDocumentFragment()
             for (let row = 0; row < pattern[0].length; row++) {
-                let tr = tableFrag.appendChild(dom.createElem('tr'))
-                let th = dom.createElem('th', {textContent: row.toString()})
+                let tr = tableFrag.appendChild($dom.createElem('tr'))
+                let th = $dom.createElem('th', {textContent: row.toString()})
                 th.classList.add('pattern-row-head')
                 tr.appendChild(th)
 
                 for (let c = 0; c < pattern.length; c++) {
                     let cell = pattern[c][row]
                     let cellFrag = templates.cellTemplate.cloneNode(true)
-                    ui.cell.setContents(cellFrag, cell)
+                    $cell.setContents(cellFrag, cell)
 
                     let td = cellFrag.querySelector('td')
                     KeyPad.makeKeyButton(td, id => {
@@ -116,7 +120,7 @@ class PatternTableElement extends HTMLElement {
                         this._target._jamPlay(id, this._viewPattern[c][row])
                     }, id => this._target._jamRelease(id), {blockScroll: false})
                     td.addEventListener('contextmenu', () => {
-                        cli.addSelProp('cell', Cell, this._viewPattern[c][row], cell => {
+                        $cli.addSelProp('cell', Cell, this._viewPattern[c][row], cell => {
                             this._onChange(edit.pattern.putCell(
                                 this._viewPattern, c, row, cell, CellPart.all))
                         })
@@ -187,7 +191,7 @@ class PatternTableElement extends HTMLElement {
         if (this._selRow >= 0 && this._selChannel >= 0) {
             let selTr = this._tbody.children[this._selRow]
             let selCell = selTr && selTr.children[this._selChannel + 1]
-            if (selCell) { ui.cell.toggleParts(selCell, this._viewEntryParts) }
+            if (selCell) { $cell.toggleParts(selCell, this._viewEntryParts) }
 
             if (this._markChannel < 0 || this._markRow < 0) {
                 if (selCell) { selCell.classList.add('sel-cell') }
@@ -217,7 +221,7 @@ class PatternTableElement extends HTMLElement {
         this._viewEntryParts = parts
         let selCell = this._tbody.querySelector('.sel-cell')
         if (selCell) {
-            ui.cell.toggleParts(selCell, parts)
+            $cell.toggleParts(selCell, parts)
         }
     }
 

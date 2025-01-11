@@ -1,7 +1,13 @@
-'use strict'
-
-/** @typedef {InstanceType<typeof TrackerMainElement>} */
-const TrackerMainElement = (() => { // IIFE
+import * as $cli from './CLI.js'
+import * as $dialog from './Dialog.js'
+import * as $dom from './DOMUtil.js'
+import {ConfirmDialogElement} from './dialogs/UtilDialogs.js'
+import templates from './Templates.js'
+import './FileToolbar.js'
+import './ModuleProperties.js'
+import './PatternEdit.js'
+import './PlaybackControls.js'
+import './SamplesList.js'
 
 const playbackQueueTime = 0.5
 const playbackDelay = 0.1
@@ -28,7 +34,7 @@ PlaybackState.prototype = {
  * @implements {FileToolbarTarget}
  * @implements {PlaybackControlsTarget}
  */
-class TrackerMainElement extends HTMLElement {
+export class TrackerMainElement extends HTMLElement {
     constructor() {
         super()
 
@@ -65,7 +71,7 @@ class TrackerMainElement extends HTMLElement {
 
         /** @type {HTMLFormElement} */
         let tabForm = fragment.querySelector('#appTabs')
-        dom.disableFormSubmit(tabForm)
+        $dom.disableFormSubmit(tabForm)
         let tabBody = fragment.querySelector('#appTabBody')
         for (let tabButton of tabForm.elements) {
             if (tabButton instanceof HTMLInputElement) {
@@ -87,17 +93,17 @@ class TrackerMainElement extends HTMLElement {
 
         this.addEventListener('contextmenu', () => {
             console.log('Selected:')
-            cli.resetSel()
+            $cli.resetSel()
         }, {capture: true})
         this.addEventListener('contextmenu', e => {
-            cli.addSelProp('module', Module, this._module,
+            $cli.addSelProp('module', Module, this._module,
                 module => this._changeModule(_ => Object.freeze(module)))
             if (!(e.target instanceof HTMLInputElement || e.target instanceof HTMLOutputElement)) {
                 e.preventDefault()
                 if (e.altKey) {
                     this._pause()
-                    let dialog = ui.dialog.open(dom.createElem('cli-dialog'), {dismissable: true})
-                    cli.beginSel(() => ui.dialog.close(dialog))
+                    let dialog = $dialog.open($dom.createElem('cli-dialog'), {dismissable: true})
+                    $cli.beginSel(() => $dialog.close(dialog))
                 }
             }
         })
@@ -411,6 +417,4 @@ class TrackerMainElement extends HTMLElement {
         }
     }
 }
-return TrackerMainElement
-})() // IIFE
 window.customElements.define('tracker-main', TrackerMainElement)

@@ -1,7 +1,3 @@
-'use strict'
-
-const cli = new function() { // namespace
-
 const state = {
     /** @type {any} */
     sel: null,
@@ -10,7 +6,7 @@ const state = {
     onSelEnd: () => {},
 }
 
-this.resetSel = function() {
+export function resetSel() {
     state.sel = {__proto__: null}
     state.selProxy = new Proxy(state.sel, {
         defineProperty() {
@@ -36,7 +32,7 @@ Object.defineProperty(window, 'sel', {
  * @param {T} value
  * @param {(value: T) => void} setter
  */
-this.addSelProp = function(name, type, value, setter) {
+export function addSelProp(name, type, value, setter) {
     Object.defineProperty(state.sel, name, {
         configurable: true,
         enumerable: true,
@@ -50,7 +46,7 @@ this.addSelProp = function(name, type, value, setter) {
                 console.error('Invalid type, must be ' + type)
             } else {
                 setter(/** @type {T} */(value))
-                this.endSel()
+                endSel()
             }
         }
     })
@@ -60,23 +56,21 @@ this.addSelProp = function(name, type, value, setter) {
 /**
  * @param {() => void} onEnd
  */
-this.beginSel = function(onEnd) {
+export function beginSel(onEnd) {
     state.onSelEnd = onEnd
     Object.seal(state.sel)
     console.log('Ready:')
 }
 
-this.endSel = function() {
+export function endSel() {
     console.log('Accepted')
     state.onSelEnd()
-    cli.resetSel()
+    resetSel()
 }
 
-this.cancelSel = function() {
+export function cancelSel() {
     console.log('Cancelled')
-    cli.resetSel()
+    resetSel()
 }
 
-} // namespace cli
-
-cli.resetSel()
+resetSel()

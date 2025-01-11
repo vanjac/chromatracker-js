@@ -1,6 +1,10 @@
-'use strict'
+import * as $dialog from '../Dialog.js'
+import * as $dom from '../DOMUtil.js'
+import {FormDialogElement} from '../Dialog.js'
+import templates from '../Templates.js'
+import global from '../GlobalState.js'
 
-class AmplifyEffectElement extends FormDialogElement {
+export class AmplifyEffectElement extends FormDialogElement {
     constructor() {
         super()
         /** @param {{amount: number, dithering: boolean}} params */
@@ -17,7 +21,7 @@ class AmplifyEffectElement extends FormDialogElement {
         this._ditherInput = fragment.querySelector('#dither')
 
         this._initForm(this._form)
-        dom.restoreFormData(this._form, this._inputNames(), global.effectFormData)
+        $dom.restoreFormData(this._form, this._inputNames(), global.effectFormData)
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -34,8 +38,8 @@ class AmplifyEffectElement extends FormDialogElement {
             amount: this._amountInput.valueAsNumber,
             dithering: this._ditherInput.checked
         })
-        dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
-        ui.dialog.close(this)
+        $dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
+        $dialog.close(this)
     }
 }
 window.customElements.define('amplify-effect', AmplifyEffectElement)

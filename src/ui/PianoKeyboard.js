@@ -1,6 +1,10 @@
-'use strict'
+import * as $cell from './Cell.js'
+import * as $dom from './DOMUtil.js'
+import * as $util from './UtilTemplates.js'
+import {KeyPad} from './KeyPad.js'
+import templates from './Templates.js'
 
-class PianoKeyboardElement extends HTMLElement {
+export class PianoKeyboardElement extends HTMLElement {
     constructor() {
         super()
         /** @type {PianoKeyboardTarget} */
@@ -22,12 +26,12 @@ class PianoKeyboardElement extends HTMLElement {
         this._pianoKeys = []
         this._createPiano()
 
-        dom.disableFormSubmit(this._piano)
+        $dom.disableFormSubmit(this._piano)
         new KeyPad(this._piano, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement
                     && elem.parentElement.parentElement.parentElement == this._piano) {
                 let input = elem.parentElement.querySelector('input')
-                dom.selectRadioButton(this._pitchInput, input.value)
+                $dom.selectRadioButton(this._pitchInput, input.value)
                 this._target._pitchChanged()
                 this._jam._jamPlay(id, this._target._getJamCell(), {useChannel: this._useChannel})
             }
@@ -53,11 +57,11 @@ class PianoKeyboardElement extends HTMLElement {
         let whiteKeys = this._piano.querySelector('#whiteKeys')
         for (let i = 0; i < periodTable[0].length; i++) {
             let note = i % 12
-            let noteStr = ui.cell.noteNamesShort[note]
+            let noteStr = $cell.noteNamesShort[note]
             if (note == 0) {
                 noteStr += Math.floor(i / 12)
             }
-            let label = ui.util.makeRadioButton('pitch', i.toString(), noteStr)
+            let label = $util.makeRadioButton('pitch', i.toString(), noteStr)
             label.classList.add('keypad-key')
             let isBlackKey = [1, 3, 6, 8, 10].includes(note)
             label.classList.add(isBlackKey ? 'black-key' : 'white-key')
@@ -66,27 +70,27 @@ class PianoKeyboardElement extends HTMLElement {
             this._pianoKeys.push(label)
 
             if ([3, 10].includes(note)) {
-                let space = blackKeys.appendChild(dom.createElem('div'))
+                let space = blackKeys.appendChild($dom.createElem('div'))
                 space.classList.add('keypad-key')
             }
         }
         this._pitchInput = this._piano.elements.namedItem('pitch')
-        dom.selectRadioButton(this._pitchInput, '36')
+        $dom.selectRadioButton(this._pitchInput, '36')
     }
 
     _getPitch() {
-        return Number(dom.getRadioButtonValue(this._pitchInput, '36'))
+        return Number($dom.getRadioButtonValue(this._pitchInput, '36'))
     }
 
     /**
      * @param {number} pitch
      */
     _setPitch(pitch) {
-        dom.selectRadioButton(this._pitchInput, pitch.toString())
+        $dom.selectRadioButton(this._pitchInput, pitch.toString())
     }
 
     _scrollToSelPitch() {
-        let selPitch = Number(dom.getRadioButtonValue(this._pitchInput, '0'))
+        let selPitch = Number($dom.getRadioButtonValue(this._pitchInput, '0'))
         selPitch -= (selPitch % 12)
         let parentRect = this._piano.getBoundingClientRect()
         let childRect = this._pianoKeys[selPitch].getBoundingClientRect()

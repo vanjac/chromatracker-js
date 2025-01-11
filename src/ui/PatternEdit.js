@@ -1,9 +1,17 @@
-'use strict'
+import * as $cell from './Cell.js'
+import * as $cli from './CLI.js'
+import {KeyPad} from './KeyPad.js'
+import global from './GlobalState.js'
+import templates from './Templates.js'
+import './CellEntry.js'
+import './InlineSVG.js'
+import './PatternTable.js'
+import './SequenceEdit.js'
 
 /**
  * @implements {CellEntryTarget}
  */
-class PatternEditElement extends HTMLElement {
+export class PatternEditElement extends HTMLElement {
     constructor() {
         super()
         /** @type {ModuleEditTarget & JamTarget} */
@@ -69,7 +77,7 @@ class PatternEditElement extends HTMLElement {
         fragment.querySelector('#delete').addEventListener('click', () => this._delete(1))
 
         this.addEventListener('contextmenu', () => {
-            cli.addSelProp('seqpos', 'number', this._selPos(), pos => this._setSelPos(pos))
+            $cli.addSelProp('seqpos', 'number', this._selPos(), pos => this._setSelPos(pos))
         })
 
         this.style.display = 'contents'
@@ -241,12 +249,12 @@ class PatternEditElement extends HTMLElement {
     }
 
     _updateCell() {
-        ui.cell.setContents(this._entryCell, this._cellEntry._getCell())
+        $cell.setContents(this._entryCell, this._cellEntry._getCell())
     }
 
     _updateEntryParts() {
         let parts = this._cellEntry._getCellParts()
-        ui.cell.toggleParts(this._entryCell, parts)
+        $cell.toggleParts(this._entryCell, parts)
         this._patternTable._setEntryParts(parts)
     }
 

@@ -1,6 +1,6 @@
-'use strict'
+import * as $dom from './DOMUtil.js'
 
-class DialogElement extends HTMLElement {
+export class DialogElement extends HTMLElement {
     disconnectedCallback() {
         if (this._lastFocused instanceof HTMLElement) {
             this._lastFocused.focus()
@@ -8,13 +8,13 @@ class DialogElement extends HTMLElement {
     }
 
     _dismiss() {
-        ui.dialog.close(this)
+        close(this)
     }
 }
 /** @type {Element} */
 DialogElement.prototype._lastFocused = null
 
-class FormDialogElement extends DialogElement {
+export class FormDialogElement extends DialogElement {
     /**
      * @param {HTMLFormElement} form
      */
@@ -26,11 +26,9 @@ class FormDialogElement extends DialogElement {
     }
 
     _submit() {
-        ui.dialog.close(this)
+        close(this)
     }
 }
-
-ui.dialog = new function() { // namespace
 
 const focusableSelector = [
     'input:not([disabled])',
@@ -44,10 +42,10 @@ const focusableSelector = [
  * @template {DialogElement} T
  * @param {T} dialog
  */
-this.open = function(dialog, {dismissable = false} = {}) {
+export function open(dialog, {dismissable = false} = {}) {
     let body = document.querySelector('body')
 
-    let container = dom.createElem('div', {tabIndex: -1})
+    let container = $dom.createElem('div', {tabIndex: -1})
     container.classList.add('dialog-container')
     body.append(container)
 
@@ -105,9 +103,7 @@ this.open = function(dialog, {dismissable = false} = {}) {
 /**
  * @param {DialogElement} dialog
  */
-this.close = function(dialog) {
+export function close(dialog) {
     let container = dialog.parentElement
     container.remove()
 }
-
-} // namespace ui.dialog

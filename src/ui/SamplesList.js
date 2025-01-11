@@ -1,6 +1,9 @@
-'use strict'
+import * as $dom from './DOMUtil.js'
+import {SampleEditElement} from './SampleEdit.js'
+import templates from './Templates.js'
+import './InlineSVG.js'
 
-class SamplesListElement extends HTMLElement {
+export class SamplesListElement extends HTMLElement {
     constructor() {
         super()
         /** @type {ModuleEditTarget & JamTarget} */
@@ -40,7 +43,7 @@ class SamplesListElement extends HTMLElement {
      */
     _createSampleEdit(idx) {
         this._destroySampleEdit()
-        this._sampleEdit = dom.createElem('sample-edit', {_target: this._target})
+        this._sampleEdit = $dom.createElem('sample-edit', {_target: this._target})
         this._sampleEditContainer.appendChild(this._sampleEdit)
         this._sampleEdit._onChange = (sample, combineTag) => (
             this._target._changeModule(
@@ -73,7 +76,7 @@ class SamplesListElement extends HTMLElement {
                 continue
             }
             let textContent = `${i}: ${sample.name}`
-            this._select.appendChild(dom.createElem('option', {value: i.toString(), textContent}))
+            this._select.appendChild($dom.createElem('option', {value: i.toString(), textContent}))
         }
         this._setSelSample(selSample ? selSample : 1)
     }

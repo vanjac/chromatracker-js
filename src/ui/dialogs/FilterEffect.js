@@ -1,7 +1,8 @@
-'use strict'
-
-/** @typedef {InstanceType<typeof FilterEffectElement>} */
-const FilterEffectElement = (() => { // IIFE
+import * as $dialog from '../Dialog.js'
+import * as $dom from '../DOMUtil.js'
+import {FormDialogElement} from '../Dialog.js'
+import templates from '../Templates.js'
+import global from '../GlobalState.js'
 
 const minGraphFreq = 20
 const maxGraphFreq = 20000
@@ -26,7 +27,7 @@ const graphFreq = new Float32Array(numGraphFreq)
  * @property {boolean} dither
  */
 
-class FilterEffectElement extends FormDialogElement {
+export class FilterEffectElement extends FormDialogElement {
     constructor() {
         super()
         /** @param {FilterEffectParams} params */
@@ -55,7 +56,7 @@ class FilterEffectElement extends FormDialogElement {
         this._graph = fragment.querySelector('#graph')
 
         this._initForm(this._form)
-        dom.restoreFormData(this._form, this._inputNames(), global.effectFormData)
+        $dom.restoreFormData(this._form, this._inputNames(), global.effectFormData)
 
         this._context = createOfflineAudioContext()
         this._filter = this._context.createBiquadFilter()
@@ -143,10 +144,8 @@ class FilterEffectElement extends FormDialogElement {
             gain: this._gainInput.valueAsNumber,
             dither: this._ditherInput.checked
         })
-        dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
-        ui.dialog.close(this)
+        $dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
+        $dialog.close(this)
     }
 }
-return FilterEffectElement
-})() // IIFE
 window.customElements.define('filter-effect', FilterEffectElement)

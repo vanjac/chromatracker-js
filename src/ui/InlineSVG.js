@@ -1,6 +1,6 @@
-'use strict'
+import templates from './Templates.js'
 
-class InlineSVGElement extends HTMLElement {
+export class InlineSVGElement extends HTMLElement {
     connectedCallback() {
         let name = this.getAttribute('src')
         let fragment = templates[name].cloneNode(true)

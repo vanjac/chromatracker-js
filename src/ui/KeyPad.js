@@ -1,6 +1,4 @@
-'use strict'
-
-class KeyPad {
+export class KeyPad {
     /**
      * @param {Element} container
      * @param {(id: number, elem: Element) => void} onPress
