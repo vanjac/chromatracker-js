@@ -1,12 +1,23 @@
-'use strict'
-
 // https://milkytracker.org/docs/MilkyTracker.html#effects
 // https://github.com/johnnovak/nim-mod/blob/master/doc/Protracker%20effects%20(FireLight)%20(.mod).txt
 // https://wiki.openmpt.org/Development:_Test_Cases/MOD
 // https://github.com/libxmp/libxmp/blob/master/docs/tracker_notes.txt
 // https://padenot.github.io/web-audio-perf/
 
-function Playback() {
+import {clamp} from './Util.js'
+import periodTable from './PeriodTable.js'
+
+const masterGain = 0.5
+const rampTimeConstant = 0.003
+
+/** Rate of C-3 */
+export const baseRate = 16574.27
+const basePeriod = periodTable[8][3*12] // TODO: combine with above, move to MOD constants
+const resampleFactor = 3
+
+const minPeriod = 15
+
+export function Playback() {
     /** @type {SamplePlayback[]} */
     this.samples = []
     /** @type {ChannelPlayback[]} */
@@ -42,7 +53,7 @@ SamplePlayback.prototype = {
     buffer: null, // null = empty wave
 }
 
-function ChannelPlayback() {
+export function ChannelPlayback() {
     this.vibrato = new OscillatorPlayback()
     this.tremolo = new OscillatorPlayback()
 }
@@ -80,7 +91,7 @@ ChannelPlayback.prototype = {
  * @constructor
  * @param {ChannelPlayback} channel
  */
-function ChannelState(channel) {
+export function ChannelState(channel) {
     this.sourceSample = channel.sourceSample
     this.sample = channel.sample
     this.volume = channel.volume
@@ -98,30 +109,14 @@ OscillatorPlayback.prototype = {
     tick: 0,
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-const play = new function() { // namespace
-
-const masterGain = 0.5
-const rampTimeConstant = 0.003
-
-/**
- * Rate of C-3
- * @readonly
- */
-this.baseRate = 16574.27
-const basePeriod = periodTable[8][3*12] // TODO: combine with above, move to MOD constants
-const resampleFactor = 3
-
-const minPeriod = 15
-
 /**
  * @param {BaseAudioContext} context
  * @param {Readonly<Module>} module
  */
-this.init = function(context, module) {
+export function init(context, module) {
     let playback = new Playback()
     playback.ctx = context
-    play.setModule(playback, module)
+    setModule(playback, module)
     playback.time = context.currentTime
     return playback
 }
@@ -130,7 +125,7 @@ this.init = function(context, module) {
  * @param {Playback} playback
  * @param {Readonly<Module>} module
  */
-this.setModule = function(playback, module) {
+export function setModule(playback, module) {
     playback.mod = module
 
     if (playback.channels.length != module.numChannels) {
@@ -200,7 +195,7 @@ function disconnectChannel(channel) {
 /**
  * @param {Playback} playback
  */
-this.stop = function(playback) {
+export function stop(playback) {
     for (let source of playback.activeSources) {
         try {
             source.stop()
@@ -221,7 +216,7 @@ this.stop = function(playback) {
  * @param {number} c
  * @param {boolean} mute
  */
-this.setChannelMute = function(playback, c, mute) {
+export function setChannelMute(playback, c, mute) {
     let channel = playback.channels[c]
     if (mute && !channel.userMute) {
         channel.gain.disconnect()
@@ -241,7 +236,7 @@ function createSamplePlayback(ctx, sample) {
     if (sample.wave.length) {
         // TODO: support protracker one-shot loops
         sp.buffer = ctx.createBuffer(1, sample.wave.length * resampleFactor,
-            play.baseRate * resampleFactor)
+            baseRate * resampleFactor)
         let data = sp.buffer.getChannelData(0)
         for (let i = 0; i < sample.wave.length; i++) {
             let s = sample.wave[i] / 128.0
@@ -256,7 +251,7 @@ function createSamplePlayback(ctx, sample) {
 /**
  * @param {Playback} playback
  */
-this.processTick = function(playback) {
+export function processTick(playback) {
     // in case module changed since last call
     if (playback.pos >= playback.mod.sequence.length) {
         playback.pos = playback.mod.sequence.length - 1
@@ -566,7 +561,7 @@ function processCellAll(playback, channel, cell) {
             channel.source.detune.setValueAtTime(detune * 100, playback.time)
         }
         if (period != channel.scheduledPeriod || detune != channel.scheduledDetune) {
-            channel.samplePredictPos = play.getSamplePredictedPos(channel, playback.time)
+            channel.samplePredictPos = getSamplePredictedPos(channel, playback.time)
             channel.samplePredictTime = playback.time
         }
         channel.scheduledPeriod = period
@@ -657,7 +652,7 @@ function periodToRate(period) {
  * @param {number} param
  */
 function calcSampleOffset(param) {
-    return param / play.baseRate
+    return param / baseRate
 }
 
 /**
@@ -726,8 +721,8 @@ function createNoteSource(playback, inst) {
     let source = playback.ctx.createBufferSource()
     source.buffer = playback.samples[inst].buffer
     source.loop = sample.hasLoop()
-    source.loopStart = sample.loopStart / play.baseRate
-    source.loopEnd = sample.loopEnd / play.baseRate
+    source.loopStart = sample.loopStart / baseRate
+    source.loopEnd = sample.loopEnd / baseRate
     return [source, sample]
 }
 
@@ -735,14 +730,14 @@ function createNoteSource(playback, inst) {
  * @param {ChannelState} channel
  * @param {number} time
  */
-this.getSamplePredictedPos = function(channel, time) {
+export function getSamplePredictedPos(channel, time) {
     if (!channel.sample || !channel.sourceSample) { return 0 }
 
     let timeDiff = time - channel.samplePredictTime
     if (timeDiff < 0) { return channel.samplePredictPos }
     let rate = periodToRate(channel.scheduledPeriod)
     // TODO: use detune (arpeggios)
-    let pos = Math.floor(channel.samplePredictPos + rate * play.baseRate * timeDiff)
+    let pos = Math.floor(channel.samplePredictPos + rate * baseRate * timeDiff)
     let {loopStart, loopEnd} = channel.sourceSample
     if (channel.sourceSample.hasLoop() && pos >= loopEnd) {
         pos = (pos - loopStart) % (loopEnd - loopStart) + loopStart
@@ -756,8 +751,8 @@ this.getSamplePredictedPos = function(channel, time) {
  * @param {number} c
  * @param {Readonly<Cell>} cell
  */
-this.jamPlay = function(playback, id, c, cell) {
-    play.jamRelease(playback, id)
+export function jamPlay(playback, id, c, cell) {
+    jamRelease(playback, id)
     if (cell.pitch < 0) {
         return
     }
@@ -796,12 +791,10 @@ this.jamPlay = function(playback, id, c, cell) {
  * @param {Playback} playback
  * @param {number} id
  */
-this.jamRelease = function(playback, id) {
+export function jamRelease(playback, id) {
     let jam = playback.jamChannels.get(id)
     if (jam) {
         disconnectChannel(jam)
         playback.jamChannels.delete(id)
     }
 }
-
-} // namespace play

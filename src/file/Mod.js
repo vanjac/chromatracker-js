@@ -2,6 +2,7 @@
 // http://lclevy.free.fr/mo3/mod.txt
 
 import * as $file from './FileUtil.js'
+import periodTable from '../PeriodTable.js'
 
 export const headerSize = 1084
 const trackerInfoSize = 32 // nonstandard!

@@ -1,6 +1,7 @@
 import * as $cli from './CLI.js'
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
+import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import {ConfirmDialogElement} from './dialogs/UtilDialogs.js'
 import {freezeAssign} from '../edit/EditUtil.js'
@@ -25,7 +26,7 @@ PlaybackState.prototype = {
     tick: 0,
     tempo: 0,
     speed: 0,
-    /** @type {readonly Readonly<ChannelState>[]} */
+    /** @type {readonly Readonly<$play.ChannelState>[]} */
     channels: emptyArray,
 }
 
@@ -48,7 +49,7 @@ export class TrackerMainElement extends HTMLElement {
         this._unsavedChangeCount = 0
         /** @type {AudioContext} */
         this._context = null
-        /** @type {Playback} */
+        /** @type {$play.Playback} */
         this._playback = null
 
         this._animHandle = 0
@@ -177,12 +178,12 @@ export class TrackerMainElement extends HTMLElement {
         } else if (this._context.state != 'running') {
             this._context.resume()
         }
-        this._playback = play.init(this._context, this._module)
+        this._playback = $play.init(this._context, this._module)
         this._playback.time += playbackDelay // avoid "catching up"
 
         for (let c = 0; c < this._module.numChannels; c++) {
             if (this._patternEdit._isChannelMuted(c)) {
-                play.setChannelMute(this._playback, c, true)
+                $play.setChannelMute(this._playback, c, true)
             }
         }
         if (restoreSpeed) {
@@ -223,7 +224,7 @@ export class TrackerMainElement extends HTMLElement {
 
     _pause() {
         if (this._isPlaying()) {
-            play.stop(this._playback)
+            $play.stop(this._playback)
             window.clearInterval(this._intervalHandle)
             this._queuedStates = []
             this._queuedTime = 0
@@ -243,12 +244,12 @@ export class TrackerMainElement extends HTMLElement {
     _processPlayback() {
         while (this._queuedTime < this._context.currentTime + playbackQueueTime) {
             let {pos, row, tick, time} = this._playback
-            play.processTick(this._playback)
+            $play.processTick(this._playback)
             // TODO: pitch slides will be inaccurate
             if (tick == 0) {
                 let {tempo, speed} = this._playback
                 let channels = Object.freeze(this._playback.channels.map(
-                    channel => Object.freeze(new ChannelState(channel))))
+                    channel => Object.freeze(new $play.ChannelState(channel))))
                 let state = freezeAssign(new PlaybackState(),
                     {time, pos, row, tempo, speed, channels})
                 this._queuedStates.push(state)
@@ -269,7 +270,7 @@ export class TrackerMainElement extends HTMLElement {
      */
     _setMute(c, mute) {
         if (this._playback) {
-            play.setChannelMute(this._playback, c, mute)
+            $play.setChannelMute(this._playback, c, mute)
         }
     }
 
@@ -281,14 +282,14 @@ export class TrackerMainElement extends HTMLElement {
         this._enablePlayback()
         this._enableAnimation()
         let channel = useChannel ? this._patternEdit._selChannel() : -1
-        play.jamPlay(this._playback, id, channel, cell)
+        $play.jamPlay(this._playback, id, channel, cell)
     }
 
     /**
      * @param {number} id
      */
     _jamRelease(id) {
-        play.jamRelease(this._playback, id)
+        $play.jamRelease(this._playback, id)
         if (!this._isPlaying() && this._playback.jamChannels.size == 0) {
             this._disableAnimation()
         }
@@ -367,7 +368,7 @@ export class TrackerMainElement extends HTMLElement {
     _setModule(module) {
         this._module = module
         if (this._playback) {
-            play.setModule(this._playback, module)
+            $play.setModule(this._playback, module)
         }
     }
 

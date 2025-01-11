@@ -1,3 +1,5 @@
+import {clamp} from '../Util.js'
+
 const ditherScale = 0.5
 const errorScale = 0.8
 

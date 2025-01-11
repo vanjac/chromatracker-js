@@ -2,12 +2,14 @@ import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
+import * as $play from '../Playback.js'
 import * as $sample from '../edit/Sample.js'
 import * as $wave from '../edit/Wave.js'
 import * as $audio from '../file/Audio.js'
 import * as $ext from '../file/External.js'
 import * as $wav from '../file/Wav.js'
 import {AlertDialogElement, InputDialogElement} from './dialogs/UtilDialogs.js'
+import {clamp, minMax} from '../Util.js'
 import {freezeAssign} from '../edit/EditUtil.js'
 import global from './GlobalState.js'
 import templates from './Templates.js'
@@ -648,7 +650,7 @@ export class SampleEditElement extends HTMLElement {
             $sample.applyNode(this._viewSample, start, end, params.dither,
                 ctx => {
                     let node = ctx.createBiquadFilter()
-                    let factor = ctx.sampleRate / play.baseRate // TODO!
+                    let factor = ctx.sampleRate / $play.baseRate // TODO!
                     node.frequency.setValueAtTime(params.freqStart * factor, 0)
                     if (params.freqEnd != null) {
                         node.frequency.exponentialRampToValueAtTime(

@@ -3,6 +3,7 @@ import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
 import {KeyPad} from './KeyPad.js'
 import templates from './Templates.js'
+import periodTable from '../PeriodTable.js'
 
 export class PianoKeyboardElement extends HTMLElement {
     constructor() {

@@ -1,4 +1,5 @@
 import * as $wave from '../edit/Wave.js'
+import {createOfflineAudioContext} from '../Util.js'
 import {freezeAssign} from '../edit/EditUtil.js'
 
 /**

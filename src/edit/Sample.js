@@ -1,5 +1,6 @@
 import * as $wave from '../edit/Wave.js'
 import {freezeAssign, immSplice} from './EditUtil.js'
+import {clamp, createOfflineAudioContext} from '../Util.js'
 
 /**
  * @param {Readonly<Module>} module

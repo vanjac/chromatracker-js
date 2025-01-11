@@ -1,4 +1,5 @@
 import * as $dom from './DOMUtil.js'
+import * as $play from '../Playback.js'
 import * as $sample from '../edit/Sample.js'
 import {SampleEditElement} from './SampleEdit.js'
 import templates from './Templates.js'
@@ -83,8 +84,8 @@ export class SamplesListElement extends HTMLElement {
     }
 
     /**
-     * @param {Playback} playback
-     * @param {readonly Readonly<ChannelState>[]} channels
+     * @param {$play.Playback} playback
+     * @param {readonly Readonly<$play.ChannelState>[]} channels
      * @param {number} time
      */
     _setChannelStates(playback, channels, time) {
@@ -92,12 +93,12 @@ export class SamplesListElement extends HTMLElement {
         let positions = []
         for (let channel of channels) {
             if (channel.volume && channel.sample == this._getSelSample()) {
-                positions.push(play.getSamplePredictedPos(channel, time))
+                positions.push($play.getSamplePredictedPos(channel, time))
             }
         }
         for (let [_, channel] of playback.jamChannels) {
             if (channel.sample == this._getSelSample()) {
-                positions.push(play.getSamplePredictedPos(channel, time))
+                positions.push($play.getSamplePredictedPos(channel, time))
             }
         }
         this._sampleEdit._setPlayPos(positions)

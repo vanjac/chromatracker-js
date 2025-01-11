@@ -3,6 +3,7 @@ import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
 import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
+import {minMax} from '../Util.js'
 import templates from './Templates.js'
 
 export class PatternTableElement extends HTMLElement {

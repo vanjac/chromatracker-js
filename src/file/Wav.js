@@ -1,6 +1,7 @@
 // https://sites.google.com/site/musicgapi/technical-documents/wav-file-format
 
 import * as $file from './FileUtil.js'
+import * as $play from '../Playback.js'
 import * as $wave from '../edit/Wave.js'
 
 const formatPCM = 1
@@ -190,7 +191,7 @@ function chunkDataView(buf, chunk) {
  */
 function writeFmtChunk(view, sample) {
     // TODO: this doesn't match OpenMPT
-    let freq = (play.baseRate / 2) * (2 ** (sample.finetune / (12 * 8)))
+    let freq = ($play.baseRate / 2) * (2 ** (sample.finetune / (12 * 8)))
 
     view.setUint16(0, formatPCM, true)
     view.setUint16(2, 1, true) // num channels
