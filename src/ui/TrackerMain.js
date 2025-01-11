@@ -99,7 +99,7 @@ export class TrackerMainElement extends HTMLElement {
             $cli.resetSel()
         }, {capture: true})
         this.addEventListener('contextmenu', e => {
-            $cli.addSelProp('module', Module, this._module,
+            $cli.addSelProp('module', 'object', this._module,
                 module => this._changeModule(_ => Object.freeze(module)))
             if (!(e.target instanceof HTMLInputElement || e.target instanceof HTMLOutputElement)) {
                 e.preventDefault()

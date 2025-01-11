@@ -140,16 +140,13 @@ const ExtEffect = Object.freeze({
  * @typedef {Readonly<PatternChannel>[]} Pattern
  */
 
-function Module() {}
-Module.prototype = {
-    name: '',
-    /** @type {number} */
-    numChannels: mod.defaultChannels,
-    /** @type {readonly number[]} */
-    sequence: emptyArray,
-    restartPos: 0,
-    /** @type {readonly Readonly<Pattern>[]} */
-    patterns: emptyArray,
-    /** @type {readonly Readonly<Sample>[]} */
-    samples: emptyArray,
-}
+/**
+ * @typedef {{
+ *      name: string
+ *      numChannels: number
+ *      sequence: readonly number[]
+ *      restartPos: number
+ *      patterns: readonly Readonly<Pattern>[]
+ *      samples: readonly Readonly<Sample>[]
+ * }} Module
+ */

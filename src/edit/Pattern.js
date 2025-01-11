@@ -1,4 +1,4 @@
-import {changeItem, freezeAssign} from './EditUtil.js'
+import {changeItem} from './EditUtil.js'
 
 /** @type {Readonly<PatternChannel>} */
 const defaultNewChannel = Object.freeze(Array(mod.numRows).fill(Cell.empty))
@@ -32,19 +32,21 @@ export function createMissing(module, idx) {
  * @param {Readonly<Module>} module
  * @param {number} p
  * @param {(pattern: Readonly<Pattern>) => Readonly<Pattern>} callback
+ * @returns {Readonly<Module>}
  */
 export function change(module, p, callback) {
     let patterns = changeItem(module.patterns, p, callback)
-    return freezeAssign(new Module(), module, {patterns})
+    return Object.freeze({...module, patterns})
 }
 
 /**
  * @param {Readonly<Module>} module
  * @param {number} pat
+ * @returns {Readonly<Module>}
  */
 export function clone(module, pat) {
     let patterns = Object.freeze([...module.patterns, module.patterns[pat]])
-    return freezeAssign(new Module(), module, {patterns})
+    return Object.freeze({...module, patterns})
 }
 
 /**

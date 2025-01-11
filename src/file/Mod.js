@@ -15,43 +15,46 @@ for (let p = 0; p < periodTable[8].length; p++) {
 
 /**
  * @param {ArrayBuffer} buf
+ * @returns {Module}
  */
 export function read(buf) {
     let view = new DataView(buf)
     let textDecode = new TextDecoder() // TODO: determine encoding from file
     let asciiDecode = new TextDecoder('ascii')
 
-    let module = new Module()
-    module.name = textDecode.decode($file.readStringZ(buf, 0, 20))
+    let name = textDecode.decode($file.readStringZ(buf, 0, 20))
 
     let songLen = Math.min(view.getUint8(950), mod.numSongPositions)
-    module.restartPos = view.getUint8(951)
-    if (module.restartPos >= songLen) {
-        module.restartPos = 0
+    let restartPos = view.getUint8(951)
+    if (restartPos >= songLen) {
+        restartPos = 0
     }
     let seq = Array.from(new Uint8Array(buf, 952, mod.numSongPositions))
     let numPatterns = Math.max(...seq) + 1
-    module.sequence = Object.freeze(seq.slice(0, songLen))
+    let sequence = Object.freeze(seq.slice(0, songLen))
 
+    /** @type {number} */
+    let numChannels = mod.defaultChannels
     let initials = asciiDecode.decode(new DataView(buf, 1080, 4))
     // TODO: support old 15-sample formats?
     let chanStr = initials.replace(/\D/g, '') // remove non-digits
     if (chanStr) {
-        module.numChannels = parseInt(chanStr)
+        numChannels = parseInt(chanStr)
     }
 
-    let patternSize = module.numChannels * mod.numRows * 4
+    let patternSize = numChannels * mod.numRows * 4
+    /** @type {Readonly<Pattern>[]} */
     let patterns = []
     for (let p = 0; p < numPatterns; p++) {
         let patOff = headerSize + patternSize * p
         /** @type {Pattern} */
         let pat = []
 
-        for (let c = 0; c < module.numChannels; c++) {
+        for (let c = 0; c < numChannels; c++) {
             /** @type {PatternChannel} */
             let chan = []
             for (let row = 0; row < mod.numRows; row++) {
-                let cellOff = patOff + (c * 4) + (row * module.numChannels * 4)
+                let cellOff = patOff + (c * 4) + (row * numChannels * 4)
 
                 let w1 = view.getUint16(cellOff)
                 let b3 = view.getUint8(cellOff + 2)
@@ -69,7 +72,6 @@ export function read(buf) {
         }
         patterns.push(Object.freeze(pat))
     }
-    module.patterns = Object.freeze(patterns)
 
     /** @type {Readonly<Sample>[]} */
     let samples = []
@@ -103,9 +105,15 @@ export function read(buf) {
 
         samples.push(Object.freeze({name, wave, loopStart, loopEnd, finetune, volume}))
     }
-    module.samples = Object.freeze(samples)
 
-    return module
+    return {
+        name,
+        numChannels,
+        sequence,
+        restartPos,
+        patterns: Object.freeze(patterns),
+        samples: Object.freeze(samples),
+    }
 }
 
 /**
