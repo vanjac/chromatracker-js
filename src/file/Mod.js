@@ -132,7 +132,7 @@ export function write(module) {
         view.setUint16(offset + 22, (sample.wave.length / 2) | 0)
         view.setUint8(offset + 24, sample.finetune & 0xf)
         view.setUint8(offset + 25, sample.volume)
-        if (!sample.hasLoop()) {
+        if (!Sample.hasLoop(sample)) {
             view.setUint16(offset + 26, 0)
             view.setUint16(offset + 28, 1)
         } else {
@@ -179,7 +179,7 @@ export function write(module) {
                 let period = periodTable[8][cell.pitch]
                 view.setUint16(cellOff, period | (cell.inst >> 4 << 12))
                 view.setUint8(cellOff + 2, ((cell.inst & 0xf) << 4) | cell.effect)
-                view.setUint8(cellOff + 3, cell.paramByte())
+                view.setUint8(cellOff + 3, Cell.paramByte(cell))
             }
         }
     }

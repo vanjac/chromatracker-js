@@ -2,7 +2,7 @@ import * as $pattern from './Pattern.js'
 import {freezeAssign, immSplice} from './EditUtil.js'
 
 export const defaultNew = freezeAssign(new Module(), {
-    patterns: Object.freeze([$pattern.create(Module.prototype.numChannels)]),
+    patterns: Object.freeze([$pattern.create(mod.defaultChannels)]),
     sequence: Object.freeze([0]),
     samples: Object.freeze([null]),
 })

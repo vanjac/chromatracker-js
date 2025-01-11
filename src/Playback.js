@@ -327,8 +327,8 @@ function processCellInst(playback, channel, cell) {
     }
     // store sample offset before playing note
     if (cell.effect == Effect.SampleOffset) {
-        if (cell.paramByte()) {
-            channel.memOff = cell.paramByte()
+        if (Cell.paramByte(cell)) {
+            channel.memOff = Cell.paramByte(cell)
         }
         channel.sampleOffset = channel.memOff * 256
     }
@@ -357,8 +357,8 @@ function processCellNote(playback, channel, cell) {
 function processCellFirst(playback, channel, cell) {
     switch (cell.effect) {
         case Effect.Portamento:
-            if (cell.paramByte()) {
-                channel.memPort = cell.paramByte()
+            if (Cell.paramByte(cell)) {
+                channel.memPort = Cell.paramByte(cell)
             }
             // fall through!
         case Effect.VolSlidePort: {
@@ -385,10 +385,10 @@ function processCellFirst(playback, channel, cell) {
             }
             break
         case Effect.Panning:
-            channel.panning = cell.paramByte()
+            channel.panning = Cell.paramByte(cell)
             break
         case Effect.Volume:
-            channel.volume = Math.min(cell.paramByte(), mod.maxVolume)
+            channel.volume = Math.min(Cell.paramByte(cell), mod.maxVolume)
             break
         case Effect.Extended:
             switch (cell.param0) {
@@ -436,7 +436,7 @@ function processCellFirst(playback, channel, cell) {
             }
             break
         case Effect.Speed: {
-            let speed = cell.paramByte()
+            let speed = Cell.paramByte(cell)
             if (speed < 0x20) {
                 playback.speed = speed
             } else {
@@ -456,10 +456,10 @@ function processCellFirst(playback, channel, cell) {
 function processCellRest(playback, channel, cell) {
     switch (cell.effect) {
         case Effect.SlideUp:
-            channel.period = Math.max(channel.period - cell.paramByte(), minPeriod)
+            channel.period = Math.max(channel.period - Cell.paramByte(cell), minPeriod)
             break
         case Effect.SlideDown:
-            channel.period += cell.paramByte()
+            channel.period += Cell.paramByte(cell)
             break
         case Effect.Portamento:
         case Effect.VolSlidePort:
@@ -546,7 +546,7 @@ function processCellAll(playback, channel, cell) {
     if (channel.source) {
         let period = channel.period
         let detune = 0
-        if (cell.effect == Effect.Arpeggio && cell.paramByte()) {
+        if (cell.effect == Effect.Arpeggio && Cell.paramByte(cell)) {
             detune = (playback.tick % 3 == 1) ? cell.param0 :
                 (playback.tick % 3 == 2) ? cell.param1 : 0
         }
@@ -580,13 +580,13 @@ function processCellAll(playback, channel, cell) {
 function processCellEnd(playback, channel, cell, pos, row) {
     switch (cell.effect) {
         case Effect.PositionJump:
-            playback.pos = cell.paramByte()
+            playback.pos = Cell.paramByte(cell)
             // https://wiki.openmpt.org/Development:_Test_Cases/MOD#PatternJump.mod
             playback.row = 0
             break
         case Effect.PatternBreak:
             // note: OpenMPT displays this value in hex, but writes to the file in BCD
-            playback.row = cell.paramDecimal()
+            playback.row = Cell.paramDecimal(cell)
             if (playback.pos == -1) {
                 playback.pos = pos + 1
             }
@@ -720,7 +720,7 @@ function createNoteSource(playback, inst) {
     if (!sample) { return [null, null] }
     let source = playback.ctx.createBufferSource()
     source.buffer = playback.samples[inst].buffer
-    source.loop = sample.hasLoop()
+    source.loop = Sample.hasLoop(sample)
     source.loopStart = sample.loopStart / baseRate
     source.loopEnd = sample.loopEnd / baseRate
     return [source, sample]
@@ -739,7 +739,7 @@ export function getSamplePredictedPos(channel, time) {
     // TODO: use detune (arpeggios)
     let pos = Math.floor(channel.samplePredictPos + rate * baseRate * timeDiff)
     let {loopStart, loopEnd} = channel.sourceSample
-    if (channel.sourceSample.hasLoop() && pos >= loopEnd) {
+    if (Sample.hasLoop(channel.sourceSample) && pos >= loopEnd) {
         pos = (pos - loopStart) % (loopEnd - loopStart) + loopStart
     }
     return pos

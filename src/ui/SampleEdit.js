@@ -230,7 +230,7 @@ export class SampleEditElement extends HTMLElement {
         this._loopStartInput.max = this._loopEndInput.max = sample.wave.length.toString()
         this._loopStartInput.valueAsNumber = sample.loopStart
         this._loopEndInput.valueAsNumber = sample.loopEnd
-        let showLoop = sample.wave.length && sample.hasLoop()
+        let showLoop = sample.wave.length && Sample.hasLoop(sample)
         this._loopStartMark.classList.toggle('hide', !showLoop)
         this._loopEndMark.classList.toggle('hide', !showLoop)
         if (showLoop) {
@@ -534,7 +534,7 @@ export class SampleEditElement extends HTMLElement {
 
     /** @private */
     _selectLoop() {
-        if (this._viewSample.hasLoop()) {
+        if (Sample.hasLoop(this._viewSample)) {
             this._setSel(this._viewSample.loopStart, this._viewSample.loopEnd)
         }
     }
@@ -583,7 +583,7 @@ export class SampleEditElement extends HTMLElement {
 
     /** @private */
     _loopRepeat() {
-        if (!this._viewSample.hasLoop()) {
+        if (!Sample.hasLoop(this._viewSample)) {
             return
         }
         InputDialogElement.open('Count:', 'Repeat Loop', global.lastLoopRepeat).then(count => {
@@ -602,7 +602,7 @@ export class SampleEditElement extends HTMLElement {
 
     /** @private */
     _loopPingPong() {
-        if (!this._viewSample.hasLoop()) {
+        if (!Sample.hasLoop(this._viewSample)) {
             return
         }
         let {loopStart, loopEnd} = this._viewSample

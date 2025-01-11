@@ -9,6 +9,7 @@ const mod = Object.freeze({
     maxSampleLength: 2 ** 17,
     defaultTempo: 125,
     defaultSpeed: 6,
+    defaultChannels: 4,
 })
 
 const emptyArray = Object.freeze([])
@@ -23,10 +24,15 @@ Sample.prototype = {
     finetune: 0, // -8 to 7
     /** @type {number} */
     volume: mod.maxVolume,
-
-    hasLoop() { return this.loopEnd > this.loopStart },
 }
 Sample.empty = Object.freeze(new Sample())
+
+/**
+ * @param {Readonly<Sample>} s
+ */
+Sample.hasLoop = function(s) {
+    return s.loopEnd > s.loopStart
+}
 
 function Cell() {}
 Cell.prototype = {
@@ -36,13 +42,24 @@ Cell.prototype = {
     effect: 0,
     param0: 0,
     param1: 0,
-
-    /** Interpret the parameter hex digits as a single byte */
-    paramByte() { return (this.param0 << 4) | this.param1 },
-    /** Interpret the parameter hex digits as binary-coded decimal */
-    paramDecimal() { return this.param0 * 10 + this.param1 },
 }
 Cell.empty = Object.freeze(new Cell())
+
+/**
+ * Interpret the parameter hex digits as a single byte
+ * @param {Readonly<Cell>} c
+ */
+Cell.paramByte = function(c) {
+    return (c.param0 << 4) | c.param1
+}
+
+/**
+ * Interpret the parameter hex digits as binary-coded decimal
+ * @param {Readonly<Cell>} c
+ */
+Cell.paramDecimal = function(c) {
+    return c.param0 * 10 + c.param1
+}
 
 /** @enum {number} */
 const CellPart = Object.freeze({
@@ -106,7 +123,8 @@ const ExtEffect = Object.freeze({
 function Module() {}
 Module.prototype = {
     name: '',
-    numChannels: 4,
+    /** @type {number} */
+    numChannels: mod.defaultChannels,
     /** @type {readonly number[]} */
     sequence: emptyArray,
     restartPos: 0,

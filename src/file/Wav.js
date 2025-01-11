@@ -222,7 +222,7 @@ function writeDataChunk(view, sample) {
  * @param {Readonly<Sample>} sample
  */
 function calcSmplChunkSize(sample) {
-    return sample.hasLoop() ? (smplChunkBaseSize + smplChunkLoopSize) : smplChunkBaseSize
+    return Sample.hasLoop(sample) ? (smplChunkBaseSize + smplChunkLoopSize) : smplChunkBaseSize
 }
 
 /**
@@ -232,7 +232,7 @@ function calcSmplChunkSize(sample) {
 function writeSmplChunk(view, sample) {
     view.setUint32(8, 118483, true) // sample period
     view.setUint32(12, 60, true) // MIDI unity note
-    if (sample.hasLoop()) {
+    if (Sample.hasLoop(sample)) {
         view.setUint32(28, 1, true) // num loops
         view.setUint32(smplChunkBaseSize + 8, sample.loopStart, true)
         view.setUint32(smplChunkBaseSize + 12, sample.loopEnd, true)
