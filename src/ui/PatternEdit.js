@@ -1,8 +1,8 @@
 import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
+import * as $keyPad from './KeyPad.js'
 import * as $pattern from '../edit/Pattern.js'
 import {Cell, CellPart, mod, Module, Pattern} from '../Model.js'
-import {KeyPad} from './KeyPad.js'
 import global from './GlobalState.js'
 import templates from './Templates.js'
 import './CellEntry.js'
@@ -51,23 +51,23 @@ export class PatternEditElement extends HTMLElement {
             }
         })
 
-        KeyPad.makeKeyButton(this._entryCell,
+        $keyPad.makeKeyButton(this._entryCell,
             id => this._target._jamPlay(id, this._cellEntry._getJamCell()),
             id => this._target._jamRelease(id))
 
-        KeyPad.makeKeyButton(fragment.querySelector('#write'), id => {
+        $keyPad.makeKeyButton(fragment.querySelector('#write'), id => {
             this._putCell(this._cellEntry._getCell(), this._cellEntry._getCellParts())
             this._target._jamPlay(id, this._selCell())
             this._advance()
         }, id => this._target._jamRelease(id))
 
-        KeyPad.makeKeyButton(fragment.querySelector('#clear'), id => {
+        $keyPad.makeKeyButton(fragment.querySelector('#clear'), id => {
             this._putCell(Cell.empty, this._cellEntry._getCellParts())
             this._target._jamPlay(id, this._selCell())
             this._advance()
         }, id => this._target._jamRelease(id))
 
-        KeyPad.makeKeyButton(fragment.querySelector('#lift'), id => {
+        $keyPad.makeKeyButton(fragment.querySelector('#lift'), id => {
             this._cellEntry._liftCell(this._selCell())
             this._target._jamPlay(id, this._cellEntry._getJamCell())
         }, id => this._target._jamRelease(id))

@@ -1,7 +1,7 @@
 import * as $cell from './Cell.js'
 import * as $dom from './DOMUtil.js'
+import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
-import {KeyPad} from './KeyPad.js'
 import templates from './Templates.js'
 import periodTable from '../PeriodTable.js'
 
@@ -28,7 +28,7 @@ export class PianoKeyboardElement extends HTMLElement {
         this._createPiano()
 
         $dom.disableFormSubmit(this._piano)
-        new KeyPad(this._piano, (id, elem) => {
+        $keyPad.create(this._piano, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement
                     && elem.parentElement.parentElement.parentElement == this._piano) {
                 let input = elem.parentElement.querySelector('input')
@@ -67,7 +67,7 @@ export class PianoKeyboardElement extends HTMLElement {
             let isBlackKey = [1, 3, 6, 8, 10].includes(note)
             label.classList.add(isBlackKey ? 'black-key' : 'white-key')
             ;(isBlackKey ? blackKeys : whiteKeys).appendChild(label)
-            KeyPad.addKeyEvents(label)
+            $keyPad.addKeyEvents(label)
             this._pianoKeys.push(label)
 
             if ([3, 10].includes(note)) {

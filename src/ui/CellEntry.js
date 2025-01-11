@@ -1,7 +1,7 @@
 import * as $dom from './DOMUtil.js'
+import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
 import {Cell, CellPart, Sample} from '../Model.js'
-import {KeyPad} from './KeyPad.js'
 import templates from './Templates.js'
 import './InlineSVG.js'
 import './PianoKeyboard.js'
@@ -53,7 +53,7 @@ export class CellEntryElement extends HTMLElement {
         this._param1Select.addEventListener('input', () => this._target._updateCell())
 
         $dom.disableFormSubmit(this._sampleList)
-        new KeyPad(this._sampleList, (id, elem) => {
+        $keyPad.create(this._sampleList, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement == this._sampleList) {
                 let input = elem.parentElement.querySelector('input')
                 this._setSelSample(Number(input.value))
@@ -71,7 +71,7 @@ export class CellEntryElement extends HTMLElement {
                 this._sampleList.scrollBy({left: e.detail * width * .75, behavior: 'smooth'})
             })
 
-        KeyPad.makeKeyButton(fragment.querySelector('#writeEffect'), id => {
+        $keyPad.makeKeyButton(fragment.querySelector('#writeEffect'), id => {
             this._target._putCell(this._getCell(), CellPart.effect | CellPart.param)
             this._jam._jamPlay(id, this._target._selCell())
         }, id => this._jam._jamRelease(id))
@@ -152,7 +152,7 @@ export class CellEntryElement extends HTMLElement {
             let label = $util.makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key')
             this._sampleList.appendChild(label)
-            KeyPad.addKeyEvents(label)
+            $keyPad.addKeyEvents(label)
         }
         this._sampleInput = this._sampleList.elements.namedItem('sample')
         this._setSelSample(selSample)

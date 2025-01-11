@@ -1,9 +1,9 @@
 import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
+import * as $keyPad from './KeyPad.js'
 import * as $pattern from '../edit/Pattern.js'
 import {CellPart, Pattern} from '../Model.js'
-import {KeyPad} from './KeyPad.js'
 import {minMax} from '../Util.js'
 import templates from './Templates.js'
 
@@ -118,7 +118,7 @@ export class PatternTableElement extends HTMLElement {
                     $cell.setContents(cellFrag, cell)
 
                     let td = cellFrag.querySelector('td')
-                    KeyPad.makeKeyButton(td, id => {
+                    $keyPad.makeKeyButton(td, id => {
                         this._setSelCell(c, row)
                         this._target._jamPlay(id, this._viewPattern[c][row])
                     }, id => this._target._jamRelease(id), {blockScroll: false})
