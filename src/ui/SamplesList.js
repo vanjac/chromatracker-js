@@ -2,6 +2,7 @@ import * as $dom from './DOMUtil.js'
 import * as $play from '../Playback.js'
 import * as $sample from '../edit/Sample.js'
 import {SampleEditElement} from './SampleEdit.js'
+import {Sample} from '../Model.js'
 import templates from './Templates.js'
 import './InlineSVG.js'
 

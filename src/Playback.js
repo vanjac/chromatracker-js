@@ -5,6 +5,7 @@
 // https://padenot.github.io/web-audio-perf/
 
 import {clamp} from './Util.js'
+import {Cell, Effect, emptyArray, ExtEffect, mod, Module, Sample} from './Model.js'
 import periodTable from './PeriodTable.js'
 
 const masterGain = 0.5

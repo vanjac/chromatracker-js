@@ -1,6 +1,4 @@
-'use strict'
-
-const mod = Object.freeze({
+export const mod = Object.freeze({
     numSamples: 32, // 0th sample is empty!
     numSongPositions: 128,
     numRows: 64,
@@ -12,7 +10,7 @@ const mod = Object.freeze({
     defaultChannels: 4,
 })
 
-const emptyArray = Object.freeze([])
+export const emptyArray = Object.freeze([])
 
 /**
  * @typedef {{
@@ -25,7 +23,7 @@ const emptyArray = Object.freeze([])
  * }} Sample
  */
 
-const Sample = Object.freeze({
+export const Sample = Object.freeze({
     /** @type {Readonly<Sample>} */
     empty: Object.freeze({
         name: '',
@@ -54,7 +52,7 @@ const Sample = Object.freeze({
  * }} Cell
  */
 
-const Cell = Object.freeze({
+export const Cell = Object.freeze({
     /** @type {Readonly<Cell>} */
     empty: Object.freeze({
         pitch: -1,
@@ -82,7 +80,7 @@ const Cell = Object.freeze({
 })
 
 /** @enum {number} */
-const CellPart = Object.freeze({
+export const CellPart = Object.freeze({
     pitch: 0x1,
     inst: 0x2,
     effect: 0x4,
@@ -93,7 +91,7 @@ const CellPart = Object.freeze({
 })
 
 /** @enum {number} */
-const Effect = Object.freeze({
+export const Effect = Object.freeze({
     Arpeggio:       0x0,
     SlideUp:        0x1,
     SlideDown:      0x2,
@@ -113,7 +111,7 @@ const Effect = Object.freeze({
 })
 
 /** @enum {number} */
-const ExtEffect = Object.freeze({
+export const ExtEffect = Object.freeze({
     // Filter:      0x0, (not supported in XM)
     FineSlideUp:    0x1,
     FineSlideDown:  0x2,
@@ -136,9 +134,13 @@ const ExtEffect = Object.freeze({
  * @typedef {Readonly<Cell>[]} PatternChannel
  */
 
+export const PatternChannel = Object.freeze({})
+
 /**
  * @typedef {Readonly<PatternChannel>[]} Pattern
  */
+
+export const Pattern = Object.freeze({})
 
 /**
  * @typedef {{
@@ -150,3 +152,5 @@ const ExtEffect = Object.freeze({
  *      samples: readonly Readonly<Sample>[]
  * }} Module
  */
+
+export const Module = Object.freeze({})

@@ -1,4 +1,5 @@
 import {changeItem} from './EditUtil.js'
+import {Cell, CellPart, mod, Module, Pattern, PatternChannel} from '../Model.js'
 
 /** @type {Readonly<PatternChannel>} */
 const defaultNewChannel = Object.freeze(Array(mod.numRows).fill(Cell.empty))

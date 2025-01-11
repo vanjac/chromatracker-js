@@ -1,5 +1,6 @@
 // Interfaces between elements
 
+import {Cell, CellPart, Module} from '../Model.js'
 import {CellEntryElement} from './CellEntry.js'
 import {FileToolbarElement} from './FileToolbar.js'
 import {ModulePropertiesElement} from './ModuleProperties.js'

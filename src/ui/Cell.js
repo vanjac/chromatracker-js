@@ -1,5 +1,7 @@
 // TODO: make this a custom element?
 
+import {Cell, CellPart} from '../Model.js'
+
 export const noteNames = ['C-', 'C#', 'D-', 'D#', 'E-', 'F-', 'F#', 'G-', 'G#', 'A-', 'A#', 'B-']
 export const noteNamesShort = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 

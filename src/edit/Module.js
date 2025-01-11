@@ -1,5 +1,6 @@
 import * as $pattern from './Pattern.js'
 import {immSplice} from './EditUtil.js'
+import {Cell, mod, Module} from '../Model.js'
 
 /** @type {Readonly<Module>} */
 export const defaultNew = Object.freeze({

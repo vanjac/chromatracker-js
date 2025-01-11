@@ -1,5 +1,6 @@
 import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
+import {Cell, CellPart, Sample} from '../Model.js'
 import {KeyPad} from './KeyPad.js'
 import templates from './Templates.js'
 import './InlineSVG.js'

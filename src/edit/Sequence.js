@@ -1,5 +1,6 @@
 import * as $pattern from './Pattern.js'
 import {immSplice} from './EditUtil.js'
+import {Module} from '../Model.js'
 
 /**
  * @param {Readonly<Module>} module

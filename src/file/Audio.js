@@ -1,4 +1,5 @@
 import * as $wave from '../edit/Wave.js'
+import {mod, Sample} from '../Model.js'
 import {createOfflineAudioContext} from '../Util.js'
 
 /**

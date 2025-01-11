@@ -3,6 +3,7 @@
 
 import * as $file from './FileUtil.js'
 import periodTable from '../PeriodTable.js'
+import {Cell, mod, Module, Pattern, PatternChannel, Sample} from '../Model.js'
 
 export const headerSize = 1084
 const trackerInfoSize = 32 // nonstandard!

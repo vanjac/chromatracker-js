@@ -1,3 +1,5 @@
+import {emptyArray, Pattern} from '../Model.js'
+
 export default {
     /** @type {Readonly<Int8Array>} */
     audioClipboard: new Int8Array(),

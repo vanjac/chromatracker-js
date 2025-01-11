@@ -1,6 +1,7 @@
 import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
+import {Module} from '../Model.js'
 import templates from './Templates.js'
 import './InlineSVG.js'
 

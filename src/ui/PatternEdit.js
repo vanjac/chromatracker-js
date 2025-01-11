@@ -1,6 +1,7 @@
 import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $pattern from '../edit/Pattern.js'
+import {Cell, CellPart, mod, Module, Pattern} from '../Model.js'
 import {KeyPad} from './KeyPad.js'
 import global from './GlobalState.js'
 import templates from './Templates.js'

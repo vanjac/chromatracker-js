@@ -1,6 +1,7 @@
 // https://sites.google.com/site/musicgapi/technical-documents/wav-file-format
 
 import * as $file from './FileUtil.js'
+import {mod, Sample} from '../Model.js'
 import * as $play from '../Playback.js'
 import * as $wave from '../edit/Wave.js'
 

@@ -3,6 +3,7 @@ import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
+import {Pattern} from '../Model.js'
 import templates from './Templates.js'
 import './InlineSVG.js'
 
