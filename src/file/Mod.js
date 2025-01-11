@@ -72,37 +72,37 @@ export function read(buf) {
     }
     module.patterns = Object.freeze(patterns)
 
+    /** @type {Readonly<Sample>[]} */
     let samples = []
     samples.push(null) // sample 0 is empty
     let wavePos = headerSize + patternSize * numPatterns
     for (let s = 1; s < mod.numSamples; s++) {
         let offset = s * 30 - 10
-        let sample = new Sample()
 
         let sampleLength = view.getUint16(offset + 22) * 2
         if (sampleLength <= 2) {
             samples.push(null)
             continue
         }
-        sample.name = textDecode.decode($file.readStringZ(buf, offset, mod.maxSampleNameLength))
-        sample.finetune = view.getUint8(offset + 24) & 0xf
-        if (sample.finetune >= 8) {
-            sample.finetune -= 16 // sign-extend nibble
+        let name = textDecode.decode($file.readStringZ(buf, offset, mod.maxSampleNameLength))
+        let finetune = view.getUint8(offset + 24) & 0xf
+        if (finetune >= 8) {
+            finetune -= 16 // sign-extend nibble
         }
-        sample.volume = Math.min(view.getUint8(offset + 25), mod.maxVolume)
-        sample.loopStart = view.getUint16(offset + 26) * 2
+        let volume = Math.min(view.getUint8(offset + 25), mod.maxVolume)
+        let loopStart = view.getUint16(offset + 26) * 2
         let repLen = view.getUint16(offset + 28)
         if (repLen == 1) {
             repLen = 0 // no loop
         }
-        sample.loopEnd = sample.loopStart + repLen * 2
+        let loopEnd = loopStart + repLen * 2
 
         // The first two bytes will "always" (usually) be zeros but they should still be included
         // TODO: is that correct?
-        sample.wave = new Int8Array(buf, wavePos, sampleLength).slice()
+        let wave = new Int8Array(buf, wavePos, sampleLength).slice()
         wavePos += sampleLength
 
-        samples.push(Object.freeze(sample))
+        samples.push(Object.freeze({name, wave, loopStart, loopEnd, finetune, volume}))
     }
     module.samples = Object.freeze(samples)
 

@@ -32,6 +32,7 @@ export function identify(buf) {
 
 /**
  * @param {ArrayBuffer} buf
+ * @returns {Sample}
  */
 export function read(buf) {
     let view = new DataView(buf)
@@ -61,12 +62,13 @@ export function read(buf) {
     let frameSize = view.getUint16(fmtChunk.pos + 12, true)
     let sampleSize = Math.ceil(view.getUint16(fmtChunk.pos + 14, true) / 8)
 
-    let sample = new Sample()
+    /** @type {number} */
+    let volume = mod.maxVolume
 
     let xtraChunk = chunks['xtra']
     if (xtraChunk && xtraChunk.size >= xtraChunkSize) {
         // https://wiki.openmpt.org/Development:_OpenMPT_Format_Extensions#RIFF_WAVE
-       sample.volume = (view.getUint16(xtraChunk.pos + 6, true) / 4) | 0
+       volume = (view.getUint16(xtraChunk.pos + 6, true) / 4) | 0
     }
 
     let dataChunk = chunks['data']
@@ -102,7 +104,7 @@ export function read(buf) {
         }
         maxAmp = Math.min(maxAmp / 127, 1)
         if (maxAmp == 0) { maxAmp = 1 }
-        sample.volume = Math.round(sample.volume * maxAmp)
+        volume = Math.round(volume * maxAmp)
 
         let error = 0
         for (let i = 0; i < numFrames; i++) {
@@ -110,23 +112,25 @@ export function read(buf) {
         }
     }
 
-    sample.wave = wave
+    let finetune = 0
+    let loopStart = 0
+    let loopEnd = 0
 
     let smplChunk = chunks['smpl']
     if (smplChunk && smplChunk.size >= smplChunkBaseSize) {
         let pitchFraction = view.getUint32(smplChunk.pos + 16)
-        sample.finetune = -Math.round(pitchFraction / 0x20000000) // TODO: not used by OpenMPT!
+        finetune = -Math.round(pitchFraction / 0x20000000) // TODO: not used by OpenMPT!
         let numLoops = view.getUint32(smplChunk.pos + 28, true)
         if (numLoops >= 1 && smplChunk.size >= smplChunkBaseSize + smplChunkLoopSize) {
             let loopPos = smplChunk.pos + smplChunkBaseSize
-            sample.loopStart = view.getUint32(loopPos + 8, true)
-            sample.loopEnd = view.getUint32(loopPos + 12, true)
+            loopStart = view.getUint32(loopPos + 8, true)
+            loopEnd = view.getUint32(loopPos + 12, true)
         }
     } else {
         // TODO: calculate finetune from sample rate
     }
 
-    return sample
+    return {name: '', wave, loopStart, loopEnd, finetune, volume}
 }
 
 /**

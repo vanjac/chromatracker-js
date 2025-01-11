@@ -33,7 +33,7 @@ export function trim(sample, start, end) {
     let transform = pos => clamp(pos - start, 0, wave.length)
     let loopStart = transform(sample.loopStart)
     let loopEnd = transform(sample.loopEnd)
-    return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
+    return Object.freeze({...sample, wave, loopStart, loopEnd})
 }
 
 /**
@@ -53,7 +53,7 @@ export function del(sample, start, end) {
     }
     let loopStart = transform(sample.loopStart)
     let loopEnd = transform(sample.loopEnd)
-    return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
+    return Object.freeze({...sample, wave, loopStart, loopEnd})
 }
 
 /**
@@ -75,7 +75,7 @@ export function splice(sample, start, end, insert) {
 export function applyEffect(sample, start, end, effect) {
     let wave = sample.wave.slice()
     effect(sample.wave.subarray(start, end), wave.subarray(start, end))
-    return freezeAssign(new Sample(), sample, {wave})
+    return Object.freeze({...sample, wave})
 }
 
 /**
@@ -98,7 +98,7 @@ export function spliceEffect(sample, start, end, length, effect) {
     }
     let loopStart = transform(sample.loopStart)
     let loopEnd = transform(sample.loopEnd)
-    return freezeAssign(new Sample(), sample, {wave, loopStart, loopEnd})
+    return Object.freeze({...sample, wave, loopStart, loopEnd})
 }
 
 /**
@@ -136,7 +136,7 @@ export function applyNode(sample, start, end, dithering, createNode) {
             for (let i = 0; i < renderData.length; i++) {
                 ;[wave[start + i], error] = ditherFn(renderData[i] * 128.0, error)
             }
-            resolve(freezeAssign(new Sample(), sample, {wave}))
+            resolve(Object.freeze({...sample, wave}))
         }
         context.startRendering()
     })

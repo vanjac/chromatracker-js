@@ -14,25 +14,36 @@ const mod = Object.freeze({
 
 const emptyArray = Object.freeze([])
 
-function Sample() {}
-Sample.prototype = {
-    name: '',
-    /** @type {Readonly<Int8Array>} */
-    wave: new Int8Array(),
-    loopStart: 0,
-    loopEnd: 0,
-    finetune: 0, // -8 to 7
-    /** @type {number} */
-    volume: mod.maxVolume,
-}
-Sample.empty = Object.freeze(new Sample())
-
 /**
- * @param {Readonly<Sample>} s
+ * @typedef {{
+ *      name: string
+ *      wave: Readonly<Int8Array>
+ *      loopStart: number
+ *      loopEnd: number
+ *      finetune: number
+ *      volume: number
+ * }} Sample
  */
-Sample.hasLoop = function(s) {
-    return s.loopEnd > s.loopStart
-}
+
+const Sample = Object.freeze({
+    empty: Object.freeze({
+        name: '',
+        /** @type {Readonly<Int8Array>} */
+        wave: new Int8Array(),
+        loopStart: 0,
+        loopEnd: 0,
+        finetune: 0, // -8 to 7
+        /** @type {number} */
+        volume: mod.maxVolume,
+    }),
+
+    /**
+     * @param {Readonly<Sample>} s
+     */
+    hasLoop(s) {
+        return s.loopEnd > s.loopStart
+    },
+})
 
 function Cell() {}
 Cell.prototype = {

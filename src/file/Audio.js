@@ -1,6 +1,5 @@
 import * as $wave from '../edit/Wave.js'
 import {createOfflineAudioContext} from '../Util.js'
-import {freezeAssign} from '../edit/EditUtil.js'
 
 /**
  * @param {ArrayBuffer} buf
@@ -23,7 +22,8 @@ export function read(buf, sampleRate) {
             for (let i = 0; i < data.length; i++) {
                 ;[wave[i], error] = $wave.dither(data[i] * 127.0 / maxAmp, error)
             }
-            resolve(freezeAssign(new Sample(), {wave, volume: Math.round(mod.maxVolume * maxAmp)}))
+            resolve(Object.freeze(
+                {...Sample.empty, wave, volume: Math.round(mod.maxVolume * maxAmp)}))
         }, reject)
     })
 }

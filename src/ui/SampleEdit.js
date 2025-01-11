@@ -190,7 +190,7 @@ export class SampleEditElement extends HTMLElement {
         this._piano = fragment.querySelector('piano-keyboard')
 
         this.addEventListener('contextmenu', () => {
-            $cli.addSelProp('sample', Sample, this._viewSample,
+            $cli.addSelProp('sample', 'object', this._viewSample,
                 sample => this._onChange(Object.freeze(sample), ''))
         })
 
@@ -367,7 +367,7 @@ export class SampleEditElement extends HTMLElement {
      * @param {string} combineTag
      */
     _changeSample(mutator, combineTag, dirty = false) {
-        let newSample = Object.assign(new Sample(), this._viewSample)
+        let newSample = {...this._viewSample}
         mutator(newSample)
         let immSample = Object.freeze(newSample)
         if (!dirty) {
@@ -594,7 +594,7 @@ export class SampleEditElement extends HTMLElement {
             for (let i = 1; i < count; i++) {
                 newSample = $sample.splice(newSample, loopStart, loopStart, loopWave)
             }
-            newSample = freezeAssign(new Sample(), newSample, {loopStart})
+            newSample = Object.freeze({...newSample, loopStart})
             this._onChange(newSample, '')
             global.lastLoopRepeat = count
         })
