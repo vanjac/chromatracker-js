@@ -1,6 +1,12 @@
 import * as $dom from './DOMUtil.js'
 
 export class DialogElement extends HTMLElement {
+    constructor() {
+        super()
+        /** @type {Element} */
+        this._lastFocused = null
+    }
+
     disconnectedCallback() {
         if (this._lastFocused instanceof HTMLElement) {
             this._lastFocused.focus()
@@ -11,8 +17,6 @@ export class DialogElement extends HTMLElement {
         close(this)
     }
 }
-/** @type {Element} */
-DialogElement.prototype._lastFocused = null
 
 export class FormDialogElement extends DialogElement {
     /**
