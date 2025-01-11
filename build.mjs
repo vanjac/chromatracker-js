@@ -4,7 +4,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-function main() {
+/**
+ * @param {string} outFile
+ * @param {string} mainScript
+ */
+function buildHTML(outFile, mainScript) {
     let templates = ''
 
     let templateFiles = fs.readdirSync('templates', {recursive: true})
@@ -28,8 +32,10 @@ function main() {
     let html = fs.readFileSync('_main.html', {encoding: 'utf8'})
     html = html.replace('{{templates}}', templates)
     html = html.replace('{{version}}', process.argv[2] || 'develop')
+    html = html.replace('{{main}}', mainScript)
 
-    fs.writeFileSync('index.html', html)
+    fs.writeFileSync(outFile, html)
 }
 
-main()
+buildHTML('index.html', 'src/Main.js')
+buildHTML('webl.html', '/webl_client.js') // https://github.com/jamesdiacono/Replete
