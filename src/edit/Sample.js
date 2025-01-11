@@ -26,6 +26,7 @@ export function update(module, idx, sample) {
  * @param {Readonly<Sample>} sample
  * @param {number} start
  * @param {number} end
+ * @returns {Readonly<Sample>}
  */
 export function trim(sample, start, end) {
     let wave = sample.wave.subarray(start, end)
@@ -40,6 +41,7 @@ export function trim(sample, start, end) {
  * @param {Readonly<Sample>} sample
  * @param {number} start
  * @param {number} end
+ * @returns {Readonly<Sample>}
  */
 export function del(sample, start, end) {
     let wave = new Int8Array(sample.wave.length - (end - start))
@@ -71,6 +73,7 @@ export function splice(sample, start, end, insert) {
  * @param {number} start
  * @param {number} end
  * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
+ * @returns {Readonly<Sample>}
  */
 export function applyEffect(sample, start, end, effect) {
     let wave = sample.wave.slice()
@@ -84,6 +87,7 @@ export function applyEffect(sample, start, end, effect) {
  * @param {number} end
  * @param {number} length
  * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
+ * @returns {Readonly<Sample>}
  */
 export function spliceEffect(sample, start, end, length, effect) {
     let wave = new Int8Array(sample.wave.length - (end - start) + length)

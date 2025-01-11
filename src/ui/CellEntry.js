@@ -93,14 +93,16 @@ export class CellEntryElement extends HTMLElement {
         this._piano._scrollToSelPitch()
     }
 
+    /**
+     * @returns {Cell}
+     */
     _getCell() {
-        let cell = new Cell()
-        cell.pitch = this._piano._getPitch()
-        cell.inst = Number($dom.getRadioButtonValue(this._sampleInput, '0'))
-        cell.effect = this._effectSelect.selectedIndex
-        cell.param0 = this._param0Select.selectedIndex
-        cell.param1 = this._param1Select.selectedIndex
-        return cell
+        let pitch = this._piano._getPitch()
+        let inst = Number($dom.getRadioButtonValue(this._sampleInput, '0'))
+        let effect = this._effectSelect.selectedIndex
+        let param0 = this._param0Select.selectedIndex
+        let param1 = this._param1Select.selectedIndex
+        return {pitch, inst, effect, param0, param1}
     }
 
     _getJamCell() {

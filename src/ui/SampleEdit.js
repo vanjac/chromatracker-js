@@ -433,19 +433,22 @@ export class SampleEditElement extends HTMLElement {
 
     _pitchChanged() {}
 
+    /**
+     * @returns {Cell}
+     */
     _getJamCell() {
-        let cell = new Cell()
-        cell.pitch = this._piano._getPitch()
-        cell.inst = this._index
+        let pitch = this._piano._getPitch()
+        let inst = this._index
+        let effect = 0, param0 = 0, param1 = 0
         if (this._anySelected()) {
             let offset = Math.min(255, Math.floor(this._selMin() / 256))
             if (offset > 0) {
-                cell.effect = Effect.SampleOffset
-                cell.param0 = offset >> 4
-                cell.param1 = offset & 0xf
+                effect = Effect.SampleOffset
+                param0 = offset >> 4
+                param1 = offset & 0xf
             }
         }
-        return cell
+        return {pitch, inst, effect, param0, param1}
     }
 
     /** @private */

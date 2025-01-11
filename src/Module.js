@@ -20,20 +20,19 @@ const emptyArray = Object.freeze([])
  *      wave: Readonly<Int8Array>
  *      loopStart: number
  *      loopEnd: number
- *      finetune: number
+ *      finetune: number // -8 to 7
  *      volume: number
  * }} Sample
  */
 
 const Sample = Object.freeze({
+    /** @type {Readonly<Sample>} */
     empty: Object.freeze({
         name: '',
-        /** @type {Readonly<Int8Array>} */
         wave: new Int8Array(),
         loopStart: 0,
         loopEnd: 0,
-        finetune: 0, // -8 to 7
-        /** @type {number} */
+        finetune: 0,
         volume: mod.maxVolume,
     }),
 
@@ -45,32 +44,42 @@ const Sample = Object.freeze({
     },
 })
 
-function Cell() {}
-Cell.prototype = {
-    pitch: -1, // -1 = no note
-    inst: 0, // 0 = no instrument
-    /** @type {Effect} */
-    effect: 0,
-    param0: 0,
-    param1: 0,
-}
-Cell.empty = Object.freeze(new Cell())
-
 /**
- * Interpret the parameter hex digits as a single byte
- * @param {Readonly<Cell>} c
+ * @typedef {{
+ *      pitch: number // -1 = no note
+ *      inst: number // 0 = no instrument
+ *      effect: Effect
+ *      param0: number
+ *      param1: number
+ * }} Cell
  */
-Cell.paramByte = function(c) {
-    return (c.param0 << 4) | c.param1
-}
 
-/**
- * Interpret the parameter hex digits as binary-coded decimal
- * @param {Readonly<Cell>} c
- */
-Cell.paramDecimal = function(c) {
-    return c.param0 * 10 + c.param1
-}
+const Cell = Object.freeze({
+    /** @type {Readonly<Cell>} */
+    empty: Object.freeze({
+        pitch: -1,
+        inst: 0,
+        effect: 0,
+        param0: 0,
+        param1: 0,
+    }),
+
+    /**
+     * Interpret the parameter hex digits as a single byte
+     * @param {Readonly<Cell>} c
+     */
+    paramByte(c) {
+        return (c.param0 << 4) | c.param1
+    },
+
+    /**
+     * Interpret the parameter hex digits as binary-coded decimal
+     * @param {Readonly<Cell>} c
+     */
+    paramDecimal(c) {
+        return c.param0 * 10 + c.param1
+    },
+})
 
 /** @enum {number} */
 const CellPart = Object.freeze({

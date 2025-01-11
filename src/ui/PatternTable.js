@@ -122,7 +122,7 @@ export class PatternTableElement extends HTMLElement {
                         this._target._jamPlay(id, this._viewPattern[c][row])
                     }, id => this._target._jamRelease(id), {blockScroll: false})
                     td.addEventListener('contextmenu', () => {
-                        $cli.addSelProp('cell', Cell, this._viewPattern[c][row], cell => {
+                        $cli.addSelProp('cell', 'object', this._viewPattern[c][row], cell => {
                             this._onChange($pattern.putCell(
                                 this._viewPattern, c, row, cell, CellPart.all))
                         })

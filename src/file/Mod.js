@@ -52,19 +52,18 @@ export function read(buf) {
             let chan = []
             for (let row = 0; row < mod.numRows; row++) {
                 let cellOff = patOff + (c * 4) + (row * module.numChannels * 4)
-                let cell = new Cell()
 
                 let w1 = view.getUint16(cellOff)
                 let b3 = view.getUint8(cellOff + 2)
                 let period = w1 & 0xfff
-                cell.pitch = periodToPitch.get(period) || -1
-                cell.inst = (b3 >> 4) | (w1 >> 12 << 4)
-                cell.effect = b3 & 0xf
+                let pitch = periodToPitch.get(period) || -1
+                let inst = (b3 >> 4) | (w1 >> 12 << 4)
+                let effect = b3 & 0xf
                 let param = view.getUint8(cellOff + 3)
-                cell.param0 = param >> 4
-                cell.param1 = param & 0xf
+                let param0 = param >> 4
+                let param1 = param & 0xf
 
-                chan.push(Object.freeze(cell))
+                chan.push(Object.freeze({pitch, inst, effect, param0, param1}))
             }
             pat.push(Object.freeze(chan))
         }
