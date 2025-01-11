@@ -1,6 +1,4 @@
-'use strict'
-
-edit.pattern = new function() { // namespace
+import {changeItem, freezeAssign} from './EditUtil.js'
 
 /** @type {Readonly<PatternChannel>} */
 const defaultNewChannel = Object.freeze(Array(mod.numRows).fill(Cell.empty))
@@ -9,7 +7,7 @@ const defaultNewChannel = Object.freeze(Array(mod.numRows).fill(Cell.empty))
  * @param {number} numChannels
  * @returns {Readonly<Pattern>}
  */
-this.create = function(numChannels) {
+export function create(numChannels) {
     return Object.freeze(Array(numChannels).fill(defaultNewChannel))
 }
 
@@ -18,14 +16,14 @@ this.create = function(numChannels) {
  * @param {number} idx
  * @returns {readonly Readonly<Pattern>[]}
  */
-this.createMissing = function(module, idx) {
+export function createMissing(module, idx) {
     if (idx < module.patterns.length) {
         return module.patterns
     }
     let newPatterns = [...module.patterns]
     while (idx >= newPatterns.length) {
         console.debug('Make new pattern')
-        newPatterns.push(this.create(module.numChannels))
+        newPatterns.push(create(module.numChannels))
     }
     return Object.freeze(newPatterns)
 }
@@ -35,7 +33,7 @@ this.createMissing = function(module, idx) {
  * @param {number} p
  * @param {(pattern: Readonly<Pattern>) => Readonly<Pattern>} callback
  */
-this.change = function(module, p, callback) {
+export function change(module, p, callback) {
     let patterns = changeItem(module.patterns, p, callback)
     return freezeAssign(new Module(), module, {patterns})
 }
@@ -44,7 +42,7 @@ this.change = function(module, p, callback) {
  * @param {Readonly<Module>} module
  * @param {number} pat
  */
-this.clone = function(module, pat) {
+export function clone(module, pat) {
     let patterns = Object.freeze([...module.patterns, module.patterns[pat]])
     return freezeAssign(new Module(), module, {patterns})
 }
@@ -71,7 +69,7 @@ function cellApply(dest, src, parts) {
  * @param {number} rStart
  * @param {number} rEnd
  */
-this.slice = function(pattern, cStart, cEnd, rStart, rEnd) {
+export function slice(pattern, cStart, cEnd, rStart, rEnd) {
     return Object.freeze(pattern.slice(cStart, cEnd).map(
         channel => Object.freeze(channel.slice(rStart, rEnd))))
 }
@@ -83,7 +81,7 @@ this.slice = function(pattern, cStart, cEnd, rStart, rEnd) {
  * @param {Readonly<Cell>} cell
  * @param {CellPart} parts
  */
-this.putCell = function(pattern, c, r, cell, parts) {
+export function putCell(pattern, c, r, cell, parts) {
     return changeItem(pattern, c, channel =>
         changeItem(channel, r, dest =>
             Object.freeze(cellApply(dest, cell, parts))))
@@ -96,7 +94,7 @@ this.putCell = function(pattern, c, r, cell, parts) {
  * @param {Readonly<Pattern>} src
  * @param {CellPart} parts
  */
-this.write = function(dest, cStart, rStart, src, parts) {
+export function write(dest, cStart, rStart, src, parts) {
     let mutPat = [...dest]
     let cSize = Math.min(src.length, dest.length - cStart)
     for (let c = 0; c < cSize; c++) {
@@ -120,7 +118,7 @@ this.write = function(dest, cStart, rStart, src, parts) {
  * @param {Readonly<Cell>} cell
  * @param {CellPart} parts
  */
-this.fill = function(pattern, cStart, cEnd, rStart, rEnd, cell, parts) {
+export function fill(pattern, cStart, cEnd, rStart, rEnd, cell, parts) {
     let mutPat = [...pattern]
     for (let c = cStart; c < cEnd; c++) {
         let mutChan = [...mutPat[c]]
@@ -138,7 +136,7 @@ this.fill = function(pattern, cStart, cEnd, rStart, rEnd, cell, parts) {
  * @param {number} r
  * @param {number} count
  */
-this.channelInsert = function(pattern, c, r, count) {
+export function channelInsert(pattern, c, r, count) {
     return changeItem(pattern, c, channel => {
         let newChannel = [...channel]
         newChannel.copyWithin(r + count, r, channel.length - count + 1)
@@ -153,7 +151,7 @@ this.channelInsert = function(pattern, c, r, count) {
  * @param {number} r
  * @param {number} count
  */
-this.channelDelete = function(pattern, c, r, count) {
+export function channelDelete(pattern, c, r, count) {
     return changeItem(pattern, c, channel => {
         let newChannel = [...channel]
         newChannel.copyWithin(r, r + count, channel.length)
@@ -161,5 +159,3 @@ this.channelDelete = function(pattern, c, r, count) {
         return Object.freeze(newChannel)
     })
 }
-
-} // namespace edit.pattern

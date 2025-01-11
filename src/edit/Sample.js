@@ -1,12 +1,11 @@
-'use strict'
-
-edit.sample = new function() { // namespace
+import * as $wave from '../edit/Wave.js'
+import {freezeAssign, immSplice} from './EditUtil.js'
 
 /**
  * @param {Readonly<Module>} module
  * @returns {[Readonly<Module>, number]}
  */
-this.create = function(module) {
+export function create(module) {
     let emptyIndex = module.samples.findIndex((sample, i) => i != 0 && !sample)
     if (emptyIndex == -1) { emptyIndex = module.samples.length }
     let samples = immSplice(module.samples, emptyIndex, 1, Sample.empty)
@@ -18,7 +17,7 @@ this.create = function(module) {
  * @param {number} idx
  * @param {Readonly<Sample>} sample
  */
-this.update = function(module, idx, sample) {
+export function update(module, idx, sample) {
     return freezeAssign(new Module(), module, {samples: immSplice(module.samples, idx, 1, sample)})
 }
 
@@ -27,7 +26,7 @@ this.update = function(module, idx, sample) {
  * @param {number} start
  * @param {number} end
  */
-this.trim = function(sample, start, end) {
+export function trim(sample, start, end) {
     let wave = sample.wave.subarray(start, end)
     /** @param {number} pos */
     let transform = pos => clamp(pos - start, 0, wave.length)
@@ -41,7 +40,7 @@ this.trim = function(sample, start, end) {
  * @param {number} start
  * @param {number} end
  */
-this.delete = function(sample, start, end) {
+export function del(sample, start, end) {
     let wave = new Int8Array(sample.wave.length - (end - start))
     wave.set(sample.wave.subarray(0, start))
     wave.set(sample.wave.subarray(end), start)
@@ -62,8 +61,8 @@ this.delete = function(sample, start, end) {
  * @param {number} end
  * @param {Readonly<Int8Array>} insert
  */
-this.splice = function(sample, start, end, insert) {
-    return this.spliceEffect(sample, start, end, insert.length, (_, dst) => dst.set(insert))
+export function splice(sample, start, end, insert) {
+    return spliceEffect(sample, start, end, insert.length, (_, dst) => dst.set(insert))
 }
 
 /**
@@ -72,7 +71,7 @@ this.splice = function(sample, start, end, insert) {
  * @param {number} end
  * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
  */
-this.applyEffect = function(sample, start, end, effect) {
+export function applyEffect(sample, start, end, effect) {
     let wave = sample.wave.slice()
     effect(sample.wave.subarray(start, end), wave.subarray(start, end))
     return freezeAssign(new Sample(), sample, {wave})
@@ -85,7 +84,7 @@ this.applyEffect = function(sample, start, end, effect) {
  * @param {number} length
  * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
  */
-this.spliceEffect = function(sample, start, end, length, effect) {
+export function spliceEffect(sample, start, end, length, effect) {
     let wave = new Int8Array(sample.wave.length - (end - start) + length)
     wave.set(sample.wave.subarray(0, start))
     wave.set(sample.wave.subarray(end), start + length)
@@ -109,7 +108,7 @@ this.spliceEffect = function(sample, start, end, length, effect) {
  * @param {boolean} dithering
  * @returns {Promise<Readonly<Sample>>}
  */
-this.applyNode = function(sample, start, end, dithering, createNode) {
+export function applyNode(sample, start, end, dithering, createNode) {
     return new Promise(resolve => {
         let length = end - start
         let context = createOfflineAudioContext(1, length)
@@ -131,7 +130,7 @@ this.applyNode = function(sample, start, end, dithering, createNode) {
         context.oncomplete = e => {
             let wave = sample.wave.slice()
             let renderData = e.renderedBuffer.getChannelData(0)
-            let ditherFn = dithering ? edit.wave.dither : edit.wave.dontDither
+            let ditherFn = dithering ? $wave.dither : $wave.dontDither
             let error = 0
             for (let i = 0; i < renderData.length; i++) {
                 ;[wave[start + i], error] = ditherFn(renderData[i] * 128.0, error)
@@ -141,5 +140,3 @@ this.applyNode = function(sample, start, end, dithering, createNode) {
         context.startRendering()
     })
 }
-
-} // namespace edit.sample

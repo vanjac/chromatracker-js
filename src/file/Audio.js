@@ -1,3 +1,6 @@
+import * as $wave from '../edit/Wave.js'
+import {freezeAssign} from '../edit/EditUtil.js'
+
 /**
  * @param {ArrayBuffer} buf
  * @param {number} sampleRate
@@ -17,7 +20,7 @@ export function read(buf, sampleRate) {
             let wave = new Int8Array(data.length)
             let error = 0
             for (let i = 0; i < data.length; i++) {
-                ;[wave[i], error] = edit.wave.dither(data[i] * 127.0 / maxAmp, error)
+                ;[wave[i], error] = $wave.dither(data[i] * 127.0 / maxAmp, error)
             }
             resolve(freezeAssign(new Sample(), {wave, volume: Math.round(mod.maxVolume * maxAmp)}))
         }, reject)

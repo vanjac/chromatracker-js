@@ -3,7 +3,6 @@
 
 import * as $file from './FileUtil.js'
 
-/** @readonly */
 export const headerSize = 1084
 const trackerInfoSize = 32 // nonstandard!
 

@@ -1,13 +1,12 @@
-'use strict'
-
-edit.sequence = new function() { // namespace
+import * as $pattern from './Pattern.js'
+import {freezeAssign, immSplice} from './EditUtil.js'
 
 /**
  * @param {Readonly<Module>} module
  */
-this.zap = function(module) {
+export function zap(module) {
     let sequence = Object.freeze([0])
-    let patterns = Object.freeze([edit.pattern.create(module.numChannels)])
+    let patterns = Object.freeze([$pattern.create(module.numChannels)])
     return freezeAssign(new Module(), module, {sequence, patterns})
 }
 
@@ -16,12 +15,12 @@ this.zap = function(module) {
  * @param {number} pos
  * @param {number} pat
  */
-this.set = function(module, pos, pat) {
+export function set(module, pos, pat) {
     if (pat < 0) {
         return module
     }
     let sequence = immSplice(module.sequence, pos, 1, pat)
-    let patterns = edit.pattern.createMissing(module, pat)
+    let patterns = $pattern.createMissing(module, pat)
     return freezeAssign(new Module(), module, {sequence, patterns})
 }
 
@@ -30,12 +29,12 @@ this.set = function(module, pos, pat) {
  * @param {number} pos
  * @param {number} pat
  */
-this.insert = function(module, pos, pat) {
+export function insert(module, pos, pat) {
     if (pat < 0) {
         return module
     }
     let sequence = immSplice(module.sequence, pos, 0, pat)
-    let patterns = edit.pattern.createMissing(module, pat)
+    let patterns = $pattern.createMissing(module, pat)
     return freezeAssign(new Module(), module, {sequence, patterns})
 }
 
@@ -43,8 +42,6 @@ this.insert = function(module, pos, pat) {
  * @param {Readonly<Module>} module
  * @param {number} pos
  */
-this.delete = function(module, pos) {
+export function del(module, pos) {
     return freezeAssign(new Module(), module, {sequence: immSplice(module.sequence, pos, 1)})
 }
-
-} // namespace edit.sequence

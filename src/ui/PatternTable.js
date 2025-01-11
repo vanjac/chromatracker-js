@@ -1,6 +1,7 @@
 import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
+import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import templates from './Templates.js'
 
@@ -121,7 +122,7 @@ export class PatternTableElement extends HTMLElement {
                     }, id => this._target._jamRelease(id), {blockScroll: false})
                     td.addEventListener('contextmenu', () => {
                         $cli.addSelProp('cell', Cell, this._viewPattern[c][row], cell => {
-                            this._onChange(edit.pattern.putCell(
+                            this._onChange($pattern.putCell(
                                 this._viewPattern, c, row, cell, CellPart.all))
                         })
                     })

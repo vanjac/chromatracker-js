@@ -1,5 +1,6 @@
 import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
+import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import global from './GlobalState.js'
 import templates from './Templates.js'
@@ -193,7 +194,7 @@ export class PatternEditElement extends HTMLElement {
      */
     _changePattern(callback) {
         this._target._changeModule(
-            module => edit.pattern.change(module, module.sequence[this._selPos()], callback))
+            module => $pattern.change(module, module.sequence[this._selPos()], callback))
     }
 
     /**
@@ -202,7 +203,7 @@ export class PatternEditElement extends HTMLElement {
      */
     _putCell(cell, parts) {
         let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => edit.pattern.putCell(pattern, channel, row, cell, parts))
+        this._changePattern(pattern => $pattern.putCell(pattern, channel, row, cell, parts))
     }
 
     /**
@@ -211,7 +212,7 @@ export class PatternEditElement extends HTMLElement {
      */
     _insert(count) {
         let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => edit.pattern.channelInsert(pattern, channel, row, count))
+        this._changePattern(pattern => $pattern.channelInsert(pattern, channel, row, count))
     }
 
     /**
@@ -220,7 +221,7 @@ export class PatternEditElement extends HTMLElement {
      */
     _delete(count) {
         let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => edit.pattern.channelDelete(pattern, channel, row, count))
+        this._changePattern(pattern => $pattern.channelDelete(pattern, channel, row, count))
     }
 
     /** @private */
@@ -229,7 +230,7 @@ export class PatternEditElement extends HTMLElement {
         let [minChannel, maxChannel] = this._patternTable._channelRange()
         let [minRow, maxRow] = this._patternTable._rowRange()
         let parts = this._cellEntry._getCellParts()
-        this._changePattern(pattern => edit.pattern.fill(
+        this._changePattern(pattern => $pattern.fill(
             pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, Cell.empty, parts))
     }
 
@@ -237,14 +238,14 @@ export class PatternEditElement extends HTMLElement {
     _copy() {
         let [minChannel, maxChannel] = this._patternTable._channelRange()
         let [minRow, maxRow] = this._patternTable._rowRange()
-        global.patternClipboard = edit.pattern.slice(
+        global.patternClipboard = $pattern.slice(
             this._selPattern(), minChannel, maxChannel + 1, minRow, maxRow + 1)
     }
 
     /** @private */
     _paste() {
         let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => edit.pattern.write(
+        this._changePattern(pattern => $pattern.write(
             pattern, channel, row, global.patternClipboard, this._cellEntry._getCellParts()))
     }
 

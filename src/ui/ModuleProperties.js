@@ -1,3 +1,5 @@
+import * as $sequence from '../edit/Sequence.js'
+import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
 import templates from './Templates.js'
 import './InlineSVG.js'
@@ -20,7 +22,7 @@ export class ModulePropertiesElement extends HTMLElement {
         this._titleInput = fragment.querySelector('#title')
         this._titleInput.addEventListener('input', () =>
             this._target._changeModule(
-                module => edit.module.setName(module, this._titleInput.value),
+                module => $module.setName(module, this._titleInput.value),
                 {combineTag: 'title'}))
         this._titleInput.addEventListener('change', () => this._target._clearUndoCombine('title'))
 
@@ -36,13 +38,13 @@ export class ModulePropertiesElement extends HTMLElement {
         this._fileSizeOutput = fragment.querySelector('#fileSize')
 
         fragment.querySelector('#addChannels').addEventListener('click',
-            () => this._target._changeModule(module => edit.module.addChannels(module, 2)))
+            () => this._target._changeModule(module => $module.addChannels(module, 2)))
         fragment.querySelector('#delChannels').addEventListener('click',
             () => this._target._changeModule(
-                module => edit.module.delChannels(module, module.numChannels - 2, 2)))
+                module => $module.delChannels(module, module.numChannels - 2, 2)))
 
         fragment.querySelector('#patternZap').addEventListener('click',
-            () => this._target._changeModule(module => edit.sequence.zap(module)))
+            () => this._target._changeModule(module => $sequence.zap(module)))
 
         this.style.display = 'contents'
         this.appendChild(fragment)

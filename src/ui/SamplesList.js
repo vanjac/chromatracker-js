@@ -1,4 +1,5 @@
 import * as $dom from './DOMUtil.js'
+import * as $sample from '../edit/Sample.js'
 import {SampleEditElement} from './SampleEdit.js'
 import templates from './Templates.js'
 import './InlineSVG.js'
@@ -47,7 +48,7 @@ export class SamplesListElement extends HTMLElement {
         this._sampleEditContainer.appendChild(this._sampleEdit)
         this._sampleEdit._onChange = (sample, combineTag) => (
             this._target._changeModule(
-                module => edit.sample.update(module, idx, sample), {combineTag}))
+                module => $sample.update(module, idx, sample), {combineTag}))
         this._sampleEdit._setIndex(idx)
         this._sampleEdit._setSample(this._viewSamples[idx])
     }
@@ -125,7 +126,7 @@ export class SamplesListElement extends HTMLElement {
     _addSample() {
         let selSample = this._getSelSample()
         this._target._changeModule(module => {
-            let [newMod, idx] = edit.sample.create(module)
+            let [newMod, idx] = $sample.create(module)
             selSample = idx
             return newMod
         })
@@ -146,7 +147,7 @@ export class SamplesListElement extends HTMLElement {
                 }
             }
         }
-        this._target._changeModule(module => edit.sample.update(module, idx, null))
+        this._target._changeModule(module => $sample.update(module, idx, null))
     }
 }
 window.customElements.define('samples-list', SamplesListElement)

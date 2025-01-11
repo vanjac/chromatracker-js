@@ -1,7 +1,9 @@
 import * as $cli from './CLI.js'
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
+import * as $module from '../edit/Module.js'
 import {ConfirmDialogElement} from './dialogs/UtilDialogs.js'
+import {freezeAssign} from '../edit/EditUtil.js'
 import templates from './Templates.js'
 import './FileToolbar.js'
 import './ModuleProperties.js'
@@ -38,7 +40,7 @@ export class TrackerMainElement extends HTMLElement {
     constructor() {
         super()
 
-        this._module = edit.module.defaultNew
+        this._module = $module.defaultNew
 
         /** @type {Readonly<Module>[]} */
         this._undoStack = []

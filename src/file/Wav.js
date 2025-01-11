@@ -1,6 +1,7 @@
 // https://sites.google.com/site/musicgapi/technical-documents/wav-file-format
 
 import * as $file from './FileUtil.js'
+import * as $wave from '../edit/Wave.js'
 
 const formatPCM = 1
 const formatIEEE = 3
@@ -104,7 +105,7 @@ export function read(buf) {
 
         let error = 0
         for (let i = 0; i < numFrames; i++) {
-            ;[wave[i], error] = edit.wave.dither(getSampleValue(i) / maxAmp, error)
+            ;[wave[i], error] = $wave.dither(getSampleValue(i) / maxAmp, error)
         }
     }
 

@@ -1,6 +1,8 @@
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
+import * as $pattern from '../edit/Pattern.js'
+import * as $sequence from '../edit/Sequence.js'
 import templates from './Templates.js'
 import './InlineSVG.js'
 
@@ -37,7 +39,7 @@ export class SequenceEditElement extends HTMLElement {
         this._select.addEventListener('contextmenu', () => {
             $cli.addSelProp('patnum', 'number', this._viewSequence[this._selPos],
                 num => this._target._changeModule(
-                    module => edit.sequence.set(module, this._selPos, num)))
+                    module => $sequence.set(module, this._selPos, num)))
         })
 
         this.style.display = 'contents'
@@ -76,7 +78,7 @@ export class SequenceEditElement extends HTMLElement {
                 this._setSelPos(i)
                 this._onSelect()
                 $cli.addSelProp('patnum', 'number', this._viewSequence[i],
-                    num => this._target._changeModule(module => edit.sequence.set(module, i, num)))
+                    num => this._target._changeModule(module => $sequence.set(module, i, num)))
             })
             this._sequenceButtons.push(label)
         }
@@ -129,22 +131,22 @@ export class SequenceEditElement extends HTMLElement {
      * @param {number} p
      */
     _seqSet(p) {
-        this._target._changeModule(module => edit.sequence.set(module, this._selPos, p))
+        this._target._changeModule(module => $sequence.set(module, this._selPos, p))
     }
 
     /** @private */
     _seqInsSame() {
         this._selPos++
         this._target._changeModule(module =>
-            edit.sequence.insert(module, this._selPos, module.sequence[this._selPos - 1]))
+            $sequence.insert(module, this._selPos, module.sequence[this._selPos - 1]))
     }
 
     /** @private */
     _seqInsClone() {
         this._selPos++
         this._target._changeModule(module => {
-            module = edit.pattern.clone(module, module.sequence[this._selPos - 1])
-            return edit.sequence.insert(module, this._selPos, module.patterns.length - 1)
+            module = $pattern.clone(module, module.sequence[this._selPos - 1])
+            return $sequence.insert(module, this._selPos, module.patterns.length - 1)
         })
     }
 
@@ -157,7 +159,7 @@ export class SequenceEditElement extends HTMLElement {
         if (this._selPos >= this._viewSequence.length - 1) {
             this._selPos--
         }
-        this._target._changeModule(module => edit.sequence.delete(module, pos))
+        this._target._changeModule(module => $sequence.del(module, pos))
     }
 }
 window.customElements.define('sequence-edit', SequenceEditElement)

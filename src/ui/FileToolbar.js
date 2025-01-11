@@ -1,5 +1,6 @@
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
+import * as $module from '../edit/Module.js'
 import * as $ext from '../file/External.js'
 import * as $mod from '../file/Mod.js'
 import {AlertDialogElement} from './dialogs/UtilDialogs.js'
@@ -17,7 +18,7 @@ export class FileToolbarElement extends HTMLElement {
         let fragment = templates.fileToolbar.cloneNode(true)
 
         fragment.querySelector('#newModule').addEventListener('click',
-            () => this._target._moduleLoaded(edit.module.defaultNew))
+            () => this._target._moduleLoaded($module.defaultNew))
 
         /** @type {HTMLInputElement} */
         let fileSelect = fragment.querySelector('#fileSelect')
