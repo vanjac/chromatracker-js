@@ -1,5 +1,7 @@
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
+import * as $ext from '../file/External.js'
+import * as $mod from '../file/Mod.js'
 import {AlertDialogElement} from './dialogs/UtilDialogs.js'
 import templates from './Templates.js'
 import './InlineSVG.js'
@@ -49,7 +51,7 @@ export class FileToolbarElement extends HTMLElement {
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                let module = Object.freeze(fileio.mod.read(reader.result))
+                let module = Object.freeze($mod.read(reader.result))
                 this._target._moduleLoaded(module)
             }
         }
@@ -58,9 +60,8 @@ export class FileToolbarElement extends HTMLElement {
 
     /** @private */
     _saveFile() {
-        let blob = new Blob([fileio.mod.write(this._target._module)],
-            {type: 'application/octet-stream'})
-        fileio.ext.download(blob, (this._target._module.name || 'Untitled') + '.mod')
+        let blob = new Blob([$mod.write(this._target._module)], {type: 'application/octet-stream'})
+        $ext.download(blob, (this._target._module.name || 'Untitled') + '.mod')
         this._target._moduleSaved()
     }
 }

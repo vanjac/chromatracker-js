@@ -2,6 +2,9 @@ import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
+import * as $audio from '../file/Audio.js'
+import * as $ext from '../file/External.js'
+import * as $wav from '../file/Wav.js'
 import {AlertDialogElement, InputDialogElement} from './dialogs/UtilDialogs.js'
 import global from './GlobalState.js'
 import templates from './Templates.js'
@@ -379,9 +382,9 @@ export class SampleEditElement extends HTMLElement {
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                if (fileio.wav.identify(reader.result)) {
+                if ($wav.identify(reader.result)) {
                     try {
-                        let newSample = fileio.wav.read(reader.result)
+                        let newSample = $wav.read(reader.result)
                         newSample.name = name
                         this._onChange(newSample, '')
                     } catch (error) {
@@ -389,8 +392,7 @@ export class SampleEditElement extends HTMLElement {
                     }
                 } else {
                     let dialog = $dialog.open($dom.createElem('wait-dialog'))
-                    let promise = fileio.audio.read(
-                        reader.result, this._sampleRateInput.valueAsNumber)
+                    let promise = $audio.read(reader.result, this._sampleRateInput.valueAsNumber)
                     promise.then(({wave, volume}) => {
                         $dialog.close(dialog)
                         this._changeSample(sample => {
@@ -410,9 +412,8 @@ export class SampleEditElement extends HTMLElement {
     }
 
     _saveAudioFile() {
-        let blob = new Blob([fileio.wav.write(this._viewSample)],
-            {type: 'application/octet-stream'})
-        fileio.ext.download(blob, (this._viewSample.name || 'sample') + '.wav')
+        let blob = new Blob([$wav.write(this._viewSample)], {type: 'application/octet-stream'})
+        $ext.download(blob, (this._viewSample.name || 'sample') + '.wav')
     }
 
     /**

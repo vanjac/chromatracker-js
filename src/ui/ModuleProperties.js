@@ -1,3 +1,4 @@
+import * as $mod from '../file/Mod.js'
 import templates from './Templates.js'
 import './InlineSVG.js'
 
@@ -68,7 +69,7 @@ export class ModulePropertiesElement extends HTMLElement {
             let sampleCount = module.samples.reduce(
                 (count, item) => (item ? (count + 1) : count), 0)
             this._sampleCountOutput.value = sampleCount.toString()
-            this._viewSamplesSize = fileio.mod.calcSamplesSize(module.samples)
+            this._viewSamplesSize = $mod.calcSamplesSize(module.samples)
         }
         if (!this._viewModule || module.patterns != this._viewModule.patterns) {
             console.debug('update pattern count')
@@ -80,9 +81,9 @@ export class ModulePropertiesElement extends HTMLElement {
         }
         if (!this._viewModule || module.sequence != this._viewModule.sequence
                 || module.numChannels != this._viewModule.numChannels) {
-            this._viewPatternsSize = fileio.mod.calcPatternsSize(module)
+            this._viewPatternsSize = $mod.calcPatternsSize(module)
         }
-        let fileSize = fileio.mod.headerSize + this._viewPatternsSize + this._viewSamplesSize
+        let fileSize = $mod.headerSize + this._viewPatternsSize + this._viewSamplesSize
         this._fileSizeOutput.value = this._formatFileSize(fileSize)
 
         this._viewModule = module

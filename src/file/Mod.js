@@ -1,12 +1,10 @@
-'use strict'
-
-fileio.mod = new function() { // namespace
-
 // https://eblong.com/zarf/blorb/mod-spec.txt
 // http://lclevy.free.fr/mo3/mod.txt
 
+import * as $file from './FileUtil.js'
+
 /** @readonly */
-this.headerSize = 1084
+export const headerSize = 1084
 const trackerInfoSize = 32 // nonstandard!
 
 /** @type {Map<number, number>} */
@@ -18,13 +16,13 @@ for (let p = 0; p < periodTable[8].length; p++) {
 /**
  * @param {ArrayBuffer} buf
  */
-this.read = function(buf) {
+export function read(buf) {
     let view = new DataView(buf)
     let textDecode = new TextDecoder() // TODO: determine encoding from file
     let asciiDecode = new TextDecoder('ascii')
 
     let module = new Module()
-    module.name = textDecode.decode(fileio.readStringZ(buf, 0, 20))
+    module.name = textDecode.decode($file.readStringZ(buf, 0, 20))
 
     let songLen = Math.min(view.getUint8(950), mod.numSongPositions)
     module.restartPos = view.getUint8(951)
@@ -45,7 +43,7 @@ this.read = function(buf) {
     let patternSize = module.numChannels * mod.numRows * 4
     let patterns = []
     for (let p = 0; p < numPatterns; p++) {
-        let patOff = this.headerSize + patternSize * p
+        let patOff = headerSize + patternSize * p
         /** @type {Pattern} */
         let pat = []
 
@@ -76,7 +74,7 @@ this.read = function(buf) {
 
     let samples = []
     samples.push(null) // sample 0 is empty
-    let wavePos = this.headerSize + patternSize * numPatterns
+    let wavePos = headerSize + patternSize * numPatterns
     for (let s = 1; s < mod.numSamples; s++) {
         let offset = s * 30 - 10
         let sample = new Sample()
@@ -86,7 +84,7 @@ this.read = function(buf) {
             samples.push(null)
             continue
         }
-        sample.name = textDecode.decode(fileio.readStringZ(buf, offset, mod.maxSampleNameLength))
+        sample.name = textDecode.decode($file.readStringZ(buf, offset, mod.maxSampleNameLength))
         sample.finetune = view.getUint8(offset + 24) & 0xf
         if (sample.finetune >= 8) {
             sample.finetune -= 16 // sign-extend nibble
@@ -114,12 +112,12 @@ this.read = function(buf) {
 /**
  * @param {Readonly<Module>} module
  */
-this.write = function(module) {
-    let buf = new ArrayBuffer(this.calcSize(module))
+export function write(module) {
+    let buf = new ArrayBuffer(calcSize(module))
     let view = new DataView(buf)
     let textEncode = new TextEncoder()
 
-    fileio.writeU8Array(buf, 0, 20, textEncode.encode(module.name))
+    $file.writeU8Array(buf, 0, 20, textEncode.encode(module.name))
 
     for (let s = 1; s < mod.numSamples; s++) {
         let offset = s * 30 - 10
@@ -130,7 +128,7 @@ this.write = function(module) {
             continue
         }
         let sample = module.samples[s]
-        fileio.writeU8Array(buf, offset, mod.maxSampleNameLength, textEncode.encode(sample.name))
+        $file.writeU8Array(buf, offset, mod.maxSampleNameLength, textEncode.encode(sample.name))
         view.setUint16(offset + 22, (sample.wave.length / 2) | 0)
         view.setUint8(offset + 24, sample.finetune & 0xf)
         view.setUint8(offset + 25, sample.volume)
@@ -168,12 +166,12 @@ this.write = function(module) {
     } else {
         initials = module.numChannels + 'CH'
     }
-    fileio.writeU8Array(buf, 1080, 4, textEncode.encode(initials))
+    $file.writeU8Array(buf, 1080, 4, textEncode.encode(initials))
 
     let patternSize = module.numChannels * mod.numRows * 4
     for (let p = 0; p < numPatterns; p++) {
         let pat = module.patterns[p]
-        let patOff = this.headerSize + patternSize * p
+        let patOff = headerSize + patternSize * p
         for (let row = 0; row < mod.numRows; row++) {
             for (let c = 0; c < module.numChannels; c++) {
                 let cell = pat[c][row]
@@ -186,7 +184,7 @@ this.write = function(module) {
         }
     }
 
-    let wavePos = this.headerSize + patternSize * numPatterns
+    let wavePos = headerSize + patternSize * numPatterns
     for (let sample of module.samples) {
         if (sample) {
             let waveArr = new Int8Array(buf, wavePos, sample.wave.length & ~1)
@@ -195,8 +193,8 @@ this.write = function(module) {
         }
     }
 
-    fileio.writeU8Array(buf, wavePos + 8, trackerInfoSize - 8,
-        textEncode.encode(`ChromaTracker v${version}`))
+    $file.writeU8Array(buf, wavePos + 8, trackerInfoSize - 8,
+        textEncode.encode(`ChromaTracker v${$file.version}`))
 
     return buf
 }
@@ -204,15 +202,15 @@ this.write = function(module) {
 /**
  * @param {Readonly<Module>} module
  */
-this.calcSize = function(module) {
-    return (this.headerSize + this.calcPatternsSize(module) + this.calcSamplesSize(module.samples)
+export function calcSize(module) {
+    return (headerSize + calcPatternsSize(module) + calcSamplesSize(module.samples)
         + trackerInfoSize)
 }
 
 /**
  * @param {Readonly<Module>} module
  */
-this.calcPatternsSize = function(module) {
+export function calcPatternsSize(module) {
     let patternSize = module.numChannels * mod.numRows * 4
     let numPatterns = Math.max(...module.sequence) + 1
     return patternSize * numPatterns
@@ -221,8 +219,6 @@ this.calcPatternsSize = function(module) {
 /**
  * @param {readonly Readonly<Sample>[]} samples
  */
-this.calcSamplesSize = function(samples) {
+export function calcSamplesSize(samples) {
     return samples.reduce((acc, sample) => (acc + (sample ? (sample.wave.length & ~1) : 0)), 0)
 }
-
-} // namespace fileio.mod

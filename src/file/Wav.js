@@ -1,8 +1,6 @@
-'use strict'
-
-fileio.wav = new function() { // namespace
-
 // https://sites.google.com/site/musicgapi/technical-documents/wav-file-format
+
+import * as $file from './FileUtil.js'
 
 const formatPCM = 1
 const formatIEEE = 3
@@ -21,7 +19,7 @@ const smplChunkLoopSize = 24
 /**
  * @param {ArrayBuffer} buf
  */
-this.identify = function(buf) {
+export function identify(buf) {
     if (buf.byteLength < 12) { return false }
     let asciiDecode = new TextDecoder('ascii')
     let fileId = asciiDecode.decode(new DataView(buf, 0, 4))
@@ -33,7 +31,7 @@ this.identify = function(buf) {
 /**
  * @param {ArrayBuffer} buf
  */
-this.read = function(buf) {
+export function read(buf) {
     let view = new DataView(buf)
     let asciiDecode = new TextDecoder('ascii')
 
@@ -132,7 +130,7 @@ this.read = function(buf) {
 /**
  * @param {Readonly<Sample>} sample
  */
-this.write = function(sample) {
+export function write(sample) {
     /** @type {Record<string, RIFFChunk>} */
     let chunks = {__proto__: null}
 
@@ -146,12 +144,12 @@ this.write = function(sample) {
     let view = new DataView(buf)
     let textEncode = new TextEncoder()
 
-    fileio.writeU8Array(buf, 0, 4, textEncode.encode('RIFF'))
+    $file.writeU8Array(buf, 0, 4, textEncode.encode('RIFF'))
     view.setUint32(4, fileSize - 8, true)
-    fileio.writeU8Array(buf, 8, 4, textEncode.encode('WAVE'))
+    $file.writeU8Array(buf, 8, 4, textEncode.encode('WAVE'))
 
     for (let [id, chunk] of Object.entries(chunks)) {
-        fileio.writeU8Array(buf, chunk.pos - 8, 4, textEncode.encode(id))
+        $file.writeU8Array(buf, chunk.pos - 8, 4, textEncode.encode(id))
         view.setUint32(chunk.pos - 4, chunk.size, true)
     }
 
@@ -249,5 +247,3 @@ function writeXtraChunk(view, sample) {
     view.setUint16(6, sample.volume * 4, true)
     view.setUint16(8, 64, true) // global volume
 }
-
-} // namespace fileio.wav
