@@ -1,4 +1,13 @@
 /**
+ * @param {TemplateStringsArray} strings
+ */
+export function html(strings) {
+    let template = document.createElement('template')
+    template.innerHTML = strings.join('')
+    return template.content
+}
+
+/**
  * @template {keyof HTMLElementTagNameMap} K
  * @param {K} tagName
  * @param {Partial<HTMLElementTagNameMap[K]>} properties

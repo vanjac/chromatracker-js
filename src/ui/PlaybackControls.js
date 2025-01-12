@@ -1,5 +1,34 @@
-import templates from './Templates.js'
+import * as $dom from './DOMUtil.js'
 import './InlineSVG.js'
+
+const template = $dom.html`
+<div class="hflex">
+    <button id="playStart">
+        <inline-svg class="icon" src="step-forward.svg"></inline-svg>
+    </button>
+    <button id="playPattern">
+        <inline-svg class="icon" src="playlist-play.svg"></inline-svg>
+    </button>
+    <button id="playRow">
+        <inline-svg class="icon" src="play.svg"></inline-svg>
+    </button>
+    <button id="pause" class="hide show-checked">
+        <inline-svg class="icon" src="pause.svg"></inline-svg>
+    </button>
+    <label class="label-button">
+        <input id="patternLoop" type="checkbox">
+        <span><inline-svg class="icon" src="repeat-variant.svg"></inline-svg></span>
+    </label>
+    <label class="label-button">
+        <input id="follow" type="checkbox" checked>
+        <span><inline-svg class="icon" src="format-indent-increase.svg"></inline-svg></span>
+    </label>
+    <div class="flex-grow"></div>
+    <button id="undo">
+        <inline-svg class="icon" src="undo.svg"></inline-svg>
+    </button>
+</div>
+`
 
 export class PlaybackControlsElement extends HTMLElement {
     constructor() {
@@ -9,7 +38,7 @@ export class PlaybackControlsElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.playbackControls.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         this._playRowButton = fragment.querySelector('#playRow')
         this._pauseButton = fragment.querySelector('#pause')

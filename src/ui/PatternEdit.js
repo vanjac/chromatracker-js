@@ -1,14 +1,70 @@
 import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
+import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
 import * as $pattern from '../edit/Pattern.js'
 import {Cell, CellPart, mod, Module, Pattern} from '../Model.js'
 import global from './GlobalState.js'
-import templates from './Templates.js'
 import './CellEntry.js'
 import './InlineSVG.js'
 import './PatternTable.js'
 import './SequenceEdit.js'
+
+const template = $dom.html`
+<div class="vflex flex-grow">
+    <sequence-edit></sequence-edit>
+    <div class="hflex">
+        <div id="playbackStatus" class="hflex">
+            <label for="tempo">Tempo:</label>
+            <input id="tempo" type="number" class="small-input" value="125" autocomplete="off">
+            <label for="speed">Speed:</label>
+            <input id="speed" type="number" class="small-input" value="6" autocomplete="off">
+        </div>
+        <div class="flex-grow"></div>
+        <div id="selectTools" class="hide hflex">
+            <button id="cut">
+                <inline-svg class="icon" src="content-cut.svg"></inline-svg>
+            </button>
+            <button id="copy">
+                <inline-svg class="icon" src="content-copy.svg"></inline-svg>
+            </button>
+        </div>
+        <button id="paste">
+            <inline-svg class="icon" src="content-paste.svg"></inline-svg>
+        </button>
+        <label class="label-button">
+            <input id="select" type="checkbox">
+            <span><inline-svg class="icon" src="selection.svg"></inline-svg></span>
+        </label>
+    </div>
+    <pattern-table></pattern-table>
+    <div class="hflex">
+        <button id="lift">
+            <inline-svg class="icon" src="eyedropper.svg"></inline-svg>
+        </button>
+        <div class="flex-grow"></div>
+        <span id="entryCell" class="pattern-cell">
+            <span id="pitch" class="cell-pitch">...</span>
+            <span id="inst" class="cell-inst">..</span>
+            <span id="effect" class="cell-effect">...</span>
+        </span>
+        <div class="flex-grow"></div>
+        <button id="write">
+            <inline-svg class="icon" src="pencil.svg"></inline-svg>
+        </button>
+        <button id="clear">
+            <inline-svg class="icon" src="eraser.svg"></inline-svg>
+        </button>
+        <button id="insert">
+            <inline-svg class="icon" src="arrow-expand-down.svg"></inline-svg>
+        </button>
+        <button id="delete">
+            <inline-svg class="icon" src="backspace-reverse-outline.svg"></inline-svg>
+        </button>
+    </div>
+    <cell-entry></cell-entry>
+</div>
+`
 
 /**
  * @implements {CellEntryTarget}
@@ -25,7 +81,7 @@ export class PatternEditElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.patternEdit.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         this._sequenceEdit = fragment.querySelector('sequence-edit')
         this._patternTable = fragment.querySelector('pattern-table')

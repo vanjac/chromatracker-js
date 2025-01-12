@@ -2,9 +2,94 @@ import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
 import {Cell, CellPart, Sample} from '../Model.js'
-import templates from './Templates.js'
 import './InlineSVG.js'
 import './PianoKeyboard.js'
+
+const template = $dom.html`
+<div class="properties-grid">
+    <label class="label-button">
+        <input id="pitchEnable" type="checkbox" checked>
+        <span>P</span>
+    </label>
+    <piano-keyboard></piano-keyboard>
+
+    <label class="label-button">
+        <input id="sampleEnable" type="checkbox" checked>
+        <span>I</span>
+    </label>
+    <div class="hflex">
+        <button id="sampleLeft">&lt;</button>
+        <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
+        <button id="sampleRight">&gt;</button>
+    </div>
+
+    <label class="label-button">
+        <input id="effectEnable" type="checkbox">
+        <span>E</span>
+    </label>
+    <div class="hflex">
+        <select id="effectSelect">
+            <option>0: Arpeggio</option>
+            <option>1: Port Up</option>
+            <option>2: Port Down</option>
+            <option>3: Tone Port</option>
+            <option>4: Vibrato</option>
+            <option>5: Volslide+Port</option>
+            <option>6: Volslide+Vib</option>
+            <option>7: Tremolo</option>
+            <option>8: Panning</option>
+            <option>9: Offset</option>
+            <option>A: Volume Slide</option>
+            <option>B: Pos. Jump</option>
+            <option selected>C: Volume</option>
+            <option>D: Pat. Break</option>
+            <option>E: Extended</option>
+            <option>F: Tempo</option>
+        </select>
+        <select id="param0Select">
+            <option>0</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+            <option>E</option>
+            <option>F</option>
+        </select>
+        <select id="param1Select">
+            <option>0</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <option>D</option>
+            <option>E</option>
+            <option>F</option>
+        </select>
+
+        <div class="flex-grow"></div>
+        <button id="writeEffect">
+            <inline-svg class="icon" src="keyboard-return.svg"></inline-svg>
+        </button>
+    </div>
+</div>
+`
 
 /**
  * @implements {PianoKeyboardTarget}
@@ -21,7 +106,7 @@ export class CellEntryElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.cellEntry.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         /** @type {HTMLInputElement} */
         this._pitchEnable = fragment.querySelector('#pitchEnable')

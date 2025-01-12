@@ -2,7 +2,6 @@ import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import {FormDialogElement} from '../Dialog.js'
 import {createOfflineAudioContext} from '../../Util.js'
-import templates from '../Templates.js'
 import global from '../GlobalState.js'
 
 const minGraphFreq = 20
@@ -28,6 +27,62 @@ const graphFreq = new Float32Array(numGraphFreq)
  * @property {boolean} dither
  */
 
+const template = $dom.html`
+<form class="dialog vflex">
+    <h3>Filter / EQ</h3>
+    <div class="hflex">
+        <canvas class="flex-grow width0" id="graph" width="512" height="128"></canvas>
+    </div>
+    <div class="properties-grid">
+        <label for="filterType">Type:</label>
+        <select id="filterType" name="filterType">
+            <optgroup label="Filter">
+                <option value="lowpass">Lowpass</option>
+                <option value="highpass">Highpass</option>
+                <option value="bandpass">Bandpass</option>
+                <option value="notch">Notch</option>
+                <option value="allpass">Allpass</option>
+            </optgroup>
+            <optgroup label="EQ">
+                <option value="lowshelf">Lowshelf</option>
+                <option value="highshelf">Highshelf</option>
+                <option value="peaking">Peaking</option>
+            </optgroup>
+        </select>
+
+        <label for="freqEnvelope">Envelope:</label>
+        <div class="hflex">
+            <input id="freqEnvelope" name="freqEnvelope" type="checkbox">
+        </div>
+
+        <label for="frequency">Frequency:</label>
+        <div class="hflex">
+            <input id="frequency" name="frequency" type="number" class="small-input" value="350">
+            &nbsp;Hz
+            <div class="flex-grow"></div>
+            <label for="freqEnd">To:</label>
+            <input id="freqEnd" name="freqEnd" type="number" class="small-input" value="350">
+            &nbsp;Hz
+        </div>
+
+        <label for="q">Q:</label>
+        <input id="q" name="q" type="number" value="1">
+
+        <label for="gain">Gain:</label>
+        <div class="hflex">
+            <input id="gain" name="gain" type="number" value="2">
+            &nbsp;dB
+        </div>
+
+        <label for="dither">Dither:</label>
+        <div class="hflex">
+            <input id="dither" name="dither" type="checkbox" checked>
+        </div>
+    </div>
+    <button>Apply</button>
+</form>
+`
+
 export class FilterEffectElement extends FormDialogElement {
     constructor() {
         super()
@@ -36,7 +91,7 @@ export class FilterEffectElement extends FormDialogElement {
     }
 
     connectedCallback() {
-        let fragment = templates.filterEffect.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         this._form = fragment.querySelector('form')
         /** @type {HTMLInputElement} */

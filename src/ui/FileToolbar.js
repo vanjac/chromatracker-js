@@ -4,8 +4,28 @@ import * as $module from '../edit/Module.js'
 import * as $ext from '../file/External.js'
 import * as $mod from '../file/Mod.js'
 import {AlertDialogElement} from './dialogs/UtilDialogs.js'
-import templates from './Templates.js'
 import './InlineSVG.js'
+
+const template = $dom.html`
+<div class="hflex">
+    <button id="newModule">
+        <inline-svg class="icon" src="file-plus-outline.svg"></inline-svg>
+    </button>
+    <label class="label-button">
+        <input id="fileSelect" type="file" autocomplete="off">
+        <span><inline-svg class="icon" src="folder-open.svg"></inline-svg></span>
+    </label>
+    <button id="fileSave">
+        <inline-svg class="icon" src="download.svg"></inline-svg>
+    </button>
+    <div class="flex-grow"></div>
+    <select id="demoMenu" class="large-menu">
+        <option selected disabled hidden>Demo Files</option>
+        <optgroup label="(TODO)">
+        </optgroup>
+    </select>
+</div>
+`
 
 export class FileToolbarElement extends HTMLElement {
     constructor() {
@@ -15,7 +35,7 @@ export class FileToolbarElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.fileToolbar.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         fragment.querySelector('#newModule').addEventListener('click',
             () => this._target._moduleLoaded($module.defaultNew))

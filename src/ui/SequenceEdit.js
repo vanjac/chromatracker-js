@@ -4,8 +4,24 @@ import * as $util from './UtilTemplates.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import {Pattern} from '../Model.js'
-import templates from './Templates.js'
 import './InlineSVG.js'
+
+const template = $dom.html`
+<div class="hflex">
+    <form id="seqList" class="hflex flex-grow hscrollable" autocomplete="off">
+        <select id="patternSelect" class="seq-select show-checked"></select>
+    </form>
+    <button id="seqInsSame">
+        <inline-svg class="icon" src="equal.svg"></inline-svg>
+    </button>
+    <button id="seqInsClone">
+        <inline-svg class="icon" src="plus.svg"></inline-svg>
+    </button>
+    <button id="seqDel">
+        <inline-svg class="icon" src="close.svg"></inline-svg>
+    </button>
+</div>
+`
 
 export class SequenceEditElement extends HTMLElement {
     constructor() {
@@ -20,7 +36,7 @@ export class SequenceEditElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.sequenceEdit.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         /** @type {HTMLFormElement} */
         this._sequenceList = fragment.querySelector('#seqList')

@@ -5,7 +5,27 @@ import * as $keyPad from './KeyPad.js'
 import * as $pattern from '../edit/Pattern.js'
 import {CellPart, Pattern} from '../Model.js'
 import {minMax} from '../Util.js'
-import templates from './Templates.js'
+
+const template = $dom.html`
+<div id="patternScroll" class="hscrollable vscrollable flex-grow">
+    <div class="pattern-table-space"></div>
+    <table>
+        <thead>
+            <tr></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div class="pattern-table-space"></div>
+</div>
+`
+
+const cellTemplate = $dom.html`
+<td class="pattern-cell">
+    <span id="pitch" class="cell-pitch">...</span>
+    <span id="inst" class="cell-inst">..</span>
+    <span id="effect" class="cell-effect">...</span>
+</td>
+`
 
 export class PatternTableElement extends HTMLElement {
     constructor() {
@@ -27,7 +47,7 @@ export class PatternTableElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.patternTable.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         this._patternScroll = fragment.querySelector('#patternScroll')
         this._theadRow = fragment.querySelector('tr')
@@ -114,7 +134,7 @@ export class PatternTableElement extends HTMLElement {
 
                 for (let c = 0; c < pattern.length; c++) {
                     let cell = pattern[c][row]
-                    let cellFrag = templates.cellTemplate.cloneNode(true)
+                    let cellFrag = cellTemplate.cloneNode(true)
                     $cell.setContents(cellFrag, cell)
 
                     let td = cellFrag.querySelector('td')

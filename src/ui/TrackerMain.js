@@ -5,7 +5,6 @@ import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import {ConfirmDialogElement} from './dialogs/UtilDialogs.js'
 import {Cell, Module} from '../Model.js'
-import templates from './Templates.js'
 import './FileToolbar.js'
 import './ModuleProperties.js'
 import './PatternEdit.js'
@@ -28,6 +27,42 @@ const maxUndo = 100
  *      channels: readonly Readonly<$play.ChannelState>[]
  * }} PlaybackState
  */
+
+const template = $dom.html`
+<div id="errors"></div>
+<playback-controls></playback-controls>
+
+<form id="appTabs" class="hflex tab-group" autocomplete="off">
+    <label class="label-button flex-grow">
+        <input type="radio" name="app-tab" value="arrange" checked>
+        <span>Arrange</span>
+    </label>
+    <label class="label-button flex-grow">
+        <input type="radio" name="app-tab" value="sequence">
+        <span>Sequence</span>
+    </label>
+    <label class="label-button flex-grow">
+        <input type="radio" name="app-tab" value="samples">
+        <span>Samples</span>
+    </label>
+</form>
+<div id="appTabBody" class="vflex flex-grow">
+    <div id="arrange" class="vflex flex-grow">
+        <hr>
+        <file-toolbar></file-toolbar>
+        <hr>
+        <module-properties></module-properties>
+        <div class="flex-grow"></div>
+        <em>Version:&nbsp;<code id="version"></code></em>
+    </div>
+    <div id="sequence" class="vflex flex-grow hide">
+        <pattern-edit></pattern-edit>
+    </div>
+    <div id="samples" class="vflex flex-grow hide">
+        <samples-list></samples-list>
+    </div>
+</div>
+`
 
 /**
  * @implements {JamTarget}
@@ -62,7 +97,7 @@ export class TrackerMainElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.trackerMain.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         this._fileToolbar = fragment.querySelector('file-toolbar')
         this._moduleProperties = fragment.querySelector('module-properties')

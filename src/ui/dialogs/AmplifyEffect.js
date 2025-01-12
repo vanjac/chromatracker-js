@@ -1,8 +1,23 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import {FormDialogElement} from '../Dialog.js'
-import templates from '../Templates.js'
 import global from '../GlobalState.js'
+
+const template = $dom.html`
+<form class="dialog vflex">
+    <h3>Amplify</h3>
+    <div class="properties-grid">
+        <label for="amp">Amount:</label>
+        <input id="amp" name="amp" type="number" value="1">
+
+        <label for="dither">Dither:</label>
+        <div class="hflex">
+            <input id="dither" name="dither" type="checkbox" checked>
+        </div>
+    </div>
+    <button>Apply</button>
+</form>
+`
 
 export class AmplifyEffectElement extends FormDialogElement {
     constructor() {
@@ -12,7 +27,7 @@ export class AmplifyEffectElement extends FormDialogElement {
     }
 
     connectedCallback() {
-        let fragment = templates.amplifyEffect.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         this._form = fragment.querySelector('form')
         /** @type {HTMLInputElement} */

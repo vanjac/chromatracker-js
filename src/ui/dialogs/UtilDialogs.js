@@ -1,7 +1,17 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import {DialogElement, FormDialogElement} from '../Dialog.js'
-import templates from '../Templates.js'
+
+const alertDialogTemplate = $dom.html`
+<form class="vflex dialog message-dialog">
+    <h3 id="title"></h3>
+    <output id="message" class="message-out"></output>
+    <div class="hflex">
+        <div class="flex-grow"></div>
+        <button class="show-checked">OK</button>
+    </div>
+</form>
+`
 
 export class AlertDialogElement extends FormDialogElement {
     constructor() {
@@ -11,7 +21,7 @@ export class AlertDialogElement extends FormDialogElement {
     }
 
     connectedCallback() {
-        let fragment = templates.alertDialog.cloneNode(true)
+        let fragment = alertDialogTemplate.cloneNode(true)
 
         this._initForm(fragment.querySelector('form'))
         fragment.querySelector('#title').textContent = this._title
@@ -33,6 +43,18 @@ AlertDialogElement.open = function(message, title = 'Error') {
     return $dialog.open($dom.createElem('alert-dialog', {_message: message, _title: title}))
 }
 
+const confirmDialogTemplate = $dom.html`
+<form class="vflex dialog message-dialog">
+    <h3 id="title"></h3>
+    <output id="message" class="message-out"></output>
+    <div class="hflex">
+        <div class="flex-grow"></div>
+        <button class="show-checked">OK</button>
+        <button id="cancel" type="button">Cancel</button>
+    </div>
+</form>
+`
+
 export class ConfirmDialogElement extends FormDialogElement {
     constructor() {
         super()
@@ -43,7 +65,7 @@ export class ConfirmDialogElement extends FormDialogElement {
     }
 
     connectedCallback() {
-        let fragment = templates.confirmDialog.cloneNode(true)
+        let fragment = confirmDialogTemplate.cloneNode(true)
 
         this._initForm(fragment.querySelector('form'))
         fragment.querySelector('#title').textContent = this._title
@@ -89,6 +111,21 @@ ConfirmDialogElement.open = function(message, title = '') {
     })
 }
 
+const inputDialogTemplate = $dom.html`
+<form class="vflex dialog">
+    <h3 id="title"></h3>
+    <div class="hflex">
+        <label id="prompt" for="value"></label>
+        <input id="value" type="number" class="med-input">
+    </div>
+    <div class="hflex">
+        <div class="flex-grow"></div>
+        <button class="show-checked">OK</button>
+        <button id="cancel" type="button">Cancel</button>
+    </div>
+</form>
+`
+
 export class InputDialogElement extends FormDialogElement {
     constructor() {
         super()
@@ -101,7 +138,7 @@ export class InputDialogElement extends FormDialogElement {
     }
 
     connectedCallback() {
-        let fragment = templates.inputDialog.cloneNode(true)
+        let fragment = inputDialogTemplate.cloneNode(true)
 
         this._initForm(fragment.querySelector('form'))
         fragment.querySelector('#title').textContent = this._title
@@ -154,10 +191,16 @@ InputDialogElement.open = function(prompt, title = '', defaultValue = 0) {
     })
 }
 
+const waitDialogTemplate = $dom.html`
+<div class="vflex dialog">
+    <span>Please wait...</span>
+    <progress></progress>
+</div>
+`
 
 export class WaitDialogElement extends DialogElement {
     connectedCallback() {
-        let fragment = templates.waitDialog.cloneNode(true)
+        let fragment = waitDialogTemplate.cloneNode(true)
 
         this.style.display = 'contents'
         this.appendChild(fragment)

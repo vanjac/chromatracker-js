@@ -11,13 +11,6 @@ import path from 'node:path'
 function buildHTML(outFile, mainScript) {
     let templates = ''
 
-    let templateFiles = fs.readdirSync('templates', {recursive: true})
-    for (let file of templateFiles) {
-        if (file.endsWith('.html')) {
-            templates += fs.readFileSync(path.join('templates', file), {encoding: 'utf8'})
-        }
-    }
-
     let assetFiles = fs.readdirSync('assets', {recursive: true})
     for (let file of assetFiles) {
         if (file.endsWith('.svg')) {

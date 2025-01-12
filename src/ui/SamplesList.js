@@ -3,8 +3,23 @@ import * as $play from '../Playback.js'
 import * as $sample from '../edit/Sample.js'
 import {SampleEditElement} from './SampleEdit.js'
 import {Sample} from '../Model.js'
-import templates from './Templates.js'
 import './InlineSVG.js'
+
+const template = $dom.html`
+<div class="vflex flex-grow">
+    <div class="hflex">
+        <select id="sampleSelect" class="flex-grow" autocomplete="off"></select>
+        <button id="addSample">
+            <inline-svg class="icon" src="plus.svg"></inline-svg>
+        </button>
+        <button id="delSample">
+            <inline-svg class="icon" src="close.svg"></inline-svg>
+        </button>
+    </div>
+    <hr>
+    <div id="sampleEditContainer" class="vflex flex-grow"></div>
+</div>
+`
 
 export class SamplesListElement extends HTMLElement {
     constructor() {
@@ -16,7 +31,7 @@ export class SamplesListElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.samplesList.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         /** @type {HTMLSelectElement} */
         this._select = fragment.querySelector('#sampleSelect')

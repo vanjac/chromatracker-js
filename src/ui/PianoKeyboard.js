@@ -2,8 +2,20 @@ import * as $cell from './Cell.js'
 import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
-import templates from './Templates.js'
 import periodTable from '../PeriodTable.js'
+
+const template = $dom.html`
+<div class="hflex">
+    <button id="pianoLeft">&lt;</button>
+    <form id="piano" class="vflex flex-grow hscrollable" autocomplete="off">
+        <div id="blackKeys" class="hflex">
+            <div class="keypad-half-key"></div>
+        </div>
+        <div id="whiteKeys" class="hflex"></div>
+    </form>
+    <button id="pianoRight">&gt;</button>
+</div>
+`
 
 export class PianoKeyboardElement extends HTMLElement {
     constructor() {
@@ -16,7 +28,7 @@ export class PianoKeyboardElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.pianoKeyboard.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         /** @type {HTMLFormElement} */
         this._piano = fragment.querySelector('#piano')

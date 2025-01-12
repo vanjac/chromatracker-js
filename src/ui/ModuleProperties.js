@@ -1,9 +1,46 @@
+import * as $dom from './DOMUtil.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
 import {Module} from '../Model.js'
-import templates from './Templates.js'
 import './InlineSVG.js'
+
+const template = $dom.html`
+<div class="properties-grid">
+    <label for="title">Title:</label>
+    <div class="hflex">
+        <input id="title" maxlength="20" autocomplete="off">
+    </div>
+
+    <label for="channelCount">Channels:</label>
+    <div class="hflex">
+        <output id="channelCount" class="small-input"></output>
+        <button id="delChannels">
+            <inline-svg class="icon" src="minus.svg"></inline-svg>
+        </button>
+        <button id="addChannels">
+            <inline-svg class="icon" src="plus.svg"></inline-svg>
+        </button>
+    </div>
+
+    <label for="sampleCount">Samples:</label>
+    <output id="sampleCount"></output>
+
+    <label for="patternCount">Patterns:</label>
+    <div class="hflex">
+        <output id="patternCount" class="small-input"></output>
+        <button id="patternZap">
+            <inline-svg class="icon" src="playlist-remove.svg"></inline-svg>
+        </button>
+    </div>
+
+    <label for="sequenceCount">Length:</label>
+    <output id="sequenceCount"></output>
+
+    <label for="fileSize">File size:</label>
+    <output id="fileSize"></output>
+</div>
+`
 
 export class ModulePropertiesElement extends HTMLElement {
     constructor() {
@@ -17,7 +54,7 @@ export class ModulePropertiesElement extends HTMLElement {
     }
 
     connectedCallback() {
-        let fragment = templates.moduleProperties.cloneNode(true)
+        let fragment = template.cloneNode(true)
 
         /** @type {HTMLInputElement} */
         this._titleInput = fragment.querySelector('#title')
