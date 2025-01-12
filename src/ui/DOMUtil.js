@@ -1,3 +1,5 @@
+import * as $id from '../ID.js'
+
 /**
  * @template {unknown[]} TValues
  * @param {TemplateStringsArray} parts
@@ -6,15 +8,30 @@
 export function html(parts, ...values) {
     // https://stackoverflow.com/a/78768252/11525734
     let str = ''
+    /** @type {Record<$id.ID, Node>} */
+    let placeholders = Object.create(null)
     for (let [i, part] of parts.entries()) {
         str += part
         if (i < values.length) {
-            str += String(values[i])
+            let v = values[i]
+            if (v instanceof Node) {
+                let id = $id.unique()
+                str += `<div id="${id}"></div>`
+                placeholders[id] = v
+            } else {
+                str += String(values[i])
+            }
         }
     }
+
     let template = document.createElement('template')
     template.innerHTML = str
-    return template.content
+    let fragment = template.content
+
+    for (let [id, node] of Object.entries(placeholders)) {
+        fragment.getElementById(id).replaceWith(node.cloneNode(true))
+    }
+    return fragment
 }
 
 /**
