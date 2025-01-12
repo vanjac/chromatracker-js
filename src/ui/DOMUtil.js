@@ -1,9 +1,19 @@
 /**
- * @param {TemplateStringsArray} strings
+ * @template {unknown[]} TValues
+ * @param {TemplateStringsArray} parts
+ * @param {TValues} values
  */
-export function html(strings) {
+export function html(parts, ...values) {
+    // https://stackoverflow.com/a/78768252/11525734
+    let str = ''
+    for (let [i, part] of parts.entries()) {
+        str += part
+        if (i < values.length) {
+            str += String(values[i])
+        }
+    }
     let template = document.createElement('template')
-    template.innerHTML = strings.join('')
+    template.innerHTML = str
     return template.content
 }
 
