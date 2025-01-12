@@ -7,7 +7,7 @@ const state = {
 }
 
 export function resetSel() {
-    state.sel = {__proto__: null}
+    state.sel = Object.create(null)
     state.selProxy = new Proxy(state.sel, {
         defineProperty() {
             // Custom error since console isn't in strict mode

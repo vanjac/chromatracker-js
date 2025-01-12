@@ -43,7 +43,7 @@ export function read(buf) {
     let fileEnd = Math.min(riffSize + 8, buf.byteLength)
 
     /** @type {Record<string, RIFFChunk>} */
-    let chunks = {__proto__: null}
+    let chunks = Object.create(null)
 
     let chunkPos = 12
     while (chunkPos + 8 <= fileEnd) {
@@ -139,7 +139,7 @@ export function read(buf) {
  */
 export function write(sample) {
     /** @type {Record<string, RIFFChunk>} */
-    let chunks = {__proto__: null}
+    let chunks = Object.create(null)
 
     let fileSize = 12
     fileSize = addChunk(chunks, fileSize, 'fmt ', fmtChunkSize)

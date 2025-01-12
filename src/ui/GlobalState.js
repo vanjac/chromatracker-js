@@ -6,7 +6,7 @@ export default {
     /** @type {Readonly<Pattern>} */
     patternClipboard: emptyArray,
     /** @type {Record<string, string>} */
-    effectFormData: {__proto__: null},
+    effectFormData: Object.create(null),
     // Effect parameters
     lastResampleSemitones: 12,
     lastLoopRepeat: 2,

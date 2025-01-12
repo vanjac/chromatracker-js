@@ -1,5 +1,5 @@
 /** @type {Record<string, DocumentFragment>} */
-const templates = {__proto__: null}
+const templates = Object.create(null)
 
 for (let template of document.querySelectorAll('template')) {
     templates[template.id] = template.content
