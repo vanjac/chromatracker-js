@@ -10,10 +10,20 @@ import path from 'node:path'
  */
 function makeHTML(outFile, mainScript) {
     let html = fs.readFileSync('_main.html', {encoding: 'utf8'})
-    html = html.replace('{{version}}', process.argv[2] || 'develop')
     html = html.replace('{{main}}', mainScript)
 
     fs.writeFileSync(outFile, html)
+}
+
+/**
+ * @param {string} version
+ */
+function makeVersion(version) {
+    let versionScript = `// GENERATED
+
+export default "${version}"
+`
+    fs.writeFileSync('src/gen/Version.js', versionScript)
 }
 
 function makeIcons() {
@@ -34,6 +44,7 @@ import {html} from '../ui/DOMUtil.js'
     fs.writeFileSync('src/gen/Icons.js', iconsScript)
 }
 
+makeVersion(process.argv[2] || 'develop')
 makeIcons()
 makeHTML('index.html', 'src/Main.js')
 makeHTML('webl.html', '/webl_client.js') // https://github.com/jamesdiacono/Replete

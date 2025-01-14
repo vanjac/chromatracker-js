@@ -5,6 +5,7 @@ import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import {ConfirmDialogElement} from './dialogs/UtilDialogs.js'
 import {Cell, Module} from '../Model.js'
+import appVersion from '../gen/Version.js'
 import './FileToolbar.js'
 import './ModuleProperties.js'
 import './PatternEdit.js'
@@ -126,7 +127,7 @@ export class TrackerMainElement extends HTMLElement {
             }
         }
 
-        fragment.querySelector('#version').textContent = document.body.getAttribute('data-version')
+        fragment.querySelector('#version').textContent = appVersion
 
         this.addEventListener('contextmenu', () => {
             console.log('Selected:')
