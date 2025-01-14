@@ -1,8 +1,8 @@
 import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
+import * as $icons from '../gen/Icons.js'
 import {Cell, CellPart, Sample} from '../Model.js'
-import './InlineSVG.js'
 import './PianoKeyboard.js'
 
 const template = $dom.html`
@@ -85,7 +85,7 @@ const template = $dom.html`
 
         <div class="flex-grow"></div>
         <button id="writeEffect">
-            <inline-svg class="icon" src="keyboard-return.svg"></inline-svg>
+            ${$icons.keyboard_return}
         </button>
     </div>
 </div>

@@ -3,8 +3,8 @@ import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
+import * as $icons from '../gen/Icons.js'
 import {Pattern} from '../Model.js'
-import './InlineSVG.js'
 
 const template = $dom.html`
 <div class="hflex">
@@ -12,13 +12,13 @@ const template = $dom.html`
         <select id="patternSelect" class="seq-select show-checked"></select>
     </form>
     <button id="seqInsSame">
-        <inline-svg class="icon" src="equal.svg"></inline-svg>
+        ${$icons.equal}
     </button>
     <button id="seqInsClone">
-        <inline-svg class="icon" src="plus.svg"></inline-svg>
+        ${$icons.plus}
     </button>
     <button id="seqDel">
-        <inline-svg class="icon" src="close.svg"></inline-svg>
+        ${$icons.close}
     </button>
 </div>
 `

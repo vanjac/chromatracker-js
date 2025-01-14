@@ -8,11 +8,11 @@ import * as $wave from '../edit/Wave.js'
 import * as $audio from '../file/Audio.js'
 import * as $ext from '../file/External.js'
 import * as $wav from '../file/Wav.js'
+import * as $icons from '../gen/Icons.js'
 import {AlertDialogElement, InputDialogElement} from './dialogs/UtilDialogs.js'
 import {clamp, minMax} from '../Util.js'
 import {Cell, Effect, mod, Sample} from '../Model.js'
 import global from './GlobalState.js'
-import './InlineSVG.js'
 import './PianoKeyboard.js'
 
 const template = $dom.html`
@@ -39,10 +39,10 @@ const template = $dom.html`
         <div class="hflex">
             <label class="label-button">
                 <input id="file" type="file" accept="audio/*" autocomplete="off">
-                <span><inline-svg class="icon" src="folder-open.svg"></inline-svg></span>
+                <span>${$icons.folder_open}</span>
             </label>
             <button id="save">
-                <inline-svg class="icon" src="download.svg"></inline-svg>
+                ${$icons.download}
             </button>
             <label for="sampleRate">Resample:</label>
             <input id="sampleRate" type="number" class="med-input" value="16574.27">

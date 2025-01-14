@@ -1,31 +1,31 @@
 import * as $dom from './DOMUtil.js'
-import './InlineSVG.js'
+import * as $icons from '../gen/Icons.js'
 
 const template = $dom.html`
 <div class="hflex">
     <button id="playStart">
-        <inline-svg class="icon" src="step-forward.svg"></inline-svg>
+        ${$icons.step_forward}
     </button>
     <button id="playPattern">
-        <inline-svg class="icon" src="playlist-play.svg"></inline-svg>
+        ${$icons.playlist_play}
     </button>
     <button id="playRow">
-        <inline-svg class="icon" src="play.svg"></inline-svg>
+        ${$icons.play}
     </button>
     <button id="pause" class="hide show-checked">
-        <inline-svg class="icon" src="pause.svg"></inline-svg>
+        ${$icons.pause}
     </button>
     <label class="label-button">
         <input id="patternLoop" type="checkbox">
-        <span><inline-svg class="icon" src="repeat-variant.svg"></inline-svg></span>
+        <span>${$icons.repeat_variant}</span>
     </label>
     <label class="label-button">
         <input id="follow" type="checkbox" checked>
-        <span><inline-svg class="icon" src="format-indent-increase.svg"></inline-svg></span>
+        <span>${$icons.format_indent_increase}</span>
     </label>
     <div class="flex-grow"></div>
     <button id="undo">
-        <inline-svg class="icon" src="undo.svg"></inline-svg>
+        ${$icons.undo}
     </button>
 </div>
 `

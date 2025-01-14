@@ -1,19 +1,19 @@
 import * as $dom from './DOMUtil.js'
 import * as $play from '../Playback.js'
 import * as $sample from '../edit/Sample.js'
+import * as $icons from '../gen/Icons.js'
 import {SampleEditElement} from './SampleEdit.js'
 import {Sample} from '../Model.js'
-import './InlineSVG.js'
 
 const template = $dom.html`
 <div class="vflex flex-grow">
     <div class="hflex">
         <select id="sampleSelect" class="flex-grow" autocomplete="off"></select>
         <button id="addSample">
-            <inline-svg class="icon" src="plus.svg"></inline-svg>
+            ${$icons.plus}
         </button>
         <button id="delSample">
-            <inline-svg class="icon" src="close.svg"></inline-svg>
+            ${$icons.close}
         </button>
     </div>
     <hr>

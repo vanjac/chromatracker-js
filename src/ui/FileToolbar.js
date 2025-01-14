@@ -3,20 +3,20 @@ import * as $dom from './DOMUtil.js'
 import * as $module from '../edit/Module.js'
 import * as $ext from '../file/External.js'
 import * as $mod from '../file/Mod.js'
+import * as $icons from '../gen/Icons.js'
 import {AlertDialogElement} from './dialogs/UtilDialogs.js'
-import './InlineSVG.js'
 
 const template = $dom.html`
 <div class="hflex">
     <button id="newModule">
-        <inline-svg class="icon" src="file-plus-outline.svg"></inline-svg>
+        ${$icons.file_plus_outline}
     </button>
     <label class="label-button">
         <input id="fileSelect" type="file" autocomplete="off">
-        <span><inline-svg class="icon" src="folder-open.svg"></inline-svg></span>
+        <span>${$icons.folder_open}</span>
     </label>
     <button id="fileSave">
-        <inline-svg class="icon" src="download.svg"></inline-svg>
+        ${$icons.download}
     </button>
     <div class="flex-grow"></div>
     <select id="demoMenu" class="large-menu">

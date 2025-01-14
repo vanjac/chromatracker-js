@@ -2,8 +2,8 @@ import * as $dom from './DOMUtil.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
+import * as $icons from '../gen/Icons.js'
 import {Module} from '../Model.js'
-import './InlineSVG.js'
 
 const template = $dom.html`
 <div class="properties-grid">
@@ -16,10 +16,10 @@ const template = $dom.html`
     <div class="hflex">
         <output id="channelCount" class="small-input"></output>
         <button id="delChannels">
-            <inline-svg class="icon" src="minus.svg"></inline-svg>
+            ${$icons.minus}
         </button>
         <button id="addChannels">
-            <inline-svg class="icon" src="plus.svg"></inline-svg>
+            ${$icons.plus}
         </button>
     </div>
 
@@ -30,7 +30,7 @@ const template = $dom.html`
     <div class="hflex">
         <output id="patternCount" class="small-input"></output>
         <button id="patternZap">
-            <inline-svg class="icon" src="playlist-remove.svg"></inline-svg>
+            ${$icons.playlist_remove}
         </button>
     </div>
 
