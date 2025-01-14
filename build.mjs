@@ -5,17 +5,6 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 /**
- * @param {string} outFile
- * @param {string} mainScript
- */
-function makeHTML(outFile, mainScript) {
-    let html = fs.readFileSync('_main.html', {encoding: 'utf8'})
-    html = html.replace('{{main}}', mainScript)
-
-    fs.writeFileSync(outFile, html)
-}
-
-/**
  * @param {string} version
  */
 function makeVersion(version) {
@@ -46,5 +35,3 @@ import {html} from '../ui/DOMUtil.js'
 
 makeVersion(process.argv[2] || 'develop')
 makeIcons()
-makeHTML('index.html', 'src/Main.js')
-makeHTML('webl.html', '/webl_client.js') // https://github.com/jamesdiacono/Replete

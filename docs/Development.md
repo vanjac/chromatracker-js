@@ -14,5 +14,5 @@ ChromaTracker is targeting the following browsers:
 
 ## Building
 
-You must have Node.js installed. Run `node build.mjs` to build `index.html`.
+You must have Node.js installed. Run `node build.mjs` to rebuild the generated JavaScript in `src/gen`.
 (Or, with VSCode press Ctrl+Shift+B.)

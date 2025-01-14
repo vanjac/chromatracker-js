@@ -1,4 +1,4 @@
-name: Build index.html
+name: Build app
 
 on:
   # Runs on pushes targeting the default branch
