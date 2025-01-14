@@ -29,7 +29,10 @@ export function html(parts, ...values) {
     let fragment = template.content
 
     for (let [id, node] of Object.entries(placeholders)) {
-        fragment.getElementById(id).replaceWith(node.cloneNode(true))
+        if (node instanceof DocumentFragment) {
+            node = node.cloneNode(true)
+        }
+        fragment.getElementById(id).replaceWith(node)
     }
     return fragment
 }
