@@ -61,7 +61,7 @@ export class SamplesListElement extends HTMLElement {
      */
     _createSampleEdit(idx) {
         this._destroySampleEdit()
-        this._sampleEdit = $dom.createElem('sample-edit', {_target: this._target})
+        this._sampleEdit = new SampleEditElement(this._target)
         this._sampleEditContainer.appendChild(this._sampleEdit)
         this._sampleEdit._onChange = (sample, combineTag) => (
             this._target._changeModule(

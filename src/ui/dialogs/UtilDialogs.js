@@ -14,10 +14,14 @@ const alertDialogTemplate = $dom.html`
 `
 
 export class AlertDialogElement extends FormDialogElement {
-    constructor() {
+    /**
+     * @param {string} message
+     * @param {string} title
+     */
+    constructor(message = '', title = '') {
         super()
-        this._title = ''
-        this._message = ''
+        this._title = title
+        this._message = message
     }
 
     connectedCallback() {
@@ -40,7 +44,7 @@ window.customElements.define('alert-dialog', AlertDialogElement)
  * @param {string} title
  */
 AlertDialogElement.open = function(message, title = 'Error') {
-    return $dialog.open($dom.createElem('alert-dialog', {_message: message, _title: title}))
+    return $dialog.open(new AlertDialogElement(message, title))
 }
 
 const confirmDialogTemplate = $dom.html`
@@ -56,10 +60,14 @@ const confirmDialogTemplate = $dom.html`
 `
 
 export class ConfirmDialogElement extends FormDialogElement {
-    constructor() {
+    /**
+     * @param {string} message
+     * @param {string} title
+     */
+    constructor(message = '', title = '') {
         super()
-        this._title = ''
-        this._message = ''
+        this._title = title
+        this._message = message
         this._onConfirm = () => {}
         this._onCancel = () => {}
     }
@@ -104,7 +112,7 @@ window.customElements.define('confirm-dialog', ConfirmDialogElement)
  */
 ConfirmDialogElement.open = function(message, title = '') {
     return new Promise((resolve, reject) => {
-        let dialog = $dom.createElem('confirm-dialog', {_message: message, _title: title})
+        let dialog = new ConfirmDialogElement(message, title)
         dialog._onConfirm = resolve
         dialog._onCancel = reject
         $dialog.open(dialog)
@@ -127,11 +135,16 @@ const inputDialogTemplate = $dom.html`
 `
 
 export class InputDialogElement extends FormDialogElement {
-    constructor() {
+    /**
+     * @param {string} prompt
+     * @param {string} title
+     * @param {number} defaultValue
+     */
+    constructor(prompt = '', title = '', defaultValue = 0) {
         super()
-        this._title = ''
-        this._prompt = ''
-        this._defaultValue = 0
+        this._title = title
+        this._prompt = prompt
+        this._defaultValue = defaultValue
         /** @param {number} value */
         this._onConfirm = value => {}
         this._onCancel = () => {}
@@ -183,8 +196,7 @@ window.customElements.define('input-dialog', InputDialogElement)
  */
 InputDialogElement.open = function(prompt, title = '', defaultValue = 0) {
     return new Promise((resolve, reject) => {
-        let dialog = $dom.createElem('input-dialog', {_prompt: prompt, _title: title})
-        dialog._defaultValue = defaultValue
+        let dialog = new InputDialogElement(prompt, title, defaultValue)
         dialog._onConfirm = resolve
         dialog._onCancel = reject
         $dialog.open(dialog, {dismissable: true})

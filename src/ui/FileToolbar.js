@@ -4,7 +4,7 @@ import * as $module from '../edit/Module.js'
 import * as $ext from '../file/External.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
-import {AlertDialogElement} from './dialogs/UtilDialogs.js'
+import {AlertDialogElement, WaitDialogElement} from './dialogs/UtilDialogs.js'
 
 const template = $dom.html`
 <div class="hflex">
@@ -48,7 +48,7 @@ export class FileToolbarElement extends HTMLElement {
             }
         })
         $dom.addMenuListener(fragment.querySelector('#demoMenu'), value => {
-            let dialog = $dialog.open($dom.createElem('wait-dialog'))
+            let dialog = $dialog.open(new WaitDialogElement())
             window.fetch(value)
                 .then(r => r.blob())
                 .then(b => this._readModuleBlob(b))

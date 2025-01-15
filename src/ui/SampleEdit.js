@@ -9,7 +9,9 @@ import * as $audio from '../file/Audio.js'
 import * as $ext from '../file/External.js'
 import * as $wav from '../file/Wav.js'
 import * as $icons from '../gen/Icons.js'
-import {AlertDialogElement, InputDialogElement} from './dialogs/UtilDialogs.js'
+import {AlertDialogElement, InputDialogElement, WaitDialogElement} from './dialogs/UtilDialogs.js'
+import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
+import {FilterEffectElement} from './dialogs/FilterEffect.js'
 import {clamp, minMax} from '../Util.js'
 import {Cell, Effect, mod, Sample} from '../Model.js'
 import global from './GlobalState.js'
@@ -113,10 +115,12 @@ const template = $dom.html`
  * @implements {PianoKeyboardTarget}
  */
 export class SampleEditElement extends HTMLElement {
-    constructor() {
+    /**
+     * @param {ModuleEditTarget & JamTarget} target
+     */
+    constructor(target = null) {
         super()
-        /** @type {ModuleEditTarget & JamTarget} */
-        this._target = null
+        this._target = target
         /**
          * @param {Readonly<Sample>} sample
          * @param {string} combineTag
@@ -489,7 +493,7 @@ export class SampleEditElement extends HTMLElement {
                         if (error instanceof Error) { AlertDialogElement.open(error.message) }
                     }
                 } else {
-                    let dialog = $dialog.open($dom.createElem('wait-dialog'))
+                    let dialog = $dialog.open(new WaitDialogElement())
                     let promise = $audio.read(reader.result, this._sampleRateInput.valueAsNumber)
                     promise.then(({wave, volume}) => {
                         $dialog.close(dialog)
@@ -718,7 +722,7 @@ export class SampleEditElement extends HTMLElement {
 
     /** @private */
     _amplify() {
-        let dialog = $dialog.open($dom.createElem('amplify-effect'), {dismissable: true})
+        let dialog = $dialog.open(new AmplifyEffectElement(), {dismissable: true})
         dialog._onComplete = params => this._applyEffect($wave.amplify.bind(null, params))
     }
 
@@ -739,10 +743,10 @@ export class SampleEditElement extends HTMLElement {
 
     /** @private */
     _filter() {
-        let dialog = $dialog.open($dom.createElem('filter-effect'), {dismissable: true})
+        let dialog = $dialog.open(new FilterEffectElement(), {dismissable: true})
         dialog._onComplete = params => {
             let [start, end] = this._selRangeOrAll()
-            let waitDialog = $dialog.open($dom.createElem('wait-dialog'))
+            let waitDialog = $dialog.open(new WaitDialogElement())
             $sample.applyNode(this._viewSample, start, end, params.dither,
                 ctx => {
                     let node = ctx.createBiquadFilter()

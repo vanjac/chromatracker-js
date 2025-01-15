@@ -3,6 +3,7 @@ import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
 import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
+import {CLIDialogElement} from './dialogs/CLIDialog.js'
 import {ConfirmDialogElement} from './dialogs/UtilDialogs.js'
 import {Cell, Module} from '../Model.js'
 import appVersion from '../gen/Version.js'
@@ -140,7 +141,7 @@ export class TrackerMainElement extends HTMLElement {
                 e.preventDefault()
                 if (e.altKey) {
                     this._pause()
-                    let dialog = $dialog.open($dom.createElem('cli-dialog'), {dismissable: true})
+                    let dialog = $dialog.open(new CLIDialogElement(), {dismissable: true})
                     $cli.beginSel(() => $dialog.close(dialog))
                 }
             }

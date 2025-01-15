@@ -8,14 +8,8 @@ import {PatternEditElement} from './PatternEdit.js'
 import {PatternTableElement} from './PatternTable.js'
 import {PianoKeyboardElement} from './PianoKeyboard.js'
 import {PlaybackControlsElement} from './PlaybackControls.js'
-import {SampleEditElement} from './SampleEdit.js'
 import {SamplesListElement} from './SamplesList.js'
 import {SequenceEditElement} from './SequenceEdit.js'
-import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
-import {CLIDialogElement} from './dialogs/CLIDialog.js'
-import {FilterEffectElement} from './dialogs/FilterEffect.js'
-import {AlertDialogElement, ConfirmDialogElement, InputDialogElement, WaitDialogElement}
-    from './dialogs/UtilDialogs.js'
 
 declare global {
 
@@ -63,23 +57,15 @@ interface PlaybackControlsTarget {
 
 // Element type extensions
 interface HTMLElementTagNameMap {
-    'alert-dialog': AlertDialogElement
-    'amplify-effect': AmplifyEffectElement
     'cell-entry': CellEntryElement
-    'cli-dialog': CLIDialogElement
-    'confirm-dialog': ConfirmDialogElement
     'file-toolbar': FileToolbarElement
-    'filter-effect': FilterEffectElement
-    'input-dialog': InputDialogElement
     'module-properties': ModulePropertiesElement
     'pattern-edit': PatternEditElement
     'pattern-table': PatternTableElement
     'piano-keyboard': PianoKeyboardElement
     'playback-controls': PlaybackControlsElement
-    'sample-edit': SampleEditElement
     'samples-list': SamplesListElement
     'sequence-edit': SequenceEditElement
-    'wait-dialog': WaitDialogElement
 }
 
 } // global
