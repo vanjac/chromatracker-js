@@ -38,6 +38,54 @@ export function html(parts, ...values) {
 }
 
 /**
+ * @template T
+ * @typedef {HTMLElement & {state: T}} Elem
+ */
+
+/**
+ * @template State
+ * @template {unknown[]} ArgType
+ * @param {string} tag
+ * @param {(elem: HTMLElement, ...args: ArgType) => State} createFn
+ * @param {{
+ *       connected?: (elem: Elem<State>) => void
+ *       disconnected?: (elem: Elem<State>) => void
+ * }} callbacks
+ */
+export function define(tag, createFn, {connected, disconnected} = {}) {
+    let constructor = /** @type {{ new (...args: ArgType): Elem<State> }} */(
+        customElements.get(tag)
+    )
+
+    if (!constructor) {
+        constructor = class extends HTMLElement {
+            /**
+             * @param {ArgType} args
+             */
+            constructor(...args) {
+                super()
+                this.state = createFn(this, ...args)
+            }
+
+            connectedCallback() {
+                if (connected) {
+                    connected(this)
+                }
+            }
+
+            disconnectedCallback() {
+                if (disconnected) {
+                    disconnected(this)
+                }
+            }
+        }
+        customElements.define(tag, constructor)
+    }
+
+    return constructor
+}
+
+/**
  * @template {keyof HTMLElementTagNameMap} K
  * @param {K} tagName
  * @param {Partial<HTMLElementTagNameMap[K]>} properties
