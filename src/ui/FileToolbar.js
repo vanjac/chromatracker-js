@@ -27,63 +27,79 @@ const template = $dom.html`
 </div>
 `
 
-export class FileToolbarElement extends HTMLElement {
-    constructor() {
-        super()
+/** @typedef {ReturnType<create>} State */
+/** @typedef {$dom.Elem<State>} Elem */
+
+function create() {
+    return {
         /** @type {FileToolbarTarget} */
-        this._target = null
-    }
-
-    connectedCallback() {
-        let fragment = template.cloneNode(true)
-
-        fragment.querySelector('#newModule').addEventListener('click',
-            () => this._target._moduleLoaded($module.defaultNew))
-
-        /** @type {HTMLInputElement} */
-        let fileSelect = fragment.querySelector('#fileSelect')
-        fileSelect.addEventListener('change', () => {
-            if (fileSelect.files.length == 1) {
-                this._readModuleBlob(fileSelect.files[0])
-            }
-        })
-        $dom.addMenuListener(fragment.querySelector('#demoMenu'), value => {
-            let dialog = $dialog.open(new WaitDialogElement())
-            window.fetch(value)
-                .then(r => r.blob())
-                .then(b => this._readModuleBlob(b))
-                .then(() => $dialog.close(dialog))
-                .catch(/** @param {Error} error */ error => {
-                    $dialog.close(dialog)
-                    AlertDialogElement.open(error.message)
-                })
-        })
-        fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile())
-
-        this.style.display = 'contents'
-        this.appendChild(fragment)
-    }
-
-    /**
-     * @private
-     * @param {Blob} blob
-     */
-    _readModuleBlob(blob) {
-        let reader = new FileReader()
-        reader.onload = () => {
-            if (reader.result instanceof ArrayBuffer) {
-                let module = Object.freeze($mod.read(reader.result))
-                this._target._moduleLoaded(module)
-            }
-        }
-        reader.readAsArrayBuffer(blob)
-    }
-
-    /** @private */
-    _saveFile() {
-        let blob = new Blob([$mod.write(this._target._module)], {type: 'application/octet-stream'})
-        $ext.download(blob, (this._target._module.name || 'Untitled') + '.mod')
-        this._target._moduleSaved()
+        target: null
     }
 }
-window.customElements.define('file-toolbar', FileToolbarElement)
+
+/**
+ * @param {Elem} e
+ * @param {FileToolbarTarget} target
+ */
+export function setTarget(e, target) {
+    e.state.target = target
+}
+
+/**
+ * @param {Elem} e
+ */
+function connected(e) {
+    let fragment = template.cloneNode(true)
+
+    fragment.querySelector('#newModule').addEventListener('click',
+        () => e.state.target._moduleLoaded($module.defaultNew))
+
+    /** @type {HTMLInputElement} */
+    let fileSelect = fragment.querySelector('#fileSelect')
+    fileSelect.addEventListener('change', () => {
+        if (fileSelect.files.length == 1) {
+            readModuleBlob(e, fileSelect.files[0])
+        }
+    })
+    $dom.addMenuListener(fragment.querySelector('#demoMenu'), value => {
+        let dialog = $dialog.open(new WaitDialogElement())
+        window.fetch(value)
+            .then(r => r.blob())
+            .then(b => readModuleBlob(e, b))
+            .then(() => $dialog.close(dialog))
+            .catch(/** @param {Error} error */ error => {
+                $dialog.close(dialog)
+                AlertDialogElement.open(error.message)
+            })
+    })
+    fragment.querySelector('#fileSave').addEventListener('click', () => saveFile(e))
+
+    e.style.display = 'contents'
+    e.appendChild(fragment)
+}
+
+/**
+ * @param {Elem} e
+ * @param {Blob} blob
+ */
+function readModuleBlob(e, blob) {
+    let reader = new FileReader()
+    reader.onload = () => {
+        if (reader.result instanceof ArrayBuffer) {
+            let module = Object.freeze($mod.read(reader.result))
+            e.state.target._moduleLoaded(module)
+        }
+    }
+    reader.readAsArrayBuffer(blob)
+}
+
+/**
+ * @param {Elem} e
+ */
+function saveFile(e) {
+    let blob = new Blob([$mod.write(e.state.target._module)], {type: 'application/octet-stream'})
+    $ext.download(blob, (e.state.target._module.name || 'Untitled') + '.mod')
+    e.state.target._moduleSaved()
+}
+
+export const Elem = $dom.define('file-toolbar', create, {connected})

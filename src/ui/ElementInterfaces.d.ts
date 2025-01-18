@@ -1,8 +1,8 @@
 // Interfaces between elements
 
+import * as $fileToolbar from './FileToolbar.js'
 import {Cell, CellPart, Module} from '../Model.js'
 import {CellEntryElement} from './CellEntry.js'
-import {FileToolbarElement} from './FileToolbar.js'
 import {ModulePropertiesElement} from './ModuleProperties.js'
 import {PatternEditElement} from './PatternEdit.js'
 import {PatternTableElement} from './PatternTable.js'
@@ -58,7 +58,7 @@ interface PlaybackControlsTarget {
 // Element type extensions
 interface HTMLElementTagNameMap {
     'cell-entry': CellEntryElement
-    'file-toolbar': FileToolbarElement
+    'file-toolbar': $fileToolbar.Elem
     'module-properties': ModulePropertiesElement
     'pattern-edit': PatternEditElement
     'pattern-table': PatternTableElement

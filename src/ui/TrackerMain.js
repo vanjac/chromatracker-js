@@ -3,11 +3,11 @@ import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
 import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
+import * as $fileToolbar from './FileToolbar.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
 import {ConfirmDialogElement} from './dialogs/UtilDialogs.js'
 import {Cell, Module} from '../Model.js'
 import appVersion from '../gen/Version.js'
-import './FileToolbar.js'
 import './ModuleProperties.js'
 import './PatternEdit.js'
 import './PlaybackControls.js'
@@ -150,7 +150,7 @@ export class TrackerMainElement extends HTMLElement {
         this.style.display = 'contents'
         this.appendChild(fragment)
 
-        this._fileToolbar._target = this
+        $fileToolbar.setTarget(this._fileToolbar, this)
         this._moduleProperties._target = this
         this._playbackControls._target = this
         this._patternEdit._setTarget(this)
