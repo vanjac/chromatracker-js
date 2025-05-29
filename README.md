@@ -14,9 +14,4 @@ Currently implemented:
 
 TODO:
 
-- The UI is very rough since I have been focused on the core functionality
-- Add a sample browser / preview dialog; import samples from other modules
-- Add pattern matrix ([like Renoise](https://tutorials.renoise.com/wiki/Pattern_Matrix))
-- Audio render/export
-- Fix some playback issues like sample swapping
-- Improve pattern rendering performance
+The UI is very rough since I have been focused on the core functionality. Many features are still missing, see [Issues](https://github.com/vanjac/chromatracker-js/milestone/1).
