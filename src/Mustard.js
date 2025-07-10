@@ -1,4 +1,4 @@
-// Chrome 54, Firefox 63, iOS 10.3
-if (!window.customElements) {
+// Chrome 55, Firefox 63, iOS 13
+if (!window.customElements || !window.PointerEvent) {
     window.alert('Your browser is not supported by ChromaTracker. Please upgrade to a newer browser.')
 }
