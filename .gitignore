@@ -1,1 +1,9 @@
-/.vscode/settings.json
+# Dotfiles
+/.*
+!/.gitignore
+!/.editorconfig
+!/.eslintrc.json
+!/.htmlhintrc
+!/.github/
+
+/node_modules/
