@@ -31,7 +31,6 @@ const maxUndo = 100
  */
 
 const template = $dom.html`
-<div id="errors"></div>
 <playback-controls></playback-controls>
 
 <form id="appTabs" class="hflex tab-group" autocomplete="off">
@@ -106,7 +105,6 @@ export class TrackerMainElement extends HTMLElement {
         this._playbackControls = fragment.querySelector('playback-controls')
         this._patternEdit = fragment.querySelector('pattern-edit')
         this._samplesList = fragment.querySelector('samples-list')
-        this._errors = fragment.querySelector('#errors')
 
         /** @type {HTMLFormElement} */
         let tabForm = fragment.querySelector('#appTabs')
@@ -157,10 +155,6 @@ export class TrackerMainElement extends HTMLElement {
         this._samplesList._target = this
 
         window.onbeforeunload = () => (this._unsavedChangeCount ? 'You have unsaved changes' : null)
-        window.onerror = (message, source, line) => {
-            this._errors.insertAdjacentHTML('beforeend',
-                `${source}:${line}<br>&nbsp;&nbsp;${message}<br>`)
-        }
 
         this._refreshModule()
     }
