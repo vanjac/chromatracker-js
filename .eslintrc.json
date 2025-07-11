@@ -1,7 +1,7 @@
 {
     "env": {
         "browser": true,
-        "es2018": true
+        "es2020": true
     },
     "parserOptions": {
         "sourceType": "module"
@@ -19,14 +19,7 @@
         "no-undef": "off",
         "no-unused-vars": "off",
         // annoying:
-        "no-empty": "off"
-    },
-    "overrides": [
-        {
-            "files": ["build.mjs"],
-            "parserOptions": {
-                "sourceType": "module"
-            }
-        }
-    ]
+        "no-empty": "off",
+		"no-constant-condition": "off"
+    }
 }

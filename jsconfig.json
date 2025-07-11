@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "target": "ES2018",
+        "module": "ES2020",
         "checkJs": true,
         "skipLibCheck": false,
         "noEmit": true,

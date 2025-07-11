@@ -1,5 +1,11 @@
 // Custom overrides for TypeScript's built-in libraries
 
+interface ImportMeta {
+	// Replete compatibility
+	// https://docs.deno.com/runtime/reference/deno_namespace_apis/#import.meta.main
+	main: boolean
+}
+
 interface ObjectConstructor {
     // Cleaner return types for Object.assign()
     assign<T extends {}>(target: T, ...sources: Partial<T>[]): T
