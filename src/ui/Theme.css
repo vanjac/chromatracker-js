@@ -11,19 +11,3 @@ body {
     --color-bg-alt: #d28;
     --color-fg-alt: #f8a;
 }
-
-@media (prefers-color-scheme: light) {
-    body {
-        --color-bg: #fff;
-        --color-fg: #222;
-
-        --color-bg-btn: #eee;
-        --color-bg-btn-press: #ccc;
-
-        --color-bg-hl: #ecf;
-        --color-fg-hl: #b4f;
-
-        --color-bg-alt: #fcd;
-        --color-fg-alt: #d28;
-    }
-}
