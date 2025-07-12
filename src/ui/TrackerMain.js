@@ -413,5 +413,5 @@ $dom.defineUnique('tracker-main', TrackerMainElement)
 let testElem
 if (import.meta.main) {
     testElem = new TrackerMainElement()
-    $dom.displayTestElem(testElem)
+    $dom.displayMain(testElem)
 }

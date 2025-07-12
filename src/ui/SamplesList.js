@@ -188,6 +188,6 @@ if (import.meta.main) {
             console.log('Jam release', id)
         },
     }
-    $dom.displayTestElem(testElem)
+    $dom.displayMain(testElem)
     testElem._setSamples(module.samples)
 }

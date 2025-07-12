@@ -195,7 +195,7 @@ if (import.meta.main) {
             testElem._setPatterns(module.patterns)
         },
     }
-    $dom.displayTestElem(testElem)
+    $dom.displayMain(testElem)
     testElem._setSequence(module.sequence)
     testElem._setPatterns(module.patterns)
 }

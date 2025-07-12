@@ -101,5 +101,5 @@ if (import.meta.main) {
             console.log('Module saved')
         },
     }
-    $dom.displayTestElem(testElem)
+    $dom.displayMain(testElem)
 }

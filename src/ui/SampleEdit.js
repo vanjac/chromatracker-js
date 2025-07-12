@@ -774,6 +774,6 @@ if (import.meta.main) {
         console.log('Change', commit)
         testElem._setSample(sample)
     }
-    $dom.displayTestElem(testElem)
+    $dom.displayMain(testElem)
     testElem._setSample(Sample.empty)
 }

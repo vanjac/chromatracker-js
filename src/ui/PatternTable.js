@@ -295,7 +295,7 @@ if (import.meta.main) {
             console.log('Jam release', id)
         },
     }
-    $dom.displayTestElem(testElem)
+    $dom.displayMain(testElem)
     testElem._setNumChannels(4)
     testElem._setPattern($pattern.create(4))
 }

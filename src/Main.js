@@ -1,4 +1,5 @@
+import * as $dom from './ui/DOMUtil.js'
 import {TrackerMainElement} from './ui/TrackerMain.js'
 import './ui/WebApp.js'
 
-document.querySelector('.base').append(new TrackerMainElement())
+$dom.displayMain(new TrackerMainElement())

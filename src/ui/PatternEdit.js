@@ -369,7 +369,7 @@ let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new PatternEditElement()
-    $dom.displayTestElem(testElem)
+    $dom.displayMain(testElem)
     testElem._setTarget({
         _setMute(c, mute) {
             console.log('Set mute', c, mute)

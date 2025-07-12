@@ -153,6 +153,6 @@ if (import.meta.main) {
             testElem._setModule(module)
         },
     }
-    $dom.displayTestElem(testElem)
+    $dom.displayMain(testElem)
     testElem._setModule(module)
 }

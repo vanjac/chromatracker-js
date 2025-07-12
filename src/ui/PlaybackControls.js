@@ -106,5 +106,5 @@ if (import.meta.main) {
             console.log('Undo')
         },
     }
-    $dom.displayTestElem(testElem)
+    $dom.displayMain(testElem)
 }

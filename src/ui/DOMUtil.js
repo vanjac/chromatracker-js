@@ -67,12 +67,12 @@ export function defineUnique(name, constructor) {
 }
 
 /**
- * This function should only be called in test code (import.meta.main).
- * It is not compatible with all target browsers.
  * @param {Element} elem
  */
-export function displayTestElem(elem) {
-    document.querySelector('.base').replaceChildren(elem)
+export function displayMain(elem) {
+    let base = document.querySelector('.base')
+    base.textContent = ''
+    base.append(elem)
 }
 
 /**

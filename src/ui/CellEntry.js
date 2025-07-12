@@ -290,7 +290,7 @@ if (import.meta.main) {
             console.log('Update entry parts')
         },
     }
-    $dom.displayTestElem(testElem)
+    $dom.displayMain(testElem)
     testElem._setJamTarget({
         _jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
