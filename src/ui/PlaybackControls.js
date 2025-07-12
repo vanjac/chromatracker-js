@@ -84,4 +84,4 @@ export class PlaybackControlsElement extends HTMLElement {
         this._pauseButton.classList.toggle('hide', !playing)
     }
 }
-window.customElements.define('playback-controls', PlaybackControlsElement)
+$dom.defineUnique('playback-controls', PlaybackControlsElement)

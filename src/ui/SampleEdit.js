@@ -767,4 +767,4 @@ export class SampleEditElement extends HTMLElement {
         }
     }
 }
-window.customElements.define('sample-edit', SampleEditElement)
+$dom.defineUnique('sample-edit', SampleEditElement)

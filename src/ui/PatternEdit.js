@@ -361,4 +361,4 @@ export class PatternEditElement extends HTMLElement {
         this._speedInput.valueAsNumber = speed
     }
 }
-window.customElements.define('pattern-edit', PatternEditElement)
+$dom.defineUnique('pattern-edit', PatternEditElement)

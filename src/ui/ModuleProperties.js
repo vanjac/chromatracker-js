@@ -140,4 +140,4 @@ export class ModulePropertiesElement extends HTMLElement {
         return ((i > 0 && n < 1000) ? n.toPrecision(3) : n) + ' ' + ['bytes', 'kB', 'MB'][i]
     }
 }
-window.customElements.define('module-properties', ModulePropertiesElement)
+$dom.defineUnique('module-properties', ModulePropertiesElement)

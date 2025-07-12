@@ -111,4 +111,4 @@ export class PianoKeyboardElement extends HTMLElement {
         this._piano.scrollBy({left: scrollAmount, behavior: 'instant'})
     }
 }
-window.customElements.define('piano-keyboard', PianoKeyboardElement)
+$dom.defineUnique('piano-keyboard', PianoKeyboardElement)

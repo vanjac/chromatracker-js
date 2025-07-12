@@ -204,4 +204,4 @@ export class FilterEffectElement extends FormDialogElement {
         $dialog.close(this)
     }
 }
-window.customElements.define('filter-effect', FilterEffectElement)
+$dom.defineUnique('filter-effect', FilterEffectElement)

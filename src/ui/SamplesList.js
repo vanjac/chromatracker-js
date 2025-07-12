@@ -167,4 +167,4 @@ export class SamplesListElement extends HTMLElement {
         this._target._changeModule(module => $sample.update(module, idx, null))
     }
 }
-window.customElements.define('samples-list', SamplesListElement)
+$dom.defineUnique('samples-list', SamplesListElement)

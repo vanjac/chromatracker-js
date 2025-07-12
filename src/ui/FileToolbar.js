@@ -86,4 +86,4 @@ export class FileToolbarElement extends HTMLElement {
         this._target._moduleSaved()
     }
 }
-window.customElements.define('file-toolbar', FileToolbarElement)
+$dom.defineUnique('file-toolbar', FileToolbarElement)

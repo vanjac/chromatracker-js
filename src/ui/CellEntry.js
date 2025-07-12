@@ -271,4 +271,4 @@ export class CellEntryElement extends HTMLElement {
         this._target._updateCell()
     }
 }
-window.customElements.define('cell-entry', CellEntryElement)
+$dom.defineUnique('cell-entry', CellEntryElement)

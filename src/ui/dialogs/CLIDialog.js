@@ -34,4 +34,4 @@ export class CLIDialogElement extends FormDialogElement {
         $dialog.close(this)
     }
 }
-window.customElements.define('cli-dialog', CLIDialogElement)
+$dom.defineUnique('cli-dialog', CLIDialogElement)

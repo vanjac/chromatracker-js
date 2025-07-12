@@ -279,4 +279,4 @@ export class PatternTableElement extends HTMLElement {
         return ! this._muteInputs[channel].checked
     }
 }
-window.customElements.define('pattern-table', PatternTableElement)
+$dom.defineUnique('pattern-table', PatternTableElement)

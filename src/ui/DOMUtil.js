@@ -48,6 +48,34 @@ export function createElem(tagName, properties = {}) {
 }
 
 /**
+ * @param {string} name
+ * @param {CustomElementConstructor} constructor
+ */
+export function defineUnique(name, constructor) {
+    if (!window.customElements.get(name)) {
+        window.customElements.define(name, constructor)
+    } else {
+        let i = 2
+        while (window.customElements.get(name + i)) {
+            i++
+        }
+        name += i
+        console.log('Redefined as', name)
+        window.customElements.define(name, constructor)
+    }
+    return name
+}
+
+/**
+ * This function should only be called in test code (import.meta.main).
+ * It is not compatible with all target browsers.
+ * @param {Element} elem
+ */
+export function displayTestElem(elem) {
+    document.querySelector('.base').replaceChildren(elem)
+}
+
+/**
  * @param {HTMLFormElement} form
  */
 export function disableFormSubmit(form) {

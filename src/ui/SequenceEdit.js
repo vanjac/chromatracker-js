@@ -179,4 +179,4 @@ export class SequenceEditElement extends HTMLElement {
         this._target._changeModule(module => $sequence.del(module, pos))
     }
 }
-window.customElements.define('sequence-edit', SequenceEditElement)
+$dom.defineUnique('sequence-edit', SequenceEditElement)

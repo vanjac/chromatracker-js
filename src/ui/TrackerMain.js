@@ -448,4 +448,4 @@ export class TrackerMainElement extends HTMLElement {
         }
     }
 }
-window.customElements.define('tracker-main', TrackerMainElement)
+$dom.defineUnique('tracker-main', TrackerMainElement)

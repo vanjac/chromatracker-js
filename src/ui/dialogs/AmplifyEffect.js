@@ -57,4 +57,4 @@ export class AmplifyEffectElement extends FormDialogElement {
         $dialog.close(this)
     }
 }
-window.customElements.define('amplify-effect', AmplifyEffectElement)
+$dom.defineUnique('amplify-effect', AmplifyEffectElement)

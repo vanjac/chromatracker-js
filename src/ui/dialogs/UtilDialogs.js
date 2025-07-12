@@ -37,7 +37,7 @@ export class AlertDialogElement extends FormDialogElement {
         this.appendChild(fragment)
     }
 }
-window.customElements.define('alert-dialog', AlertDialogElement)
+$dom.defineUnique('alert-dialog', AlertDialogElement)
 
 /**
  * @param {string} message
@@ -103,7 +103,7 @@ export class ConfirmDialogElement extends FormDialogElement {
         super._dismiss()
     }
 }
-window.customElements.define('confirm-dialog', ConfirmDialogElement)
+$dom.defineUnique('confirm-dialog', ConfirmDialogElement)
 
 /**
  * @param {string} message
@@ -186,7 +186,7 @@ export class InputDialogElement extends FormDialogElement {
         super._dismiss()
     }
 }
-window.customElements.define('input-dialog', InputDialogElement)
+$dom.defineUnique('input-dialog', InputDialogElement)
 
 /**
  * @param {string} prompt
@@ -218,4 +218,4 @@ export class WaitDialogElement extends DialogElement {
         this.appendChild(fragment)
     }
 }
-window.customElements.define('wait-dialog', WaitDialogElement)
+$dom.defineUnique('wait-dialog', WaitDialogElement)
