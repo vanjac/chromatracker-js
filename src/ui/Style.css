@@ -17,12 +17,9 @@
 }
 .hscrollable {
     overflow-x: auto;
-    /* fix scroll momentum on old Safari */
-    -webkit-overflow-scrolling: touch;
 }
 .vscrollable {
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
 }
 .hscrollable > *,
 .vscrollable > * {
@@ -256,7 +253,6 @@ table,
 /* https://issues.chromium.org/issues/40511425 */
 th {
     position: sticky;
-    position: -webkit-sticky;
     background-color: var(--color-bg);
     z-index: 1;
 }
