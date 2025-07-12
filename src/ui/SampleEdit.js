@@ -16,6 +16,7 @@ import {clamp, minMax} from '../Util.js'
 import {Cell, Effect, mod, Sample} from '../Model.js'
 import global from './GlobalState.js'
 import './PianoKeyboard.js'
+/** @import {JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
 <div class="vflex flex-grow">
@@ -111,21 +112,15 @@ const template = $dom.html`
 </div>
 `
 
-/**
- * @implements {PianoKeyboardTarget}
- */
 export class SampleEditElement extends HTMLElement {
     /**
-     * @param {ModuleEditTarget & JamTarget} target
+     * @param {JamCallbacks & {
+     *      onChange(sample: Readonly<Sample>, commit: boolean): void
+     * }} callbacks
      */
-    constructor(target = null) {
+    constructor(callbacks = null) {
         super()
-        this._target = target
-        /**
-         * @param {Readonly<Sample>} sample
-         * @param {boolean} commit
-         */
-        this._onChange = (sample, commit) => {}
+        this._callbacks = callbacks
 
         this._selectA = -1
         this._selectB = -1
@@ -277,14 +272,18 @@ export class SampleEditElement extends HTMLElement {
 
         this.addEventListener('contextmenu', () => {
             $cli.addSelProp('sample', 'object', this._viewSample,
-                sample => this._onChange(Object.freeze(sample), true))
+                sample => this._callbacks.onChange(Object.freeze(sample), true))
         })
 
         this.style.display = 'contents'
         this.appendChild(fragment)
 
-        this._piano._target = this
-        this._piano._jam = this._target
+        this._piano._callbacks = {
+            jamPlay: (...args) => this._callbacks.jamPlay(...args),
+            jamRelease: (...args) => this._callbacks.jamRelease(...args),
+            pitchChanged() {},
+            getJamCell: this._getJamCell.bind(this),
+        }
         this._piano._useChannel = false
         this._piano._scrollToSelPitch()
     }
@@ -459,7 +458,7 @@ export class SampleEditElement extends HTMLElement {
         if (!dirty) {
             this._viewSample = immSample // avoid unnecessary refresh
         }
-        this._onChange(immSample, commit)
+        this._callbacks.onChange(immSample, commit)
     }
 
     /**
@@ -477,7 +476,7 @@ export class SampleEditElement extends HTMLElement {
                     try {
                         let newSample = $wav.read(reader.result)
                         newSample.name = name
-                        this._onChange(newSample, true)
+                        this._callbacks.onChange(newSample, true)
                     } catch (error) {
                         if (error instanceof Error) { AlertDialogElement.open(error.message) }
                     }
@@ -516,8 +515,6 @@ export class SampleEditElement extends HTMLElement {
         let pos = (clientX - waveRect.left) * this._viewSample.wave.length / waveRect.width
         return clamp(Math.round(pos), 0, this._viewSample.wave.length)
     }
-
-    _pitchChanged() {}
 
     /**
      * @returns {Cell}
@@ -631,7 +628,7 @@ export class SampleEditElement extends HTMLElement {
     /** @private */
     _trim() {
         if (this._rangeSelected()) {
-            this._onChange($sample.trim(this._viewSample, this._selMin(), this._selMax()), true)
+            this._callbacks.onChange($sample.trim(this._viewSample, this._selMin(), this._selMax()), true)
             this._selectNone()
         }
     }
@@ -647,7 +644,7 @@ export class SampleEditElement extends HTMLElement {
         if (this._rangeSelected()) {
             this._copy()
             let [start, end] = this._sel()
-            this._onChange($sample.del(this._viewSample, start, end), true)
+            this._callbacks.onChange($sample.del(this._viewSample, start, end), true)
             this._setSel(start, start)
         }
     }
@@ -659,7 +656,7 @@ export class SampleEditElement extends HTMLElement {
      * @param {Readonly<Int8Array>} wave
      */
     _replace(start, end, wave) {
-        this._onChange($sample.splice(this._viewSample, start, end, wave), true)
+        this._callbacks.onChange($sample.splice(this._viewSample, start, end, wave), true)
         let newEnd = start + wave.length
         this._setSel(newEnd, newEnd)
     }
@@ -684,7 +681,7 @@ export class SampleEditElement extends HTMLElement {
                 newSample = $sample.splice(newSample, loopStart, loopStart, loopWave)
             }
             newSample = Object.freeze({...newSample, loopStart})
-            this._onChange(newSample, true)
+            this._callbacks.onChange(newSample, true)
             global.lastLoopRepeat = count
         })
     }
@@ -697,7 +694,7 @@ export class SampleEditElement extends HTMLElement {
         let {loopStart, loopEnd} = this._viewSample
         let loopWave = new Int8Array(loopEnd - loopStart)
         $wave.reverse(this._viewSample.wave.subarray(loopStart, loopEnd), loopWave)
-        this._onChange($sample.splice(this._viewSample, loopEnd, loopEnd, loopWave), true)
+        this._callbacks.onChange($sample.splice(this._viewSample, loopEnd, loopEnd, loopWave), true)
     }
 
     /**
@@ -706,7 +703,7 @@ export class SampleEditElement extends HTMLElement {
      */
     _applyEffect(effect) {
         let [start, end] = this._selRangeOrAll()
-        this._onChange($sample.applyEffect(this._viewSample, start, end, effect), true)
+        this._callbacks.onChange($sample.applyEffect(this._viewSample, start, end, effect), true)
     }
 
     /** @private */
@@ -722,7 +719,7 @@ export class SampleEditElement extends HTMLElement {
             let [start, end] = this._selRangeOrAll()
             let length = (end - start) * (2 ** (-semitones / 12))
             let newWave = $sample.spliceEffect(this._viewSample, start, end, length, $wave.resample)
-            this._onChange(newWave, true)
+            this._callbacks.onChange(newWave, true)
             if (this._rangeSelected()) {
                 this._setSel(start, start + length)
             }
@@ -750,7 +747,7 @@ export class SampleEditElement extends HTMLElement {
                     node.type = params.type
                     return node
                 })
-                .then(s => this._onChange(s, true))
+                .then(s => this._callbacks.onChange(s, true))
                 .then(() => $dialog.close(waitDialog))
                 .catch(() => $dialog.close(waitDialog))
         }
@@ -762,18 +759,17 @@ $dom.defineUnique('sample-edit', SampleEditElement)
 let testElem
 if (import.meta.main) {
     testElem = new SampleEditElement({
-        _changeModule(_callback, _commit) {},
-        _jamPlay(id, cell, _options) {
+        jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },
-        _jamRelease(id) {
+        jamRelease(id) {
             console.log('Jam release', id)
         },
+        onChange(sample, commit) {
+            console.log('Change', commit)
+            testElem._setSample(sample)
+        },
     })
-    testElem._onChange = (sample, commit) => {
-        console.log('Change', commit)
-        testElem._setSample(sample)
-    }
     $dom.displayMain(testElem)
     testElem._setSample(Sample.empty)
 }

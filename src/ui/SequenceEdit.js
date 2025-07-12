@@ -6,6 +6,7 @@ import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $icons from '../gen/Icons.js'
 import {Pattern} from '../Model.js'
+/** @import {ModuleEditCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
 <div class="hflex">
@@ -25,15 +26,18 @@ const template = $dom.html`
 `
 
 export class SequenceEditElement extends HTMLElement {
-    constructor() {
+    /**
+     * @param {ModuleEditCallbacks & {
+     *      onSelect(): void
+     * }} callbacks
+     */
+    constructor(callbacks = null) {
         super()
-        /** @type {ModuleEditTarget} */
-        this._target = null
+        this._callbacks = callbacks
         this._selPos = 0
         /** @type {readonly number[]} */
         this._viewSequence = null
         this._viewNumPatterns = 0
-        this._onSelect = () => {}
     }
 
     connectedCallback() {
@@ -56,7 +60,7 @@ export class SequenceEditElement extends HTMLElement {
         this._select.addEventListener('input', () => this._seqSet(this._select.selectedIndex))
         this._select.addEventListener('contextmenu', () => {
             $cli.addSelProp('patnum', 'number', this._viewSequence[this._selPos],
-                num => this._target._changeModule(
+                num => this._callbacks.changeModule(
                     module => $sequence.set(module, this._selPos, num)))
         })
 
@@ -89,14 +93,14 @@ export class SequenceEditElement extends HTMLElement {
             this._sequenceList.appendChild(label)
             label.addEventListener('change', () => {
                 this._selPos = i
-                this._onSelect()
+                this._callbacks.onSelect()
                 this._updateSel()
             })
             label.addEventListener('contextmenu', () => {
                 this._setSelPos(i)
-                this._onSelect()
+                this._callbacks.onSelect()
                 $cli.addSelProp('patnum', 'number', this._viewSequence[i],
-                    num => this._target._changeModule(module => $sequence.set(module, i, num)))
+                    num => this._callbacks.changeModule(module => $sequence.set(module, i, num)))
             })
             this._sequenceButtons.push(label)
         }
@@ -149,20 +153,20 @@ export class SequenceEditElement extends HTMLElement {
      * @param {number} p
      */
     _seqSet(p) {
-        this._target._changeModule(module => $sequence.set(module, this._selPos, p))
+        this._callbacks.changeModule(module => $sequence.set(module, this._selPos, p))
     }
 
     /** @private */
     _seqInsSame() {
         this._selPos++
-        this._target._changeModule(module =>
+        this._callbacks.changeModule(module =>
             $sequence.insert(module, this._selPos, module.sequence[this._selPos - 1]))
     }
 
     /** @private */
     _seqInsClone() {
         this._selPos++
-        this._target._changeModule(module => {
+        this._callbacks.changeModule(module => {
             module = $pattern.clone(module, module.sequence[this._selPos - 1])
             return $sequence.insert(module, this._selPos, module.patterns.length - 1)
         })
@@ -177,7 +181,7 @@ export class SequenceEditElement extends HTMLElement {
         if (this._selPos >= this._viewSequence.length - 1) {
             this._selPos--
         }
-        this._target._changeModule(module => $sequence.del(module, pos))
+        this._callbacks.changeModule(module => $sequence.del(module, pos))
     }
 }
 $dom.defineUnique('sequence-edit', SequenceEditElement)
@@ -186,15 +190,17 @@ $dom.defineUnique('sequence-edit', SequenceEditElement)
 let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
-    testElem = new SequenceEditElement()
-    testElem._target = {
-        _changeModule(callback, commit) {
+    testElem = new SequenceEditElement({
+        changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
             testElem._setSequence(module.sequence)
             testElem._setPatterns(module.patterns)
         },
-    }
+        onSelect() {
+            console.log('Select')
+        }
+    })
     $dom.displayMain(testElem)
     testElem._setSequence(module.sequence)
     testElem._setPatterns(module.patterns)

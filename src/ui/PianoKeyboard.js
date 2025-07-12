@@ -4,6 +4,7 @@ import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
 import {Cell} from '../Model.js'
 import periodTable from '../PeriodTable.js'
+/** @import {JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
 <div class="hflex">
@@ -19,12 +20,15 @@ const template = $dom.html`
 `
 
 export class PianoKeyboardElement extends HTMLElement {
-    constructor() {
+    /**
+     * @param {JamCallbacks & {
+     *      pitchChanged(): void
+     *      getJamCell(): Cell
+     * }} callbacks
+     */
+    constructor(callbacks = null) {
         super()
-        /** @type {PianoKeyboardTarget} */
-        this._target = null
-        /** @type {JamTarget} */
-        this._jam = null
+        this._callbacks = callbacks
         this._useChannel = true
     }
 
@@ -46,10 +50,11 @@ export class PianoKeyboardElement extends HTMLElement {
                     && elem.parentElement.parentElement.parentElement == this._piano) {
                 let input = elem.parentElement.querySelector('input')
                 $dom.selectRadioButton(this._pitchInput, input.value)
-                this._target._pitchChanged()
-                this._jam._jamPlay(id, this._target._getJamCell(), {useChannel: this._useChannel})
+                this._callbacks.pitchChanged()
+                this._callbacks.jamPlay(
+                    id, this._callbacks.getJamCell(), {useChannel: this._useChannel})
             }
-        }, id => this._jam._jamRelease(id))
+        }, id => this._callbacks.jamRelease(id))
         fragment.querySelector('#pianoLeft').addEventListener('click',
             /** @param {UIEventInit} e */ e => {
                 let keyWidth = this._pianoKeys[0].clientWidth
@@ -116,22 +121,19 @@ $dom.defineUnique('piano-keyboard', PianoKeyboardElement)
 
 let testElem
 if (import.meta.main) {
-    testElem = new PianoKeyboardElement()
-    testElem._target = {
-        _pitchChanged() {
+    testElem = new PianoKeyboardElement({
+        pitchChanged() {
             console.log("Pitch changed")
         },
-        _getJamCell() {
+        getJamCell() {
             return Cell.empty
         },
-    }
-    testElem._jam = {
-        _jamPlay(id, cell, _options) {
+        jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },
-        _jamRelease(id) {
+        jamRelease(id) {
             console.log('Jam release', id)
         },
-    }
+    })
     $dom.displayMain(testElem)
 }

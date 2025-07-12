@@ -18,7 +18,20 @@ const playbackQueueTime = 0.5
 const playbackDelay = 0.1
 const processInterval = 200
 
-const maxUndo = 100
+/**
+ * @typedef {{
+ *      changeModule(
+ *          callback: (module: Readonly<Module>) => Readonly<Module>, commit?: boolean
+ *      ): void
+ * }} ModuleEditCallbacks
+ */
+
+/**
+ * @typedef {{
+ *      jamPlay(id: number, cell: Readonly<Cell>, options?: {useChannel?: boolean}): void
+        jamRelease(id: number): void
+ * }} JamCallbacks
+ */
 
 /**
  * @typedef {{
@@ -66,13 +79,6 @@ const template = $dom.html`
 </div>
 `
 
-/**
- * @implements {JamTarget}
- * @implements {ModuleEditTarget}
- * @implements {PatternTableTarget}
- * @implements {FileToolbarTarget}
- * @implements {PlaybackControlsTarget}
- */
 export class TrackerMainElement extends HTMLElement {
     constructor() {
         super()
@@ -145,11 +151,32 @@ export class TrackerMainElement extends HTMLElement {
         this.style.display = 'contents'
         this.appendChild(fragment)
 
-        this._fileToolbar._target = this
-        this._moduleProperties._target = this
-        this._playbackControls._target = this
-        this._patternEdit._setTarget(this)
-        this._samplesList._target = this
+        this._fileToolbar._callbacks = {
+            getModule: () => this._module.value,
+            moduleLoaded: this._moduleLoaded.bind(this),
+            moduleSaved: () => this._module.saved(),
+        }
+        this._moduleProperties._callbacks = {
+            changeModule: this._changeModule.bind(this),
+        }
+        this._playbackControls._callbacks = {
+            resetPlayback: this._resetPlayback.bind(this),
+            play: this._play.bind(this),
+            pause: this._pause.bind(this),
+            updatePlaySettings: this._updatePlaySettings.bind(this),
+            undo: this._undo.bind(this),
+        }
+        this._patternEdit._callbacks = {
+            jamPlay: this._jamPlay.bind(this),
+            jamRelease: this._jamRelease.bind(this),
+            setMute: this._setMute.bind(this),
+            changeModule: this._changeModule.bind(this),
+        }
+        this._samplesList._callbacks = {
+            jamPlay: this._jamPlay.bind(this),
+            jamRelease: this._jamRelease.bind(this),
+            changeModule: this._changeModule.bind(this),
+        }
 
         window.onbeforeunload = () => (this._module.isUnsaved() ? 'You have unsaved changes' : null)
 
@@ -178,10 +205,6 @@ export class TrackerMainElement extends HTMLElement {
         }
     }
 
-    _getModule() {
-        return this._module.value
-    }
-
     /**
      * @param {Readonly<Module>} module
      */
@@ -191,10 +214,6 @@ export class TrackerMainElement extends HTMLElement {
             this._resetEditorState(module)
             this._resetPlayback()
         })
-    }
-
-    _moduleSaved() {
-        this._module.saved()
     }
 
     /**

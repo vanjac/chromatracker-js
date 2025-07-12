@@ -5,6 +5,7 @@ import * as $keyPad from './KeyPad.js'
 import * as $pattern from '../edit/Pattern.js'
 import {CellPart, Pattern} from '../Model.js'
 import {minMax} from '../Util.js'
+/** @import {JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
 <div id="patternScroll" class="hscrollable vscrollable flex-grow">
@@ -28,12 +29,15 @@ const cellTemplate = $dom.html`
 `
 
 export class PatternTableElement extends HTMLElement {
-    constructor() {
+    /**
+     * @param {JamCallbacks & {
+     *      setMute(c: number, mute: boolean): void
+            onChange(pattern: Readonly<Pattern>): void
+     * }} callbacks
+     */
+    constructor(callbacks = null) {
         super()
-        /** @type {PatternTableTarget & JamTarget} */
-        this._target = null
-        /** @param {Readonly<Pattern>} pattern */
-        this._onChange = pattern => {}
+        this._callbacks = callbacks
         this._selChannel = 0
         this._selRow = 0
         this._markChannel = -1
@@ -61,7 +65,7 @@ export class PatternTableElement extends HTMLElement {
             $cli.addSelProp('channel', 'number', this._selChannel,
                 channel => this._setSelCell(this._selChannel, channel))
             $cli.addSelProp('pattern', Array, this._viewPattern,
-                pattern => this._onChange(Object.freeze(pattern)))
+                pattern => this._callbacks.onChange(Object.freeze(pattern)))
         })
 
         this.style.display = 'contents'
@@ -94,7 +98,7 @@ export class PatternTableElement extends HTMLElement {
                 input.checked = true
             }
             input.addEventListener('change',
-                () => this._target._setMute(c, !input.checked))
+                () => this._callbacks.setMute(c, !input.checked))
                 newMuteInputs.push(input)
             let label = th.appendChild($dom.createElem('label', {htmlFor: input.id}))
             label.textContent = 'Ch ' + (c + 1).toString()
@@ -140,11 +144,11 @@ export class PatternTableElement extends HTMLElement {
                     let td = cellFrag.querySelector('td')
                     $keyPad.makeKeyButton(td, id => {
                         this._setSelCell(c, row)
-                        this._target._jamPlay(id, this._viewPattern[c][row])
-                    }, id => this._target._jamRelease(id), {blockScroll: false})
+                        this._callbacks.jamPlay(id, this._viewPattern[c][row])
+                    }, id => this._callbacks.jamRelease(id), {blockScroll: false})
                     td.addEventListener('contextmenu', () => {
                         $cli.addSelProp('cell', 'object', this._viewPattern[c][row], cell => {
-                            this._onChange($pattern.putCell(
+                            this._callbacks.onChange($pattern.putCell(
                                 this._viewPattern, c, row, cell, CellPart.all))
                         })
                     })
@@ -283,18 +287,20 @@ $dom.defineUnique('pattern-table', PatternTableElement)
 
 let testElem
 if (import.meta.main) {
-    testElem = new PatternTableElement()
-    testElem._target = {
-        _setMute(c, mute) {
+    testElem = new PatternTableElement({
+        setMute(c, mute) {
             console.log('Set mute', c, mute)
         },
-        _jamPlay(id, cell, _options) {
+        onChange(_pattern) {
+            console.log('Change pattern')
+        },
+        jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },
-        _jamRelease(id) {
+        jamRelease(id) {
             console.log('Jam release', id)
         },
-    }
+    })
     $dom.displayMain(testElem)
     testElem._setNumChannels(4)
     testElem._setPattern($pattern.create(4))

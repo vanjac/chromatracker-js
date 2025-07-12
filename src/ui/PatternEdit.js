@@ -10,6 +10,7 @@ import global from './GlobalState.js'
 import './CellEntry.js'
 import './PatternTable.js'
 import './SequenceEdit.js'
+/** @import {ModuleEditCallbacks, JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
 <div class="vflex flex-grow">
@@ -67,14 +68,15 @@ const template = $dom.html`
 </div>
 `
 
-/**
- * @implements {CellEntryTarget}
- */
 export class PatternEditElement extends HTMLElement {
-    constructor() {
+    /**
+     * @param {ModuleEditCallbacks & JamCallbacks & {
+     *      setMute(c: number, mute: boolean): void
+     * }} callbacks
+     */
+    constructor(callbacks = null) {
         super()
-        /** @type {ModuleEditTarget & JamTarget} */
-        this._target = null
+        this._callbacks = callbacks
         /** @type {readonly number[]} */
         this._viewSequence = null
         /** @type {readonly Readonly<Pattern>[]} */
@@ -109,25 +111,25 @@ export class PatternEditElement extends HTMLElement {
         })
 
         $keyPad.makeKeyButton(this._entryCell,
-            id => this._target._jamPlay(id, this._cellEntry._getJamCell()),
-            id => this._target._jamRelease(id))
+            id => this._callbacks.jamPlay(id, this._cellEntry._getJamCell()),
+            id => this._callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#write'), id => {
             this._putCell(this._cellEntry._getCell(), this._cellEntry._getCellParts())
-            this._target._jamPlay(id, this._selCell())
+            this._callbacks.jamPlay(id, this._selCell())
             this._advance()
-        }, id => this._target._jamRelease(id))
+        }, id => this._callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#clear'), id => {
             this._putCell(Cell.empty, this._cellEntry._getCellParts())
-            this._target._jamPlay(id, this._selCell())
+            this._callbacks.jamPlay(id, this._selCell())
             this._advance()
-        }, id => this._target._jamRelease(id))
+        }, id => this._callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#lift'), id => {
             this._cellEntry._liftCell(this._selCell())
-            this._target._jamPlay(id, this._cellEntry._getJamCell())
-        }, id => this._target._jamRelease(id))
+            this._callbacks.jamPlay(id, this._cellEntry._getJamCell())
+        }, id => this._callbacks.jamRelease(id))
 
         fragment.querySelector('#cut').addEventListener('click', () => this._cut())
         fragment.querySelector('#copy').addEventListener('click', () => this._copy())
@@ -142,25 +144,30 @@ export class PatternEditElement extends HTMLElement {
         this.style.display = 'contents'
         this.appendChild(fragment)
 
-        this._sequenceEdit._onSelect = () => this._refreshPattern()
-        this._patternTable._onChange = pattern => this._changePattern(_ => pattern)
-        this._cellEntry._target = this
+        this._sequenceEdit._callbacks = {
+            changeModule: (...args) => this._callbacks.changeModule(...args),
+            onSelect: this._refreshPattern.bind(this)
+        }
+        this._patternTable._callbacks = {
+            jamPlay: (...args) => this._callbacks.jamPlay(...args),
+            jamRelease: (...args) => this._callbacks.jamRelease(...args),
+            onChange: (pattern) => this._changePattern(_ => pattern),
+            setMute: (...args) => this._callbacks.setMute(...args),
+        }
+        this._cellEntry._callbacks = {
+            jamPlay: (...args) => this._callbacks.jamPlay(...args),
+            jamRelease: (...args) => this._callbacks.jamRelease(...args),
+            putCell: this._putCell.bind(this),
+            updateCell: this._updateCell.bind(this),
+            selCell: this._selCell.bind(this),
+            updateEntryParts: this._updateEntryParts.bind(this),
+        }
         this._updateCell()
         this._updateEntryParts()
     }
 
     _onVisible() {
         this._cellEntry._onVisible()
-    }
-
-    /**
-     * @param {PatternTableTarget & ModuleEditTarget & JamTarget} target
-     */
-    _setTarget(target) {
-        this._target = target
-        this._sequenceEdit._target = target
-        this._patternTable._target = target
-        this._cellEntry._setJamTarget(target)
     }
 
     _resetState() {
@@ -251,7 +258,7 @@ export class PatternEditElement extends HTMLElement {
      * @param {(pattern: Readonly<Pattern>) => Readonly<Pattern>} callback
      */
     _changePattern(callback) {
-        this._target._changeModule(
+        this._callbacks.changeModule(
             module => $pattern.change(module, module.sequence[this._selPos()], callback))
     }
 
@@ -368,23 +375,22 @@ $dom.defineUnique('pattern-edit', PatternEditElement)
 let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
-    testElem = new PatternEditElement()
-    $dom.displayMain(testElem)
-    testElem._setTarget({
-        _setMute(c, mute) {
-            console.log('Set mute', c, mute)
-        },
-        _changeModule(callback, commit) {
+    testElem = new PatternEditElement({
+        changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
             testElem._setModule(module)
         },
-        _jamPlay(id, cell, _options) {
+        setMute(c, mute) {
+            console.log('Set mute', c, mute)
+        },
+        jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },
-        _jamRelease(id) {
+        jamRelease(id) {
             console.log('Jam release', id)
         },
     })
+    $dom.displayMain(testElem)
     testElem._setModule(module)
 }

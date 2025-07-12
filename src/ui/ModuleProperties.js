@@ -4,6 +4,7 @@ import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
 import {Module} from '../Model.js'
+/** @import {ModuleEditCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
 <div class="properties-grid">
@@ -43,10 +44,12 @@ const template = $dom.html`
 `
 
 export class ModulePropertiesElement extends HTMLElement {
-    constructor() {
+    /**
+     * @param {ModuleEditCallbacks} callbacks
+     */
+    constructor(callbacks = null) {
         super()
-        /** @type {ModuleEditTarget} */
-        this._target = null
+        this._callbacks = callbacks
         /** @type {Module} */
         this._viewModule = null
         this._viewPatternsSize = 0
@@ -59,7 +62,7 @@ export class ModulePropertiesElement extends HTMLElement {
         /** @type {HTMLInputElement} */
         this._titleInput = fragment.querySelector('#title')
         $dom.addInputListeners(this._titleInput, commit => {
-            this._target._changeModule(
+            this._callbacks.changeModule(
                 module => $module.setName(module, this._titleInput.value), commit)
         })
 
@@ -75,13 +78,13 @@ export class ModulePropertiesElement extends HTMLElement {
         this._fileSizeOutput = fragment.querySelector('#fileSize')
 
         fragment.querySelector('#addChannels').addEventListener('click',
-            () => this._target._changeModule(module => $module.addChannels(module, 2)))
+            () => this._callbacks.changeModule(module => $module.addChannels(module, 2)))
         fragment.querySelector('#delChannels').addEventListener('click',
-            () => this._target._changeModule(
+            () => this._callbacks.changeModule(
                 module => $module.delChannels(module, module.numChannels - 2, 2)))
 
         fragment.querySelector('#patternZap').addEventListener('click',
-            () => this._target._changeModule(module => $sequence.zap(module)))
+            () => this._callbacks.changeModule(module => $sequence.zap(module)))
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -145,14 +148,13 @@ $dom.defineUnique('module-properties', ModulePropertiesElement)
 let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
-    testElem = new ModulePropertiesElement()
-    testElem._target = {
-        _changeModule(callback, commit) {
+    testElem = new ModulePropertiesElement({
+        changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
             testElem._setModule(module)
         },
-    }
+    })
     $dom.displayMain(testElem)
     testElem._setModule(module)
 }

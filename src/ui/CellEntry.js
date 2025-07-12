@@ -4,6 +4,7 @@ import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
 import {Cell, CellPart, Sample} from '../Model.js'
 import './PianoKeyboard.js'
+/** @import {JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
 <div class="properties-grid">
@@ -91,16 +92,18 @@ const template = $dom.html`
 </div>
 `
 
-/**
- * @implements {PianoKeyboardTarget}
- */
 export class CellEntryElement extends HTMLElement {
-    constructor() {
+    /**
+     * @param {JamCallbacks & {
+     *      putCell(cell: Readonly<Cell>, parts: CellPart): void
+     *      updateCell(): void
+     *      selCell(): Readonly<Cell>
+     *      updateEntryParts(): void
+     * }} callbacks
+     */
+    constructor(callbacks = null) {
         super()
-        /** @type {CellEntryTarget} */
-        this._target = null
-        /** @type {JamTarget} */
-        this._jam = null
+        this._callbacks = callbacks
         /** @type {readonly Readonly<Sample>[]} */
         this._viewSamples = null
     }
@@ -126,25 +129,25 @@ export class CellEntryElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._param1Select = fragment.querySelector('#param1Select')
 
-        this._pitchEnable.addEventListener('change', () => this._target._updateEntryParts())
-        this._sampleEnable.addEventListener('change', () => this._target._updateEntryParts())
-        this._effectEnable.addEventListener('change', () => this._target._updateEntryParts())
+        this._pitchEnable.addEventListener('change', () => this._callbacks.updateEntryParts())
+        this._sampleEnable.addEventListener('change', () => this._callbacks.updateEntryParts())
+        this._effectEnable.addEventListener('change', () => this._callbacks.updateEntryParts())
 
         this._effectSelect.addEventListener('input', () => {
             this._param0Select.selectedIndex = this._param1Select.selectedIndex = 0
-            this._target._updateCell()
+            this._callbacks.updateCell()
         })
-        this._param0Select.addEventListener('input', () => this._target._updateCell())
-        this._param1Select.addEventListener('input', () => this._target._updateCell())
+        this._param0Select.addEventListener('input', () => this._callbacks.updateCell())
+        this._param1Select.addEventListener('input', () => this._callbacks.updateCell())
 
         $dom.disableFormSubmit(this._sampleList)
         $keyPad.create(this._sampleList, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement == this._sampleList) {
                 let input = elem.parentElement.querySelector('input')
                 this._setSelSample(Number(input.value))
-                this._jam._jamPlay(id, this._getJamCell())
+                this._callbacks.jamPlay(id, this._getJamCell())
             }
-        }, id => this._jam._jamRelease(id))
+        }, id => this._callbacks.jamRelease(id))
         fragment.querySelector('#sampleLeft').addEventListener('click',
             /** @param {UIEventInit} e */ e => {
                 let width = this._sampleList.clientWidth
@@ -157,22 +160,19 @@ export class CellEntryElement extends HTMLElement {
             })
 
         $keyPad.makeKeyButton(fragment.querySelector('#writeEffect'), id => {
-            this._target._putCell(this._getCell(), CellPart.effect | CellPart.param)
-            this._jam._jamPlay(id, this._target._selCell())
-        }, id => this._jam._jamRelease(id))
+            this._callbacks.putCell(this._getCell(), CellPart.effect | CellPart.param)
+            this._callbacks.jamPlay(id, this._callbacks.selCell())
+        }, id => this._callbacks.jamRelease(id))
 
         this.style.display = 'contents'
         this.appendChild(fragment)
 
-        this._piano._target = this
-    }
-
-    /**
-     * @param {JamTarget} target
-     */
-    _setJamTarget(target) {
-        this._jam = target
-        this._piano._jam = target
+        this._piano._callbacks = {
+            jamPlay: (...args) => this._callbacks.jamPlay(...args),
+            jamRelease: (...args) => this._callbacks.jamRelease(...args),
+            pitchChanged: () => this._callbacks.updateCell(),
+            getJamCell: this._getJamCell.bind(this),
+        }
     }
 
     _onVisible() {
@@ -213,10 +213,6 @@ export class CellEntryElement extends HTMLElement {
         return parts
     }
 
-    _pitchChanged() {
-        this._target._updateCell()
-    }
-
     /**
      * @param {readonly Readonly<Sample>[]} samples
      */
@@ -250,7 +246,7 @@ export class CellEntryElement extends HTMLElement {
         if (this._viewSamples[s]) {
             $dom.selectRadioButton(this._sampleInput, s.toString())
         }
-        this._target._updateCell()
+        this._callbacks.updateCell()
     }
 
     /**
@@ -268,37 +264,34 @@ export class CellEntryElement extends HTMLElement {
             this._param0Select.selectedIndex = cell.param0
             this._param1Select.selectedIndex = cell.param1
         }
-        this._target._updateCell()
+        this._callbacks.updateCell()
     }
 }
 $dom.defineUnique('cell-entry', CellEntryElement)
 
 let testElem
 if (import.meta.main) {
-    testElem = new CellEntryElement()
-    testElem._target = {
-        _putCell(cell, parts) {
+    testElem = new CellEntryElement({
+        putCell(cell, parts) {
             console.log('Put cell:', cell, parts)
         },
-        _updateCell() {
+        updateCell() {
             console.log('Update cell')
         },
-        _selCell() {
+        selCell() {
             return Cell.empty
         },
-        _updateEntryParts() {
+        updateEntryParts() {
             console.log('Update entry parts')
         },
-    }
-    $dom.displayMain(testElem)
-    testElem._setJamTarget({
-        _jamPlay(id, cell, _options) {
+        jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },
-        _jamRelease(id) {
+        jamRelease(id) {
             console.log('Jam release', id)
         },
     })
+    $dom.displayMain(testElem)
     testElem._setSamples(Object.freeze([]))
     testElem._onVisible()
 }

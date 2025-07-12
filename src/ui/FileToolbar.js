@@ -4,6 +4,7 @@ import * as $module from '../edit/Module.js'
 import * as $ext from '../file/External.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
+import {Module} from '../Model.js'
 import {AlertDialogElement, WaitDialogElement} from './dialogs/UtilDialogs.js'
 
 const template = $dom.html`
@@ -28,17 +29,23 @@ const template = $dom.html`
 `
 
 export class FileToolbarElement extends HTMLElement {
-    constructor() {
+    /**
+     * @param {{
+     *      getModule(): Readonly<Module>
+     *      moduleLoaded(module: Readonly<Module>): void
+     *      moduleSaved(): void
+     * }} callbacks
+     */
+    constructor(callbacks = null) {
         super()
-        /** @type {FileToolbarTarget} */
-        this._target = null
+        this._callbacks = callbacks
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
         fragment.querySelector('#newModule').addEventListener('click',
-            () => this._target._moduleLoaded($module.defaultNew))
+            () => this._callbacks.moduleLoaded($module.defaultNew))
 
         /** @type {HTMLInputElement} */
         let fileSelect = fragment.querySelector('#fileSelect')
@@ -73,7 +80,7 @@ export class FileToolbarElement extends HTMLElement {
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
                 let module = Object.freeze($mod.read(reader.result))
-                this._target._moduleLoaded(module)
+                this._callbacks.moduleLoaded(module)
             }
         }
         reader.readAsArrayBuffer(blob)
@@ -81,25 +88,24 @@ export class FileToolbarElement extends HTMLElement {
 
     /** @private */
     _saveFile() {
-        let module = this._target._getModule()
+        let module = this._callbacks.getModule()
         let blob = new Blob([$mod.write(module)], {type: 'application/octet-stream'})
         $ext.download(blob, (module.name || 'Untitled') + '.mod')
-        this._target._moduleSaved()
+        this._callbacks.moduleSaved()
     }
 }
 $dom.defineUnique('file-toolbar', FileToolbarElement)
 
 let testElem
 if (import.meta.main) {
-    testElem = new FileToolbarElement()
-    testElem._target = {
-        _getModule() { return $module.defaultNew },
-        _moduleLoaded(module) {
+    testElem = new FileToolbarElement({
+        getModule() { return $module.defaultNew },
+        moduleLoaded(module) {
             console.log('Module loaded:', module)
         },
-        _moduleSaved() {
+        moduleSaved() {
             console.log('Module saved')
         },
-    }
+    })
     $dom.displayMain(testElem)
 }

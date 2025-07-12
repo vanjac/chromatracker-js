@@ -5,6 +5,7 @@ import * as $sample from '../edit/Sample.js'
 import * as $icons from '../gen/Icons.js'
 import {SampleEditElement} from './SampleEdit.js'
 import {Sample} from '../Model.js'
+/** @import {ModuleEditCallbacks, JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
 <div class="vflex flex-grow">
@@ -23,10 +24,12 @@ const template = $dom.html`
 `
 
 export class SamplesListElement extends HTMLElement {
-    constructor() {
+    /**
+     * @param {ModuleEditCallbacks & JamCallbacks} callbacks
+     */
+    constructor(callbacks = null) {
         super()
-        /** @type {ModuleEditTarget & JamTarget} */
-        this._target = null
+        this._callbacks = callbacks
         /** @type {readonly Readonly<Sample>[]} */
         this._viewSamples = null
     }
@@ -62,11 +65,15 @@ export class SamplesListElement extends HTMLElement {
      */
     _createSampleEdit(idx) {
         this._destroySampleEdit()
-        this._sampleEdit = new SampleEditElement(this._target)
+        this._sampleEdit = new SampleEditElement({
+            jamPlay: (...args) => this._callbacks.jamPlay(...args),
+            jamRelease: (...args) => this._callbacks.jamRelease(...args),
+            onChange: (sample, commit) => {
+                this._callbacks.changeModule(
+                    module => $sample.update(module, idx, sample), commit)
+            },
+        })
         this._sampleEditContainer.appendChild(this._sampleEdit)
-        this._sampleEdit._onChange = (sample, commit) => (
-            this._target._changeModule(
-                module => $sample.update(module, idx, sample), commit))
         this._sampleEdit._setIndex(idx)
         this._sampleEdit._setSample(this._viewSamples[idx])
     }
@@ -143,7 +150,7 @@ export class SamplesListElement extends HTMLElement {
     /** @private */
     _addSample() {
         let selSample = this._getSelSample()
-        this._target._changeModule(module => {
+        this._callbacks.changeModule(module => {
             let [newMod, idx] = $sample.create(module)
             selSample = idx
             return newMod
@@ -165,7 +172,7 @@ export class SamplesListElement extends HTMLElement {
                 }
             }
         }
-        this._target._changeModule(module => $sample.update(module, idx, null))
+        this._callbacks.changeModule(module => $sample.update(module, idx, null))
     }
 }
 $dom.defineUnique('samples-list', SamplesListElement)
@@ -174,20 +181,19 @@ $dom.defineUnique('samples-list', SamplesListElement)
 let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
-    testElem = new SamplesListElement()
-    testElem._target = {
-        _changeModule(callback, commit) {
+    testElem = new SamplesListElement({
+        changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
             testElem._setSamples(module.samples)
         },
-        _jamPlay(id, cell, _options) {
+        jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },
-        _jamRelease(id) {
+        jamRelease(id) {
             console.log('Jam release', id)
         },
-    }
+    })
     $dom.displayMain(testElem)
     testElem._setSamples(module.samples)
 }

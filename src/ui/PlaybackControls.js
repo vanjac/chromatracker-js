@@ -31,10 +31,20 @@ const template = $dom.html`
 `
 
 export class PlaybackControlsElement extends HTMLElement {
-    constructor() {
+    /**
+     * @param {{
+     *      resetPlayback(
+     *          options?: {restoreSpeed?: boolean, restorePos?: boolean, restoreRow?: boolean}
+     *      ): void
+     *      play(): void
+     *      pause(): void
+     *      updatePlaySettings(): void
+     *      undo(): void
+     * }} callbacks
+     */
+    constructor(callbacks = null) {
         super()
-        /** @type {PlaybackControlsTarget} */
-        this._target = null
+        this._callbacks = callbacks
     }
 
     connectedCallback() {
@@ -48,21 +58,21 @@ export class PlaybackControlsElement extends HTMLElement {
         this._followInput = fragment.querySelector('#follow')
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
-            this._target._resetPlayback()
-            this._target._play()
+            this._callbacks.resetPlayback()
+            this._callbacks.play()
         })
         fragment.querySelector('#playPattern').addEventListener('click', () => {
-            this._target._resetPlayback({restoreSpeed: true, restorePos: true})
-            this._target._play()
+            this._callbacks.resetPlayback({restoreSpeed: true, restorePos: true})
+            this._callbacks.play()
         })
         this._playRowButton.addEventListener('click', () => {
-            this._target._resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})
-            this._target._play()
+            this._callbacks.resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})
+            this._callbacks.play()
         })
-        this._pauseButton.addEventListener('click', () => this._target._pause())
+        this._pauseButton.addEventListener('click', () => this._callbacks.pause())
         fragment.querySelector('#patternLoop').addEventListener('click',
-            () => this._target._updatePlaySettings())
-        fragment.querySelector('#undo').addEventListener('click', () => this._target._undo())
+            () => this._callbacks.updatePlaySettings())
+        fragment.querySelector('#undo').addEventListener('click', () => this._callbacks.undo())
 
         this.style.display = 'contents'
         this.appendChild(fragment)
@@ -88,23 +98,22 @@ $dom.defineUnique('playback-controls', PlaybackControlsElement)
 
 let testElem
 if (import.meta.main) {
-    testElem = new PlaybackControlsElement()
-    testElem._target = {
-        _resetPlayback(options) {
+    testElem = new PlaybackControlsElement({
+        resetPlayback(options) {
             console.log('Reset playback', options)
         },
-        _play() {
+        play() {
             console.log('Play')
         },
-        _pause() {
+        pause() {
             console.log('Pause')
         },
-        _updatePlaySettings() {
+        updatePlaySettings() {
             console.log('Update play settings')
         },
-        _undo() {
+        undo() {
             console.log('Undo')
         },
-    }
+    })
     $dom.displayMain(testElem)
 }

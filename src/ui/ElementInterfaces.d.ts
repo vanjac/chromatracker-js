@@ -1,6 +1,3 @@
-// Interfaces between elements
-
-import {Cell, CellPart, Module} from '../Model.js'
 import {CellEntryElement} from './CellEntry.js'
 import {FileToolbarElement} from './FileToolbar.js'
 import {ModulePropertiesElement} from './ModuleProperties.js'
@@ -12,46 +9,6 @@ import {SamplesListElement} from './SamplesList.js'
 import {SequenceEditElement} from './SequenceEdit.js'
 
 declare global {
-
-interface JamTarget {
-    _jamPlay(id: number, cell: Readonly<Cell>, options?: {useChannel?: boolean}): void
-    _jamRelease(id: number): void
-}
-
-interface ModuleEditTarget {
-    _changeModule(callback: (module: Readonly<Module>) => Readonly<Module>, commit?: boolean): void
-}
-
-interface PatternTableTarget {
-    _setMute(c: number, mute: boolean): void
-}
-
-interface CellEntryTarget {
-    _putCell(cell: Readonly<Cell>, parts: CellPart): void
-    _updateCell(): void
-    _selCell(): Readonly<Cell>
-    _updateEntryParts(): void
-}
-
-interface PianoKeyboardTarget {
-    _pitchChanged(): void
-    _getJamCell(): Cell
-}
-
-interface FileToolbarTarget {
-    _getModule(): Readonly<Module>
-    _moduleLoaded(module: Readonly<Module>): void
-    _moduleSaved(): void
-}
-
-interface PlaybackControlsTarget {
-    _resetPlayback(options?: {restoreSpeed?: boolean, restorePos?: boolean, restoreRow?: boolean})
-        : void
-    _play(): void
-    _pause(): void
-    _updatePlaySettings(): void
-    _undo(): void
-}
 
 // Element type extensions
 interface HTMLElementTagNameMap {
