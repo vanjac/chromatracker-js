@@ -123,9 +123,9 @@ export class SampleEditElement extends HTMLElement {
         this._target = target
         /**
          * @param {Readonly<Sample>} sample
-         * @param {string} combineTag
+         * @param {boolean} commit
          */
-        this._onChange = (sample, combineTag) => {}
+        this._onChange = (sample, commit) => {}
 
         this._selectA = -1
         this._selectB = -1
@@ -140,10 +140,8 @@ export class SampleEditElement extends HTMLElement {
 
         /** @type {HTMLInputElement} */
         this._nameInput = fragment.querySelector('#name')
-        this._nameInput.addEventListener('input', () => this._changeSample(
-            sample => {sample.name = this._nameInput.value}, 'sample name'))
-        this._nameInput.addEventListener('change', () =>
-            this._target._clearUndoCombine('sample name'))
+        $dom.addInputListeners(this._nameInput, commit => this._changeSample(
+            sample => {sample.name = this._nameInput.value}, commit))
 
         this._waveEditBox = fragment.querySelector('#waveEdit')
         this._waveContainer = fragment.querySelector('#waveContainer')
@@ -199,18 +197,14 @@ export class SampleEditElement extends HTMLElement {
 
         /** @type {HTMLInputElement} */
         this._loopStartInput = fragment.querySelector('#loopStart')
-        this._loopStartInput.addEventListener('input', () =>
+        $dom.addInputListeners(this._loopStartInput, commit =>
             this._changeSample(sample => {sample.loopStart = this._loopStartInput.valueAsNumber},
-                'sample loop start', true))
-        this._loopStartInput.addEventListener('change', () =>
-            this._target._clearUndoCombine('sample loop start'))
+                commit, true))
         /** @type {HTMLInputElement} */
         this._loopEndInput = fragment.querySelector('#loopEnd')
-        this._loopEndInput.addEventListener('input', () =>
+        $dom.addInputListeners(this._loopEndInput, commit =>
             this._changeSample(sample => {sample.loopEnd = this._loopEndInput.valueAsNumber},
-                'sample loop end', true))
-        this._loopEndInput.addEventListener('change', () =>
-            this._target._clearUndoCombine('sample loop end'))
+                commit, true))
 
         $dom.addMenuListener(fragment.querySelector('#selectMenu'), value => {
             switch (value) {
@@ -250,25 +244,20 @@ export class SampleEditElement extends HTMLElement {
         this._volumeInput = fragment.querySelector('#volume')
         /** @type {HTMLOutputElement} */
         this._volumeOutput = fragment.querySelector('#volumeOut')
-        this._volumeInput.addEventListener('input', () => {
-            this._changeSample(sample => {sample.volume = this._volumeInput.valueAsNumber},
-                'sample volume')
+        $dom.addInputListeners(this._volumeInput, commit => {
+            this._changeSample(sample => {sample.volume = this._volumeInput.valueAsNumber}, commit)
             this._volumeOutput.value = this._volumeInput.value
         })
-        this._volumeInput.addEventListener('change', () =>
-            this._target._clearUndoCombine('sample volume'))
 
         /** @type {HTMLInputElement} */
         this._finetuneInput = fragment.querySelector('#finetune')
         /** @type {HTMLOutputElement} */
         this._finetuneOutput = fragment.querySelector('#finetuneOut')
-        this._finetuneInput.addEventListener('input', () => {
+        $dom.addInputListeners(this._finetuneInput, commit => {
             this._changeSample(sample => {sample.finetune = this._finetuneInput.valueAsNumber},
-                'sample finetune')
+                commit)
             this._finetuneOutput.value = this._finetuneInput.value
         })
-        this._finetuneInput.addEventListener('change', () =>
-            this._target._clearUndoCombine('sample finetune'))
 
         /** @type {HTMLInputElement} */
         this._fileInput = fragment.querySelector('#file')
@@ -288,7 +277,7 @@ export class SampleEditElement extends HTMLElement {
 
         this.addEventListener('contextmenu', () => {
             $cli.addSelProp('sample', 'object', this._viewSample,
-                sample => this._onChange(Object.freeze(sample), ''))
+                sample => this._onChange(Object.freeze(sample), true))
         })
 
         this.style.display = 'contents'
@@ -461,16 +450,16 @@ export class SampleEditElement extends HTMLElement {
     /**
      * @private
      * @param {(sample: Sample) => void} mutator
-     * @param {string} combineTag
+     * @param {boolean} commit
      */
-    _changeSample(mutator, combineTag, dirty = false) {
+    _changeSample(mutator, commit, dirty = false) {
         let newSample = {...this._viewSample}
         mutator(newSample)
         let immSample = Object.freeze(newSample)
         if (!dirty) {
             this._viewSample = immSample // avoid unnecessary refresh
         }
-        this._onChange(immSample, combineTag)
+        this._onChange(immSample, commit)
     }
 
     /**
@@ -488,7 +477,7 @@ export class SampleEditElement extends HTMLElement {
                     try {
                         let newSample = $wav.read(reader.result)
                         newSample.name = name
-                        this._onChange(newSample, '')
+                        this._onChange(newSample, true)
                     } catch (error) {
                         if (error instanceof Error) { AlertDialogElement.open(error.message) }
                     }
@@ -502,7 +491,7 @@ export class SampleEditElement extends HTMLElement {
                             sample.volume = volume
                             sample.name = name
                             sample.loopStart = sample.loopEnd = 0
-                        }, '', true)
+                        }, true, true)
                     }).catch(/** @param {DOMException} error */ error => {
                         $dialog.close(dialog)
                         AlertDialogElement.open(`Error reading audio file.\n${error.message}`)
@@ -604,12 +593,12 @@ export class SampleEditElement extends HTMLElement {
     /** @private */
     _loopSelection() {
         this._changeSample(sample => [sample.loopStart, sample.loopEnd] = this._selRangeOrAll(),
-            '', true)
+            true, true)
     }
 
     /** @private */
     _clearLoop() {
-        this._changeSample(sample => sample.loopStart = sample.loopEnd = 0, '', true)
+        this._changeSample(sample => sample.loopStart = sample.loopEnd = 0, true, true)
     }
 
     /**
@@ -642,7 +631,7 @@ export class SampleEditElement extends HTMLElement {
     /** @private */
     _trim() {
         if (this._rangeSelected()) {
-            this._onChange($sample.trim(this._viewSample, this._selMin(), this._selMax()), '')
+            this._onChange($sample.trim(this._viewSample, this._selMin(), this._selMax()), true)
             this._selectNone()
         }
     }
@@ -658,7 +647,7 @@ export class SampleEditElement extends HTMLElement {
         if (this._rangeSelected()) {
             this._copy()
             let [start, end] = this._sel()
-            this._onChange($sample.del(this._viewSample, start, end), '')
+            this._onChange($sample.del(this._viewSample, start, end), true)
             this._setSel(start, start)
         }
     }
@@ -670,7 +659,7 @@ export class SampleEditElement extends HTMLElement {
      * @param {Readonly<Int8Array>} wave
      */
     _replace(start, end, wave) {
-        this._onChange($sample.splice(this._viewSample, start, end, wave), '')
+        this._onChange($sample.splice(this._viewSample, start, end, wave), true)
         let newEnd = start + wave.length
         this._setSel(newEnd, newEnd)
     }
@@ -695,7 +684,7 @@ export class SampleEditElement extends HTMLElement {
                 newSample = $sample.splice(newSample, loopStart, loopStart, loopWave)
             }
             newSample = Object.freeze({...newSample, loopStart})
-            this._onChange(newSample, '')
+            this._onChange(newSample, true)
             global.lastLoopRepeat = count
         })
     }
@@ -708,7 +697,7 @@ export class SampleEditElement extends HTMLElement {
         let {loopStart, loopEnd} = this._viewSample
         let loopWave = new Int8Array(loopEnd - loopStart)
         $wave.reverse(this._viewSample.wave.subarray(loopStart, loopEnd), loopWave)
-        this._onChange($sample.splice(this._viewSample, loopEnd, loopEnd, loopWave), '')
+        this._onChange($sample.splice(this._viewSample, loopEnd, loopEnd, loopWave), true)
     }
 
     /**
@@ -717,7 +706,7 @@ export class SampleEditElement extends HTMLElement {
      */
     _applyEffect(effect) {
         let [start, end] = this._selRangeOrAll()
-        this._onChange($sample.applyEffect(this._viewSample, start, end, effect), '')
+        this._onChange($sample.applyEffect(this._viewSample, start, end, effect), true)
     }
 
     /** @private */
@@ -733,7 +722,7 @@ export class SampleEditElement extends HTMLElement {
             let [start, end] = this._selRangeOrAll()
             let length = (end - start) * (2 ** (-semitones / 12))
             let newWave = $sample.spliceEffect(this._viewSample, start, end, length, $wave.resample)
-            this._onChange(newWave, '')
+            this._onChange(newWave, true)
             if (this._rangeSelected()) {
                 this._setSel(start, start + length)
             }
@@ -761,7 +750,7 @@ export class SampleEditElement extends HTMLElement {
                     node.type = params.type
                     return node
                 })
-                .then(s => this._onChange(s, ''))
+                .then(s => this._onChange(s, true))
                 .then(() => $dialog.close(waitDialog))
                 .catch(() => $dialog.close(waitDialog))
         }
@@ -773,8 +762,7 @@ $dom.defineUnique('sample-edit', SampleEditElement)
 let testElem
 if (import.meta.main) {
     testElem = new SampleEditElement({
-        _changeModule(_callback, _options) {},
-        _clearUndoCombine(_tag) {},
+        _changeModule(_callback, _commit) {},
         _jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },
@@ -782,7 +770,10 @@ if (import.meta.main) {
             console.log('Jam release', id)
         },
     })
-    testElem._onChange = (sample, _combine) => {testElem._setSample(sample)}
+    testElem._onChange = (sample, commit) => {
+        console.log('Change', commit)
+        testElem._setSample(sample)
+    }
     $dom.displayTestElem(testElem)
     testElem._setSample(Sample.empty)
 }

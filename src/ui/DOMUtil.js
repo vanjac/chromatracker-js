@@ -109,6 +109,15 @@ export function getRadioButtonValue(namedItem, defaultValue) {
 }
 
 /**
+ * @param {HTMLInputElement} elem
+ * @param {(commit: boolean) => void} listener
+ */
+export function addInputListeners(elem, listener) {
+    elem.addEventListener('input', () => listener(false))
+    elem.addEventListener('change', () => listener(true))
+}
+
+/**
  * @param {HTMLSelectElement} menu
  * @param {(value: string) => void} listener
  */

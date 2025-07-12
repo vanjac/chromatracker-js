@@ -58,11 +58,10 @@ export class ModulePropertiesElement extends HTMLElement {
 
         /** @type {HTMLInputElement} */
         this._titleInput = fragment.querySelector('#title')
-        this._titleInput.addEventListener('input', () =>
+        $dom.addInputListeners(this._titleInput, commit => {
             this._target._changeModule(
-                module => $module.setName(module, this._titleInput.value),
-                {combineTag: 'title'}))
-        this._titleInput.addEventListener('change', () => this._target._clearUndoCombine('title'))
+                module => $module.setName(module, this._titleInput.value), commit)
+        })
 
         /** @type {HTMLOutputElement} */
         this._channelCountOutput = fragment.querySelector('#channelCount')
@@ -148,12 +147,11 @@ if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new ModulePropertiesElement()
     testElem._target = {
-        _changeModule(callback, _options) {
-            console.log('Change module')
+        _changeModule(callback, commit) {
+            console.log('Change module', commit)
             module = callback(module)
             testElem._setModule(module)
         },
-        _clearUndoCombine(_tag) {},
     }
     $dom.displayTestElem(testElem)
     testElem._setModule(module)

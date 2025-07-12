@@ -3,6 +3,7 @@ import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
 import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
+import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
 import {ConfirmDialogElement} from './dialogs/UtilDialogs.js'
 import {Cell, Module} from '../Model.js'
@@ -76,12 +77,8 @@ export class TrackerMainElement extends HTMLElement {
     constructor() {
         super()
 
-        this._module = $module.defaultNew
+        this._module = new Undoable($module.defaultNew)
 
-        /** @type {Readonly<Module>[]} */
-        this._undoStack = []
-        this._undoCombineTag = ''
-        this._unsavedChangeCount = 0
         /** @type {AudioContext} */
         this._context = null
         /** @type {$play.Playback} */
@@ -133,7 +130,7 @@ export class TrackerMainElement extends HTMLElement {
             $cli.resetSel()
         }, {capture: true})
         this.addEventListener('contextmenu', e => {
-            $cli.addSelProp('module', 'object', this._module,
+            $cli.addSelProp('module', 'object', this._module.value,
                 module => this._changeModule(_ => Object.freeze(module)))
             if (!(e.target instanceof HTMLInputElement || e.target instanceof HTMLOutputElement)) {
                 e.preventDefault()
@@ -154,16 +151,17 @@ export class TrackerMainElement extends HTMLElement {
         this._patternEdit._setTarget(this)
         this._samplesList._target = this
 
-        window.onbeforeunload = () => (this._unsavedChangeCount ? 'You have unsaved changes' : null)
+        window.onbeforeunload = () => (this._module.isUnsaved() ? 'You have unsaved changes' : null)
 
         this._refreshModule()
     }
 
-    /** @private */
-    _resetEditorState() {
-        this._undoStack = []
-        this._undoCombineTag = ''
-        this._unsavedChangeCount = 0
+    /**
+     * @private
+     * @param {Readonly<Module>} module
+     */
+    _resetEditorState(module) {
+        this._module.reset(module)
 
         this._refreshModule()
         this._patternEdit._resetState()
@@ -172,12 +170,16 @@ export class TrackerMainElement extends HTMLElement {
 
     /** @private */
     _askUnsavedChanges() {
-        if (this._unsavedChangeCount) {
+        if (this._module.isUnsaved()) {
             let message = 'You will lose your unsaved changes. Continue?'
             return ConfirmDialogElement.open(message, 'Unsaved Changes')
         } else {
             return Promise.resolve()
         }
+    }
+
+    _getModule() {
+        return this._module.value
     }
 
     /**
@@ -186,14 +188,13 @@ export class TrackerMainElement extends HTMLElement {
     _moduleLoaded(module) {
         this._askUnsavedChanges().then(() => {
             console.log('Loaded module:', module)
-            this._module = module
-            this._resetEditorState()
+            this._resetEditorState(module)
             this._resetPlayback()
         })
     }
 
     _moduleSaved() {
-        this._unsavedChangeCount = 0
+        this._module.saved()
     }
 
     /**
@@ -208,10 +209,10 @@ export class TrackerMainElement extends HTMLElement {
         } else if (this._context.state != 'running') {
             this._context.resume()
         }
-        this._playback = $play.init(this._context, this._module)
+        this._playback = $play.init(this._context, this._module.value)
         this._playback.time += playbackDelay // avoid "catching up"
 
-        for (let c = 0; c < this._module.numChannels; c++) {
+        for (let c = 0; c < this._module.value.numChannels; c++) {
             if (this._patternEdit._isChannelMuted(c)) {
                 $play.setChannelMute(this._playback, c, true)
             }
@@ -383,68 +384,27 @@ export class TrackerMainElement extends HTMLElement {
     /** @private */
     _refreshModule() {
         console.debug('=== begin refresh ===')
-        this._moduleProperties._setModule(this._module)
-        this._patternEdit._setModule(this._module)
-        this._samplesList._setSamples(this._module.samples)
-        console.debug('===  end refresh  ===')
-    }
-
-    /**
-     * @private
-     * @param {Readonly<Module>} module
-     */
-    _setModule(module) {
-        this._module = module
+        this._moduleProperties._setModule(this._module.value)
+        this._patternEdit._setModule(this._module.value)
+        this._samplesList._setSamples(this._module.value.samples)
         if (this._playback) {
-            $play.setModule(this._playback, module)
+            $play.setModule(this._playback, this._module.value)
         }
+        console.debug('===  end refresh  ===')
     }
 
     /**
      * @param {(module: Readonly<Module>) => Readonly<Module>} callback
      */
-    _changeModule(callback, {refresh = true, combineTag = ''} = {}) {
-        let newMod = callback(this._module)
-        if (newMod != this._module) {
-            this._pushUndo(combineTag)
-            this._setModule(newMod)
-            if (refresh) {
-                this._refreshModule()
-            }
-        }
-    }
-
-    /**
-     * @private
-     * @param {string} combineTag
-     */
-    _pushUndo(combineTag) {
-        if (!combineTag || combineTag != this._undoCombineTag) {
-            this._undoStack.push(this._module)
-            if (this._undoStack.length > maxUndo) {
-                this._undoStack.shift()
-            }
-            this._unsavedChangeCount++
-        }
-        this._undoCombineTag = combineTag
-    }
-
-    /**
-     * @param {string} tag
-     */
-    _clearUndoCombine(tag) {
-        if (this._undoCombineTag == tag) {
-            this._undoCombineTag = ''
+    _changeModule(callback, commit = true) {
+        if (this._module.apply(callback, commit)) {
+            this._refreshModule()
         }
     }
 
     _undo() {
-        if (this._undoStack.length) {
-            this._setModule(this._undoStack.pop())
+        if (this._module.undo()) {
             this._refreshModule()
-            this._unsavedChangeCount--
-            this._undoCombineTag = ''
-            console.log('Undo:', this._module)
         }
     }
 }

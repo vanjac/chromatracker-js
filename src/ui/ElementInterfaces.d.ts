@@ -19,9 +19,7 @@ interface JamTarget {
 }
 
 interface ModuleEditTarget {
-    _changeModule(callback: (module: Readonly<Module>) => Readonly<Module>,
-        options?: {refresh?: boolean, combineTag?: string}): void
-    _clearUndoCombine(tag: string): void
+    _changeModule(callback: (module: Readonly<Module>) => Readonly<Module>, commit?: boolean): void
 }
 
 interface PatternTableTarget {
@@ -41,7 +39,7 @@ interface PianoKeyboardTarget {
 }
 
 interface FileToolbarTarget {
-    readonly _module: Readonly<Module>
+    _getModule(): Readonly<Module>
     _moduleLoaded(module: Readonly<Module>): void
     _moduleSaved(): void
 }

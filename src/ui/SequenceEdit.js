@@ -188,13 +188,12 @@ if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new SequenceEditElement()
     testElem._target = {
-        _changeModule(callback, _options) {
-            console.log('Change module')
+        _changeModule(callback, commit) {
+            console.log('Change module', commit)
             module = callback(module)
             testElem._setSequence(module.sequence)
             testElem._setPatterns(module.patterns)
         },
-        _clearUndoCombine(_tag) {},
     }
     $dom.displayTestElem(testElem)
     testElem._setSequence(module.sequence)

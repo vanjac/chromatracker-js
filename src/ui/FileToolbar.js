@@ -81,8 +81,9 @@ export class FileToolbarElement extends HTMLElement {
 
     /** @private */
     _saveFile() {
-        let blob = new Blob([$mod.write(this._target._module)], {type: 'application/octet-stream'})
-        $ext.download(blob, (this._target._module.name || 'Untitled') + '.mod')
+        let module = this._target._getModule()
+        let blob = new Blob([$mod.write(module)], {type: 'application/octet-stream'})
+        $ext.download(blob, (module.name || 'Untitled') + '.mod')
         this._target._moduleSaved()
     }
 }
@@ -92,7 +93,7 @@ let testElem
 if (import.meta.main) {
     testElem = new FileToolbarElement()
     testElem._target = {
-        _module: $module.defaultNew,
+        _getModule() { return $module.defaultNew },
         _moduleLoaded(module) {
             console.log('Module loaded:', module)
         },

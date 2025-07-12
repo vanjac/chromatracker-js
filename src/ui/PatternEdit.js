@@ -374,12 +374,11 @@ if (import.meta.main) {
         _setMute(c, mute) {
             console.log('Set mute', c, mute)
         },
-        _changeModule(callback, _options) {
-            console.log('Change module')
+        _changeModule(callback, commit) {
+            console.log('Change module', commit)
             module = callback(module)
             testElem._setModule(module)
         },
-        _clearUndoCombine(_tag) {},
         _jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },

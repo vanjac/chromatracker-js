@@ -64,9 +64,9 @@ export class SamplesListElement extends HTMLElement {
         this._destroySampleEdit()
         this._sampleEdit = new SampleEditElement(this._target)
         this._sampleEditContainer.appendChild(this._sampleEdit)
-        this._sampleEdit._onChange = (sample, combineTag) => (
+        this._sampleEdit._onChange = (sample, commit) => (
             this._target._changeModule(
-                module => $sample.update(module, idx, sample), {combineTag}))
+                module => $sample.update(module, idx, sample), commit))
         this._sampleEdit._setIndex(idx)
         this._sampleEdit._setSample(this._viewSamples[idx])
     }
@@ -176,12 +176,11 @@ if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new SamplesListElement()
     testElem._target = {
-        _changeModule(callback, _options) {
-            console.log('Change module')
+        _changeModule(callback, commit) {
+            console.log('Change module', commit)
             module = callback(module)
             testElem._setSamples(module.samples)
         },
-        _clearUndoCombine(_tag) {},
         _jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },
