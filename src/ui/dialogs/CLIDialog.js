@@ -35,3 +35,9 @@ export class CLIDialogElement extends FormDialogElement {
     }
 }
 $dom.defineUnique('cli-dialog', CLIDialogElement)
+
+let testElem
+if (import.meta.main) {
+    testElem = new CLIDialogElement()
+    $dialog.open(testElem)
+}

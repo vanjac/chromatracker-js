@@ -1,6 +1,7 @@
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
+import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $icons from '../gen/Icons.js'
@@ -180,3 +181,22 @@ export class SequenceEditElement extends HTMLElement {
     }
 }
 $dom.defineUnique('sequence-edit', SequenceEditElement)
+
+/** @type {SequenceEditElement} */
+let testElem
+if (import.meta.main) {
+    let module = $module.defaultNew
+    testElem = new SequenceEditElement()
+    testElem._target = {
+        _changeModule(callback, _options) {
+            console.log('Change module')
+            module = callback(module)
+            testElem._setSequence(module.sequence)
+            testElem._setPatterns(module.patterns)
+        },
+        _clearUndoCombine(_tag) {},
+    }
+    $dom.displayTestElem(testElem)
+    testElem._setSequence(module.sequence)
+    testElem._setPatterns(module.patterns)
+}

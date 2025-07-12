@@ -272,3 +272,33 @@ export class CellEntryElement extends HTMLElement {
     }
 }
 $dom.defineUnique('cell-entry', CellEntryElement)
+
+let testElem
+if (import.meta.main) {
+    testElem = new CellEntryElement()
+    testElem._target = {
+        _putCell(cell, parts) {
+            console.log('Put cell:', cell, parts)
+        },
+        _updateCell() {
+            console.log('Update cell')
+        },
+        _selCell() {
+            return Cell.empty
+        },
+        _updateEntryParts() {
+            console.log('Update entry parts')
+        },
+    }
+    $dom.displayTestElem(testElem)
+    testElem._setJamTarget({
+        _jamPlay(id, cell, _options) {
+            console.log('Jam play', id, cell)
+        },
+        _jamRelease(id) {
+            console.log('Jam release', id)
+        },
+    })
+    testElem._setSamples(Object.freeze([]))
+    testElem._onVisible()
+}

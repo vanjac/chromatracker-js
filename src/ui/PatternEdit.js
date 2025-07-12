@@ -2,6 +2,7 @@ import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
+import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
 import {Cell, CellPart, mod, Module, Pattern} from '../Model.js'
@@ -362,3 +363,29 @@ export class PatternEditElement extends HTMLElement {
     }
 }
 $dom.defineUnique('pattern-edit', PatternEditElement)
+
+/** @type {PatternEditElement} */
+let testElem
+if (import.meta.main) {
+    let module = $module.defaultNew
+    testElem = new PatternEditElement()
+    $dom.displayTestElem(testElem)
+    testElem._setTarget({
+        _setMute(c, mute) {
+            console.log('Set mute', c, mute)
+        },
+        _changeModule(callback, _options) {
+            console.log('Change module')
+            module = callback(module)
+            testElem._setModule(module)
+        },
+        _clearUndoCombine(_tag) {},
+        _jamPlay(id, cell, _options) {
+            console.log('Jam play', id, cell)
+        },
+        _jamRelease(id) {
+            console.log('Jam release', id)
+        },
+    })
+    testElem._setModule(module)
+}

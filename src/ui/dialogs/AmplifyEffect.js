@@ -58,3 +58,9 @@ export class AmplifyEffectElement extends FormDialogElement {
     }
 }
 $dom.defineUnique('amplify-effect', AmplifyEffectElement)
+
+let testElem
+if (import.meta.main) {
+    testElem = new AmplifyEffectElement()
+    $dialog.open(testElem)
+}

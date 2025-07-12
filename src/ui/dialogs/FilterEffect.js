@@ -205,3 +205,9 @@ export class FilterEffectElement extends FormDialogElement {
     }
 }
 $dom.defineUnique('filter-effect', FilterEffectElement)
+
+let testElem
+if (import.meta.main) {
+    testElem = new FilterEffectElement()
+    $dialog.open(testElem)
+}

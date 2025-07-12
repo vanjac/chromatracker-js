@@ -87,3 +87,18 @@ export class FileToolbarElement extends HTMLElement {
     }
 }
 $dom.defineUnique('file-toolbar', FileToolbarElement)
+
+let testElem
+if (import.meta.main) {
+    testElem = new FileToolbarElement()
+    testElem._target = {
+        _module: $module.defaultNew,
+        _moduleLoaded(module) {
+            console.log('Module loaded:', module)
+        },
+        _moduleSaved() {
+            console.log('Module saved')
+        },
+    }
+    $dom.displayTestElem(testElem)
+}

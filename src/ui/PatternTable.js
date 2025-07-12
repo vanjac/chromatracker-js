@@ -280,3 +280,22 @@ export class PatternTableElement extends HTMLElement {
     }
 }
 $dom.defineUnique('pattern-table', PatternTableElement)
+
+let testElem
+if (import.meta.main) {
+    testElem = new PatternTableElement()
+    testElem._target = {
+        _setMute(c, mute) {
+            console.log('Set mute', c, mute)
+        },
+        _jamPlay(id, cell, _options) {
+            console.log('Jam play', id, cell)
+        },
+        _jamRelease(id) {
+            console.log('Jam release', id)
+        },
+    }
+    $dom.displayTestElem(testElem)
+    testElem._setNumChannels(4)
+    testElem._setPattern($pattern.create(4))
+}

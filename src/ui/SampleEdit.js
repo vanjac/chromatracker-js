@@ -768,3 +768,21 @@ export class SampleEditElement extends HTMLElement {
     }
 }
 $dom.defineUnique('sample-edit', SampleEditElement)
+
+/** @type {SampleEditElement} */
+let testElem
+if (import.meta.main) {
+    testElem = new SampleEditElement({
+        _changeModule(_callback, _options) {},
+        _clearUndoCombine(_tag) {},
+        _jamPlay(id, cell, _options) {
+            console.log('Jam play', id, cell)
+        },
+        _jamRelease(id) {
+            console.log('Jam release', id)
+        },
+    })
+    testElem._onChange = (sample, _combine) => {testElem._setSample(sample)}
+    $dom.displayTestElem(testElem)
+    testElem._setSample(Sample.empty)
+}

@@ -141,3 +141,20 @@ export class ModulePropertiesElement extends HTMLElement {
     }
 }
 $dom.defineUnique('module-properties', ModulePropertiesElement)
+
+/** @type {ModulePropertiesElement} */
+let testElem
+if (import.meta.main) {
+    let module = $module.defaultNew
+    testElem = new ModulePropertiesElement()
+    testElem._target = {
+        _changeModule(callback, _options) {
+            console.log('Change module')
+            module = callback(module)
+            testElem._setModule(module)
+        },
+        _clearUndoCombine(_tag) {},
+    }
+    $dom.displayTestElem(testElem)
+    testElem._setModule(module)
+}

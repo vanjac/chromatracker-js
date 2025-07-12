@@ -85,3 +85,26 @@ export class PlaybackControlsElement extends HTMLElement {
     }
 }
 $dom.defineUnique('playback-controls', PlaybackControlsElement)
+
+let testElem
+if (import.meta.main) {
+    testElem = new PlaybackControlsElement()
+    testElem._target = {
+        _resetPlayback(options) {
+            console.log('Reset playback', options)
+        },
+        _play() {
+            console.log('Play')
+        },
+        _pause() {
+            console.log('Pause')
+        },
+        _updatePlaySettings() {
+            console.log('Update play settings')
+        },
+        _undo() {
+            console.log('Undo')
+        },
+    }
+    $dom.displayTestElem(testElem)
+}

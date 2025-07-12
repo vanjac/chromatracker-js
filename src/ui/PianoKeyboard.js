@@ -2,6 +2,7 @@ import * as $cell from './Cell.js'
 import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
+import {Cell} from '../Model.js'
 import periodTable from '../PeriodTable.js'
 
 const template = $dom.html`
@@ -112,3 +113,25 @@ export class PianoKeyboardElement extends HTMLElement {
     }
 }
 $dom.defineUnique('piano-keyboard', PianoKeyboardElement)
+
+let testElem
+if (import.meta.main) {
+    testElem = new PianoKeyboardElement()
+    testElem._target = {
+        _pitchChanged() {
+            console.log("Pitch changed")
+        },
+        _getJamCell() {
+            return Cell.empty
+        },
+    }
+    testElem._jam = {
+        _jamPlay(id, cell, _options) {
+            console.log('Jam play', id, cell)
+        },
+        _jamRelease(id) {
+            console.log('Jam release', id)
+        },
+    }
+    $dom.displayTestElem(testElem)
+}

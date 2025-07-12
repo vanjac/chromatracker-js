@@ -1,5 +1,6 @@
 import * as $dom from './DOMUtil.js'
 import * as $play from '../Playback.js'
+import * as $module from '../edit/Module.js'
 import * as $sample from '../edit/Sample.js'
 import * as $icons from '../gen/Icons.js'
 import {SampleEditElement} from './SampleEdit.js'
@@ -168,3 +169,26 @@ export class SamplesListElement extends HTMLElement {
     }
 }
 $dom.defineUnique('samples-list', SamplesListElement)
+
+/** @type {SamplesListElement} */
+let testElem
+if (import.meta.main) {
+    let module = $module.defaultNew
+    testElem = new SamplesListElement()
+    testElem._target = {
+        _changeModule(callback, _options) {
+            console.log('Change module')
+            module = callback(module)
+            testElem._setSamples(module.samples)
+        },
+        _clearUndoCombine(_tag) {},
+        _jamPlay(id, cell, _options) {
+            console.log('Jam play', id, cell)
+        },
+        _jamRelease(id) {
+            console.log('Jam release', id)
+        },
+    }
+    $dom.displayTestElem(testElem)
+    testElem._setSamples(module.samples)
+}
