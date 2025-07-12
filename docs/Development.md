@@ -6,8 +6,9 @@ ChromaTracker is targeting the following browsers:
     - [Download here](https://portableapps.com/apps/internet/firefox-portable-legacy-68)
 - Safari iOS 15+
   - [Usage stats](https://iosref.com/ios-usage)
-- Android WebView 61+
+- Android WebView 66+ (included with Android 9)
     - Same versioning as Chromium
+    - [Android versions list](https://docs.signageos.io/hc/en-us/articles/4405381554578-Browser-WebKit-and-Chromium-versions-by-each-Platform#h_01HABYXXZMDMS644M0BXH43GYD)
 - Edge latest
 - Firefox Android latest
 - Chrome Android latest
