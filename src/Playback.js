@@ -69,7 +69,7 @@ function channelPlayback() {
         sourceSample: null,
         /** @type {GainNode} */
         gain: null,
-        /** @type {StereoPannerNode|PannerNode} */
+        /** @type {StereoPannerNode} */
         panner: null,
         sample: 0,
         sampleOffset: 0,
@@ -178,14 +178,8 @@ export function setModule(playback, module) {
  */
 function initChannelNodes(playback, channel) {
     let pan = calcPanning(channel.panning)
-    if (playback.ctx.createStereoPanner) {
-        channel.panner = playback.ctx.createStereoPanner()
-        channel.panner.pan.value = pan
-    } else {
-        channel.panner = playback.ctx.createPanner()
-        channel.panner.panningModel = 'equalpower'
-        channel.panner.setPosition(pan, 0, 1 - Math.abs(pan))
-    }
+    channel.panner = playback.ctx.createStereoPanner()
+    channel.panner.pan.value = pan
     channel.panner.connect(playback.ctx.destination)
     channel.gain = playback.ctx.createGain()
     channel.gain.connect(channel.panner)
@@ -546,13 +540,7 @@ function processCellAll(playback, channel, cell) {
 
     if (channel.panning != channel.scheduledPanning) {
         let pan = calcPanning(channel.panning)
-        if (typeof StereoPannerNode != 'undefined'
-                && (channel.panner instanceof StereoPannerNode)) {
-            channel.panner.pan.setTargetAtTime(pan, playback.time, rampTimeConstant)
-        }
-        // TODO: what about PannerNode?
-        // setPosition doesn't have time argument, but iOS doesn't support positionX/Y/Z until 14.1,
-        // so....???
+        channel.panner.pan.setTargetAtTime(pan, playback.time, rampTimeConstant)
     }
     channel.scheduledPanning = channel.panning
 
@@ -793,9 +781,7 @@ export function jamPlay(playback, id, c, cell) {
         jam.samplePredictPos = jam.sampleOffset
         jam.samplePredictTime = playback.ctx.currentTime
         jam.gain.gain.value = volumeToGain(jam.volume)
-        if (typeof StereoPannerNode != 'undefined' && (jam.panner instanceof StereoPannerNode)) {
-            jam.panner.pan.value = calcPanning(jam.panning)
-        }
+        jam.panner.pan.value = calcPanning(jam.panning)
         jam.source.playbackRate.value = periodToRate(jam.period)
         jam.scheduledPeriod = jam.period
     }

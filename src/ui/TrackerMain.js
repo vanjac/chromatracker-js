@@ -203,8 +203,6 @@ export class TrackerMainElement extends HTMLElement {
     _resetPlayback({restoreSpeed = false, restorePos = false, restoreRow = false} = {}) {
         this._pause()
         if (!this._context) {
-            // @ts-ignore
-            let AudioContext = window.AudioContext || window.webkitAudioContext
             this._context = new AudioContext({latencyHint: 'interactive'})
         } else if (this._context.state != 'running') {
             this._context.resume()

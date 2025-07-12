@@ -1,7 +1,7 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import {FormDialogElement} from '../Dialog.js'
-import {createOfflineAudioContext} from '../../Util.js'
+import {defaultSampleRate} from '../../Util.js'
 import global from '../GlobalState.js'
 
 const minGraphFreq = 20
@@ -114,7 +114,7 @@ export class FilterEffectElement extends FormDialogElement {
         this._initForm(this._form)
         $dom.restoreFormData(this._form, this._inputNames(), global.effectFormData)
 
-        this._context = createOfflineAudioContext()
+        this._context = new OfflineAudioContext(1, 1, defaultSampleRate)
         this._filter = this._context.createBiquadFilter()
 
         this._updateFilterType()

@@ -11,7 +11,6 @@ input, button, textarea, select {
 }
 select {
     appearance: menulist-button;
-    -webkit-appearance: menulist-button;
 }
 
 html, body {

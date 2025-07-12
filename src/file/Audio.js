@@ -1,15 +1,15 @@
 import * as $wave from '../edit/Wave.js'
 import {mod, Sample} from '../Model.js'
-import {createOfflineAudioContext} from '../Util.js'
 
 /**
  * @param {ArrayBuffer} buf
- * @param {number} sampleRate
+ * @param {number} sampleRate Sample rate, must be between 44100 and 96000 Hz.
  * @returns {Promise<Readonly<Sample>>}
  */
 export function read(buf, sampleRate) {
     return new Promise((resolve, reject) => {
-        let context = createOfflineAudioContext(1, 1, sampleRate)
+        // https://stackoverflow.com/a/55022825
+        let context = new OfflineAudioContext(1, 1, sampleRate)
 
         context.decodeAudioData(buf, audioBuffer => {
             let data = audioBuffer.getChannelData(0)

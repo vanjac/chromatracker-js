@@ -1,6 +1,6 @@
 import * as $wave from '../edit/Wave.js'
 import {immSplice} from './EditUtil.js'
-import {clamp, createOfflineAudioContext} from '../Util.js'
+import {clamp, defaultSampleRate} from '../Util.js'
 import {Module, Sample} from '../Model.js'
 
 /**
@@ -118,7 +118,7 @@ export function spliceEffect(sample, start, end, length, effect) {
 export function applyNode(sample, start, end, dithering, createNode) {
     return new Promise(resolve => {
         let length = end - start
-        let context = createOfflineAudioContext(1, length)
+        let context = new OfflineAudioContext(1, length, defaultSampleRate)
 
         let buffer = context.createBuffer(1, length, context.sampleRate)
         let srcData = buffer.getChannelData(0)
