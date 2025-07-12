@@ -9,18 +9,16 @@ import {SamplesListElement} from './SamplesList.js'
 import {SequenceEditElement} from './SequenceEdit.js'
 
 declare global {
-
-// Element type extensions
-interface HTMLElementTagNameMap {
-    'cell-entry': CellEntryElement
-    'file-toolbar': FileToolbarElement
-    'module-properties': ModulePropertiesElement
-    'pattern-edit': PatternEditElement
-    'pattern-table': PatternTableElement
-    'piano-keyboard': PianoKeyboardElement
-    'playback-controls': PlaybackControlsElement
-    'samples-list': SamplesListElement
-    'sequence-edit': SequenceEditElement
+    // Element type extensions
+    interface HTMLElementTagNameMap {
+        'cell-entry': CellEntryElement
+        'file-toolbar': FileToolbarElement
+        'module-properties': ModulePropertiesElement
+        'pattern-edit': PatternEditElement
+        'pattern-table': PatternTableElement
+        'piano-keyboard': PianoKeyboardElement
+        'playback-controls': PlaybackControlsElement
+        'samples-list': SamplesListElement
+        'sequence-edit': SequenceEditElement
+    }
 }
-
-} // global
