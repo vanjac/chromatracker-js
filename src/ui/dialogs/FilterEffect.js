@@ -174,7 +174,7 @@ export class FilterEffectElement extends FormDialogElement {
 
         let ctx = this._graph.getContext('2d')
         // 'currentColor' doesn't work in Chrome or Safari
-        ctx.strokeStyle = window.getComputedStyle(this._graph).getPropertyValue('--color-fg')
+        ctx.strokeStyle = window.getComputedStyle(this).getPropertyValue('--color-fg')
         let {width, height} = this._graph
         ctx.clearRect(0, 0, width, height)
 
