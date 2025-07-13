@@ -189,9 +189,7 @@ export class PatternEdit {
         this.cellEntry.controller.callbacks = {
             jamPlay: (...args) => this.callbacks.jamPlay(...args),
             jamRelease: (...args) => this.callbacks.jamRelease(...args),
-            putCell: this.putCell.bind(this),
             updateCell: this.updateCell.bind(this),
-            selCell: this.selCell.bind(this),
             cellParts: this.getCellParts.bind(this),
         }
         this.updateCell()

@@ -73,11 +73,6 @@ const template = $dom.html`
             <option>E</option>
             <option>F</option>
         </select>
-
-        <div class="flex-grow"></div>
-        <button id="writeEffect">
-            ${$icons.keyboard_return}
-        </button>
     </div>
 </div>
 `
@@ -90,9 +85,7 @@ export class CellEntry {
         this.view = view
         /**
          * @type {JamCallbacks & {
-         *      putCell(cell: Readonly<Cell>, parts: CellPart): void
          *      updateCell(): void
-         *      selCell(): Readonly<Cell>
                 cellParts(): CellPart
          * }}
          */
@@ -141,11 +134,6 @@ export class CellEntry {
                 this.sampleList.classList.remove('scroll-lock')
             }
         })
-
-        $keyPad.makeKeyButton(fragment.querySelector('#writeEffect'), id => {
-            this.callbacks.putCell(this.getCell(), CellPart.effect | CellPart.param)
-            this.callbacks.jamPlay(id, this.callbacks.selCell())
-        }, id => this.callbacks.jamRelease(id))
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -242,14 +230,8 @@ let testElem
 if (import.meta.main) {
     testElem = new CellEntryElement()
     testElem.controller.callbacks = {
-        putCell(cell, parts) {
-            console.log('Put cell:', cell, parts)
-        },
         updateCell() {
             console.log('Update cell')
-        },
-        selCell() {
-            return Cell.empty
         },
         cellParts() {
             return CellPart.all
