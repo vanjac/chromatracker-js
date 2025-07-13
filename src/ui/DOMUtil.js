@@ -1,7 +1,7 @@
 import * as $id from '../ID.js'
 
 /**
- * @typedef {{
+ * @typedef {Object & {
  *      connectedCallback?: (elem: HTMLElement) => void
  *      disconnectedCallback?: (elem: HTMLElement) => void
  * }} Controller
@@ -20,12 +20,14 @@ export class ViewElement extends HTMLElement {
         if (this.controller.connectedCallback) {
             this.controller.connectedCallback(this)
         }
+        this.dispatchEvent(new Event('connected'))
     }
 
     disconnectedCallback() {
         if (this.controller.disconnectedCallback) {
             this.controller.disconnectedCallback(this)
         }
+        this.dispatchEvent(new Event('disconnected'))
     }
 }
 /**

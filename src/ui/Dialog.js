@@ -1,40 +1,22 @@
 import * as $dom from './DOMUtil.js'
 
-export class Dialog {
-    /**
-     * @param {HTMLElement} view
-     */
-    constructor(view) {
-        this.view = view
-        /** @type {Element} */
-        this.lastFocused = null
-    }
+/**
+ * @typedef {$dom.Controller & {
+ *      onDismiss?: () => void
+ * }} Dialog
+ */
 
-    disconnectedCallback() {
-        if (this.lastFocused instanceof HTMLElement) {
-            this.lastFocused.focus()
-        }
-    }
-
-    dismiss() {
-        close(this.view)
-    }
-}
-
-export class FormDialog extends Dialog {
-    /**
-     * @param {HTMLFormElement} form
-     */
-    initForm(form) {
-        form.addEventListener('submit', e => {
-            e.preventDefault()
-            this.submit()
-        })
-    }
-
-    submit() {
-        close(this.view)
-    }
+/**
+ * @param {HTMLElement} dialog
+ * @param {HTMLFormElement} form
+ * @param {() => void} callback
+ */
+export function addFormListener(dialog, form, callback = null) {
+    form.addEventListener('submit', e => {
+        e.preventDefault()
+        if (callback) { callback() }
+        close(dialog)
+    })
 }
 
 const focusableSelector = [
@@ -61,7 +43,7 @@ export function open(dialog, {dismissable = false} = {}) {
     if (dismissable) {
         container.addEventListener('click', e => {
             if (e.target == container) {
-                dialog.controller.dismiss()
+                dismiss(dialog)
             }
         })
         // TODO: handle back button (pushState)
@@ -69,7 +51,7 @@ export function open(dialog, {dismissable = false} = {}) {
 
     // https://bitsofco.de/accessible-modal-dialog/
 
-    dialog.controller.lastFocused = document.activeElement
+    const lastFocused = document.activeElement
     // TODO: doesn't work if elements change disabled state
     let focusable = [...dialog.querySelectorAll(focusableSelector)]
     if (focusable.length == 0) {
@@ -80,9 +62,15 @@ export function open(dialog, {dismissable = false} = {}) {
 
     if (firstFocusable instanceof HTMLElement) {
         firstFocusable.focus()
-    } else if (dialog.controller.lastFocused instanceof HTMLElement) {
-        dialog.controller.lastFocused.blur()
+    } else if (lastFocused instanceof HTMLElement) {
+        lastFocused.blur()
     }
+
+    dialog.addEventListener('disconnected', () => {
+        if (lastFocused instanceof HTMLElement) {
+            lastFocused.focus()
+        }
+    })
 
     container.addEventListener('keydown', e => {
         if (e.code == 'Tab') {
@@ -100,7 +88,7 @@ export function open(dialog, {dismissable = false} = {}) {
                 e.preventDefault()
             }
         } else if (dismissable && e.code == 'Escape') {
-            dialog.controller.dismiss()
+            dismiss(dialog)
         }
     })
 
@@ -113,4 +101,13 @@ export function open(dialog, {dismissable = false} = {}) {
 export function close(dialog) {
     let container = dialog.parentElement
     container.remove()
+}
+
+/**
+ * @template {Dialog} T
+ * @param {$dom.ViewElement<T>} dialog
+ */
+function dismiss(dialog) {
+    if (dialog.controller.onDismiss) { dialog.controller.onDismiss() }
+    close(dialog)
 }

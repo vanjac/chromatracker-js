@@ -1,6 +1,5 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {FormDialog} from '../Dialog.js'
 import {defaultSampleRate} from '../../Util.js'
 import global from '../GlobalState.js'
 
@@ -83,12 +82,12 @@ const template = $dom.html`
 </form>
 `
 
-export class FilterEffect extends FormDialog {
+export class FilterEffect {
     /**
      * @param {HTMLElement} view
      */
     constructor(view) {
-        super(view)
+        this.view = view
         /** @param {FilterEffectParams} params */
         this.onComplete = params => {}
     }
@@ -114,7 +113,7 @@ export class FilterEffect extends FormDialog {
         /** @type {HTMLCanvasElement} */
         this.graph = fragment.querySelector('#graph')
 
-        this.initForm(this.form)
+        $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
         $dom.restoreFormData(this.form, this.inputNames(), global.effectFormData)
 
         this.context = new OfflineAudioContext(1, 1, defaultSampleRate)
@@ -191,9 +190,6 @@ export class FilterEffect extends FormDialog {
         ctx.stroke()
     }
 
-    /**
-     * @override
-     */
     submit() {
         this.onComplete({
             type: /** @type {BiquadFilterType} */(this.typeInput.value),
@@ -204,7 +200,6 @@ export class FilterEffect extends FormDialog {
             dither: this.ditherInput.checked
         })
         $dom.saveFormData(this.form, this.inputNames(), global.effectFormData)
-        $dialog.close(this.view)
     }
 }
 export const FilterEffectElement = $dom.defineView('filter-effect', FilterEffect)

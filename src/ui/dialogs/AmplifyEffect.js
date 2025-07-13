@@ -1,6 +1,5 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {FormDialog} from '../Dialog.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -19,12 +18,12 @@ const template = $dom.html`
 </form>
 `
 
-export class AmplifyEffect extends FormDialog {
+export class AmplifyEffect {
     /**
      * @param {HTMLElement} view
      */
     constructor(view) {
-        super(view)
+        this.view = view
         /** @param {{amount: number, dithering: boolean}} params */
         this.onComplete = ({amount, dithering}) => {}
     }
@@ -38,7 +37,7 @@ export class AmplifyEffect extends FormDialog {
         /** @type {HTMLInputElement} */
         this.ditherInput = fragment.querySelector('#dither')
 
-        this.initForm(this.form)
+        $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
         $dom.restoreFormData(this.form, this.inputNames(), global.effectFormData)
 
         this.view.style.display = 'contents'
@@ -48,16 +47,12 @@ export class AmplifyEffect extends FormDialog {
     /** @private */
     inputNames() { return ['amp', 'dither'] }
 
-    /**
-     * @override
-     */
     submit() {
         this.onComplete({
             amount: this.amountInput.valueAsNumber,
             dithering: this.ditherInput.checked
         })
         $dom.saveFormData(this.form, this.inputNames(), global.effectFormData)
-        $dialog.close(this.view)
     }
 }
 export const AmplifyEffectElement = $dom.defineView('amplify-effect', AmplifyEffect)

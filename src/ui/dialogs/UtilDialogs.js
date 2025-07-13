@@ -1,6 +1,5 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {Dialog, FormDialog} from '../Dialog.js'
 
 const alertDialogTemplate = $dom.html`
 <form class="vflex dialog message-dialog">
@@ -13,12 +12,12 @@ const alertDialogTemplate = $dom.html`
 </form>
 `
 
-export class AlertDialog extends FormDialog {
+export class AlertDialog {
     /**
      * @param {HTMLElement} view
      */
     constructor(view) {
-        super(view)
+        this.view = view
         this.title = ''
         this.message = ''
         this.onDismiss = () => {}
@@ -27,7 +26,7 @@ export class AlertDialog extends FormDialog {
     connectedCallback() {
         let fragment = alertDialogTemplate.cloneNode(true)
 
-        this.initForm(fragment.querySelector('form'))
+        $dialog.addFormListener(this.view, fragment.querySelector('form'), this.submit.bind(this))
         fragment.querySelector('#title').textContent = this.title
         /** @type {HTMLOutputElement} */
         let messageOut = fragment.querySelector('#message')
@@ -37,20 +36,8 @@ export class AlertDialog extends FormDialog {
         this.view.appendChild(fragment)
     }
 
-    /**
-     * @override
-     */
     submit() {
-        if (this.onDismiss) { this.onDismiss() }
-        super.submit()
-    }
-
-    /**
-     * @override
-     */
-    dismiss() {
-        if (this.onDismiss) { this.onDismiss() }
-        super.dismiss()
+        this.onDismiss()
     }
 }
 export const AlertDialogElement = $dom.defineView('alert-dialog', AlertDialog)
@@ -82,47 +69,38 @@ const confirmDialogTemplate = $dom.html`
 </form>
 `
 
-export class ConfirmDialog extends FormDialog {
+export class ConfirmDialog {
     /**
      * @param {HTMLElement} view
      */
     constructor(view) {
-        super(view)
+        this.view = view
         this.title = ''
         this.message = ''
         this.onConfirm = () => {}
-        this.onCancel = () => {}
+        this.onDismiss = () => {}
     }
 
     connectedCallback() {
         let fragment = confirmDialogTemplate.cloneNode(true)
 
-        this.initForm(fragment.querySelector('form'))
+        $dialog.addFormListener(this.view, fragment.querySelector('form'), this.submit.bind(this))
         fragment.querySelector('#title').textContent = this.title
         /** @type {HTMLOutputElement} */
         let messageOut = fragment.querySelector('#message')
         messageOut.value = this.message
 
-        fragment.querySelector('#cancel').addEventListener('click', () => this.dismiss())
+        fragment.querySelector('#cancel').addEventListener('click', () => {
+            this.onDismiss()
+            $dialog.close(this.view)
+        })
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 
-    /**
-     * @override
-     */
     submit() {
-        if (this.onConfirm) { this.onConfirm() }
-        super.submit()
-    }
-
-    /**
-     * @override
-     */
-    dismiss() {
-        if (this.onCancel) { this.onCancel() }
-        super.dismiss()
+        this.onConfirm()
     }
 }
 export const ConfirmDialogElement = $dom.defineView('confirm-dialog', ConfirmDialog)
@@ -138,7 +116,7 @@ ConfirmDialog.open = function(message, title = '') {
         dialog.controller.message = message
         dialog.controller.title = title
         dialog.controller.onConfirm = resolve
-        dialog.controller.onCancel = reject
+        dialog.controller.onDismiss = reject
         $dialog.open(dialog)
     })
 }
@@ -158,54 +136,45 @@ const inputDialogTemplate = $dom.html`
 </form>
 `
 
-export class InputDialog extends FormDialog {
+export class InputDialog {
     /**
      * @param {HTMLElement} view
      */
     constructor(view) {
-        super(view)
+        this.view = view
         this.title = ''
         this.prompt = ''
         this.defaultValue = 0
         /** @param {number} value */
         this.onConfirm = value => {}
-        this.onCancel = () => {}
+        this.onDismiss = () => {}
     }
 
     connectedCallback() {
         let fragment = inputDialogTemplate.cloneNode(true)
 
-        this.initForm(fragment.querySelector('form'))
+        $dialog.addFormListener(this.view, fragment.querySelector('form'), this.submit.bind(this))
         fragment.querySelector('#title').textContent = this.title
         fragment.querySelector('#prompt').textContent = this.prompt
 
         this.input = fragment.querySelector('input')
         this.input.valueAsNumber = this.defaultValue
 
-        fragment.querySelector('#cancel').addEventListener('click', () => this.dismiss())
+        fragment.querySelector('#cancel').addEventListener('click', () => {
+            this.onDismiss()
+            $dialog.close(this.view)
+        })
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 
-    /**
-     * @override
-     */
     submit() {
         if (Number.isNaN(this.input.valueAsNumber)) {
-            this.dismiss()
+            this.onDismiss()
         } else {
             this.onConfirm(this.input.valueAsNumber)
-            super.submit()
         }
-    }
-
-    /**
-     * @override
-     */
-    dismiss() {
-        if (this.onCancel) { this.onCancel() }
-        super.dismiss()
     }
 }
 export const InputDialogElement = $dom.defineView('input-dialog', InputDialog)
@@ -223,7 +192,7 @@ InputDialog.open = function(prompt, title = '', defaultValue = 0) {
         dialog.controller.title = title
         dialog.controller.defaultValue = defaultValue
         dialog.controller.onConfirm = resolve
-        dialog.controller.onCancel = reject
+        dialog.controller.onDismiss = reject
         $dialog.open(dialog, {dismissable: true})
     })
 }
@@ -235,7 +204,14 @@ const waitDialogTemplate = $dom.html`
 </div>
 `
 
-export class WaitDialog extends Dialog {
+export class WaitDialog {
+    /**
+     * @param {HTMLElement} view
+     */
+    constructor(view) {
+        this.view = view
+    }
+
     connectedCallback() {
         let fragment = waitDialogTemplate.cloneNode(true)
 
@@ -250,6 +226,6 @@ if (import.meta.main) {
         await AlertDialog.open('Message', 'Title')
         await ConfirmDialog.open('Message', 'Title')
         console.log(await InputDialog.open('Prompt', 'Title', 123))
-        $dialog.open(new WaitDialogElement())
+        $dialog.open(new WaitDialogElement(), {dismissable: true})
     })()
 }
