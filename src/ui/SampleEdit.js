@@ -274,7 +274,7 @@ export class SampleEdit {
         this.piano.controller.callbacks = {
             jamPlay: (...args) => this.callbacks.jamPlay(...args),
             jamRelease: (...args) => this.callbacks.jamRelease(...args),
-            pitchChanged() {},
+            pitchChanged: this.updateJamCell.bind(this),
             getJamCell: this.getJamCell.bind(this),
         }
         this.piano.controller.useChannel = false
