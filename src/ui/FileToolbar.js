@@ -23,7 +23,8 @@ const template = $dom.html`
     <select id="demoMenu" class="large-menu">
         <option selected disabled hidden>Demo Files</option>
         <optgroup label="(TODO)">
-            <option value="http://chroma.zone/share/space_debris.mod">space_debris.mod</option>
+            <option value="https://chroma.zone/share/space_debris.mod">space debris</option>
+            <option value="https://chroma.zone/share/pixipack1.mod">pixipack 1</option>
         </optgroup>
     </select>
 </div>
