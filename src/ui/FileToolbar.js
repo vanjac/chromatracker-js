@@ -23,6 +23,7 @@ const template = $dom.html`
     <select id="demoMenu" class="large-menu">
         <option selected disabled hidden>Demo Files</option>
         <optgroup label="(TODO)">
+            <option value="http://chroma.zone/share/space_debris.mod">space_debris.mod</option>
         </optgroup>
     </select>
 </div>
@@ -57,17 +58,7 @@ export class FileToolbar {
                 this.readModuleBlob(fileSelect.files[0])
             }
         })
-        $dom.addMenuListener(fragment.querySelector('#demoMenu'), value => {
-            let dialog = $dialog.open(new WaitDialogElement())
-            window.fetch(value)
-                .then(r => r.blob())
-                .then(b => this.readModuleBlob(b))
-                .then(() => $dialog.close(dialog))
-                .catch(/** @param {Error} error */ error => {
-                    $dialog.close(dialog)
-                    AlertDialog.open(error.message)
-                })
-        })
+        $dom.addMenuListener(fragment.querySelector('#demoMenu'), value => this.loadFromUrl(value))
         fragment.querySelector('#fileSave').addEventListener('click', () => this.saveFile())
 
         this.view.style.display = 'contents'
@@ -87,6 +78,21 @@ export class FileToolbar {
             }
         }
         reader.readAsArrayBuffer(blob)
+    }
+
+    /**
+     * @param {string} url
+     */
+    loadFromUrl(url) {
+        let dialog = $dialog.open(new WaitDialogElement())
+        window.fetch(url)
+            .then(r => r.blob())
+            .then(b => this.readModuleBlob(b))
+            .then(() => $dialog.close(dialog))
+            .catch(/** @param {Error} error */ error => {
+                $dialog.close(dialog)
+                AlertDialog.open(error.message)
+            })
     }
 
     /** @private */
