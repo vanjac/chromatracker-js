@@ -101,6 +101,7 @@ export class PatternEdit {
         this.selectInput = fragment.querySelector('#select')
         this.playbackStatus = fragment.querySelector('#playbackStatus')
         this.selectTools = fragment.querySelector('#selectTools')
+        /** @type {HTMLElement} */
         this.entryCell = fragment.querySelector('#entryCell')
 
         this.selectInput.addEventListener('change', () => {

@@ -236,7 +236,6 @@ export class CellEntry {
             let label = $util.makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key')
             this.sampleList.appendChild(label)
-            $keyPad.addKeyEvents(label)
         }
         this.sampleInput = this.sampleList.elements.namedItem('sample')
         this.setSelSample(selSample)

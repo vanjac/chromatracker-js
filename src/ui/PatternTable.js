@@ -148,7 +148,7 @@ export class PatternTable {
                     $keyPad.makeKeyButton(td, id => {
                         this.setSelCell(c, row)
                         this.callbacks.jamPlay(id, this.viewPattern[c][row])
-                    }, id => this.callbacks.jamRelease(id), {blockScroll: false})
+                    }, id => this.callbacks.jamRelease(id))
                     td.addEventListener('contextmenu', () => {
                         $cli.addSelProp('cell', 'object', this.viewPattern[c][row], cell => {
                             this.callbacks.onChange($pattern.putCell(
