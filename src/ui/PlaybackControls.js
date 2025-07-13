@@ -47,54 +47,54 @@ export class PlaybackControls {
          *      undo(): void
          * }}
          */
-        this._callbacks = null
+        this.callbacks = null
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this._playRowButton = fragment.querySelector('#playRow')
-        this._pauseButton = fragment.querySelector('#pause')
+        this.playRowButton = fragment.querySelector('#playRow')
+        this.pauseButton = fragment.querySelector('#pause')
         /** @type {HTMLInputElement} */
-        this._patternLoopInput = fragment.querySelector('#patternLoop')
+        this.patternLoopInput = fragment.querySelector('#patternLoop')
         /** @type {HTMLInputElement} */
-        this._followInput = fragment.querySelector('#follow')
+        this.followInput = fragment.querySelector('#follow')
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
-            this._callbacks.resetPlayback()
-            this._callbacks.play()
+            this.callbacks.resetPlayback()
+            this.callbacks.play()
         })
         fragment.querySelector('#playPattern').addEventListener('click', () => {
-            this._callbacks.resetPlayback({restoreSpeed: true, restorePos: true})
-            this._callbacks.play()
+            this.callbacks.resetPlayback({restoreSpeed: true, restorePos: true})
+            this.callbacks.play()
         })
-        this._playRowButton.addEventListener('click', () => {
-            this._callbacks.resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})
-            this._callbacks.play()
+        this.playRowButton.addEventListener('click', () => {
+            this.callbacks.resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})
+            this.callbacks.play()
         })
-        this._pauseButton.addEventListener('click', () => this._callbacks.pause())
+        this.pauseButton.addEventListener('click', () => this.callbacks.pause())
         fragment.querySelector('#patternLoop').addEventListener('click',
-            () => this._callbacks.updatePlaySettings())
-        fragment.querySelector('#undo').addEventListener('click', () => this._callbacks.undo())
+            () => this.callbacks.updatePlaySettings())
+        fragment.querySelector('#undo').addEventListener('click', () => this.callbacks.undo())
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 
-    _getPatternLoop() {
-        return this._patternLoopInput.checked
+    getPatternLoop() {
+        return this.patternLoopInput.checked
     }
 
-    _getFollow() {
-        return this._followInput.checked
+    getFollow() {
+        return this.followInput.checked
     }
 
     /**
      * @param {boolean} playing
      */
-    _setPlayState(playing) {
-        this._playRowButton.classList.toggle('hide', playing)
-        this._pauseButton.classList.toggle('hide', !playing)
+    setPlayState(playing) {
+        this.playRowButton.classList.toggle('hide', playing)
+        this.pauseButton.classList.toggle('hide', !playing)
     }
 }
 export const PlaybackControlsElement = $dom.defineView('playback-controls', PlaybackControls)
@@ -102,7 +102,7 @@ export const PlaybackControlsElement = $dom.defineView('playback-controls', Play
 let testElem
 if (import.meta.main) {
     testElem = new PlaybackControlsElement()
-    testElem.controller._callbacks = {
+    testElem.controller.callbacks = {
         resetPlayback(options) {
             console.log('Reset playback', options)
         },

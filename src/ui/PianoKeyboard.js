@@ -31,42 +31,42 @@ export class PianoKeyboard {
          *      getJamCell(): Cell
          * }}
          */
-        this._callbacks = null
-        this._useChannel = true
+        this.callbacks = null
+        this.useChannel = true
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
         /** @type {HTMLFormElement} */
-        this._piano = fragment.querySelector('#piano')
+        this.piano = fragment.querySelector('#piano')
         /** @type {NamedFormItem} */
-        this._pitchInput = null
+        this.pitchInput = null
 
         /** @type {Element[]} */
-        this._pianoKeys = []
-        this._createPiano()
+        this.pianoKeys = []
+        this.createPiano()
 
-        $dom.disableFormSubmit(this._piano)
-        $keyPad.create(this._piano, (id, elem) => {
+        $dom.disableFormSubmit(this.piano)
+        $keyPad.create(this.piano, (id, elem) => {
             if (elem.parentElement && elem.parentElement.parentElement
-                    && elem.parentElement.parentElement.parentElement == this._piano) {
+                    && elem.parentElement.parentElement.parentElement == this.piano) {
                 let input = elem.parentElement.querySelector('input')
-                $dom.selectRadioButton(this._pitchInput, input.value)
-                this._callbacks.pitchChanged()
-                this._callbacks.jamPlay(
-                    id, this._callbacks.getJamCell(), {useChannel: this._useChannel})
+                $dom.selectRadioButton(this.pitchInput, input.value)
+                this.callbacks.pitchChanged()
+                this.callbacks.jamPlay(
+                    id, this.callbacks.getJamCell(), {useChannel: this.useChannel})
             }
-        }, id => this._callbacks.jamRelease(id))
+        }, id => this.callbacks.jamRelease(id))
         fragment.querySelector('#pianoLeft').addEventListener('click',
             /** @param {UIEventInit} e */ e => {
-                let keyWidth = this._pianoKeys[0].clientWidth
-                this._piano.scrollBy({left: -e.detail * keyWidth * 7, behavior: 'smooth'})
+                let keyWidth = this.pianoKeys[0].clientWidth
+                this.piano.scrollBy({left: -e.detail * keyWidth * 7, behavior: 'smooth'})
             })
         fragment.querySelector('#pianoRight').addEventListener('click',
             /** @param {UIEventInit} e */ e => {
-                let keyWidth = this._pianoKeys[0].clientWidth
-                this._piano.scrollBy({left: e.detail * keyWidth * 7, behavior: 'smooth'})
+                let keyWidth = this.pianoKeys[0].clientWidth
+                this.piano.scrollBy({left: e.detail * keyWidth * 7, behavior: 'smooth'})
             })
 
         this.view.style.display = 'contents'
@@ -74,9 +74,9 @@ export class PianoKeyboard {
     }
 
     /** @private */
-    _createPiano() {
-        let blackKeys = this._piano.querySelector('#blackKeys')
-        let whiteKeys = this._piano.querySelector('#whiteKeys')
+    createPiano() {
+        let blackKeys = this.piano.querySelector('#blackKeys')
+        let whiteKeys = this.piano.querySelector('#whiteKeys')
         for (let i = 0; i < periodTable[0].length; i++) {
             let note = i % 12
             let noteStr = $cell.noteNamesShort[note]
@@ -89,35 +89,35 @@ export class PianoKeyboard {
             label.classList.add(isBlackKey ? 'black-key' : 'white-key')
             ;(isBlackKey ? blackKeys : whiteKeys).appendChild(label)
             $keyPad.addKeyEvents(label)
-            this._pianoKeys.push(label)
+            this.pianoKeys.push(label)
 
             if ([3, 10].includes(note)) {
                 let space = blackKeys.appendChild($dom.createElem('div'))
                 space.classList.add('keypad-key')
             }
         }
-        this._pitchInput = this._piano.elements.namedItem('pitch')
-        $dom.selectRadioButton(this._pitchInput, '36')
+        this.pitchInput = this.piano.elements.namedItem('pitch')
+        $dom.selectRadioButton(this.pitchInput, '36')
     }
 
-    _getPitch() {
-        return Number($dom.getRadioButtonValue(this._pitchInput, '36'))
+    getPitch() {
+        return Number($dom.getRadioButtonValue(this.pitchInput, '36'))
     }
 
     /**
      * @param {number} pitch
      */
-    _setPitch(pitch) {
-        $dom.selectRadioButton(this._pitchInput, pitch.toString())
+    setPitch(pitch) {
+        $dom.selectRadioButton(this.pitchInput, pitch.toString())
     }
 
-    _scrollToSelPitch() {
-        let selPitch = Number($dom.getRadioButtonValue(this._pitchInput, '0'))
+    scrollToSelPitch() {
+        let selPitch = Number($dom.getRadioButtonValue(this.pitchInput, '0'))
         selPitch -= (selPitch % 12)
-        let parentRect = this._piano.getBoundingClientRect()
-        let childRect = this._pianoKeys[selPitch].getBoundingClientRect()
+        let parentRect = this.piano.getBoundingClientRect()
+        let childRect = this.pianoKeys[selPitch].getBoundingClientRect()
         let scrollAmount = childRect.left - parentRect.left
-        this._piano.scrollBy({left: scrollAmount, behavior: 'instant'})
+        this.piano.scrollBy({left: scrollAmount, behavior: 'instant'})
     }
 }
 export const PianoKeyboardElement = $dom.defineView('piano-keyboard', PianoKeyboard)
@@ -125,7 +125,7 @@ export const PianoKeyboardElement = $dom.defineView('piano-keyboard', PianoKeybo
 let testElem
 if (import.meta.main) {
     testElem = new PianoKeyboardElement()
-    testElem.controller._callbacks = {
+    testElem.controller.callbacks = {
         pitchChanged() {
             console.log("Pitch changed")
         },

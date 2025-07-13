@@ -22,9 +22,9 @@ export class CLIDialog extends FormDialog {
         super(view)
         let fragment = template.cloneNode(true)
 
-        this._initForm(fragment.querySelector('form'))
+        this.initForm(fragment.querySelector('form'))
 
-        fragment.querySelector('#cancel').addEventListener('click', () => this._dismiss())
+        fragment.querySelector('#cancel').addEventListener('click', () => this.dismiss())
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -33,7 +33,7 @@ export class CLIDialog extends FormDialog {
     /**
      * @override
      */
-    _dismiss() {
+    dismiss() {
         $cli.cancelSel()
         $dialog.close(this.view)
     }

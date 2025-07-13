@@ -50,42 +50,42 @@ export class ModuleProperties {
     constructor(view) {
         this.view = view
         /** @type {ModuleEditCallbacks} */
-        this._callbacks = null
+        this.callbacks = null
         /** @type {Module} */
-        this._viewModule = null
-        this._viewPatternsSize = 0
-        this._viewSamplesSize = 0
+        this.viewModule = null
+        this.viewPatternsSize = 0
+        this.viewSamplesSize = 0
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
         /** @type {HTMLInputElement} */
-        this._titleInput = fragment.querySelector('#title')
-        $dom.addInputListeners(this._titleInput, commit => {
-            this._callbacks.changeModule(
-                module => $module.setName(module, this._titleInput.value), commit)
+        this.titleInput = fragment.querySelector('#title')
+        $dom.addInputListeners(this.titleInput, commit => {
+            this.callbacks.changeModule(
+                module => $module.setName(module, this.titleInput.value), commit)
         })
 
         /** @type {HTMLOutputElement} */
-        this._channelCountOutput = fragment.querySelector('#channelCount')
+        this.channelCountOutput = fragment.querySelector('#channelCount')
         /** @type {HTMLOutputElement} */
-        this._sampleCountOutput = fragment.querySelector('#sampleCount')
+        this.sampleCountOutput = fragment.querySelector('#sampleCount')
         /** @type {HTMLOutputElement} */
-        this._patternCountOutput = fragment.querySelector('#patternCount')
+        this.patternCountOutput = fragment.querySelector('#patternCount')
         /** @type {HTMLOutputElement} */
-        this._sequenceCountOutput = fragment.querySelector('#sequenceCount')
+        this.sequenceCountOutput = fragment.querySelector('#sequenceCount')
         /** @type {HTMLOutputElement} */
-        this._fileSizeOutput = fragment.querySelector('#fileSize')
+        this.fileSizeOutput = fragment.querySelector('#fileSize')
 
         fragment.querySelector('#addChannels').addEventListener('click',
-            () => this._callbacks.changeModule(module => $module.addChannels(module, 2)))
+            () => this.callbacks.changeModule(module => $module.addChannels(module, 2)))
         fragment.querySelector('#delChannels').addEventListener('click',
-            () => this._callbacks.changeModule(
+            () => this.callbacks.changeModule(
                 module => $module.delChannels(module, module.numChannels - 2, 2)))
 
         fragment.querySelector('#patternZap').addEventListener('click',
-            () => this._callbacks.changeModule(module => $sequence.zap(module)))
+            () => this.callbacks.changeModule(module => $sequence.zap(module)))
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -94,49 +94,49 @@ export class ModuleProperties {
     /**
      * @param {Module} module
      */
-    _setModule(module) {
-        if (module == this._viewModule) {
+    setModule(module) {
+        if (module == this.viewModule) {
             return
         }
 
-        if (!this._viewModule || module.name != this._titleInput.value) {
+        if (!this.viewModule || module.name != this.titleInput.value) {
             console.debug('update title')
-            this._titleInput.value = module.name
+            this.titleInput.value = module.name
         }
-        if (!this._viewModule || module.numChannels != this._viewModule.numChannels) {
+        if (!this.viewModule || module.numChannels != this.viewModule.numChannels) {
             console.debug('update channel count')
-            this._channelCountOutput.value = module.numChannels.toString()
+            this.channelCountOutput.value = module.numChannels.toString()
         }
-        if (!this._viewModule || module.samples != this._viewModule.samples) {
+        if (!this.viewModule || module.samples != this.viewModule.samples) {
             console.debug('update sample count')
             let sampleCount = module.samples.reduce(
                 (count, item) => (item ? (count + 1) : count), 0)
-            this._sampleCountOutput.value = sampleCount.toString()
-            this._viewSamplesSize = $mod.calcSamplesSize(module.samples)
+            this.sampleCountOutput.value = sampleCount.toString()
+            this.viewSamplesSize = $mod.calcSamplesSize(module.samples)
         }
-        if (!this._viewModule || module.patterns != this._viewModule.patterns) {
+        if (!this.viewModule || module.patterns != this.viewModule.patterns) {
             console.debug('update pattern count')
-            this._patternCountOutput.value = module.patterns.length.toString()
+            this.patternCountOutput.value = module.patterns.length.toString()
         }
-        if (!this._viewModule || module.sequence != this._viewModule.sequence) {
+        if (!this.viewModule || module.sequence != this.viewModule.sequence) {
             console.debug('update sequence count')
-            this._sequenceCountOutput.value = module.sequence.length.toString()
+            this.sequenceCountOutput.value = module.sequence.length.toString()
         }
-        if (!this._viewModule || module.sequence != this._viewModule.sequence
-                || module.numChannels != this._viewModule.numChannels) {
-            this._viewPatternsSize = $mod.calcPatternsSize(module)
+        if (!this.viewModule || module.sequence != this.viewModule.sequence
+                || module.numChannels != this.viewModule.numChannels) {
+            this.viewPatternsSize = $mod.calcPatternsSize(module)
         }
-        let fileSize = $mod.headerSize + this._viewPatternsSize + this._viewSamplesSize
-        this._fileSizeOutput.value = this._formatFileSize(fileSize)
+        let fileSize = $mod.headerSize + this.viewPatternsSize + this.viewSamplesSize
+        this.fileSizeOutput.value = this.formatFileSize(fileSize)
 
-        this._viewModule = module
+        this.viewModule = module
     }
 
     /**
      * @private
      * @param {number} size
      */
-    _formatFileSize(size) {
+    formatFileSize(size) {
         // https://stackoverflow.com/a/20732091
         let i = size ? Math.floor(Math.log(size) / Math.log(1024)) : 0
         let n = size / (1024 ** i)
@@ -150,13 +150,13 @@ let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new ModulePropertiesElement()
-    testElem.controller._callbacks = {
+    testElem.controller.callbacks = {
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
-            testElem.controller._setModule(module)
+            testElem.controller.setModule(module)
         },
     }
     $dom.displayMain(testElem)
-    testElem.controller._setModule(module)
+    testElem.controller.setModule(module)
 }

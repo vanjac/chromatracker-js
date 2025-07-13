@@ -86,31 +86,31 @@ export class TrackerMain {
     constructor(view) {
         this.view = view
 
-        this._module = new Undoable($module.defaultNew)
+        this.module = new Undoable($module.defaultNew)
 
         /** @type {AudioContext} */
-        this._context = null
+        this.context = null
         /** @type {$play.Playback} */
-        this._playback = null
+        this.playback = null
 
-        this._animHandle = 0
-        this._intervalHandle = 0
+        this.animHandle = 0
+        this.intervalHandle = 0
 
-        this._queuedTime = 0
+        this.queuedTime = 0
         /** @type {Readonly<PlaybackState>[]} */
-        this._queuedStates = []
+        this.queuedStates = []
         /** @type {PlaybackState} */
-        this._viewState = null
+        this.viewState = null
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this._fileToolbar = fragment.querySelector('file-toolbar')
-        this._moduleProperties = fragment.querySelector('module-properties')
-        this._playbackControls = fragment.querySelector('playback-controls')
-        this._patternEdit = fragment.querySelector('pattern-edit')
-        this._samplesList = fragment.querySelector('samples-list')
+        this.fileToolbar = fragment.querySelector('file-toolbar')
+        this.moduleProperties = fragment.querySelector('module-properties')
+        this.playbackControls = fragment.querySelector('playback-controls')
+        this.patternEdit = fragment.querySelector('pattern-edit')
+        this.samplesList = fragment.querySelector('samples-list')
 
         /** @type {HTMLFormElement} */
         let tabForm = fragment.querySelector('#appTabs')
@@ -124,9 +124,9 @@ export class TrackerMain {
                         element.classList.toggle('hide', element.id != tabName)
                     }
                     if (tabName == 'sequence') {
-                        this._patternEdit.controller._onVisible()
+                        this.patternEdit.controller.onVisible()
                     } else if (tabName == 'samples') {
-                        this._samplesList.controller._onVisible()
+                        this.samplesList.controller.onVisible()
                     }
                 })
             }
@@ -139,12 +139,12 @@ export class TrackerMain {
             $cli.resetSel()
         }, {capture: true})
         this.view.addEventListener('contextmenu', e => {
-            $cli.addSelProp('module', 'object', this._module.value,
-                module => this._changeModule(_ => Object.freeze(module)))
+            $cli.addSelProp('module', 'object', this.module.value,
+                module => this.changeModule(_ => Object.freeze(module)))
             if (!(e.target instanceof HTMLInputElement || e.target instanceof HTMLOutputElement)) {
                 e.preventDefault()
                 if (e.altKey) {
-                    this._pause()
+                    this.pause()
                     let dialog = $dialog.open(new CLIDialogElement(), {dismissable: true})
                     $cli.beginSel(() => $dialog.close(dialog))
                 }
@@ -154,53 +154,53 @@ export class TrackerMain {
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
 
-        this._fileToolbar.controller._callbacks = {
-            getModule: () => this._module.value,
-            moduleLoaded: this._moduleLoaded.bind(this),
-            moduleSaved: () => this._module.saved(),
+        this.fileToolbar.controller.callbacks = {
+            getModule: () => this.module.value,
+            moduleLoaded: this.moduleLoaded.bind(this),
+            moduleSaved: () => this.module.saved(),
         }
-        this._moduleProperties.controller._callbacks = {
-            changeModule: this._changeModule.bind(this),
+        this.moduleProperties.controller.callbacks = {
+            changeModule: this.changeModule.bind(this),
         }
-        this._playbackControls.controller._callbacks = {
-            resetPlayback: this._resetPlayback.bind(this),
-            play: this._play.bind(this),
-            pause: this._pause.bind(this),
-            updatePlaySettings: this._updatePlaySettings.bind(this),
-            undo: this._undo.bind(this),
+        this.playbackControls.controller.callbacks = {
+            resetPlayback: this.resetPlayback.bind(this),
+            play: this.play.bind(this),
+            pause: this.pause.bind(this),
+            updatePlaySettings: this.updatePlaySettings.bind(this),
+            undo: this.undo.bind(this),
         }
-        this._patternEdit.controller._callbacks = {
-            jamPlay: this._jamPlay.bind(this),
-            jamRelease: this._jamRelease.bind(this),
-            setMute: this._setMute.bind(this),
-            changeModule: this._changeModule.bind(this),
+        this.patternEdit.controller.callbacks = {
+            jamPlay: this.jamPlay.bind(this),
+            jamRelease: this.jamRelease.bind(this),
+            setMute: this.setMute.bind(this),
+            changeModule: this.changeModule.bind(this),
         }
-        this._samplesList.controller._callbacks = {
-            jamPlay: this._jamPlay.bind(this),
-            jamRelease: this._jamRelease.bind(this),
-            changeModule: this._changeModule.bind(this),
+        this.samplesList.controller.callbacks = {
+            jamPlay: this.jamPlay.bind(this),
+            jamRelease: this.jamRelease.bind(this),
+            changeModule: this.changeModule.bind(this),
         }
 
-        window.onbeforeunload = () => (this._module.isUnsaved() ? 'You have unsaved changes' : null)
+        window.onbeforeunload = () => (this.module.isUnsaved() ? 'You have unsaved changes' : null)
 
-        this._refreshModule()
+        this.refreshModule()
     }
 
     /**
      * @private
      * @param {Readonly<Module>} module
      */
-    _resetEditorState(module) {
-        this._module.reset(module)
+    resetEditorState(module) {
+        this.module.reset(module)
 
-        this._refreshModule()
-        this._patternEdit.controller._resetState()
-        this._samplesList.controller._setSelSample(1)
+        this.refreshModule()
+        this.patternEdit.controller.resetState()
+        this.samplesList.controller.setSelSample(1)
     }
 
     /** @private */
-    _askUnsavedChanges() {
-        if (this._module.isUnsaved()) {
+    askUnsavedChanges() {
+        if (this.module.isUnsaved()) {
             let message = 'You will lose your unsaved changes. Continue?'
             return ConfirmDialog.open(message, 'Unsaved Changes')
         } else {
@@ -211,105 +211,105 @@ export class TrackerMain {
     /**
      * @param {Readonly<Module>} module
      */
-    _moduleLoaded(module) {
-        this._askUnsavedChanges().then(() => {
+    moduleLoaded(module) {
+        this.askUnsavedChanges().then(() => {
             console.log('Loaded module:', module)
-            this._resetEditorState(module)
-            this._resetPlayback()
+            this.resetEditorState(module)
+            this.resetPlayback()
         })
     }
 
     /**
      * Must be called as result of user interaction
      */
-    _resetPlayback({restoreSpeed = false, restorePos = false, restoreRow = false} = {}) {
-        this._pause()
-        if (!this._context) {
-            this._context = new AudioContext({latencyHint: 'interactive'})
-        } else if (this._context.state != 'running') {
-            this._context.resume()
+    resetPlayback({restoreSpeed = false, restorePos = false, restoreRow = false} = {}) {
+        this.pause()
+        if (!this.context) {
+            this.context = new AudioContext({latencyHint: 'interactive'})
+        } else if (this.context.state != 'running') {
+            this.context.resume()
         }
-        this._playback = $play.init(this._context, this._module.value)
-        this._playback.time += playbackDelay // avoid "catching up"
+        this.playback = $play.init(this.context, this.module.value)
+        this.playback.time += playbackDelay // avoid "catching up"
 
-        for (let c = 0; c < this._module.value.numChannels; c++) {
-            if (this._patternEdit.controller._isChannelMuted(c)) {
-                $play.setChannelMute(this._playback, c, true)
+        for (let c = 0; c < this.module.value.numChannels; c++) {
+            if (this.patternEdit.controller.isChannelMuted(c)) {
+                $play.setChannelMute(this.playback, c, true)
             }
         }
         if (restoreSpeed) {
-            this._playback.tempo = this._patternEdit.controller._getTempo()
-            this._playback.speed = this._patternEdit.controller._getSpeed()
+            this.playback.tempo = this.patternEdit.controller.getTempo()
+            this.playback.speed = this.patternEdit.controller.getSpeed()
         }
         if (restorePos) {
-            this._playback.pos = this._patternEdit.controller._selPos()
+            this.playback.pos = this.patternEdit.controller.selPos()
         }
         if (restoreRow) {
-            this._playback.row = this._patternEdit.controller._selRow()
+            this.playback.row = this.patternEdit.controller.selRow()
         }
 
-        this._updatePlaySettings()
+        this.updatePlaySettings()
     }
 
     /**
      * Must be called as result of user interaction
      * @private
      */
-    _enablePlayback() {
-        if (!this._playback) {
-            this._resetPlayback()
-        } else if (this._context.state != 'running') {
-            this._context.resume()
+    enablePlayback() {
+        if (!this.playback) {
+            this.resetPlayback()
+        } else if (this.context.state != 'running') {
+            this.context.resume()
         }
     }
 
     /**
-     * Must call _resetPlayback() first
+     * Must call resetPlayback() first
      */
-    _play() {
-        this._processPlayback()
-        this._intervalHandle = window.setInterval(() => this._processPlayback(), processInterval)
-        this._enableAnimation()
-        this._playbackControls.controller._setPlayState(true)
+    play() {
+        this.processPlayback()
+        this.intervalHandle = window.setInterval(() => this.processPlayback(), processInterval)
+        this.enableAnimation()
+        this.playbackControls.controller.setPlayState(true)
     }
 
-    _pause() {
-        if (this._isPlaying()) {
-            $play.stop(this._playback)
-            window.clearInterval(this._intervalHandle)
-            this._queuedStates = []
-            this._queuedTime = 0
-            if (this._playback.jamChannels.size == 0) {
-                this._disableAnimation() // should be called after clearing queuedStates
+    pause() {
+        if (this.isPlaying()) {
+            $play.stop(this.playback)
+            window.clearInterval(this.intervalHandle)
+            this.queuedStates = []
+            this.queuedTime = 0
+            if (this.playback.jamChannels.size == 0) {
+                this.disableAnimation() // should be called after clearing queuedStates
             }
-            this._intervalHandle = 0
-            this._playbackControls.controller._setPlayState(false)
+            this.intervalHandle = 0
+            this.playbackControls.controller.setPlayState(false)
         }
     }
 
-    _isPlaying() {
-        return !!this._intervalHandle
+    isPlaying() {
+        return !!this.intervalHandle
     }
 
     /** @private */
-    _processPlayback() {
-        while (this._queuedTime < this._context.currentTime + playbackQueueTime) {
-            let {pos, row, tick, time} = this._playback
-            $play.processTick(this._playback)
+    processPlayback() {
+        while (this.queuedTime < this.context.currentTime + playbackQueueTime) {
+            let {pos, row, tick, time} = this.playback
+            $play.processTick(this.playback)
             // TODO: pitch slides will be inaccurate
             if (tick == 0) {
-                let {tempo, speed} = this._playback
-                let channels = Object.freeze(this._playback.channels.map(
+                let {tempo, speed} = this.playback
+                let channels = Object.freeze(this.playback.channels.map(
                     channel => Object.freeze($play.channelState(channel))))
-                this._queuedStates.push(Object.freeze({time, pos, row, tempo, speed, channels}))
+                this.queuedStates.push(Object.freeze({time, pos, row, tempo, speed, channels}))
             }
-            this._queuedTime = time
+            this.queuedTime = time
         }
     }
 
-    _updatePlaySettings() {
-        if (this._playback) {
-            this._playback.userPatternLoop = this._playbackControls.controller._getPatternLoop()
+    updatePlaySettings() {
+        if (this.playback) {
+            this.playback.userPatternLoop = this.playbackControls.controller.getPatternLoop()
         }
     }
 
@@ -317,9 +317,9 @@ export class TrackerMain {
      * @param {number} c
      * @param {boolean} mute
      */
-    _setMute(c, mute) {
-        if (this._playback) {
-            $play.setChannelMute(this._playback, c, mute)
+    setMute(c, mute) {
+        if (this.playback) {
+            $play.setChannelMute(this.playback, c, mute)
         }
     }
 
@@ -327,90 +327,90 @@ export class TrackerMain {
      * @param {number} id
      * @param {Readonly<Cell>} cell
      */
-    _jamPlay(id, cell, {useChannel = true} = {}) {
-        this._enablePlayback()
-        this._enableAnimation()
-        let channel = useChannel ? this._patternEdit.controller._selChannel() : -1
-        $play.jamPlay(this._playback, id, channel, cell)
+    jamPlay(id, cell, {useChannel = true} = {}) {
+        this.enablePlayback()
+        this.enableAnimation()
+        let channel = useChannel ? this.patternEdit.controller.selChannel() : -1
+        $play.jamPlay(this.playback, id, channel, cell)
     }
 
     /**
      * @param {number} id
      */
-    _jamRelease(id) {
-        $play.jamRelease(this._playback, id)
-        if (!this._isPlaying() && this._playback.jamChannels.size == 0) {
-            this._disableAnimation()
+    jamRelease(id) {
+        $play.jamRelease(this.playback, id)
+        if (!this.isPlaying() && this.playback.jamChannels.size == 0) {
+            this.disableAnimation()
         }
     }
 
     /** @private */
-    _enableAnimation() {
-        if (!this._animHandle) {
+    enableAnimation() {
+        if (!this.animHandle) {
             console.debug('enable animation')
-            this._animHandle = window.requestAnimationFrame(() => this._frameUpdateCallback())
+            this.animHandle = window.requestAnimationFrame(() => this.frameUpdateCallback())
         }
     }
 
     /** @private */
-    _disableAnimation() {
-        if (this._animHandle) {
+    disableAnimation() {
+        if (this.animHandle) {
             console.debug('disable animation')
-            this._frameUpdate() // clear frame
-            window.cancelAnimationFrame(this._animHandle)
-            this._animHandle = 0
+            this.frameUpdate() // clear frame
+            window.cancelAnimationFrame(this.animHandle)
+            this.animHandle = 0
         }
     }
 
     /** @private */
-    _frameUpdateCallback() {
-        this._animHandle = window.requestAnimationFrame(() => this._frameUpdateCallback())
-        this._frameUpdate()
+    frameUpdateCallback() {
+        this.animHandle = window.requestAnimationFrame(() => this.frameUpdateCallback())
+        this.frameUpdate()
     }
 
     /** @private */
-    _frameUpdate() {
-        let curTime = this._context.currentTime
-        if (this._context.outputLatency) { // if supported
-            curTime -= this._context.outputLatency
+    frameUpdate() {
+        let curTime = this.context.currentTime
+        if (this.context.outputLatency) { // if supported
+            curTime -= this.context.outputLatency
         }
-        if (!this._queuedStates.length) {
-            this._viewState = null
-            this._samplesList.controller._setChannelStates(this._playback, [], curTime)
+        if (!this.queuedStates.length) {
+            this.viewState = null
+            this.samplesList.controller.setChannelStates(this.playback, [], curTime)
         } else {
             let i = 0
-            while (i < (this._queuedStates.length - 1)
-                    && this._queuedStates[i + 1].time <= curTime) {
+            while (i < (this.queuedStates.length - 1)
+                    && this.queuedStates[i + 1].time <= curTime) {
                 i++
             }
-            this._queuedStates.splice(0, i)
-            let curState = this._queuedStates[0]
+            this.queuedStates.splice(0, i)
+            let curState = this.queuedStates[0]
 
-            if (curState != this._viewState) {
-                this._viewState = curState
+            if (curState != this.viewState) {
+                this.viewState = curState
 
-                this._patternEdit.controller._setTempoSpeed(curState.tempo, curState.speed)
-                if (this._playbackControls.controller._getFollow()) {
-                    this._patternEdit.controller._setSelPos(curState.pos)
-                    this._patternEdit.controller._setSelCell(
-                        this._patternEdit.controller._selChannel(), curState.row, true)
+                this.patternEdit.controller.setTempoSpeed(curState.tempo, curState.speed)
+                if (this.playbackControls.controller.getFollow()) {
+                    this.patternEdit.controller.setSelPos(curState.pos)
+                    this.patternEdit.controller.setSelCell(
+                        this.patternEdit.controller.selChannel(), curState.row, true)
                 }
-                this._patternEdit.controller._setPlaybackPos(curState.pos, curState.row)
+                this.patternEdit.controller.setPlaybackPos(curState.pos, curState.row)
             }
-            this._samplesList.controller._setChannelStates(
-                this._playback, curState.channels, curTime
+            this.samplesList.controller.setChannelStates(
+                this.playback, curState.channels, curTime
             )
         }
     }
 
     /** @private */
-    _refreshModule() {
+    refreshModule() {
         console.debug('=== begin refresh ===')
-        this._moduleProperties.controller._setModule(this._module.value)
-        this._patternEdit.controller._setModule(this._module.value)
-        this._samplesList.controller._setSamples(this._module.value.samples)
-        if (this._playback) {
-            $play.setModule(this._playback, this._module.value)
+        this.moduleProperties.controller.setModule(this.module.value)
+        this.patternEdit.controller.setModule(this.module.value)
+        this.samplesList.controller.setSamples(this.module.value.samples)
+        if (this.playback) {
+            $play.setModule(this.playback, this.module.value)
         }
         console.debug('===  end refresh  ===')
     }
@@ -418,15 +418,15 @@ export class TrackerMain {
     /**
      * @param {(module: Readonly<Module>) => Readonly<Module>} callback
      */
-    _changeModule(callback, commit = true) {
-        if (this._module.apply(callback, commit)) {
-            this._refreshModule()
+    changeModule(callback, commit = true) {
+        if (this.module.apply(callback, commit)) {
+            this.refreshModule()
         }
     }
 
-    _undo() {
-        if (this._module.undo()) {
-            this._refreshModule()
+    undo() {
+        if (this.module.undo()) {
+            this.refreshModule()
         }
     }
 }

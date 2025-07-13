@@ -41,34 +41,34 @@ export class FileToolbar {
          *      moduleSaved(): void
          * }}
          */
-        this._callbacks = null
+        this.callbacks = null
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
         fragment.querySelector('#newModule').addEventListener('click',
-            () => this._callbacks.moduleLoaded($module.defaultNew))
+            () => this.callbacks.moduleLoaded($module.defaultNew))
 
         /** @type {HTMLInputElement} */
         let fileSelect = fragment.querySelector('#fileSelect')
         fileSelect.addEventListener('change', () => {
             if (fileSelect.files.length == 1) {
-                this._readModuleBlob(fileSelect.files[0])
+                this.readModuleBlob(fileSelect.files[0])
             }
         })
         $dom.addMenuListener(fragment.querySelector('#demoMenu'), value => {
             let dialog = $dialog.open(new WaitDialogElement())
             window.fetch(value)
                 .then(r => r.blob())
-                .then(b => this._readModuleBlob(b))
+                .then(b => this.readModuleBlob(b))
                 .then(() => $dialog.close(dialog))
                 .catch(/** @param {Error} error */ error => {
                     $dialog.close(dialog)
                     AlertDialog.open(error.message)
                 })
         })
-        fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile())
+        fragment.querySelector('#fileSave').addEventListener('click', () => this.saveFile())
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -78,23 +78,23 @@ export class FileToolbar {
      * @private
      * @param {Blob} blob
      */
-    _readModuleBlob(blob) {
+    readModuleBlob(blob) {
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
                 let module = Object.freeze($mod.read(reader.result))
-                this._callbacks.moduleLoaded(module)
+                this.callbacks.moduleLoaded(module)
             }
         }
         reader.readAsArrayBuffer(blob)
     }
 
     /** @private */
-    _saveFile() {
-        let module = this._callbacks.getModule()
+    saveFile() {
+        let module = this.callbacks.getModule()
         let blob = new Blob([$mod.write(module)], {type: 'application/octet-stream'})
         $ext.download(blob, (module.name || 'Untitled') + '.mod')
-        this._callbacks.moduleSaved()
+        this.callbacks.moduleSaved()
     }
 }
 export const FileToolbarElement = $dom.defineView('file-toolbar', FileToolbar)
@@ -102,7 +102,7 @@ export const FileToolbarElement = $dom.defineView('file-toolbar', FileToolbar)
 let testElem
 if (import.meta.main) {
     testElem = new FileToolbarElement()
-    testElem.controller._callbacks = {
+    testElem.controller.callbacks = {
         getModule() { return $module.defaultNew },
         moduleLoaded(module) {
             console.log('Module loaded:', module)

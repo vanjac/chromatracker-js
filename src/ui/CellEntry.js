@@ -106,111 +106,111 @@ export class CellEntry {
          *      updateEntryParts(): void
          * }}
          */
-        this._callbacks
+        this.callbacks
         /** @type {readonly Readonly<Sample>[]} */
-        this._viewSamples = null
+        this.viewSamples = null
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
         /** @type {HTMLInputElement} */
-        this._pitchEnable = fragment.querySelector('#pitchEnable')
+        this.pitchEnable = fragment.querySelector('#pitchEnable')
         /** @type {HTMLInputElement} */
-        this._sampleEnable = fragment.querySelector('#sampleEnable')
+        this.sampleEnable = fragment.querySelector('#sampleEnable')
         /** @type {HTMLInputElement} */
-        this._effectEnable = fragment.querySelector('#effectEnable')
-        this._piano = fragment.querySelector('piano-keyboard')
+        this.effectEnable = fragment.querySelector('#effectEnable')
+        this.piano = fragment.querySelector('piano-keyboard')
         /** @type {HTMLFormElement} */
-        this._sampleList = fragment.querySelector('#sampleList')
+        this.sampleList = fragment.querySelector('#sampleList')
         /** @type {NamedFormItem} */
-        this._sampleInput = null
+        this.sampleInput = null
         /** @type {HTMLSelectElement} */
-        this._effectSelect = fragment.querySelector('#effectSelect')
+        this.effectSelect = fragment.querySelector('#effectSelect')
         /** @type {HTMLSelectElement} */
-        this._param0Select = fragment.querySelector('#param0Select')
+        this.param0Select = fragment.querySelector('#param0Select')
         /** @type {HTMLSelectElement} */
-        this._param1Select = fragment.querySelector('#param1Select')
+        this.param1Select = fragment.querySelector('#param1Select')
 
-        this._pitchEnable.addEventListener('change', () => this._callbacks.updateEntryParts())
-        this._sampleEnable.addEventListener('change', () => this._callbacks.updateEntryParts())
-        this._effectEnable.addEventListener('change', () => this._callbacks.updateEntryParts())
+        this.pitchEnable.addEventListener('change', () => this.callbacks.updateEntryParts())
+        this.sampleEnable.addEventListener('change', () => this.callbacks.updateEntryParts())
+        this.effectEnable.addEventListener('change', () => this.callbacks.updateEntryParts())
 
-        this._effectSelect.addEventListener('input', () => {
-            this._param0Select.selectedIndex = this._param1Select.selectedIndex = 0
-            this._callbacks.updateCell()
+        this.effectSelect.addEventListener('input', () => {
+            this.param0Select.selectedIndex = this.param1Select.selectedIndex = 0
+            this.callbacks.updateCell()
         })
-        this._param0Select.addEventListener('input', () => this._callbacks.updateCell())
-        this._param1Select.addEventListener('input', () => this._callbacks.updateCell())
+        this.param0Select.addEventListener('input', () => this.callbacks.updateCell())
+        this.param1Select.addEventListener('input', () => this.callbacks.updateCell())
 
-        $dom.disableFormSubmit(this._sampleList)
-        $keyPad.create(this._sampleList, (id, elem) => {
-            if (elem.parentElement && elem.parentElement.parentElement == this._sampleList) {
+        $dom.disableFormSubmit(this.sampleList)
+        $keyPad.create(this.sampleList, (id, elem) => {
+            if (elem.parentElement && elem.parentElement.parentElement == this.sampleList) {
                 let input = elem.parentElement.querySelector('input')
-                this._setSelSample(Number(input.value))
-                this._callbacks.jamPlay(id, this._getJamCell())
+                this.setSelSample(Number(input.value))
+                this.callbacks.jamPlay(id, this.getJamCell())
             }
-        }, id => this._callbacks.jamRelease(id))
+        }, id => this.callbacks.jamRelease(id))
         fragment.querySelector('#sampleLeft').addEventListener('click',
             /** @param {UIEventInit} e */ e => {
-                let width = this._sampleList.clientWidth
-                this._sampleList.scrollBy({left: -e.detail * width * .75, behavior: 'smooth'})
+                let width = this.sampleList.clientWidth
+                this.sampleList.scrollBy({left: -e.detail * width * .75, behavior: 'smooth'})
             })
         fragment.querySelector('#sampleRight').addEventListener('click',
             /** @param {UIEventInit} e */ e => {
-                let width = this._sampleList.clientWidth
-                this._sampleList.scrollBy({left: e.detail * width * .75, behavior: 'smooth'})
+                let width = this.sampleList.clientWidth
+                this.sampleList.scrollBy({left: e.detail * width * .75, behavior: 'smooth'})
             })
 
         $keyPad.makeKeyButton(fragment.querySelector('#writeEffect'), id => {
-            this._callbacks.putCell(this._getCell(), CellPart.effect | CellPart.param)
-            this._callbacks.jamPlay(id, this._callbacks.selCell())
-        }, id => this._callbacks.jamRelease(id))
+            this.callbacks.putCell(this.getCell(), CellPart.effect | CellPart.param)
+            this.callbacks.jamPlay(id, this.callbacks.selCell())
+        }, id => this.callbacks.jamRelease(id))
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
 
-        this._piano.controller._callbacks = {
-            jamPlay: (...args) => this._callbacks.jamPlay(...args),
-            jamRelease: (...args) => this._callbacks.jamRelease(...args),
-            pitchChanged: () => this._callbacks.updateCell(),
-            getJamCell: this._getJamCell.bind(this),
+        this.piano.controller.callbacks = {
+            jamPlay: (...args) => this.callbacks.jamPlay(...args),
+            jamRelease: (...args) => this.callbacks.jamRelease(...args),
+            pitchChanged: () => this.callbacks.updateCell(),
+            getJamCell: this.getJamCell.bind(this),
         }
     }
 
-    _onVisible() {
-        this._piano.controller._scrollToSelPitch()
+    onVisible() {
+        this.piano.controller.scrollToSelPitch()
     }
 
     /**
      * @returns {Cell}
      */
-    _getCell() {
-        let pitch = this._piano.controller._getPitch()
-        let inst = Number($dom.getRadioButtonValue(this._sampleInput, '0'))
-        let effect = this._effectSelect.selectedIndex
-        let param0 = this._param0Select.selectedIndex
-        let param1 = this._param1Select.selectedIndex
+    getCell() {
+        let pitch = this.piano.controller.getPitch()
+        let inst = Number($dom.getRadioButtonValue(this.sampleInput, '0'))
+        let effect = this.effectSelect.selectedIndex
+        let param0 = this.param0Select.selectedIndex
+        let param1 = this.param1Select.selectedIndex
         return {pitch, inst, effect, param0, param1}
     }
 
-    _getJamCell() {
-        let cell = this._getCell()
-        if (!this._effectEnable.checked) {
+    getJamCell() {
+        let cell = this.getCell()
+        if (!this.effectEnable.checked) {
             cell.effect = cell.param0 = cell.param1 = 0
         }
         return cell
     }
 
-    _getCellParts() {
+    getCellParts() {
         let parts = CellPart.none
-        if (this._pitchEnable.checked) {
+        if (this.pitchEnable.checked) {
             parts |= CellPart.pitch
         }
-        if (this._sampleEnable.checked) {
+        if (this.sampleEnable.checked) {
             parts |= CellPart.inst
         }
-        if (this._effectEnable.checked) {
+        if (this.effectEnable.checked) {
             parts |= CellPart.effect | CellPart.param
         }
         return parts
@@ -219,55 +219,55 @@ export class CellEntry {
     /**
      * @param {readonly Readonly<Sample>[]} samples
      */
-    _setSamples(samples) {
-        if (samples == this._viewSamples) {
+    setSamples(samples) {
+        if (samples == this.viewSamples) {
             return
         }
         console.debug('update entry samples')
-        this._viewSamples = samples
+        this.viewSamples = samples
 
-        let selSample = Number($dom.getRadioButtonValue(this._sampleInput, '1'))
+        let selSample = Number($dom.getRadioButtonValue(this.sampleInput, '1'))
 
-        this._sampleList.textContent = ''
+        this.sampleList.textContent = ''
         for (let [i, sample] of samples.entries()) {
             if (!sample) {
                 continue
             }
             let label = $util.makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key')
-            this._sampleList.appendChild(label)
+            this.sampleList.appendChild(label)
             $keyPad.addKeyEvents(label)
         }
-        this._sampleInput = this._sampleList.elements.namedItem('sample')
-        this._setSelSample(selSample)
+        this.sampleInput = this.sampleList.elements.namedItem('sample')
+        this.setSelSample(selSample)
     }
 
     /**
      * @param {number} s
      */
-    _setSelSample(s) {
-        if (this._viewSamples[s]) {
-            $dom.selectRadioButton(this._sampleInput, s.toString())
+    setSelSample(s) {
+        if (this.viewSamples[s]) {
+            $dom.selectRadioButton(this.sampleInput, s.toString())
         }
-        this._callbacks.updateCell()
+        this.callbacks.updateCell()
     }
 
     /**
      * @param {Readonly<Cell>} cell
      */
-    _liftCell(cell) {
-        if (this._pitchEnable.checked && cell.pitch >= 0) {
-            this._piano.controller._setPitch(cell.pitch)
+    liftCell(cell) {
+        if (this.pitchEnable.checked && cell.pitch >= 0) {
+            this.piano.controller.setPitch(cell.pitch)
         }
-        if (this._sampleEnable.checked && cell.inst) {
-            $dom.selectRadioButton(this._sampleInput, cell.inst.toString())
+        if (this.sampleEnable.checked && cell.inst) {
+            $dom.selectRadioButton(this.sampleInput, cell.inst.toString())
         }
-        if (this._effectEnable.checked) {
-            this._effectSelect.selectedIndex = cell.effect
-            this._param0Select.selectedIndex = cell.param0
-            this._param1Select.selectedIndex = cell.param1
+        if (this.effectEnable.checked) {
+            this.effectSelect.selectedIndex = cell.effect
+            this.param0Select.selectedIndex = cell.param0
+            this.param1Select.selectedIndex = cell.param1
         }
-        this._callbacks.updateCell()
+        this.callbacks.updateCell()
     }
 }
 export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)
@@ -275,7 +275,7 @@ export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)
 let testElem
 if (import.meta.main) {
     testElem = new CellEntryElement()
-    testElem.controller._callbacks = {
+    testElem.controller.callbacks = {
         putCell(cell, parts) {
             console.log('Put cell:', cell, parts)
         },
@@ -296,6 +296,6 @@ if (import.meta.main) {
         },
     }
     $dom.displayMain(testElem)
-    testElem.controller._setSamples(Object.freeze([]))
-    testElem.controller._onVisible()
+    testElem.controller.setSamples(Object.freeze([]))
+    testElem.controller.onVisible()
 }

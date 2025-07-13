@@ -123,280 +123,280 @@ export class SampleEdit {
          *      onChange(sample: Readonly<Sample>, commit: boolean): void
          * }}
          */
-        this._callbacks = null
+        this.callbacks = null
 
-        this._selectA = -1
-        this._selectB = -1
+        this.selectA = -1
+        this.selectB = -1
 
         /** @type {Readonly<Sample>} */
-        this._viewSample = null
-        this._index = 0
+        this.viewSample = null
+        this.index = 0
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
         /** @type {HTMLInputElement} */
-        this._nameInput = fragment.querySelector('#name')
-        $dom.addInputListeners(this._nameInput, commit => this._changeSample(
-            sample => {sample.name = this._nameInput.value}, commit))
+        this.nameInput = fragment.querySelector('#name')
+        $dom.addInputListeners(this.nameInput, commit => this.changeSample(
+            sample => {sample.name = this.nameInput.value}, commit))
 
-        this._waveEditBox = fragment.querySelector('#waveEdit')
-        this._waveContainer = fragment.querySelector('#waveContainer')
+        this.waveEditBox = fragment.querySelector('#waveEdit')
+        this.waveContainer = fragment.querySelector('#waveContainer')
         /** @type {HTMLCanvasElement} */
-        this._wavePreview = fragment.querySelector('#wavePreview')
+        this.wavePreview = fragment.querySelector('#wavePreview')
         /** @type {HTMLElement} */
-        this._selectMarkA = fragment.querySelector('#selectMarkA')
+        this.selectMarkA = fragment.querySelector('#selectMarkA')
         /** @type {HTMLElement} */
-        this._selectMarkB = fragment.querySelector('#selectMarkB')
+        this.selectMarkB = fragment.querySelector('#selectMarkB')
         /** @type {HTMLElement} */
-        this._selectRange = fragment.querySelector('#selectRange')
+        this.selectRange = fragment.querySelector('#selectRange')
         /** @type {HTMLElement} */
-        this._loopStartMark = fragment.querySelector('#loopStartMark')
+        this.loopStartMark = fragment.querySelector('#loopStartMark')
         /** @type {HTMLElement} */
-        this._loopEndMark = fragment.querySelector('#loopEndMark')
+        this.loopEndMark = fragment.querySelector('#loopEndMark')
         /** @type {HTMLElement[]} */
-        this._playMarks = []
+        this.playMarks = []
 
-        this._waveEditBox.addEventListener('mousedown', /** @param {MouseEventInit} e */ e => {
+        this.waveEditBox.addEventListener('mousedown', /** @param {MouseEventInit} e */ e => {
             if (e.button == 0) {
-                let pos = this._mouseToWavePos(e.clientX)
-                this._setSel(pos, pos)
+                let pos = this.mouseToWavePos(e.clientX)
+                this.setSel(pos, pos)
             }
         })
-        this._waveEditBox.addEventListener('touchstart',
+        this.waveEditBox.addEventListener('touchstart',
             /** @param {TouchEventInit & Event} e */ e => {
                 e.preventDefault()
-                let pos = this._mouseToWavePos(e.changedTouches[0].clientX)
-                this._setSel(pos, pos)
+                let pos = this.mouseToWavePos(e.changedTouches[0].clientX)
+                this.setSel(pos, pos)
             })
-        this._waveEditBox.addEventListener('mousemove', /** @param {MouseEventInit} e */ e => {
+        this.waveEditBox.addEventListener('mousemove', /** @param {MouseEventInit} e */ e => {
             if (e.buttons & 1) {
-                this._selectB = this._mouseToWavePos(e.clientX)
-                this._updateSelection()
+                this.selectB = this.mouseToWavePos(e.clientX)
+                this.updateSelection()
             }
         })
-        this._waveEditBox.addEventListener('touchmove',
+        this.waveEditBox.addEventListener('touchmove',
             /** @param {TouchEventInit & Event} e */ e => {
                 e.preventDefault()
-                this._selectB = this._mouseToWavePos(e.changedTouches[0].clientX)
-                this._updateSelection()
+                this.selectB = this.mouseToWavePos(e.changedTouches[0].clientX)
+                this.updateSelection()
             })
-        this._waveEditBox.addEventListener('contextmenu', () => {
-            let [start, end] = this._selRangeOrAll()
+        this.waveEditBox.addEventListener('contextmenu', () => {
+            let [start, end] = this.selRangeOrAll()
             // slice for safety (can't be frozen)
-            $cli.addSelProp('wave', Int8Array, this._viewSample.wave.slice(start, end),
-                wave => this._replace(start, end, wave))
+            $cli.addSelProp('wave', Int8Array, this.viewSample.wave.slice(start, end),
+                wave => this.replace(start, end, wave))
             $cli.addSelProp('waverange', Array, [start, end], ([start, end]) => {
                 if (start == null) { start = -1 }
-                this._setSel(start, end != null ? end : start)
+                this.setSel(start, end != null ? end : start)
             })
         })
 
         /** @type {HTMLInputElement} */
-        this._loopStartInput = fragment.querySelector('#loopStart')
-        $dom.addInputListeners(this._loopStartInput, commit =>
-            this._changeSample(sample => {sample.loopStart = this._loopStartInput.valueAsNumber},
+        this.loopStartInput = fragment.querySelector('#loopStart')
+        $dom.addInputListeners(this.loopStartInput, commit =>
+            this.changeSample(sample => {sample.loopStart = this.loopStartInput.valueAsNumber},
                 commit, true))
         /** @type {HTMLInputElement} */
-        this._loopEndInput = fragment.querySelector('#loopEnd')
-        $dom.addInputListeners(this._loopEndInput, commit =>
-            this._changeSample(sample => {sample.loopEnd = this._loopEndInput.valueAsNumber},
+        this.loopEndInput = fragment.querySelector('#loopEnd')
+        $dom.addInputListeners(this.loopEndInput, commit =>
+            this.changeSample(sample => {sample.loopEnd = this.loopEndInput.valueAsNumber},
                 commit, true))
 
         $dom.addMenuListener(fragment.querySelector('#selectMenu'), value => {
             switch (value) {
-                case 'all': this._selectAll(); break
-                case 'none': this._selectNone(); break
-                case 'loop': this._selectLoop(); break
+                case 'all': this.selectAll(); break
+                case 'none': this.selectNone(); break
+                case 'loop': this.selectLoop(); break
             }
         })
         $dom.addMenuListener(fragment.querySelector('#editMenu'), value => {
             switch (value) {
-                case 'trim': this._trim(); break
-                case 'cut': this._cut(); break
-                case 'copy': this._copy(); break
-                case 'paste': this._paste(); break
+                case 'trim': this.trim(); break
+                case 'cut': this.cut(); break
+                case 'copy': this.copy(); break
+                case 'paste': this.paste(); break
             }
         })
         $dom.addMenuListener(fragment.querySelector('#loopMenu'), value => {
             switch (value) {
-                case 'set': this._loopSelection(); break
-                case 'clear': this._clearLoop(); break
-                case 'repeat': this._loopRepeat(); break
-                case 'pingpong': this._loopPingPong(); break
+                case 'set': this.loopSelection(); break
+                case 'clear': this.clearLoop(); break
+                case 'repeat': this.loopRepeat(); break
+                case 'pingpong': this.loopPingPong(); break
             }
         })
         $dom.addMenuListener(fragment.querySelector('#effectMenu'), value => {
             switch (value) {
-                case 'amplify': this._amplify(); break
-                case 'fadeIn': this._applyEffect($wave.fade.bind(null, 0, 1, 2)); break
-                case 'fadeOut': this._applyEffect($wave.fade.bind(null, 1, 0, 2)); break
-                case 'reverse': this._applyEffect($wave.reverse); break
-                case 'resample': this._resample(); break
-                case 'filter': this._filter(); break
+                case 'amplify': this.amplify(); break
+                case 'fadeIn': this.applyEffect($wave.fade.bind(null, 0, 1, 2)); break
+                case 'fadeOut': this.applyEffect($wave.fade.bind(null, 1, 0, 2)); break
+                case 'reverse': this.applyEffect($wave.reverse); break
+                case 'resample': this.resample(); break
+                case 'filter': this.filter(); break
             }
         })
 
         /** @type {HTMLInputElement} */
-        this._volumeInput = fragment.querySelector('#volume')
+        this.volumeInput = fragment.querySelector('#volume')
         /** @type {HTMLOutputElement} */
-        this._volumeOutput = fragment.querySelector('#volumeOut')
-        $dom.addInputListeners(this._volumeInput, commit => {
-            this._changeSample(sample => {sample.volume = this._volumeInput.valueAsNumber}, commit)
-            this._volumeOutput.value = this._volumeInput.value
+        this.volumeOutput = fragment.querySelector('#volumeOut')
+        $dom.addInputListeners(this.volumeInput, commit => {
+            this.changeSample(sample => {sample.volume = this.volumeInput.valueAsNumber}, commit)
+            this.volumeOutput.value = this.volumeInput.value
         })
 
         /** @type {HTMLInputElement} */
-        this._finetuneInput = fragment.querySelector('#finetune')
+        this.finetuneInput = fragment.querySelector('#finetune')
         /** @type {HTMLOutputElement} */
-        this._finetuneOutput = fragment.querySelector('#finetuneOut')
-        $dom.addInputListeners(this._finetuneInput, commit => {
-            this._changeSample(sample => {sample.finetune = this._finetuneInput.valueAsNumber},
+        this.finetuneOutput = fragment.querySelector('#finetuneOut')
+        $dom.addInputListeners(this.finetuneInput, commit => {
+            this.changeSample(sample => {sample.finetune = this.finetuneInput.valueAsNumber},
                 commit)
-            this._finetuneOutput.value = this._finetuneInput.value
+            this.finetuneOutput.value = this.finetuneInput.value
         })
 
         /** @type {HTMLInputElement} */
-        this._fileInput = fragment.querySelector('#file')
-        this._fileInput.addEventListener('change', () => {
-            if (this._fileInput.files.length == 1) {
-                this._readAudioFile(this._fileInput.files[0])
+        this.fileInput = fragment.querySelector('#file')
+        this.fileInput.addEventListener('change', () => {
+            if (this.fileInput.files.length == 1) {
+                this.readAudioFile(this.fileInput.files[0])
             }
         })
 
-        fragment.querySelector('#save').addEventListener('click', () => this._saveAudioFile())
+        fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
 
         /** @type {HTMLInputElement} */
-        this._sampleRateInput = fragment.querySelector('#sampleRate')
+        this.sampleRateInput = fragment.querySelector('#sampleRate')
 
-        this._jamCell = fragment.querySelector('#jamCell')
-        this._piano = fragment.querySelector('piano-keyboard')
+        this.jamCell = fragment.querySelector('#jamCell')
+        this.piano = fragment.querySelector('piano-keyboard')
 
         this.view.addEventListener('contextmenu', () => {
-            $cli.addSelProp('sample', 'object', this._viewSample,
-                sample => this._callbacks.onChange(Object.freeze(sample), true))
+            $cli.addSelProp('sample', 'object', this.viewSample,
+                sample => this.callbacks.onChange(Object.freeze(sample), true))
         })
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
 
-        this._piano.controller._callbacks = {
-            jamPlay: (...args) => this._callbacks.jamPlay(...args),
-            jamRelease: (...args) => this._callbacks.jamRelease(...args),
+        this.piano.controller.callbacks = {
+            jamPlay: (...args) => this.callbacks.jamPlay(...args),
+            jamRelease: (...args) => this.callbacks.jamRelease(...args),
             pitchChanged() {},
-            getJamCell: this._getJamCell.bind(this),
+            getJamCell: this.getJamCell.bind(this),
         }
-        this._piano.controller._useChannel = false
-        this._piano.controller._scrollToSelPitch()
+        this.piano.controller.useChannel = false
+        this.piano.controller.scrollToSelPitch()
     }
 
-    _onVisible() {
-        this._piano.controller._scrollToSelPitch()
+    onVisible() {
+        this.piano.controller.scrollToSelPitch()
     }
 
     /**
      * @param {number} index
      */
-    _setIndex(index) {
-        this._index = index
-        this._updateJamCell()
+    setIndex(index) {
+        this.index = index
+        this.updateJamCell()
     }
 
     /**
      * @param {Readonly<Sample>} sample
      */
-    _setSample(sample) {
-        if (sample == this._viewSample) {
+    setSample(sample) {
+        if (sample == this.viewSample) {
             return
         }
 
         console.debug('update sample')
 
-        this._nameInput.value = sample.name
+        this.nameInput.value = sample.name
 
-        this._loopStartInput.max = this._loopEndInput.max = sample.wave.length.toString()
-        this._loopStartInput.valueAsNumber = sample.loopStart
-        this._loopEndInput.valueAsNumber = sample.loopEnd
+        this.loopStartInput.max = this.loopEndInput.max = sample.wave.length.toString()
+        this.loopStartInput.valueAsNumber = sample.loopStart
+        this.loopEndInput.valueAsNumber = sample.loopEnd
         let showLoop = sample.wave.length && Sample.hasLoop(sample)
-        this._loopStartMark.classList.toggle('hide', !showLoop)
-        this._loopEndMark.classList.toggle('hide', !showLoop)
+        this.loopStartMark.classList.toggle('hide', !showLoop)
+        this.loopEndMark.classList.toggle('hide', !showLoop)
         if (showLoop) {
-            this._setMarkPos(this._loopStartMark, sample, sample.loopStart)
-            this._setMarkPos(this._loopEndMark, sample, sample.loopEnd)
+            this.setMarkPos(this.loopStartMark, sample, sample.loopStart)
+            this.setMarkPos(this.loopEndMark, sample, sample.loopEnd)
         }
 
-        this._volumeInput.valueAsNumber = sample.volume
-        this._volumeOutput.value = sample.volume.toString()
-        this._finetuneInput.valueAsNumber = sample.finetune
-        this._finetuneOutput.value = sample.finetune.toString()
-        this._fileInput.value = ''
+        this.volumeInput.valueAsNumber = sample.volume
+        this.volumeOutput.value = sample.volume.toString()
+        this.finetuneInput.valueAsNumber = sample.finetune
+        this.finetuneOutput.value = sample.finetune.toString()
+        this.fileInput.value = ''
 
-        if (!this._viewSample || sample.wave != this._viewSample.wave) {
-            this._createSamplePreview(sample.wave)
+        if (!this.viewSample || sample.wave != this.viewSample.wave) {
+            this.createSamplePreview(sample.wave)
         }
 
-        this._viewSample = sample
-        this._selectA = Math.min(this._selectA, sample.wave.length)
-        this._selectB = Math.min(this._selectB, sample.wave.length)
-        this._updateSelection()
+        this.viewSample = sample
+        this.selectA = Math.min(this.selectA, sample.wave.length)
+        this.selectB = Math.min(this.selectB, sample.wave.length)
+        this.updateSelection()
     }
 
     /**
      * @param {number[]} positions
      */
-    _setPlayPos(positions) {
-        while (this._playMarks.length > positions.length) {
-            this._playMarks.pop().remove()
+    setPlayPos(positions) {
+        while (this.playMarks.length > positions.length) {
+            this.playMarks.pop().remove()
         }
-        while (this._playMarks.length < positions.length) {
-            let mark = this._waveContainer.appendChild($dom.createElem('div'))
+        while (this.playMarks.length < positions.length) {
+            let mark = this.waveContainer.appendChild($dom.createElem('div'))
             mark.classList.add('wave-mark', 'wave-play-mark')
-            this._playMarks.push(mark)
+            this.playMarks.push(mark)
         }
         for (let i = 0; i < positions.length; i++) {
-            let visible = positions[i] <= this._viewSample.wave.length
-            this._playMarks[i].classList.toggle('hide', !visible)
+            let visible = positions[i] <= this.viewSample.wave.length
+            this.playMarks[i].classList.toggle('hide', !visible)
             if (visible) {
-                this._setMarkPos(this._playMarks[i], this._viewSample, positions[i])
+                this.setMarkPos(this.playMarks[i], this.viewSample, positions[i])
             }
         }
     }
 
     /** @private */
-    _selMin() {
-        return Math.min(this._selectA, this._selectB)
+    selMin() {
+        return Math.min(this.selectA, this.selectB)
     }
 
     /** @private */
-    _selMax() {
-        return Math.max(this._selectA, this._selectB)
+    selMax() {
+        return Math.max(this.selectA, this.selectB)
     }
 
     /** @private */
-    _anySelected() {
-        return this._selectA >= 0 && this._selectB >= 0
+    anySelected() {
+        return this.selectA >= 0 && this.selectB >= 0
     }
 
     /** @private */
-    _rangeSelected() {
-        return this._anySelected() && this._selectA != this._selectB
+    rangeSelected() {
+        return this.anySelected() && this.selectA != this.selectB
     }
 
     /** @private */
-    _sel() {
-        return minMax(this._selectA, this._selectB)
+    sel() {
+        return minMax(this.selectA, this.selectB)
     }
 
     /**
      * @private
      * @returns {[number, number]}
      */
-    _selOrAll() {
-        if (this._anySelected()) {
-            return this._sel()
+    selOrAll() {
+        if (this.anySelected()) {
+            return this.sel()
         } else {
-            return [0, this._viewSample.wave.length]
+            return [0, this.viewSample.wave.length]
         }
     }
 
@@ -404,38 +404,38 @@ export class SampleEdit {
      * @private
      * @returns {[number, number]}
      */
-    _selRangeOrAll() {
-        if (this._rangeSelected()) {
-            return this._sel()
+    selRangeOrAll() {
+        if (this.rangeSelected()) {
+            return this.sel()
         } else {
-            return [0, this._viewSample.wave.length]
+            return [0, this.viewSample.wave.length]
         }
     }
 
     /** @private */
-    _selLen() {
-        return Math.abs(this._selectA - this._selectB)
+    selLen() {
+        return Math.abs(this.selectA - this.selectB)
     }
 
     /** @private */
-    _updateSelection() {
-        this._selectMarkA.classList.toggle('hide', this._selectA < 0)
-        if (this._selectA >= 0) {
-            this._setMarkPos(this._selectMarkA, this._viewSample, this._selectA)
+    updateSelection() {
+        this.selectMarkA.classList.toggle('hide', this.selectA < 0)
+        if (this.selectA >= 0) {
+            this.setMarkPos(this.selectMarkA, this.viewSample, this.selectA)
         }
-        this._selectMarkB.classList.toggle('hide', this._selectB < 0)
-        if (this._selectB >= 0) {
-            this._setMarkPos(this._selectMarkB, this._viewSample, this._selectB)
-        }
-
-        this._selectRange.classList.toggle('hide', !this._rangeSelected())
-        if (this._rangeSelected()) {
-            this._setMarkPos(this._selectRange, this._viewSample, this._selMin())
-            let waveLen = this._viewSample.wave.length
-            this._selectRange.style.width = (100 * this._selLen() / waveLen) + '%'
+        this.selectMarkB.classList.toggle('hide', this.selectB < 0)
+        if (this.selectB >= 0) {
+            this.setMarkPos(this.selectMarkB, this.viewSample, this.selectB)
         }
 
-        this._updateJamCell()
+        this.selectRange.classList.toggle('hide', !this.rangeSelected())
+        if (this.rangeSelected()) {
+            this.setMarkPos(this.selectRange, this.viewSample, this.selMin())
+            let waveLen = this.viewSample.wave.length
+            this.selectRange.style.width = (100 * this.selLen() / waveLen) + '%'
+        }
+
+        this.updateJamCell()
     }
 
     /**
@@ -444,8 +444,8 @@ export class SampleEdit {
      * @param {Readonly<Sample>} sample
      * @param {number} pos
      */
-    _setMarkPos(mark, sample, pos) {
-        let waveRect = this._wavePreview.getBoundingClientRect()
+    setMarkPos(mark, sample, pos) {
+        let waveRect = this.wavePreview.getBoundingClientRect()
         mark.style.transform = `translate(${pos * waveRect.width / sample.wave.length}px, 0)`
     }
 
@@ -454,21 +454,21 @@ export class SampleEdit {
      * @param {(sample: Sample) => void} mutator
      * @param {boolean} commit
      */
-    _changeSample(mutator, commit, dirty = false) {
-        let newSample = {...this._viewSample}
+    changeSample(mutator, commit, dirty = false) {
+        let newSample = {...this.viewSample}
         mutator(newSample)
         let immSample = Object.freeze(newSample)
         if (!dirty) {
-            this._viewSample = immSample // avoid unnecessary refresh
+            this.viewSample = immSample // avoid unnecessary refresh
         }
-        this._callbacks.onChange(immSample, commit)
+        this.callbacks.onChange(immSample, commit)
     }
 
     /**
      * @private
      * @param {File} file
      */
-    _readAudioFile(file) {
+    readAudioFile(file) {
         let name = file.name.replace(/\.[^/.]+$/, '') // remove extension
         name = name.slice(0, mod.maxSampleNameLength)
 
@@ -479,16 +479,16 @@ export class SampleEdit {
                     try {
                         let newSample = $wav.read(reader.result)
                         newSample.name = name
-                        this._callbacks.onChange(newSample, true)
+                        this.callbacks.onChange(newSample, true)
                     } catch (error) {
                         if (error instanceof Error) { AlertDialog.open(error.message) }
                     }
                 } else {
                     let dialog = $dialog.open(new WaitDialogElement())
-                    let promise = $audio.read(reader.result, this._sampleRateInput.valueAsNumber)
+                    let promise = $audio.read(reader.result, this.sampleRateInput.valueAsNumber)
                     promise.then(({wave, volume}) => {
                         $dialog.close(dialog)
-                        this._changeSample(sample => {
+                        this.changeSample(sample => {
                             sample.wave = wave
                             sample.volume = volume
                             sample.name = name
@@ -504,30 +504,30 @@ export class SampleEdit {
         reader.readAsArrayBuffer(file)
     }
 
-    _saveAudioFile() {
-        let blob = new Blob([$wav.write(this._viewSample)], {type: 'application/octet-stream'})
-        $ext.download(blob, (this._viewSample.name || 'sample') + '.wav')
+    saveAudioFile() {
+        let blob = new Blob([$wav.write(this.viewSample)], {type: 'application/octet-stream'})
+        $ext.download(blob, (this.viewSample.name || 'sample') + '.wav')
     }
 
     /**
      * @private
      * @param {number} clientX
      */
-    _mouseToWavePos(clientX) {
-        let waveRect = this._wavePreview.getBoundingClientRect()
-        let pos = (clientX - waveRect.left) * this._viewSample.wave.length / waveRect.width
-        return clamp(Math.round(pos), 0, this._viewSample.wave.length)
+    mouseToWavePos(clientX) {
+        let waveRect = this.wavePreview.getBoundingClientRect()
+        let pos = (clientX - waveRect.left) * this.viewSample.wave.length / waveRect.width
+        return clamp(Math.round(pos), 0, this.viewSample.wave.length)
     }
 
     /**
      * @returns {Cell}
      */
-    _getJamCell() {
-        let pitch = this._piano.controller._getPitch()
-        let inst = this._index
+    getJamCell() {
+        let pitch = this.piano.controller.getPitch()
+        let inst = this.index
         let effect = 0, param0 = 0, param1 = 0
-        if (this._anySelected()) {
-            let offset = Math.min(255, Math.floor(this._selMin() / 256))
+        if (this.anySelected()) {
+            let offset = Math.min(255, Math.floor(this.selMin() / 256))
             if (offset > 0) {
                 effect = Effect.SampleOffset
                 param0 = offset >> 4
@@ -538,20 +538,20 @@ export class SampleEdit {
     }
 
     /** @private */
-    _updateJamCell() {
-        $cell.setContents(this._jamCell, this._getJamCell())
+    updateJamCell() {
+        $cell.setContents(this.jamCell, this.getJamCell())
     }
 
     /**
      * @private
      * @param {Readonly<Int8Array>} wave
      */
-    _createSamplePreview(wave) {
-        let {width, height} = this._wavePreview
+    createSamplePreview(wave) {
+        let {width, height} = this.wavePreview
         let numBlocks = width
         let blockPerFrame = numBlocks / wave.length
 
-        let ctx = this._wavePreview.getContext('2d')
+        let ctx = this.wavePreview.getContext('2d')
         // 'currentColor' doesn't work in Chrome or Safari
         ctx.strokeStyle = window.getComputedStyle(this.view).getPropertyValue('--color-fg')
         ctx.clearRect(0, 0, width, height)
@@ -591,64 +591,64 @@ export class SampleEdit {
     }
 
     /** @private */
-    _loopSelection() {
-        this._changeSample(sample => [sample.loopStart, sample.loopEnd] = this._selRangeOrAll(),
+    loopSelection() {
+        this.changeSample(sample => [sample.loopStart, sample.loopEnd] = this.selRangeOrAll(),
             true, true)
     }
 
     /** @private */
-    _clearLoop() {
-        this._changeSample(sample => sample.loopStart = sample.loopEnd = 0, true, true)
+    clearLoop() {
+        this.changeSample(sample => sample.loopStart = sample.loopEnd = 0, true, true)
     }
 
     /**
      * @param {number} a
      * @param {number} b
      */
-    _setSel(a, b) {
-        this._selectA = a
-        this._selectB = b
-        this._updateSelection()
+    setSel(a, b) {
+        this.selectA = a
+        this.selectB = b
+        this.updateSelection()
     }
 
     /** @private */
-    _selectAll() {
-        this._setSel(0, this._viewSample.wave.length)
+    selectAll() {
+        this.setSel(0, this.viewSample.wave.length)
     }
 
     /** @private */
-    _selectNone() {
-        this._setSel(-1, -1)
+    selectNone() {
+        this.setSel(-1, -1)
     }
 
     /** @private */
-    _selectLoop() {
-        if (Sample.hasLoop(this._viewSample)) {
-            this._setSel(this._viewSample.loopStart, this._viewSample.loopEnd)
+    selectLoop() {
+        if (Sample.hasLoop(this.viewSample)) {
+            this.setSel(this.viewSample.loopStart, this.viewSample.loopEnd)
         }
     }
 
     /** @private */
-    _trim() {
-        if (this._rangeSelected()) {
-            this._callbacks.onChange($sample.trim(this._viewSample, this._selMin(), this._selMax()), true)
-            this._selectNone()
+    trim() {
+        if (this.rangeSelected()) {
+            this.callbacks.onChange($sample.trim(this.viewSample, this.selMin(), this.selMax()), true)
+            this.selectNone()
         }
     }
 
     /** @private */
-    _copy() {
-        let [start, end] = this._selRangeOrAll()
-        global.audioClipboard = this._viewSample.wave.subarray(start, end)
+    copy() {
+        let [start, end] = this.selRangeOrAll()
+        global.audioClipboard = this.viewSample.wave.subarray(start, end)
     }
 
     /** @private */
-    _cut() {
-        if (this._rangeSelected()) {
-            this._copy()
-            let [start, end] = this._sel()
-            this._callbacks.onChange($sample.del(this._viewSample, start, end), true)
-            this._setSel(start, start)
+    cut() {
+        if (this.rangeSelected()) {
+            this.copy()
+            let [start, end] = this.sel()
+            this.callbacks.onChange($sample.del(this.viewSample, start, end), true)
+            this.setSel(start, start)
         }
     }
 
@@ -658,87 +658,87 @@ export class SampleEdit {
      * @param {number} end
      * @param {Readonly<Int8Array>} wave
      */
-    _replace(start, end, wave) {
-        this._callbacks.onChange($sample.splice(this._viewSample, start, end, wave), true)
+    replace(start, end, wave) {
+        this.callbacks.onChange($sample.splice(this.viewSample, start, end, wave), true)
         let newEnd = start + wave.length
-        this._setSel(newEnd, newEnd)
+        this.setSel(newEnd, newEnd)
     }
 
     /** @private */
-    _paste() {
-        let [start, end] = this._selOrAll()
-        this._replace(start, end, global.audioClipboard)
+    paste() {
+        let [start, end] = this.selOrAll()
+        this.replace(start, end, global.audioClipboard)
     }
 
     /** @private */
-    _loopRepeat() {
-        if (!Sample.hasLoop(this._viewSample)) {
+    loopRepeat() {
+        if (!Sample.hasLoop(this.viewSample)) {
             return
         }
         InputDialog.open('Count:', 'Repeat Loop', global.lastLoopRepeat).then(count => {
-            let {loopStart} = this._viewSample
-            let loopWave = this._viewSample.wave.subarray(loopStart, this._viewSample.loopEnd)
+            let {loopStart} = this.viewSample
+            let loopWave = this.viewSample.wave.subarray(loopStart, this.viewSample.loopEnd)
             // TODO: this could be much more efficient
-            let newSample = this._viewSample
+            let newSample = this.viewSample
             for (let i = 1; i < count; i++) {
                 newSample = $sample.splice(newSample, loopStart, loopStart, loopWave)
             }
             newSample = Object.freeze({...newSample, loopStart})
-            this._callbacks.onChange(newSample, true)
+            this.callbacks.onChange(newSample, true)
             global.lastLoopRepeat = count
         })
     }
 
     /** @private */
-    _loopPingPong() {
-        if (!Sample.hasLoop(this._viewSample)) {
+    loopPingPong() {
+        if (!Sample.hasLoop(this.viewSample)) {
             return
         }
-        let {loopStart, loopEnd} = this._viewSample
+        let {loopStart, loopEnd} = this.viewSample
         let loopWave = new Int8Array(loopEnd - loopStart)
-        $wave.reverse(this._viewSample.wave.subarray(loopStart, loopEnd), loopWave)
-        this._callbacks.onChange($sample.splice(this._viewSample, loopEnd, loopEnd, loopWave), true)
+        $wave.reverse(this.viewSample.wave.subarray(loopStart, loopEnd), loopWave)
+        this.callbacks.onChange($sample.splice(this.viewSample, loopEnd, loopEnd, loopWave), true)
     }
 
     /**
      * @private
      * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
      */
-    _applyEffect(effect) {
-        let [start, end] = this._selRangeOrAll()
-        this._callbacks.onChange($sample.applyEffect(this._viewSample, start, end, effect), true)
+    applyEffect(effect) {
+        let [start, end] = this.selRangeOrAll()
+        this.callbacks.onChange($sample.applyEffect(this.viewSample, start, end, effect), true)
     }
 
     /** @private */
-    _amplify() {
+    amplify() {
         let dialog = $dialog.open(new AmplifyEffectElement(), {dismissable: true})
-        dialog.controller._onComplete = params => {
-            this._applyEffect($wave.amplify.bind(null, params))
+        dialog.controller.onComplete = params => {
+            this.applyEffect($wave.amplify.bind(null, params))
         }
     }
 
     /** @private */
-    _resample() {
+    resample() {
         let defaultValue = global.lastResampleSemitones
         InputDialog.open('Semitones:', 'Resample', defaultValue).then(semitones => {
-            let [start, end] = this._selRangeOrAll()
+            let [start, end] = this.selRangeOrAll()
             let length = (end - start) * (2 ** (-semitones / 12))
-            let newWave = $sample.spliceEffect(this._viewSample, start, end, length, $wave.resample)
-            this._callbacks.onChange(newWave, true)
-            if (this._rangeSelected()) {
-                this._setSel(start, start + length)
+            let newWave = $sample.spliceEffect(this.viewSample, start, end, length, $wave.resample)
+            this.callbacks.onChange(newWave, true)
+            if (this.rangeSelected()) {
+                this.setSel(start, start + length)
             }
             global.lastResampleSemitones = semitones
         })
     }
 
     /** @private */
-    _filter() {
+    filter() {
         let dialog = $dialog.open(new FilterEffectElement(), {dismissable: true})
-        dialog.controller._onComplete = params => {
-            let [start, end] = this._selRangeOrAll()
+        dialog.controller.onComplete = params => {
+            let [start, end] = this.selRangeOrAll()
             let waitDialog = $dialog.open(new WaitDialogElement())
-            $sample.applyNode(this._viewSample, start, end, params.dither,
+            $sample.applyNode(this.viewSample, start, end, params.dither,
                 ctx => {
                     let node = ctx.createBiquadFilter()
                     let factor = ctx.sampleRate / $play.baseRate // TODO!
@@ -752,7 +752,7 @@ export class SampleEdit {
                     node.type = params.type
                     return node
                 })
-                .then(s => this._callbacks.onChange(s, true))
+                .then(s => this.callbacks.onChange(s, true))
                 .then(() => $dialog.close(waitDialog))
                 .catch(() => $dialog.close(waitDialog))
         }
@@ -764,7 +764,7 @@ export const SampleEditElement = $dom.defineView('sample-edit', SampleEdit)
 let testElem
 if (import.meta.main) {
     testElem = new SampleEditElement()
-    testElem.controller._callbacks = {
+    testElem.controller.callbacks = {
         jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },
@@ -773,9 +773,9 @@ if (import.meta.main) {
         },
         onChange(sample, commit) {
             console.log('Change', commit)
-            testElem.controller._setSample(sample)
+            testElem.controller.setSample(sample)
         },
     }
     $dom.displayMain(testElem)
-    testElem.controller._setSample(Sample.empty)
+    testElem.controller.setSample(Sample.empty)
 }

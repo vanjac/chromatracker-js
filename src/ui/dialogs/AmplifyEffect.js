@@ -26,37 +26,37 @@ export class AmplifyEffect extends FormDialog {
     constructor(view) {
         super(view)
         /** @param {{amount: number, dithering: boolean}} params */
-        this._onComplete = ({amount, dithering}) => {}
+        this.onComplete = ({amount, dithering}) => {}
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this._form = fragment.querySelector('form')
+        this.form = fragment.querySelector('form')
         /** @type {HTMLInputElement} */
-        this._amountInput = fragment.querySelector('#amp')
+        this.amountInput = fragment.querySelector('#amp')
         /** @type {HTMLInputElement} */
-        this._ditherInput = fragment.querySelector('#dither')
+        this.ditherInput = fragment.querySelector('#dither')
 
-        this._initForm(this._form)
-        $dom.restoreFormData(this._form, this._inputNames(), global.effectFormData)
+        this.initForm(this.form)
+        $dom.restoreFormData(this.form, this.inputNames(), global.effectFormData)
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 
     /** @private */
-    _inputNames() { return ['amp', 'dither'] }
+    inputNames() { return ['amp', 'dither'] }
 
     /**
      * @override
      */
-    _submit() {
-        this._onComplete({
-            amount: this._amountInput.valueAsNumber,
-            dithering: this._ditherInput.checked
+    submit() {
+        this.onComplete({
+            amount: this.amountInput.valueAsNumber,
+            dithering: this.ditherInput.checked
         })
-        $dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
+        $dom.saveFormData(this.form, this.inputNames(), global.effectFormData)
         $dialog.close(this.view)
     }
 }

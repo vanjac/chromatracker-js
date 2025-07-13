@@ -90,60 +90,60 @@ export class FilterEffect extends FormDialog {
     constructor(view) {
         super(view)
         /** @param {FilterEffectParams} params */
-        this._onComplete = params => {}
+        this.onComplete = params => {}
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this._form = fragment.querySelector('form')
+        this.form = fragment.querySelector('form')
         /** @type {HTMLInputElement} */
-        this._typeInput = fragment.querySelector('#filterType')
+        this.typeInput = fragment.querySelector('#filterType')
         /** @type {HTMLInputElement} */
-        this._envelopeEnableInput = fragment.querySelector('#freqEnvelope')
+        this.envelopeEnableInput = fragment.querySelector('#freqEnvelope')
         /** @type {HTMLInputElement} */
-        this._freqStartInput = fragment.querySelector('#frequency')
+        this.freqStartInput = fragment.querySelector('#frequency')
         /** @type {HTMLInputElement} */
-        this._freqEndInput = fragment.querySelector('#freqEnd')
+        this.freqEndInput = fragment.querySelector('#freqEnd')
         /** @type {HTMLInputElement} */
-        this._qInput = fragment.querySelector('#q')
+        this.qInput = fragment.querySelector('#q')
         /** @type {HTMLInputElement} */
-        this._gainInput = fragment.querySelector('#gain')
+        this.gainInput = fragment.querySelector('#gain')
         /** @type {HTMLInputElement} */
-        this._ditherInput = fragment.querySelector('#dither')
+        this.ditherInput = fragment.querySelector('#dither')
         /** @type {HTMLCanvasElement} */
-        this._graph = fragment.querySelector('#graph')
+        this.graph = fragment.querySelector('#graph')
 
-        this._initForm(this._form)
-        $dom.restoreFormData(this._form, this._inputNames(), global.effectFormData)
+        this.initForm(this.form)
+        $dom.restoreFormData(this.form, this.inputNames(), global.effectFormData)
 
-        this._context = new OfflineAudioContext(1, 1, defaultSampleRate)
-        this._filter = this._context.createBiquadFilter()
+        this.context = new OfflineAudioContext(1, 1, defaultSampleRate)
+        this.filter = this.context.createBiquadFilter()
 
-        this._updateFilterType()
-        this._updateEnvelopeEnabled()
-        this._updateGraph()
+        this.updateFilterType()
+        this.updateEnvelopeEnabled()
+        this.updateGraph()
 
-        this._typeInput.addEventListener('input', () => {
-            this._updateFilterType()
-            this._updateGraph()
+        this.typeInput.addEventListener('input', () => {
+            this.updateFilterType()
+            this.updateGraph()
         })
-        this._envelopeEnableInput.addEventListener('change', () => this._updateEnvelopeEnabled())
-        this._freqStartInput.addEventListener('input', () => this._updateGraph())
-        this._qInput.addEventListener('input', () => this._updateGraph())
-        this._gainInput.addEventListener('input', () => this._updateGraph())
+        this.envelopeEnableInput.addEventListener('change', () => this.updateEnvelopeEnabled())
+        this.freqStartInput.addEventListener('input', () => this.updateGraph())
+        this.qInput.addEventListener('input', () => this.updateGraph())
+        this.gainInput.addEventListener('input', () => this.updateGraph())
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 
     /** @private */
-    _inputNames() {
+    inputNames() {
         return ['filterType', 'freqEnvelope', 'frequency', 'freqEnd', 'q', 'gain', 'dither']
     }
 
     /** @private */
-    _updateFilterType() {
+    updateFilterType() {
         let [useQ, useGain] = {
             lowpass:   [true, false],
             highpass:  [true, false],
@@ -153,32 +153,32 @@ export class FilterEffect extends FormDialog {
             lowshelf:  [false, true],
             highshelf: [false, true],
             peaking:   [true, true],
-        }[this._typeInput.value]
+        }[this.typeInput.value]
 
-        this._qInput.disabled = !useQ
-        this._gainInput.disabled = !useGain
+        this.qInput.disabled = !useQ
+        this.gainInput.disabled = !useGain
     }
 
     /** @private */
-    _updateEnvelopeEnabled() {
-        this._freqEndInput.disabled = !this._envelopeEnableInput.checked
+    updateEnvelopeEnabled() {
+        this.freqEndInput.disabled = !this.envelopeEnableInput.checked
     }
 
     /** @private */
-    _updateGraph() {
-        this._filter.type = /** @type {BiquadFilterType} */(this._typeInput.value)
-        this._filter.frequency.value = this._freqStartInput.valueAsNumber || 0
-        this._filter.Q.value = this._qInput.valueAsNumber || 0
-        this._filter.gain.value = this._gainInput.valueAsNumber || 0
+    updateGraph() {
+        this.filter.type = /** @type {BiquadFilterType} */(this.typeInput.value)
+        this.filter.frequency.value = this.freqStartInput.valueAsNumber || 0
+        this.filter.Q.value = this.qInput.valueAsNumber || 0
+        this.filter.gain.value = this.gainInput.valueAsNumber || 0
 
         let magResponse = new Float32Array(numGraphFreq)
         let phaseResponse = new Float32Array(numGraphFreq)
-        this._filter.getFrequencyResponse(graphFreq, magResponse, phaseResponse)
+        this.filter.getFrequencyResponse(graphFreq, magResponse, phaseResponse)
 
-        let ctx = this._graph.getContext('2d')
+        let ctx = this.graph.getContext('2d')
         // 'currentColor' doesn't work in Chrome or Safari
         ctx.strokeStyle = window.getComputedStyle(this.view).getPropertyValue('--color-fg')
-        let {width, height} = this._graph
+        let {width, height} = this.graph
         ctx.clearRect(0, 0, width, height)
 
         ctx.beginPath()
@@ -194,16 +194,16 @@ export class FilterEffect extends FormDialog {
     /**
      * @override
      */
-    _submit() {
-        this._onComplete({
-            type: /** @type {BiquadFilterType} */(this._typeInput.value),
-            freqStart: this._freqStartInput.valueAsNumber,
-            freqEnd: this._envelopeEnableInput.checked ? this._freqEndInput.valueAsNumber : null,
-            q: this._qInput.valueAsNumber,
-            gain: this._gainInput.valueAsNumber,
-            dither: this._ditherInput.checked
+    submit() {
+        this.onComplete({
+            type: /** @type {BiquadFilterType} */(this.typeInput.value),
+            freqStart: this.freqStartInput.valueAsNumber,
+            freqEnd: this.envelopeEnableInput.checked ? this.freqEndInput.valueAsNumber : null,
+            q: this.qInput.valueAsNumber,
+            gain: this.gainInput.valueAsNumber,
+            dither: this.ditherInput.checked
         })
-        $dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
+        $dom.saveFormData(this.form, this.inputNames(), global.effectFormData)
         $dialog.close(this.view)
     }
 }

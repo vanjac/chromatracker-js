@@ -79,163 +79,163 @@ export class PatternEdit {
          *      setMute(c: number, mute: boolean): void
          * }}
          */
-        this._callbacks = null
+        this.callbacks = null
         /** @type {readonly number[]} */
-        this._viewSequence = null
+        this.viewSequence = null
         /** @type {readonly Readonly<Pattern>[]} */
-        this._viewPatterns = null
+        this.viewPatterns = null
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this._sequenceEdit = fragment.querySelector('sequence-edit')
-        this._patternTable = fragment.querySelector('pattern-table')
-        this._cellEntry = fragment.querySelector('cell-entry')
+        this.sequenceEdit = fragment.querySelector('sequence-edit')
+        this.patternTable = fragment.querySelector('pattern-table')
+        this.cellEntry = fragment.querySelector('cell-entry')
 
         /** @type {HTMLInputElement} */
-        this._tempoInput = fragment.querySelector('#tempo')
+        this.tempoInput = fragment.querySelector('#tempo')
         /** @type {HTMLInputElement} */
-        this._speedInput = fragment.querySelector('#speed')
+        this.speedInput = fragment.querySelector('#speed')
         /** @type {HTMLInputElement} */
-        this._selectInput = fragment.querySelector('#select')
-        this._playbackStatus = fragment.querySelector('#playbackStatus')
-        this._selectTools = fragment.querySelector('#selectTools')
-        this._entryCell = fragment.querySelector('#entryCell')
+        this.selectInput = fragment.querySelector('#select')
+        this.playbackStatus = fragment.querySelector('#playbackStatus')
+        this.selectTools = fragment.querySelector('#selectTools')
+        this.entryCell = fragment.querySelector('#entryCell')
 
-        this._selectInput.addEventListener('change', () => {
-            this._selectTools.classList.toggle('hide', !this._selectInput.checked)
-            this._playbackStatus.classList.toggle('hide', this._selectInput.checked)
-            if (this._selectInput.checked) {
-                this._patternTable.controller._setMark()
+        this.selectInput.addEventListener('change', () => {
+            this.selectTools.classList.toggle('hide', !this.selectInput.checked)
+            this.playbackStatus.classList.toggle('hide', this.selectInput.checked)
+            if (this.selectInput.checked) {
+                this.patternTable.controller.setMark()
             } else {
-                this._patternTable.controller._clearMark()
+                this.patternTable.controller.clearMark()
             }
         })
 
-        $keyPad.makeKeyButton(this._entryCell,
-            id => this._callbacks.jamPlay(id, this._cellEntry.controller._getJamCell()),
-            id => this._callbacks.jamRelease(id))
+        $keyPad.makeKeyButton(this.entryCell,
+            id => this.callbacks.jamPlay(id, this.cellEntry.controller.getJamCell()),
+            id => this.callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#write'), id => {
-            this._putCell(
-                this._cellEntry.controller._getCell(),
-                this._cellEntry.controller._getCellParts()
+            this.putCell(
+                this.cellEntry.controller.getCell(),
+                this.cellEntry.controller.getCellParts()
             )
-            this._callbacks.jamPlay(id, this._selCell())
-            this._advance()
-        }, id => this._callbacks.jamRelease(id))
+            this.callbacks.jamPlay(id, this.selCell())
+            this.advance()
+        }, id => this.callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#clear'), id => {
-            this._putCell(Cell.empty, this._cellEntry.controller._getCellParts())
-            this._callbacks.jamPlay(id, this._selCell())
-            this._advance()
-        }, id => this._callbacks.jamRelease(id))
+            this.putCell(Cell.empty, this.cellEntry.controller.getCellParts())
+            this.callbacks.jamPlay(id, this.selCell())
+            this.advance()
+        }, id => this.callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#lift'), id => {
-            this._cellEntry.controller._liftCell(this._selCell())
-            this._callbacks.jamPlay(id, this._cellEntry.controller._getJamCell())
-        }, id => this._callbacks.jamRelease(id))
+            this.cellEntry.controller.liftCell(this.selCell())
+            this.callbacks.jamPlay(id, this.cellEntry.controller.getJamCell())
+        }, id => this.callbacks.jamRelease(id))
 
-        fragment.querySelector('#cut').addEventListener('click', () => this._cut())
-        fragment.querySelector('#copy').addEventListener('click', () => this._copy())
-        fragment.querySelector('#paste').addEventListener('click', () => this._paste())
-        fragment.querySelector('#insert').addEventListener('click', () => this._insert(1))
-        fragment.querySelector('#delete').addEventListener('click', () => this._delete(1))
+        fragment.querySelector('#cut').addEventListener('click', () => this.cut())
+        fragment.querySelector('#copy').addEventListener('click', () => this.copy())
+        fragment.querySelector('#paste').addEventListener('click', () => this.paste())
+        fragment.querySelector('#insert').addEventListener('click', () => this.insert(1))
+        fragment.querySelector('#delete').addEventListener('click', () => this.delete(1))
 
         this.view.addEventListener('contextmenu', () => {
-            $cli.addSelProp('seqpos', 'number', this._selPos(), pos => this._setSelPos(pos))
+            $cli.addSelProp('seqpos', 'number', this.selPos(), pos => this.setSelPos(pos))
         })
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
 
-        this._sequenceEdit.controller._callbacks = {
-            changeModule: (...args) => this._callbacks.changeModule(...args),
-            onSelect: this._refreshPattern.bind(this)
+        this.sequenceEdit.controller.callbacks = {
+            changeModule: (...args) => this.callbacks.changeModule(...args),
+            onSelect: this.refreshPattern.bind(this)
         }
-        this._patternTable.controller._callbacks = {
-            jamPlay: (...args) => this._callbacks.jamPlay(...args),
-            jamRelease: (...args) => this._callbacks.jamRelease(...args),
-            onChange: (pattern) => this._changePattern(_ => pattern),
-            setMute: (...args) => this._callbacks.setMute(...args),
+        this.patternTable.controller.callbacks = {
+            jamPlay: (...args) => this.callbacks.jamPlay(...args),
+            jamRelease: (...args) => this.callbacks.jamRelease(...args),
+            onChange: (pattern) => this.changePattern(_ => pattern),
+            setMute: (...args) => this.callbacks.setMute(...args),
         }
-        this._cellEntry.controller._callbacks = {
-            jamPlay: (...args) => this._callbacks.jamPlay(...args),
-            jamRelease: (...args) => this._callbacks.jamRelease(...args),
-            putCell: this._putCell.bind(this),
-            updateCell: this._updateCell.bind(this),
-            selCell: this._selCell.bind(this),
-            updateEntryParts: this._updateEntryParts.bind(this),
+        this.cellEntry.controller.callbacks = {
+            jamPlay: (...args) => this.callbacks.jamPlay(...args),
+            jamRelease: (...args) => this.callbacks.jamRelease(...args),
+            putCell: this.putCell.bind(this),
+            updateCell: this.updateCell.bind(this),
+            selCell: this.selCell.bind(this),
+            updateEntryParts: this.updateEntryParts.bind(this),
         }
-        this._updateCell()
-        this._updateEntryParts()
+        this.updateCell()
+        this.updateEntryParts()
     }
 
-    _onVisible() {
-        this._cellEntry.controller._onVisible()
+    onVisible() {
+        this.cellEntry.controller.onVisible()
     }
 
-    _resetState() {
-        this._setSelPos(0)
-        this._patternTable.controller._setSelCell(0, 0, true)
-        this._selectInput.checked = false
-        this._selectTools.classList.add('hide')
-        this._playbackStatus.classList.remove('hide')
-        this._patternTable.controller._scrollToSelCell()
-        this._cellEntry.controller._setSelSample(1)
-        this._setTempoSpeed(mod.defaultTempo, mod.defaultSpeed)
+    resetState() {
+        this.setSelPos(0)
+        this.patternTable.controller.setSelCell(0, 0, true)
+        this.selectInput.checked = false
+        this.selectTools.classList.add('hide')
+        this.playbackStatus.classList.remove('hide')
+        this.patternTable.controller.scrollToSelCell()
+        this.cellEntry.controller.setSelSample(1)
+        this.setTempoSpeed(mod.defaultTempo, mod.defaultSpeed)
     }
 
     /**
      * @param {Readonly<Module>} module
      */
-    _setModule(module) {
-        this._patternTable.controller._setNumChannels(module.numChannels)
-        this._cellEntry.controller._setSamples(module.samples)
-        this._sequenceEdit.controller._setSequence(module.sequence)
-        this._sequenceEdit.controller._setPatterns(module.patterns)
+    setModule(module) {
+        this.patternTable.controller.setNumChannels(module.numChannels)
+        this.cellEntry.controller.setSamples(module.samples)
+        this.sequenceEdit.controller.setSequence(module.sequence)
+        this.sequenceEdit.controller.setPatterns(module.patterns)
 
-        if (module.sequence != this._viewSequence || module.patterns != this._viewPatterns) {
-            this._viewSequence = module.sequence
-            this._viewPatterns = module.patterns
-            this._refreshPattern()
+        if (module.sequence != this.viewSequence || module.patterns != this.viewPatterns) {
+            this.viewSequence = module.sequence
+            this.viewPatterns = module.patterns
+            this.refreshPattern()
         }
     }
 
     /** @private */
-    _refreshPattern() {
-        this._patternTable.controller._setPattern(this._selPattern())
+    refreshPattern() {
+        this.patternTable.controller.setPattern(this.selPattern())
     }
 
-    _selChannel() {
-        return this._patternTable.controller._selChannel
+    selChannel() {
+        return this.patternTable.controller.selChannel
     }
 
-    _selRow() {
-        return this._patternTable.controller._selRow
+    selRow() {
+        return this.patternTable.controller.selRow
     }
 
-    _selPos() {
-        return this._sequenceEdit.controller._selPos
+    selPos() {
+        return this.sequenceEdit.controller.selPos
     }
 
-    _selPatternNum() {
-        return this._viewSequence[this._selPos()]
+    selPatternNum() {
+        return this.viewSequence[this.selPos()]
     }
 
-    _selPattern() {
-        return this._viewPatterns[this._selPatternNum()]
+    selPattern() {
+        return this.viewPatterns[this.selPatternNum()]
     }
 
     /**
      * @param {number} channel
      * @param {number} row
      */
-    _setSelCell(channel, row, scroll = false) {
-        this._patternTable.controller._setSelCell(channel, row)
+    setSelCell(channel, row, scroll = false) {
+        this.patternTable.controller.setSelCell(channel, row)
         if (scroll) {
-            this._patternTable.controller._scrollToSelCell()
+            this.patternTable.controller.scrollToSelCell()
         }
     }
 
@@ -243,141 +243,141 @@ export class PatternEdit {
      * @private
      * @returns {[number, number]}
      */
-    _selCellPos() {
-        return [this._selChannel(), this._selRow()]
+    selCellPos() {
+        return [this.selChannel(), this.selRow()]
     }
 
     /**
      * @param {number} pos
      */
-    _setSelPos(pos) {
-        this._sequenceEdit.controller._setSelPos(pos)
-        this._refreshPattern()
+    setSelPos(pos) {
+        this.sequenceEdit.controller.setSelPos(pos)
+        this.refreshPattern()
     }
 
-    _selCell() {
-        return this._patternTable.controller._selCell()
+    selCell() {
+        return this.patternTable.controller.selCell()
     }
 
     /**
      * @private
      * @param {(pattern: Readonly<Pattern>) => Readonly<Pattern>} callback
      */
-    _changePattern(callback) {
-        this._callbacks.changeModule(
-            module => $pattern.change(module, module.sequence[this._selPos()], callback))
+    changePattern(callback) {
+        this.callbacks.changeModule(
+            module => $pattern.change(module, module.sequence[this.selPos()], callback))
     }
 
     /**
      * @param {Readonly<Cell>} cell
      * @param {CellPart} parts
      */
-    _putCell(cell, parts) {
-        let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => $pattern.putCell(pattern, channel, row, cell, parts))
+    putCell(cell, parts) {
+        let [channel, row] = this.selCellPos()
+        this.changePattern(pattern => $pattern.putCell(pattern, channel, row, cell, parts))
     }
 
     /**
      * @private
      * @param {number} count
      */
-    _insert(count) {
-        let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => $pattern.channelInsert(pattern, channel, row, count))
+    insert(count) {
+        let [channel, row] = this.selCellPos()
+        this.changePattern(pattern => $pattern.channelInsert(pattern, channel, row, count))
     }
 
     /**
      * @private
      * @param {number} count
      */
-    _delete(count) {
-        let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => $pattern.channelDelete(pattern, channel, row, count))
+    delete(count) {
+        let [channel, row] = this.selCellPos()
+        this.changePattern(pattern => $pattern.channelDelete(pattern, channel, row, count))
     }
 
     /** @private */
-    _cut() {
-        this._copy()
-        let [minChannel, maxChannel] = this._patternTable.controller._channelRange()
-        let [minRow, maxRow] = this._patternTable.controller._rowRange()
-        let parts = this._cellEntry.controller._getCellParts()
-        this._changePattern(pattern => $pattern.fill(
+    cut() {
+        this.copy()
+        let [minChannel, maxChannel] = this.patternTable.controller.channelRange()
+        let [minRow, maxRow] = this.patternTable.controller.rowRange()
+        let parts = this.cellEntry.controller.getCellParts()
+        this.changePattern(pattern => $pattern.fill(
             pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, Cell.empty, parts))
     }
 
     /** @private */
-    _copy() {
-        let [minChannel, maxChannel] = this._patternTable.controller._channelRange()
-        let [minRow, maxRow] = this._patternTable.controller._rowRange()
+    copy() {
+        let [minChannel, maxChannel] = this.patternTable.controller.channelRange()
+        let [minRow, maxRow] = this.patternTable.controller.rowRange()
         global.patternClipboard = $pattern.slice(
-            this._selPattern(), minChannel, maxChannel + 1, minRow, maxRow + 1)
+            this.selPattern(), minChannel, maxChannel + 1, minRow, maxRow + 1)
     }
 
     /** @private */
-    _paste() {
-        let [channel, row] = this._selCellPos()
-        this._changePattern(pattern => $pattern.write(
+    paste() {
+        let [channel, row] = this.selCellPos()
+        this.changePattern(pattern => $pattern.write(
             pattern,
             channel,
             row,
             global.patternClipboard,
-            this._cellEntry.controller._getCellParts()
+            this.cellEntry.controller.getCellParts()
         ))
     }
 
-    _updateCell() {
-        $cell.setContents(this._entryCell, this._cellEntry.controller._getCell())
+    updateCell() {
+        $cell.setContents(this.entryCell, this.cellEntry.controller.getCell())
     }
 
-    _updateEntryParts() {
-        let parts = this._cellEntry.controller._getCellParts()
-        $cell.toggleParts(this._entryCell, parts)
-        this._patternTable.controller._setEntryParts(parts)
+    updateEntryParts() {
+        let parts = this.cellEntry.controller.getCellParts()
+        $cell.toggleParts(this.entryCell, parts)
+        this.patternTable.controller.setEntryParts(parts)
     }
 
     /**
      * @param {number} pos
      * @param {number} row
      */
-    _setPlaybackPos(pos, row) {
-        if (this._selPatternNum() == this._viewSequence[pos]) {
-            this._patternTable.controller._setPlaybackRow(row)
+    setPlaybackPos(pos, row) {
+        if (this.selPatternNum() == this.viewSequence[pos]) {
+            this.patternTable.controller.setPlaybackRow(row)
         } else {
-            this._patternTable.controller._setPlaybackRow(-1)
+            this.patternTable.controller.setPlaybackRow(-1)
         }
     }
 
     /** @private */
-    _advance() {
-        let {_selChannel, _selRow} = this._patternTable.controller
-        _selRow++
-        _selRow %= this._selPattern()[0].length
-        this._patternTable.controller._setSelCell(_selChannel, _selRow)
-        this._patternTable.controller._scrollToSelCell()
+    advance() {
+        let {selChannel, selRow} = this.patternTable.controller
+        selRow++
+        selRow %= this.selPattern()[0].length
+        this.patternTable.controller.setSelCell(selChannel, selRow)
+        this.patternTable.controller.scrollToSelCell()
     }
 
     /**
      * @param {number} channel
      */
-    _isChannelMuted(channel) {
-        return this._patternTable.controller._isChannelMuted(channel)
+    isChannelMuted(channel) {
+        return this.patternTable.controller.isChannelMuted(channel)
     }
 
-    _getTempo() {
-        return this._tempoInput.valueAsNumber
+    getTempo() {
+        return this.tempoInput.valueAsNumber
     }
 
-    _getSpeed() {
-        return this._speedInput.valueAsNumber
+    getSpeed() {
+        return this.speedInput.valueAsNumber
     }
 
     /**
      * @param {number} tempo
      * @param {number} speed
      */
-    _setTempoSpeed(tempo, speed) {
-        this._tempoInput.valueAsNumber = tempo
-        this._speedInput.valueAsNumber = speed
+    setTempoSpeed(tempo, speed) {
+        this.tempoInput.valueAsNumber = tempo
+        this.speedInput.valueAsNumber = speed
     }
 }
 export const PatternEditElement = $dom.defineView('pattern-edit', PatternEdit)
@@ -387,11 +387,11 @@ let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new PatternEditElement()
-    testElem.controller._callbacks = {
+    testElem.controller.callbacks = {
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
-            testElem.controller._setModule(module)
+            testElem.controller.setModule(module)
         },
         setMute(c, mute) {
             console.log('Set mute', c, mute)
@@ -404,5 +404,5 @@ if (import.meta.main) {
         },
     }
     $dom.displayMain(testElem)
-    testElem.controller._setModule(module)
+    testElem.controller.setModule(module)
 }

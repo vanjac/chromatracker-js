@@ -7,16 +7,16 @@ export class Dialog {
     constructor(view) {
         this.view = view
         /** @type {Element} */
-        this._lastFocused = null
+        this.lastFocused = null
     }
 
     disconnectedCallback() {
-        if (this._lastFocused instanceof HTMLElement) {
-            this._lastFocused.focus()
+        if (this.lastFocused instanceof HTMLElement) {
+            this.lastFocused.focus()
         }
     }
 
-    _dismiss() {
+    dismiss() {
         close(this.view)
     }
 }
@@ -25,14 +25,14 @@ export class FormDialog extends Dialog {
     /**
      * @param {HTMLFormElement} form
      */
-    _initForm(form) {
+    initForm(form) {
         form.addEventListener('submit', e => {
             e.preventDefault()
-            this._submit()
+            this.submit()
         })
     }
 
-    _submit() {
+    submit() {
         close(this.view)
     }
 }
@@ -61,7 +61,7 @@ export function open(dialog, {dismissable = false} = {}) {
     if (dismissable) {
         container.addEventListener('click', e => {
             if (e.target == container) {
-                dialog.controller._dismiss()
+                dialog.controller.dismiss()
             }
         })
         // TODO: handle back button (pushState)
@@ -69,7 +69,7 @@ export function open(dialog, {dismissable = false} = {}) {
 
     // https://bitsofco.de/accessible-modal-dialog/
 
-    dialog.controller._lastFocused = document.activeElement
+    dialog.controller.lastFocused = document.activeElement
     // TODO: doesn't work if elements change disabled state
     let focusable = [...dialog.querySelectorAll(focusableSelector)]
     if (focusable.length == 0) {
@@ -80,8 +80,8 @@ export function open(dialog, {dismissable = false} = {}) {
 
     if (firstFocusable instanceof HTMLElement) {
         firstFocusable.focus()
-    } else if (dialog.controller._lastFocused instanceof HTMLElement) {
-        dialog.controller._lastFocused.blur()
+    } else if (dialog.controller.lastFocused instanceof HTMLElement) {
+        dialog.controller.lastFocused.blur()
     }
 
     container.addEventListener('keydown', e => {
@@ -100,7 +100,7 @@ export function open(dialog, {dismissable = false} = {}) {
                 e.preventDefault()
             }
         } else if (dismissable && e.code == 'Escape') {
-            dialog.controller._dismiss()
+            dialog.controller.dismiss()
         }
     })
 

@@ -40,35 +40,35 @@ export class PatternTable {
                 onChange(pattern: Readonly<Pattern>): void
          * }}
          */
-        this._callbacks = null
-        this._selChannel = 0
-        this._selRow = 0
-        this._markChannel = -1
-        this._markRow = -1
+        this.callbacks = null
+        this.selChannel = 0
+        this.selRow = 0
+        this.markChannel = -1
+        this.markRow = -1
         /** @type {CellPart} */
-        this._viewEntryParts = CellPart.none
-        this._viewNumChannels = 0
-        this._viewNumRows = 0
+        this.viewEntryParts = CellPart.none
+        this.viewNumChannels = 0
+        this.viewNumRows = 0
         /** @type {Readonly<Pattern>} */
-        this._viewPattern = null
+        this.viewPattern = null
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this._patternScroll = fragment.querySelector('#patternScroll')
-        this._theadRow = fragment.querySelector('tr')
-        this._tbody = fragment.querySelector('tbody')
+        this.patternScroll = fragment.querySelector('#patternScroll')
+        this.theadRow = fragment.querySelector('tr')
+        this.tbody = fragment.querySelector('tbody')
         /** @type {HTMLInputElement[]} */
-        this._muteInputs = []
+        this.muteInputs = []
 
         this.view.addEventListener('contextmenu', () => {
-            $cli.addSelProp('row', 'number', this._selRow,
-                row => this._setSelCell(this._selChannel, row))
-            $cli.addSelProp('channel', 'number', this._selChannel,
-                channel => this._setSelCell(this._selChannel, channel))
-            $cli.addSelProp('pattern', Array, this._viewPattern,
-                pattern => this._callbacks.onChange(Object.freeze(pattern)))
+            $cli.addSelProp('row', 'number', this.selRow,
+                row => this.setSelCell(this.selChannel, row))
+            $cli.addSelProp('channel', 'number', this.selChannel,
+                channel => this.setSelCell(this.selChannel, channel))
+            $cli.addSelProp('pattern', Array, this.viewPattern,
+                pattern => this.callbacks.onChange(Object.freeze(pattern)))
         })
 
         this.view.style.display = 'contents'
@@ -78,15 +78,15 @@ export class PatternTable {
     /**
      * @param {number} numChannels
      */
-    _setNumChannels(numChannels) {
-        if (numChannels == this._viewNumChannels) {
+    setNumChannels(numChannels) {
+        if (numChannels == this.viewNumChannels) {
             return
         }
         console.debug('update pattern channels')
-        this._viewNumChannels = numChannels
-        this._viewNumRows = 0
+        this.viewNumChannels = numChannels
+        this.viewNumRows = 0
 
-        this._theadRow.textContent = ''
+        this.theadRow.textContent = ''
         let newMuteInputs = []
         let rowFrag = document.createDocumentFragment()
 
@@ -97,41 +97,41 @@ export class PatternTable {
             let th = rowFrag.appendChild($dom.createElem('th'))
             th.classList.add('pattern-col-head')
             let input = th.appendChild($dom.createElem('input', {type: 'checkbox', id: 'ch' + c}))
-            if (!this._muteInputs[c] || this._muteInputs[c].checked) {
+            if (!this.muteInputs[c] || this.muteInputs[c].checked) {
                 input.checked = true
             }
             input.addEventListener('change',
-                () => this._callbacks.setMute(c, !input.checked))
+                () => this.callbacks.setMute(c, !input.checked))
                 newMuteInputs.push(input)
             let label = th.appendChild($dom.createElem('label', {htmlFor: input.id}))
             label.textContent = 'Ch ' + (c + 1).toString()
         }
-        this._theadRow.appendChild(rowFrag)
-        this._muteInputs = newMuteInputs
+        this.theadRow.appendChild(rowFrag)
+        this.muteInputs = newMuteInputs
     }
 
     /**
      * @param {Readonly<Pattern>} pattern
      */
-    _setPattern(pattern) {
-        if (pattern == this._viewPattern) {
+    setPattern(pattern) {
+        if (pattern == this.viewPattern) {
             return
         }
         console.debug('update pattern')
 
-        if (pattern[0].length == this._viewNumRows) {
+        if (pattern[0].length == this.viewNumRows) {
             for (let [c, channel] of pattern.entries()) {
-                if (channel != this._viewPattern[c]) {
+                if (channel != this.viewPattern[c]) {
                     for (let [row, cell] of channel.entries()) {
-                        if (cell != this._viewPattern[c][row]) {
-                            $cell.setContents(this._tbody.children[row].children[c + 1], cell)
+                        if (cell != this.viewPattern[c][row]) {
+                            $cell.setContents(this.tbody.children[row].children[c + 1], cell)
                         }
                     }
                 }
             }
         } else {
-            this._viewNumRows = pattern[0].length
-            this._tbody.textContent = ''
+            this.viewNumRows = pattern[0].length
+            this.tbody.textContent = ''
             let tableFrag = document.createDocumentFragment()
             for (let row = 0; row < pattern[0].length; row++) {
                 let tr = tableFrag.appendChild($dom.createElem('tr'))
@@ -146,44 +146,44 @@ export class PatternTable {
 
                     let td = cellFrag.querySelector('td')
                     $keyPad.makeKeyButton(td, id => {
-                        this._setSelCell(c, row)
-                        this._callbacks.jamPlay(id, this._viewPattern[c][row])
-                    }, id => this._callbacks.jamRelease(id), {blockScroll: false})
+                        this.setSelCell(c, row)
+                        this.callbacks.jamPlay(id, this.viewPattern[c][row])
+                    }, id => this.callbacks.jamRelease(id), {blockScroll: false})
                     td.addEventListener('contextmenu', () => {
-                        $cli.addSelProp('cell', 'object', this._viewPattern[c][row], cell => {
-                            this._callbacks.onChange($pattern.putCell(
-                                this._viewPattern, c, row, cell, CellPart.all))
+                        $cli.addSelProp('cell', 'object', this.viewPattern[c][row], cell => {
+                            this.callbacks.onChange($pattern.putCell(
+                                this.viewPattern, c, row, cell, CellPart.all))
                         })
                     })
 
                     tr.appendChild(cellFrag)
                 }
             }
-            this._tbody.appendChild(tableFrag)
-            this._setSelCell(this._selChannel, this._selRow)
+            this.tbody.appendChild(tableFrag)
+            this.setSelCell(this.selChannel, this.selRow)
         }
-        this._viewPattern = pattern
+        this.viewPattern = pattern
     }
 
     /**
      * @returns {[number, number]}
      */
-    _channelRange() {
-        if (this._markChannel < 0 || this._markRow < 0) {
-            return [this._selChannel, this._selChannel]
+    channelRange() {
+        if (this.markChannel < 0 || this.markRow < 0) {
+            return [this.selChannel, this.selChannel]
         } else {
-            return minMax(this._selChannel, this._markChannel)
+            return minMax(this.selChannel, this.markChannel)
         }
     }
 
     /**
      * @returns {[number, number]}
      */
-    _rowRange() {
-        if (this._markChannel < 0 || this._markRow < 0) {
-            return [this._selRow, this._selRow]
+    rowRange() {
+        if (this.markChannel < 0 || this.markRow < 0) {
+            return [this.selRow, this.selRow]
         } else {
-            return minMax(this._selRow, this._markRow)
+            return minMax(this.selRow, this.markRow)
         }
     }
 
@@ -191,45 +191,45 @@ export class PatternTable {
      * @param {number} channel
      * @param {number} row
      */
-    _setSelCell(channel, row, clearMark = false) {
-        this._selChannel = channel
-        this._selRow = row
+    setSelCell(channel, row, clearMark = false) {
+        this.selChannel = channel
+        this.selRow = row
         if (clearMark) {
-            this._markChannel = this._markRow = -1
+            this.markChannel = this.markRow = -1
         }
-        this._updateSelection()
+        this.updateSelection()
     }
 
-    _setMark() {
-        this._markChannel = this._selChannel
-        this._markRow = this._selRow
+    setMark() {
+        this.markChannel = this.selChannel
+        this.markRow = this.selRow
     }
 
-    _clearMark() {
-        this._markChannel = this._markRow = -1
-        this._updateSelection()
+    clearMark() {
+        this.markChannel = this.markRow = -1
+        this.updateSelection()
     }
 
     /** @private */
-    _updateSelection() {
-        for (let cell of this._tbody.querySelectorAll('.sel-cell')) {
+    updateSelection() {
+        for (let cell of this.tbody.querySelectorAll('.sel-cell')) {
             cell.classList.remove('sel-cell')
             cell.classList.remove('sel-pitch')
             cell.classList.remove('sel-inst')
             cell.classList.remove('sel-effect')
         }
-        if (this._selRow >= 0 && this._selChannel >= 0) {
-            let selTr = this._tbody.children[this._selRow]
-            let selCell = selTr && selTr.children[this._selChannel + 1]
-            if (selCell) { $cell.toggleParts(selCell, this._viewEntryParts) }
+        if (this.selRow >= 0 && this.selChannel >= 0) {
+            let selTr = this.tbody.children[this.selRow]
+            let selCell = selTr && selTr.children[this.selChannel + 1]
+            if (selCell) { $cell.toggleParts(selCell, this.viewEntryParts) }
 
-            if (this._markChannel < 0 || this._markRow < 0) {
+            if (this.markChannel < 0 || this.markRow < 0) {
                 if (selCell) { selCell.classList.add('sel-cell') }
             } else {
-                let [minChannel, maxChannel] = minMax(this._selChannel, this._markChannel)
-                let [minRow, maxRow] = minMax(this._selRow, this._markRow)
+                let [minChannel, maxChannel] = minMax(this.selChannel, this.markChannel)
+                let [minRow, maxRow] = minMax(this.selRow, this.markRow)
                 for (let row = minRow; row <= maxRow; row++) {
-                    let tr = this._tbody.children[row]
+                    let tr = this.tbody.children[row]
                     if (!tr) { continue }
                     for (let channel = minChannel; channel <= maxChannel; channel++) {
                         let cell = tr.children[channel + 1]
@@ -240,16 +240,16 @@ export class PatternTable {
         }
     }
 
-    _selCell() {
-        return this._viewPattern[this._selChannel][this._selRow]
+    selCell() {
+        return this.viewPattern[this.selChannel][this.selRow]
     }
 
     /**
      * @param {CellPart} parts
      */
-    _setEntryParts(parts) {
-        this._viewEntryParts = parts
-        let selCell = this._tbody.querySelector('.sel-cell')
+    setEntryParts(parts) {
+        this.viewEntryParts = parts
+        let selCell = this.tbody.querySelector('.sel-cell')
         if (selCell) {
             $cell.toggleParts(selCell, parts)
         }
@@ -258,32 +258,32 @@ export class PatternTable {
     /**
      * @param {number} row
      */
-    _setPlaybackRow(row) {
-        let oldHilite = this._tbody.querySelector('.hilite-row')
+    setPlaybackRow(row) {
+        let oldHilite = this.tbody.querySelector('.hilite-row')
         if (oldHilite) {
             oldHilite.classList.remove('hilite-row')
         }
         if (row >= 0) {
-            this._tbody.children[row].classList.add('hilite-row')
+            this.tbody.children[row].classList.add('hilite-row')
         }
     }
 
-    _scrollToSelCell() {
-        let parentRect = this._patternScroll.getBoundingClientRect()
-        let childRect = this._tbody.children[this._selRow].getBoundingClientRect()
-        let centerY = this._patternScroll.clientHeight / 2
+    scrollToSelCell() {
+        let parentRect = this.patternScroll.getBoundingClientRect()
+        let childRect = this.tbody.children[this.selRow].getBoundingClientRect()
+        let centerY = this.patternScroll.clientHeight / 2
         let scrollAmount = (childRect.top - parentRect.top) - centerY
-        this._patternScroll.scrollBy({top: scrollAmount, behavior: 'instant'})
+        this.patternScroll.scrollBy({top: scrollAmount, behavior: 'instant'})
     }
 
     /**
      * @param {number} channel
      */
-    _isChannelMuted(channel) {
-        if (channel >= this._muteInputs.length) {
+    isChannelMuted(channel) {
+        if (channel >= this.muteInputs.length) {
             return false
         }
-        return ! this._muteInputs[channel].checked
+        return ! this.muteInputs[channel].checked
     }
 }
 export const PatternTableElement = $dom.defineView('pattern-table', PatternTable)
@@ -291,7 +291,7 @@ export const PatternTableElement = $dom.defineView('pattern-table', PatternTable
 let testElem
 if (import.meta.main) {
     testElem = new PatternTableElement()
-    testElem.controller._callbacks = {
+    testElem.controller.callbacks = {
         setMute(c, mute) {
             console.log('Set mute', c, mute)
         },
@@ -306,6 +306,6 @@ if (import.meta.main) {
         },
     }
     $dom.displayMain(testElem)
-    testElem.controller._setNumChannels(4)
-    testElem.controller._setPattern($pattern.create(4))
+    testElem.controller.setNumChannels(4)
+    testElem.controller.setPattern($pattern.create(4))
 }

@@ -19,19 +19,19 @@ export class AlertDialog extends FormDialog {
      */
     constructor(view) {
         super(view)
-        this._title = ''
-        this._message = ''
-        this._onDismiss = () => {}
+        this.title = ''
+        this.message = ''
+        this.onDismiss = () => {}
     }
 
     connectedCallback() {
         let fragment = alertDialogTemplate.cloneNode(true)
 
-        this._initForm(fragment.querySelector('form'))
-        fragment.querySelector('#title').textContent = this._title
+        this.initForm(fragment.querySelector('form'))
+        fragment.querySelector('#title').textContent = this.title
         /** @type {HTMLOutputElement} */
         let messageOut = fragment.querySelector('#message')
-        messageOut.value = this._message
+        messageOut.value = this.message
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -40,17 +40,17 @@ export class AlertDialog extends FormDialog {
     /**
      * @override
      */
-    _submit() {
-        if (this._onDismiss) { this._onDismiss() }
-        super._submit()
+    submit() {
+        if (this.onDismiss) { this.onDismiss() }
+        super.submit()
     }
 
     /**
      * @override
      */
-    _dismiss() {
-        if (this._onDismiss) { this._onDismiss() }
-        super._dismiss()
+    dismiss() {
+        if (this.onDismiss) { this.onDismiss() }
+        super.dismiss()
     }
 }
 export const AlertDialogElement = $dom.defineView('alert-dialog', AlertDialog)
@@ -63,9 +63,9 @@ export const AlertDialogElement = $dom.defineView('alert-dialog', AlertDialog)
 AlertDialog.open = function(message, title = 'Error') {
     return new Promise((resolve) => {
         let dialog = new AlertDialogElement()
-        dialog.controller._message = message
-        dialog.controller._title = title
-        dialog.controller._onDismiss = resolve
+        dialog.controller.message = message
+        dialog.controller.title = title
+        dialog.controller.onDismiss = resolve
         $dialog.open(dialog)
     })
 }
@@ -88,22 +88,22 @@ export class ConfirmDialog extends FormDialog {
      */
     constructor(view) {
         super(view)
-        this._title = ''
-        this._message = ''
-        this._onConfirm = () => {}
-        this._onCancel = () => {}
+        this.title = ''
+        this.message = ''
+        this.onConfirm = () => {}
+        this.onCancel = () => {}
     }
 
     connectedCallback() {
         let fragment = confirmDialogTemplate.cloneNode(true)
 
-        this._initForm(fragment.querySelector('form'))
-        fragment.querySelector('#title').textContent = this._title
+        this.initForm(fragment.querySelector('form'))
+        fragment.querySelector('#title').textContent = this.title
         /** @type {HTMLOutputElement} */
         let messageOut = fragment.querySelector('#message')
-        messageOut.value = this._message
+        messageOut.value = this.message
 
-        fragment.querySelector('#cancel').addEventListener('click', () => this._dismiss())
+        fragment.querySelector('#cancel').addEventListener('click', () => this.dismiss())
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -112,17 +112,17 @@ export class ConfirmDialog extends FormDialog {
     /**
      * @override
      */
-    _submit() {
-        if (this._onConfirm) { this._onConfirm() }
-        super._submit()
+    submit() {
+        if (this.onConfirm) { this.onConfirm() }
+        super.submit()
     }
 
     /**
      * @override
      */
-    _dismiss() {
-        if (this._onCancel) { this._onCancel() }
-        super._dismiss()
+    dismiss() {
+        if (this.onCancel) { this.onCancel() }
+        super.dismiss()
     }
 }
 export const ConfirmDialogElement = $dom.defineView('confirm-dialog', ConfirmDialog)
@@ -135,10 +135,10 @@ export const ConfirmDialogElement = $dom.defineView('confirm-dialog', ConfirmDia
 ConfirmDialog.open = function(message, title = '') {
     return new Promise((resolve, reject) => {
         let dialog = new ConfirmDialogElement()
-        dialog.controller._message = message
-        dialog.controller._title = title
-        dialog.controller._onConfirm = resolve
-        dialog.controller._onCancel = reject
+        dialog.controller.message = message
+        dialog.controller.title = title
+        dialog.controller.onConfirm = resolve
+        dialog.controller.onCancel = reject
         $dialog.open(dialog)
     })
 }
@@ -164,25 +164,25 @@ export class InputDialog extends FormDialog {
      */
     constructor(view) {
         super(view)
-        this._title = ''
-        this._prompt = ''
-        this._defaultValue = 0
+        this.title = ''
+        this.prompt = ''
+        this.defaultValue = 0
         /** @param {number} value */
-        this._onConfirm = value => {}
-        this._onCancel = () => {}
+        this.onConfirm = value => {}
+        this.onCancel = () => {}
     }
 
     connectedCallback() {
         let fragment = inputDialogTemplate.cloneNode(true)
 
-        this._initForm(fragment.querySelector('form'))
-        fragment.querySelector('#title').textContent = this._title
-        fragment.querySelector('#prompt').textContent = this._prompt
+        this.initForm(fragment.querySelector('form'))
+        fragment.querySelector('#title').textContent = this.title
+        fragment.querySelector('#prompt').textContent = this.prompt
 
-        this._input = fragment.querySelector('input')
-        this._input.valueAsNumber = this._defaultValue
+        this.input = fragment.querySelector('input')
+        this.input.valueAsNumber = this.defaultValue
 
-        fragment.querySelector('#cancel').addEventListener('click', () => this._dismiss())
+        fragment.querySelector('#cancel').addEventListener('click', () => this.dismiss())
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -191,21 +191,21 @@ export class InputDialog extends FormDialog {
     /**
      * @override
      */
-    _submit() {
-        if (Number.isNaN(this._input.valueAsNumber)) {
-            this._dismiss()
+    submit() {
+        if (Number.isNaN(this.input.valueAsNumber)) {
+            this.dismiss()
         } else {
-            this._onConfirm(this._input.valueAsNumber)
-            super._submit()
+            this.onConfirm(this.input.valueAsNumber)
+            super.submit()
         }
     }
 
     /**
      * @override
      */
-    _dismiss() {
-        if (this._onCancel) { this._onCancel() }
-        super._dismiss()
+    dismiss() {
+        if (this.onCancel) { this.onCancel() }
+        super.dismiss()
     }
 }
 export const InputDialogElement = $dom.defineView('input-dialog', InputDialog)
@@ -219,11 +219,11 @@ export const InputDialogElement = $dom.defineView('input-dialog', InputDialog)
 InputDialog.open = function(prompt, title = '', defaultValue = 0) {
     return new Promise((resolve, reject) => {
         let dialog = new InputDialogElement()
-        dialog.controller._prompt = prompt
-        dialog.controller._title = title
-        dialog.controller._defaultValue = defaultValue
-        dialog.controller._onConfirm = resolve
-        dialog.controller._onCancel = reject
+        dialog.controller.prompt = prompt
+        dialog.controller.title = title
+        dialog.controller.defaultValue = defaultValue
+        dialog.controller.onConfirm = resolve
+        dialog.controller.onCancel = reject
         $dialog.open(dialog, {dismissable: true})
     })
 }
