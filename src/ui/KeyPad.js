@@ -15,8 +15,10 @@ export function create(container, onPress, onRelease) {
     }
 
     container.addEventListener('pointerdown', e => {
-        if (press(self, e.pointerId, e.clientX, e.clientY)) {
-            container.setPointerCapture(e.pointerId)
+        if (e.pointerType != 'mouse' || e.button == 0) {
+            if (press(self, e.pointerId, e.clientX, e.clientY)) {
+                container.setPointerCapture(e.pointerId)
+            }
         }
     })
     container.addEventListener('pointermove', e => {
@@ -64,8 +66,10 @@ function release(self, id) {
  */
 export function makeKeyButton(elem, onPress, onRelease) {
     elem.addEventListener('pointerdown', e => {
-        onPress(e.pointerId)
-        elem.setPointerCapture(e.pointerId)
+        if (e.pointerType != 'mouse' || e.button == 0) {
+            onPress(e.pointerId)
+            elem.setPointerCapture(e.pointerId)
+        }
     })
     elem.addEventListener('lostpointercapture', e => {
         onRelease(e.pointerId)

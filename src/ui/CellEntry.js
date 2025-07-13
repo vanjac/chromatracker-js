@@ -151,16 +151,18 @@ export class CellEntry {
                 this.callbacks.jamPlay(id, this.getJamCell())
             }
         }, id => this.callbacks.jamRelease(id))
-        fragment.querySelector('#sampleLeft').addEventListener('click',
-            /** @param {UIEventInit} e */ e => {
-                let width = this.sampleList.clientWidth
-                this.sampleList.scrollBy({left: -e.detail * width * .75, behavior: 'smooth'})
-            })
-        fragment.querySelector('#sampleRight').addEventListener('click',
-            /** @param {UIEventInit} e */ e => {
-                let width = this.sampleList.clientWidth
-                this.sampleList.scrollBy({left: e.detail * width * .75, behavior: 'smooth'})
-            })
+        /** @type {HTMLElement} */
+        let sampleLeft = fragment.querySelector('#sampleLeft')
+        sampleLeft.addEventListener('click', e => {
+            let width = this.sampleList.clientWidth
+            this.sampleList.scrollBy({left: -e.detail * width * .75, behavior: 'smooth'})
+        })
+        /** @type {HTMLElement} */
+        let sampleRight = fragment.querySelector('#sampleRight')
+        sampleRight.addEventListener('click', e => {
+            let width = this.sampleList.clientWidth
+            this.sampleList.scrollBy({left: e.detail * width * .75, behavior: 'smooth'})
+        })
 
         $keyPad.makeKeyButton(fragment.querySelector('#writeEffect'), id => {
             this.callbacks.putCell(this.getCell(), CellPart.effect | CellPart.param)

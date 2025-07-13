@@ -58,16 +58,18 @@ export class PianoKeyboard {
                     id, this.callbacks.getJamCell(), {useChannel: this.useChannel})
             }
         }, id => this.callbacks.jamRelease(id))
-        fragment.querySelector('#pianoLeft').addEventListener('click',
-            /** @param {UIEventInit} e */ e => {
-                let keyWidth = this.pianoKeys[0].clientWidth
-                this.piano.scrollBy({left: -e.detail * keyWidth * 7, behavior: 'smooth'})
-            })
-        fragment.querySelector('#pianoRight').addEventListener('click',
-            /** @param {UIEventInit} e */ e => {
-                let keyWidth = this.pianoKeys[0].clientWidth
-                this.piano.scrollBy({left: e.detail * keyWidth * 7, behavior: 'smooth'})
-            })
+        /** @type {HTMLElement} */
+        let pianoLeft = fragment.querySelector('#pianoLeft')
+        pianoLeft.addEventListener('click', e => {
+            let keyWidth = this.pianoKeys[0].clientWidth
+            this.piano.scrollBy({left: -e.detail * keyWidth * 7, behavior: 'smooth'})
+        })
+        /** @type {HTMLElement} */
+        let pianoRight = fragment.querySelector('#pianoRight')
+        pianoRight.addEventListener('click', e => {
+            let keyWidth = this.pianoKeys[0].clientWidth
+            this.piano.scrollBy({left: e.detail * keyWidth * 7, behavior: 'smooth'})
+        })
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)

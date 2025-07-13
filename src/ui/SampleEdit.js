@@ -141,6 +141,7 @@ export class SampleEdit {
         $dom.addInputListeners(this.nameInput, commit => this.changeSample(
             sample => {sample.name = this.nameInput.value}, commit))
 
+        /** @type {HTMLElement} */
         this.waveEditBox = fragment.querySelector('#waveEdit')
         this.waveContainer = fragment.querySelector('#waveContainer')
         /** @type {HTMLCanvasElement} */
@@ -158,30 +159,19 @@ export class SampleEdit {
         /** @type {HTMLElement[]} */
         this.playMarks = []
 
-        this.waveEditBox.addEventListener('mousedown', /** @param {MouseEventInit} e */ e => {
-            if (e.button == 0) {
-                let pos = this.mouseToWavePos(e.clientX)
+        this.waveEditBox.addEventListener('pointerdown', e => {
+            if (e.pointerType != 'mouse' || e.button == 0) {
+                let pos = this.pointerToWavePos(e.clientX)
                 this.setSel(pos, pos)
+                this.waveEditBox.setPointerCapture(e.pointerId)
             }
         })
-        this.waveEditBox.addEventListener('touchstart',
-            /** @param {TouchEventInit & Event} e */ e => {
-                e.preventDefault()
-                let pos = this.mouseToWavePos(e.changedTouches[0].clientX)
-                this.setSel(pos, pos)
-            })
-        this.waveEditBox.addEventListener('mousemove', /** @param {MouseEventInit} e */ e => {
-            if (e.buttons & 1) {
-                this.selectB = this.mouseToWavePos(e.clientX)
+        this.waveEditBox.addEventListener('pointermove', e => {
+            if (this.waveEditBox.hasPointerCapture(e.pointerId)) {
+                this.selectB = this.pointerToWavePos(e.clientX)
                 this.updateSelection()
             }
         })
-        this.waveEditBox.addEventListener('touchmove',
-            /** @param {TouchEventInit & Event} e */ e => {
-                e.preventDefault()
-                this.selectB = this.mouseToWavePos(e.changedTouches[0].clientX)
-                this.updateSelection()
-            })
         this.waveEditBox.addEventListener('contextmenu', () => {
             let [start, end] = this.selRangeOrAll()
             // slice for safety (can't be frozen)
@@ -513,7 +503,7 @@ export class SampleEdit {
      * @private
      * @param {number} clientX
      */
-    mouseToWavePos(clientX) {
+    pointerToWavePos(clientX) {
         let waveRect = this.wavePreview.getBoundingClientRect()
         let pos = (clientX - waveRect.left) * this.viewSample.wave.length / waveRect.width
         return clamp(Math.round(pos), 0, this.viewSample.wave.length)
