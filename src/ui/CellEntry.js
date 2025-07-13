@@ -92,18 +92,21 @@ const template = $dom.html`
 </div>
 `
 
-export class CellEntryElement extends HTMLElement {
+export class CellEntry {
     /**
-     * @param {JamCallbacks & {
-     *      putCell(cell: Readonly<Cell>, parts: CellPart): void
-     *      updateCell(): void
-     *      selCell(): Readonly<Cell>
-     *      updateEntryParts(): void
-     * }} callbacks
+     * @param {HTMLElement} view
      */
-    constructor(callbacks = null) {
-        super()
-        this._callbacks = callbacks
+    constructor(view) {
+        this.view = view
+        /**
+         * @type {JamCallbacks & {
+         *      putCell(cell: Readonly<Cell>, parts: CellPart): void
+         *      updateCell(): void
+         *      selCell(): Readonly<Cell>
+         *      updateEntryParts(): void
+         * }}
+         */
+        this._callbacks
         /** @type {readonly Readonly<Sample>[]} */
         this._viewSamples = null
     }
@@ -164,10 +167,10 @@ export class CellEntryElement extends HTMLElement {
             this._callbacks.jamPlay(id, this._callbacks.selCell())
         }, id => this._callbacks.jamRelease(id))
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
 
-        this._piano._callbacks = {
+        this._piano.controller._callbacks = {
             jamPlay: (...args) => this._callbacks.jamPlay(...args),
             jamRelease: (...args) => this._callbacks.jamRelease(...args),
             pitchChanged: () => this._callbacks.updateCell(),
@@ -176,14 +179,14 @@ export class CellEntryElement extends HTMLElement {
     }
 
     _onVisible() {
-        this._piano._scrollToSelPitch()
+        this._piano.controller._scrollToSelPitch()
     }
 
     /**
      * @returns {Cell}
      */
     _getCell() {
-        let pitch = this._piano._getPitch()
+        let pitch = this._piano.controller._getPitch()
         let inst = Number($dom.getRadioButtonValue(this._sampleInput, '0'))
         let effect = this._effectSelect.selectedIndex
         let param0 = this._param0Select.selectedIndex
@@ -254,7 +257,7 @@ export class CellEntryElement extends HTMLElement {
      */
     _liftCell(cell) {
         if (this._pitchEnable.checked && cell.pitch >= 0) {
-            this._piano._setPitch(cell.pitch)
+            this._piano.controller._setPitch(cell.pitch)
         }
         if (this._sampleEnable.checked && cell.inst) {
             $dom.selectRadioButton(this._sampleInput, cell.inst.toString())
@@ -267,11 +270,12 @@ export class CellEntryElement extends HTMLElement {
         this._callbacks.updateCell()
     }
 }
-$dom.defineUnique('cell-entry', CellEntryElement)
+export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)
 
 let testElem
 if (import.meta.main) {
-    testElem = new CellEntryElement({
+    testElem = new CellEntryElement()
+    testElem.controller._callbacks = {
         putCell(cell, parts) {
             console.log('Put cell:', cell, parts)
         },
@@ -290,8 +294,8 @@ if (import.meta.main) {
         jamRelease(id) {
             console.log('Jam release', id)
         },
-    })
+    }
     $dom.displayMain(testElem)
-    testElem._setSamples(Object.freeze([]))
-    testElem._onVisible()
+    testElem.controller._setSamples(Object.freeze([]))
+    testElem.controller._onVisible()
 }

@@ -28,16 +28,19 @@ const cellTemplate = $dom.html`
 </td>
 `
 
-export class PatternTableElement extends HTMLElement {
+export class PatternTable {
     /**
-     * @param {JamCallbacks & {
-     *      setMute(c: number, mute: boolean): void
-            onChange(pattern: Readonly<Pattern>): void
-     * }} callbacks
+     * @param {HTMLElement} view
      */
-    constructor(callbacks = null) {
-        super()
-        this._callbacks = callbacks
+    constructor(view) {
+        this.view = view
+        /**
+         * @type {JamCallbacks & {
+         *      setMute(c: number, mute: boolean): void
+                onChange(pattern: Readonly<Pattern>): void
+         * }}
+         */
+        this._callbacks = null
         this._selChannel = 0
         this._selRow = 0
         this._markChannel = -1
@@ -59,7 +62,7 @@ export class PatternTableElement extends HTMLElement {
         /** @type {HTMLInputElement[]} */
         this._muteInputs = []
 
-        this.addEventListener('contextmenu', () => {
+        this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('row', 'number', this._selRow,
                 row => this._setSelCell(this._selChannel, row))
             $cli.addSelProp('channel', 'number', this._selChannel,
@@ -68,8 +71,8 @@ export class PatternTableElement extends HTMLElement {
                 pattern => this._callbacks.onChange(Object.freeze(pattern)))
         })
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
     }
 
     /**
@@ -283,11 +286,12 @@ export class PatternTableElement extends HTMLElement {
         return ! this._muteInputs[channel].checked
     }
 }
-$dom.defineUnique('pattern-table', PatternTableElement)
+export const PatternTableElement = $dom.defineView('pattern-table', PatternTable)
 
 let testElem
 if (import.meta.main) {
-    testElem = new PatternTableElement({
+    testElem = new PatternTableElement()
+    testElem.controller._callbacks = {
         setMute(c, mute) {
             console.log('Set mute', c, mute)
         },
@@ -300,8 +304,8 @@ if (import.meta.main) {
         jamRelease(id) {
             console.log('Jam release', id)
         },
-    })
+    }
     $dom.displayMain(testElem)
-    testElem._setNumChannels(4)
-    testElem._setPattern($pattern.create(4))
+    testElem.controller._setNumChannels(4)
+    testElem.controller._setPattern($pattern.create(4))
 }

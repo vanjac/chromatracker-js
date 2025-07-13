@@ -23,13 +23,14 @@ const template = $dom.html`
 </div>
 `
 
-export class SamplesListElement extends HTMLElement {
+export class SamplesList {
     /**
-     * @param {ModuleEditCallbacks & JamCallbacks} callbacks
+     * @param {HTMLElement} view
      */
-    constructor(callbacks = null) {
-        super()
-        this._callbacks = callbacks
+    constructor(view) {
+        this.view = view
+        /** @type {ModuleEditCallbacks & JamCallbacks} */
+        this._callbacks = null
         /** @type {readonly Readonly<Sample>[]} */
         this._viewSamples = null
     }
@@ -40,7 +41,7 @@ export class SamplesListElement extends HTMLElement {
         /** @type {HTMLSelectElement} */
         this._select = fragment.querySelector('#sampleSelect')
         this._sampleEditContainer = fragment.querySelector('#sampleEditContainer')
-        /** @type {SampleEditElement} */
+        /** @type {InstanceType<typeof SampleEditElement>} */
         this._sampleEdit = null
 
         this._select.addEventListener('input',
@@ -49,13 +50,13 @@ export class SamplesListElement extends HTMLElement {
         fragment.querySelector('#addSample').addEventListener('click', () => this._addSample())
         fragment.querySelector('#delSample').addEventListener('click', () => this._deleteSample())
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
     }
 
     _onVisible() {
         if (this._sampleEdit) {
-            this._sampleEdit._onVisible()
+            this._sampleEdit.controller._onVisible()
         }
     }
 
@@ -65,17 +66,18 @@ export class SamplesListElement extends HTMLElement {
      */
     _createSampleEdit(idx) {
         this._destroySampleEdit()
-        this._sampleEdit = new SampleEditElement({
+        this._sampleEdit = new SampleEditElement()
+        this._sampleEdit.controller._callbacks = {
             jamPlay: (...args) => this._callbacks.jamPlay(...args),
             jamRelease: (...args) => this._callbacks.jamRelease(...args),
             onChange: (sample, commit) => {
                 this._callbacks.changeModule(
                     module => $sample.update(module, idx, sample), commit)
             },
-        })
+        }
         this._sampleEditContainer.appendChild(this._sampleEdit)
-        this._sampleEdit._setIndex(idx)
-        this._sampleEdit._setSample(this._viewSamples[idx])
+        this._sampleEdit.controller._setIndex(idx)
+        this._sampleEdit.controller._setSample(this._viewSamples[idx])
     }
 
     /** @private */
@@ -125,7 +127,7 @@ export class SamplesListElement extends HTMLElement {
                 positions.push($play.getSamplePredictedPos(channel, time))
             }
         }
-        this._sampleEdit._setPlayPos(positions)
+        this._sampleEdit.controller._setPlayPos(positions)
     }
 
     _getSelSample() {
@@ -140,10 +142,10 @@ export class SamplesListElement extends HTMLElement {
         let idx = this._getSelSample()
         if (!this._select.value) {
             this._destroySampleEdit()
-        } else if (!this._sampleEdit || idx != this._sampleEdit._index) {
+        } else if (!this._sampleEdit || idx != this._sampleEdit.controller._index) {
             this._createSampleEdit(idx)
         } else {
-            this._sampleEdit._setSample(this._viewSamples[idx])
+            this._sampleEdit.controller._setSample(this._viewSamples[idx])
         }
     }
 
@@ -175,17 +177,18 @@ export class SamplesListElement extends HTMLElement {
         this._callbacks.changeModule(module => $sample.update(module, idx, null))
     }
 }
-$dom.defineUnique('samples-list', SamplesListElement)
+export const SamplesListElement = $dom.defineView('samples-list', SamplesList)
 
-/** @type {SamplesListElement} */
+/** @type {InstanceType<SamplesListElement>} */
 let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
-    testElem = new SamplesListElement({
+    testElem = new SamplesListElement()
+    testElem.controller._callbacks = {
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
-            testElem._setSamples(module.samples)
+            testElem.controller._setSamples(module.samples)
         },
         jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
@@ -193,7 +196,7 @@ if (import.meta.main) {
         jamRelease(id) {
             console.log('Jam release', id)
         },
-    })
+    }
     $dom.displayMain(testElem)
-    testElem._setSamples(module.samples)
+    testElem.controller._setSamples(module.samples)
 }

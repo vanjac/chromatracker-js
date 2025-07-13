@@ -43,13 +43,14 @@ const template = $dom.html`
 </div>
 `
 
-export class ModulePropertiesElement extends HTMLElement {
+export class ModuleProperties {
     /**
-     * @param {ModuleEditCallbacks} callbacks
+     * @param {HTMLElement} view
      */
-    constructor(callbacks = null) {
-        super()
-        this._callbacks = callbacks
+    constructor(view) {
+        this.view = view
+        /** @type {ModuleEditCallbacks} */
+        this._callbacks = null
         /** @type {Module} */
         this._viewModule = null
         this._viewPatternsSize = 0
@@ -86,8 +87,8 @@ export class ModulePropertiesElement extends HTMLElement {
         fragment.querySelector('#patternZap').addEventListener('click',
             () => this._callbacks.changeModule(module => $sequence.zap(module)))
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
     }
 
     /**
@@ -142,19 +143,20 @@ export class ModulePropertiesElement extends HTMLElement {
         return ((i > 0 && n < 1000) ? n.toPrecision(3) : n) + ' ' + ['bytes', 'kB', 'MB'][i]
     }
 }
-$dom.defineUnique('module-properties', ModulePropertiesElement)
+export const ModulePropertiesElement = $dom.defineView('module-properties', ModuleProperties)
 
-/** @type {ModulePropertiesElement} */
+/** @type {InstanceType<typeof ModulePropertiesElement>} */
 let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
-    testElem = new ModulePropertiesElement({
+    testElem = new ModulePropertiesElement()
+    testElem.controller._callbacks = {
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
-            testElem._setModule(module)
+            testElem.controller._setModule(module)
         },
-    })
+    }
     $dom.displayMain(testElem)
-    testElem._setModule(module)
+    testElem.controller._setModule(module)
 }

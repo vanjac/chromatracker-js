@@ -68,15 +68,18 @@ const template = $dom.html`
 </div>
 `
 
-export class PatternEditElement extends HTMLElement {
+export class PatternEdit {
     /**
-     * @param {ModuleEditCallbacks & JamCallbacks & {
-     *      setMute(c: number, mute: boolean): void
-     * }} callbacks
+     * @param {HTMLElement} view
      */
-    constructor(callbacks = null) {
-        super()
-        this._callbacks = callbacks
+    constructor(view) {
+        this.view = view
+        /**
+         * @type {ModuleEditCallbacks & JamCallbacks & {
+         *      setMute(c: number, mute: boolean): void
+         * }}
+         */
+        this._callbacks = null
         /** @type {readonly number[]} */
         this._viewSequence = null
         /** @type {readonly Readonly<Pattern>[]} */
@@ -104,31 +107,34 @@ export class PatternEditElement extends HTMLElement {
             this._selectTools.classList.toggle('hide', !this._selectInput.checked)
             this._playbackStatus.classList.toggle('hide', this._selectInput.checked)
             if (this._selectInput.checked) {
-                this._patternTable._setMark()
+                this._patternTable.controller._setMark()
             } else {
-                this._patternTable._clearMark()
+                this._patternTable.controller._clearMark()
             }
         })
 
         $keyPad.makeKeyButton(this._entryCell,
-            id => this._callbacks.jamPlay(id, this._cellEntry._getJamCell()),
+            id => this._callbacks.jamPlay(id, this._cellEntry.controller._getJamCell()),
             id => this._callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#write'), id => {
-            this._putCell(this._cellEntry._getCell(), this._cellEntry._getCellParts())
+            this._putCell(
+                this._cellEntry.controller._getCell(),
+                this._cellEntry.controller._getCellParts()
+            )
             this._callbacks.jamPlay(id, this._selCell())
             this._advance()
         }, id => this._callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#clear'), id => {
-            this._putCell(Cell.empty, this._cellEntry._getCellParts())
+            this._putCell(Cell.empty, this._cellEntry.controller._getCellParts())
             this._callbacks.jamPlay(id, this._selCell())
             this._advance()
         }, id => this._callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#lift'), id => {
-            this._cellEntry._liftCell(this._selCell())
-            this._callbacks.jamPlay(id, this._cellEntry._getJamCell())
+            this._cellEntry.controller._liftCell(this._selCell())
+            this._callbacks.jamPlay(id, this._cellEntry.controller._getJamCell())
         }, id => this._callbacks.jamRelease(id))
 
         fragment.querySelector('#cut').addEventListener('click', () => this._cut())
@@ -137,24 +143,24 @@ export class PatternEditElement extends HTMLElement {
         fragment.querySelector('#insert').addEventListener('click', () => this._insert(1))
         fragment.querySelector('#delete').addEventListener('click', () => this._delete(1))
 
-        this.addEventListener('contextmenu', () => {
+        this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('seqpos', 'number', this._selPos(), pos => this._setSelPos(pos))
         })
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
 
-        this._sequenceEdit._callbacks = {
+        this._sequenceEdit.controller._callbacks = {
             changeModule: (...args) => this._callbacks.changeModule(...args),
             onSelect: this._refreshPattern.bind(this)
         }
-        this._patternTable._callbacks = {
+        this._patternTable.controller._callbacks = {
             jamPlay: (...args) => this._callbacks.jamPlay(...args),
             jamRelease: (...args) => this._callbacks.jamRelease(...args),
             onChange: (pattern) => this._changePattern(_ => pattern),
             setMute: (...args) => this._callbacks.setMute(...args),
         }
-        this._cellEntry._callbacks = {
+        this._cellEntry.controller._callbacks = {
             jamPlay: (...args) => this._callbacks.jamPlay(...args),
             jamRelease: (...args) => this._callbacks.jamRelease(...args),
             putCell: this._putCell.bind(this),
@@ -167,17 +173,17 @@ export class PatternEditElement extends HTMLElement {
     }
 
     _onVisible() {
-        this._cellEntry._onVisible()
+        this._cellEntry.controller._onVisible()
     }
 
     _resetState() {
         this._setSelPos(0)
-        this._patternTable._setSelCell(0, 0, true)
+        this._patternTable.controller._setSelCell(0, 0, true)
         this._selectInput.checked = false
         this._selectTools.classList.add('hide')
         this._playbackStatus.classList.remove('hide')
-        this._patternTable._scrollToSelCell()
-        this._cellEntry._setSelSample(1)
+        this._patternTable.controller._scrollToSelCell()
+        this._cellEntry.controller._setSelSample(1)
         this._setTempoSpeed(mod.defaultTempo, mod.defaultSpeed)
     }
 
@@ -185,10 +191,10 @@ export class PatternEditElement extends HTMLElement {
      * @param {Readonly<Module>} module
      */
     _setModule(module) {
-        this._patternTable._setNumChannels(module.numChannels)
-        this._cellEntry._setSamples(module.samples)
-        this._sequenceEdit._setSequence(module.sequence)
-        this._sequenceEdit._setPatterns(module.patterns)
+        this._patternTable.controller._setNumChannels(module.numChannels)
+        this._cellEntry.controller._setSamples(module.samples)
+        this._sequenceEdit.controller._setSequence(module.sequence)
+        this._sequenceEdit.controller._setPatterns(module.patterns)
 
         if (module.sequence != this._viewSequence || module.patterns != this._viewPatterns) {
             this._viewSequence = module.sequence
@@ -199,19 +205,19 @@ export class PatternEditElement extends HTMLElement {
 
     /** @private */
     _refreshPattern() {
-        this._patternTable._setPattern(this._selPattern())
+        this._patternTable.controller._setPattern(this._selPattern())
     }
 
     _selChannel() {
-        return this._patternTable._selChannel
+        return this._patternTable.controller._selChannel
     }
 
     _selRow() {
-        return this._patternTable._selRow
+        return this._patternTable.controller._selRow
     }
 
     _selPos() {
-        return this._sequenceEdit._selPos
+        return this._sequenceEdit.controller._selPos
     }
 
     _selPatternNum() {
@@ -227,9 +233,9 @@ export class PatternEditElement extends HTMLElement {
      * @param {number} row
      */
     _setSelCell(channel, row, scroll = false) {
-        this._patternTable._setSelCell(channel, row)
+        this._patternTable.controller._setSelCell(channel, row)
         if (scroll) {
-            this._patternTable._scrollToSelCell()
+            this._patternTable.controller._scrollToSelCell()
         }
     }
 
@@ -245,12 +251,12 @@ export class PatternEditElement extends HTMLElement {
      * @param {number} pos
      */
     _setSelPos(pos) {
-        this._sequenceEdit._setSelPos(pos)
+        this._sequenceEdit.controller._setSelPos(pos)
         this._refreshPattern()
     }
 
     _selCell() {
-        return this._patternTable._selCell()
+        return this._patternTable.controller._selCell()
     }
 
     /**
@@ -292,17 +298,17 @@ export class PatternEditElement extends HTMLElement {
     /** @private */
     _cut() {
         this._copy()
-        let [minChannel, maxChannel] = this._patternTable._channelRange()
-        let [minRow, maxRow] = this._patternTable._rowRange()
-        let parts = this._cellEntry._getCellParts()
+        let [minChannel, maxChannel] = this._patternTable.controller._channelRange()
+        let [minRow, maxRow] = this._patternTable.controller._rowRange()
+        let parts = this._cellEntry.controller._getCellParts()
         this._changePattern(pattern => $pattern.fill(
             pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, Cell.empty, parts))
     }
 
     /** @private */
     _copy() {
-        let [minChannel, maxChannel] = this._patternTable._channelRange()
-        let [minRow, maxRow] = this._patternTable._rowRange()
+        let [minChannel, maxChannel] = this._patternTable.controller._channelRange()
+        let [minRow, maxRow] = this._patternTable.controller._rowRange()
         global.patternClipboard = $pattern.slice(
             this._selPattern(), minChannel, maxChannel + 1, minRow, maxRow + 1)
     }
@@ -311,17 +317,22 @@ export class PatternEditElement extends HTMLElement {
     _paste() {
         let [channel, row] = this._selCellPos()
         this._changePattern(pattern => $pattern.write(
-            pattern, channel, row, global.patternClipboard, this._cellEntry._getCellParts()))
+            pattern,
+            channel,
+            row,
+            global.patternClipboard,
+            this._cellEntry.controller._getCellParts()
+        ))
     }
 
     _updateCell() {
-        $cell.setContents(this._entryCell, this._cellEntry._getCell())
+        $cell.setContents(this._entryCell, this._cellEntry.controller._getCell())
     }
 
     _updateEntryParts() {
-        let parts = this._cellEntry._getCellParts()
+        let parts = this._cellEntry.controller._getCellParts()
         $cell.toggleParts(this._entryCell, parts)
-        this._patternTable._setEntryParts(parts)
+        this._patternTable.controller._setEntryParts(parts)
     }
 
     /**
@@ -330,26 +341,26 @@ export class PatternEditElement extends HTMLElement {
      */
     _setPlaybackPos(pos, row) {
         if (this._selPatternNum() == this._viewSequence[pos]) {
-            this._patternTable._setPlaybackRow(row)
+            this._patternTable.controller._setPlaybackRow(row)
         } else {
-            this._patternTable._setPlaybackRow(-1)
+            this._patternTable.controller._setPlaybackRow(-1)
         }
     }
 
     /** @private */
     _advance() {
-        let {_selChannel, _selRow} = this._patternTable
+        let {_selChannel, _selRow} = this._patternTable.controller
         _selRow++
         _selRow %= this._selPattern()[0].length
-        this._patternTable._setSelCell(_selChannel, _selRow)
-        this._patternTable._scrollToSelCell()
+        this._patternTable.controller._setSelCell(_selChannel, _selRow)
+        this._patternTable.controller._scrollToSelCell()
     }
 
     /**
      * @param {number} channel
      */
     _isChannelMuted(channel) {
-        return this._patternTable._isChannelMuted(channel)
+        return this._patternTable.controller._isChannelMuted(channel)
     }
 
     _getTempo() {
@@ -369,17 +380,18 @@ export class PatternEditElement extends HTMLElement {
         this._speedInput.valueAsNumber = speed
     }
 }
-$dom.defineUnique('pattern-edit', PatternEditElement)
+export const PatternEditElement = $dom.defineView('pattern-edit', PatternEdit)
 
-/** @type {PatternEditElement} */
+/** @type {InstanceType<typeof PatternEditElement>} */
 let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
-    testElem = new PatternEditElement({
+    testElem = new PatternEditElement()
+    testElem.controller._callbacks = {
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
-            testElem._setModule(module)
+            testElem.controller._setModule(module)
         },
         setMute(c, mute) {
             console.log('Set mute', c, mute)
@@ -390,7 +402,7 @@ if (import.meta.main) {
         jamRelease(id) {
             console.log('Jam release', id)
         },
-    })
+    }
     $dom.displayMain(testElem)
-    testElem._setModule(module)
+    testElem.controller._setModule(module)
 }

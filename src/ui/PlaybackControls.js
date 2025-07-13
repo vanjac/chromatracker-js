@@ -30,21 +30,24 @@ const template = $dom.html`
 </div>
 `
 
-export class PlaybackControlsElement extends HTMLElement {
+export class PlaybackControls {
     /**
-     * @param {{
-     *      resetPlayback(
-     *          options?: {restoreSpeed?: boolean, restorePos?: boolean, restoreRow?: boolean}
-     *      ): void
-     *      play(): void
-     *      pause(): void
-     *      updatePlaySettings(): void
-     *      undo(): void
-     * }} callbacks
+     * @param {HTMLElement} view
      */
-    constructor(callbacks = null) {
-        super()
-        this._callbacks = callbacks
+    constructor(view) {
+        this.view = view
+        /**
+         * @type {{
+         *      resetPlayback(
+         *          options?: {restoreSpeed?: boolean, restorePos?: boolean, restoreRow?: boolean}
+         *      ): void
+         *      play(): void
+         *      pause(): void
+         *      updatePlaySettings(): void
+         *      undo(): void
+         * }}
+         */
+        this._callbacks = null
     }
 
     connectedCallback() {
@@ -74,8 +77,8 @@ export class PlaybackControlsElement extends HTMLElement {
             () => this._callbacks.updatePlaySettings())
         fragment.querySelector('#undo').addEventListener('click', () => this._callbacks.undo())
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
     }
 
     _getPatternLoop() {
@@ -94,11 +97,12 @@ export class PlaybackControlsElement extends HTMLElement {
         this._pauseButton.classList.toggle('hide', !playing)
     }
 }
-$dom.defineUnique('playback-controls', PlaybackControlsElement)
+export const PlaybackControlsElement = $dom.defineView('playback-controls', PlaybackControls)
 
 let testElem
 if (import.meta.main) {
-    testElem = new PlaybackControlsElement({
+    testElem = new PlaybackControlsElement()
+    testElem.controller._callbacks = {
         resetPlayback(options) {
             console.log('Reset playback', options)
         },
@@ -114,6 +118,6 @@ if (import.meta.main) {
         undo() {
             console.log('Undo')
         },
-    })
+    }
     $dom.displayMain(testElem)
 }

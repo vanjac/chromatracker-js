@@ -19,16 +19,19 @@ const template = $dom.html`
 </div>
 `
 
-export class PianoKeyboardElement extends HTMLElement {
+export class PianoKeyboard {
     /**
-     * @param {JamCallbacks & {
-     *      pitchChanged(): void
-     *      getJamCell(): Cell
-     * }} callbacks
+     * @param {HTMLElement} view
      */
-    constructor(callbacks = null) {
-        super()
-        this._callbacks = callbacks
+    constructor(view) {
+        this.view = view
+        /**
+         * @type {JamCallbacks & {
+         *      pitchChanged(): void
+         *      getJamCell(): Cell
+         * }}
+         */
+        this._callbacks = null
         this._useChannel = true
     }
 
@@ -66,8 +69,8 @@ export class PianoKeyboardElement extends HTMLElement {
                 this._piano.scrollBy({left: e.detail * keyWidth * 7, behavior: 'smooth'})
             })
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
     }
 
     /** @private */
@@ -117,11 +120,12 @@ export class PianoKeyboardElement extends HTMLElement {
         this._piano.scrollBy({left: scrollAmount, behavior: 'instant'})
     }
 }
-$dom.defineUnique('piano-keyboard', PianoKeyboardElement)
+export const PianoKeyboardElement = $dom.defineView('piano-keyboard', PianoKeyboard)
 
 let testElem
 if (import.meta.main) {
-    testElem = new PianoKeyboardElement({
+    testElem = new PianoKeyboardElement()
+    testElem.controller._callbacks = {
         pitchChanged() {
             console.log("Pitch changed")
         },
@@ -134,6 +138,6 @@ if (import.meta.main) {
         jamRelease(id) {
             console.log('Jam release', id)
         },
-    })
+    }
     $dom.displayMain(testElem)
 }

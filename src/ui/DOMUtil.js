@@ -1,6 +1,57 @@
 import * as $id from '../ID.js'
 
 /**
+ * @typedef {{
+ *      connectedCallback?: (elem: HTMLElement) => void
+ *      disconnectedCallback?: (elem: HTMLElement) => void
+ * }} Controller
+ */
+
+/**
+ * @template {Controller} ControllerType
+ */
+export class ViewElement extends HTMLElement {
+    constructor() {
+        super()
+        this.controller = new this._controllerClass(this)
+    }
+
+    connectedCallback() {
+        if (this.controller.connectedCallback) {
+            this.controller.connectedCallback(this)
+        }
+    }
+
+    disconnectedCallback() {
+        if (this.controller.disconnectedCallback) {
+            this.controller.disconnectedCallback(this)
+        }
+    }
+}
+/**
+ * @type {{ new (view: HTMLElement): ControllerType }}
+ */
+ViewElement.prototype._controllerClass = null
+
+/**
+ * @template {Controller} ControllerType
+ * @param {string} tag
+ * @param {{ new (view: HTMLElement): ControllerType }} controllerClass
+ */
+export function defineView(tag, controllerClass) {
+    let viewClass = /** @type {{ new(): ViewElement<ControllerType> }} */ (
+        customElements.get(tag)
+    )
+    if (!viewClass) {
+        /** @extends {ViewElement<ControllerType>} */
+        viewClass = class extends ViewElement {}
+        customElements.define(tag, viewClass)
+    }
+    viewClass.prototype._controllerClass = controllerClass
+    return viewClass
+}
+
+/**
  * @template {unknown[]} TValues
  * @param {TemplateStringsArray} parts
  * @param {TValues} values
@@ -45,25 +96,6 @@ export function html(parts, ...values) {
  */
 export function createElem(tagName, properties = {}) {
     return Object.assign(document.createElement(tagName), properties)
-}
-
-/**
- * @param {string} name
- * @param {CustomElementConstructor} constructor
- */
-export function defineUnique(name, constructor) {
-    if (!window.customElements.get(name)) {
-        window.customElements.define(name, constructor)
-    } else {
-        let i = 2
-        while (window.customElements.get(name + i)) {
-            i++
-        }
-        name += i
-        console.log('Redefined as', name)
-        window.customElements.define(name, constructor)
-    }
-    return name
 }
 
 /**

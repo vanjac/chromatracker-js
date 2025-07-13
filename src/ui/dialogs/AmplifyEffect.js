@@ -1,6 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {FormDialogElement} from '../Dialog.js'
+import {FormDialog} from '../Dialog.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -19,9 +19,12 @@ const template = $dom.html`
 </form>
 `
 
-export class AmplifyEffectElement extends FormDialogElement {
-    constructor() {
-        super()
+export class AmplifyEffect extends FormDialog {
+    /**
+     * @param {HTMLElement} view
+     */
+    constructor(view) {
+        super(view)
         /** @param {{amount: number, dithering: boolean}} params */
         this._onComplete = ({amount, dithering}) => {}
     }
@@ -38,8 +41,8 @@ export class AmplifyEffectElement extends FormDialogElement {
         this._initForm(this._form)
         $dom.restoreFormData(this._form, this._inputNames(), global.effectFormData)
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
     }
 
     /** @private */
@@ -54,10 +57,10 @@ export class AmplifyEffectElement extends FormDialogElement {
             dithering: this._ditherInput.checked
         })
         $dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
-        $dialog.close(this)
+        $dialog.close(this.view)
     }
 }
-$dom.defineUnique('amplify-effect', AmplifyEffectElement)
+export const AmplifyEffectElement = $dom.defineView('amplify-effect', AmplifyEffect)
 
 let testElem
 if (import.meta.main) {

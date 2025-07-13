@@ -1,8 +1,11 @@
 import * as $dom from './DOMUtil.js'
 
-export class DialogElement extends HTMLElement {
-    constructor() {
-        super()
+export class Dialog {
+    /**
+     * @param {HTMLElement} view
+     */
+    constructor(view) {
+        this.view = view
         /** @type {Element} */
         this._lastFocused = null
     }
@@ -14,11 +17,11 @@ export class DialogElement extends HTMLElement {
     }
 
     _dismiss() {
-        close(this)
+        close(this.view)
     }
 }
 
-export class FormDialogElement extends DialogElement {
+export class FormDialog extends Dialog {
     /**
      * @param {HTMLFormElement} form
      */
@@ -30,7 +33,7 @@ export class FormDialogElement extends DialogElement {
     }
 
     _submit() {
-        close(this)
+        close(this.view)
     }
 }
 
@@ -43,8 +46,8 @@ const focusableSelector = [
 ].join(',')
 
 /**
- * @template {DialogElement} T
- * @param {T} dialog
+ * @template {Dialog} T
+ * @param {$dom.ViewElement<T>} dialog
  */
 export function open(dialog, {dismissable = false} = {}) {
     let body = document.querySelector('body')
@@ -58,7 +61,7 @@ export function open(dialog, {dismissable = false} = {}) {
     if (dismissable) {
         container.addEventListener('click', e => {
             if (e.target == container) {
-                dialog._dismiss()
+                dialog.controller._dismiss()
             }
         })
         // TODO: handle back button (pushState)
@@ -66,7 +69,7 @@ export function open(dialog, {dismissable = false} = {}) {
 
     // https://bitsofco.de/accessible-modal-dialog/
 
-    dialog._lastFocused = document.activeElement
+    dialog.controller._lastFocused = document.activeElement
     // TODO: doesn't work if elements change disabled state
     let focusable = [...dialog.querySelectorAll(focusableSelector)]
     if (focusable.length == 0) {
@@ -77,8 +80,8 @@ export function open(dialog, {dismissable = false} = {}) {
 
     if (firstFocusable instanceof HTMLElement) {
         firstFocusable.focus()
-    } else if (dialog._lastFocused instanceof HTMLElement) {
-        dialog._lastFocused.blur()
+    } else if (dialog.controller._lastFocused instanceof HTMLElement) {
+        dialog.controller._lastFocused.blur()
     }
 
     container.addEventListener('keydown', e => {
@@ -97,7 +100,7 @@ export function open(dialog, {dismissable = false} = {}) {
                 e.preventDefault()
             }
         } else if (dismissable && e.code == 'Escape') {
-            dialog._dismiss()
+            dialog.controller._dismiss()
         }
     })
 
@@ -105,7 +108,7 @@ export function open(dialog, {dismissable = false} = {}) {
 }
 
 /**
- * @param {DialogElement} dialog
+ * @param {HTMLElement} dialog
  */
 export function close(dialog) {
     let container = dialog.parentElement

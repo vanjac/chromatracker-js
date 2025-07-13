@@ -25,15 +25,18 @@ const template = $dom.html`
 </div>
 `
 
-export class SequenceEditElement extends HTMLElement {
+export class SequenceEdit {
     /**
-     * @param {ModuleEditCallbacks & {
-     *      onSelect(): void
-     * }} callbacks
+     * @param {HTMLElement} view
      */
-    constructor(callbacks = null) {
-        super()
-        this._callbacks = callbacks
+    constructor(view) {
+        this.view = view
+        /**
+         * @type {ModuleEditCallbacks & {
+         *      onSelect(): void
+         * }}
+         */
+        this._callbacks = null
         this._selPos = 0
         /** @type {readonly number[]} */
         this._viewSequence = null
@@ -64,8 +67,8 @@ export class SequenceEditElement extends HTMLElement {
                     module => $sequence.set(module, this._selPos, num)))
         })
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
     }
 
     /**
@@ -184,24 +187,25 @@ export class SequenceEditElement extends HTMLElement {
         this._callbacks.changeModule(module => $sequence.del(module, pos))
     }
 }
-$dom.defineUnique('sequence-edit', SequenceEditElement)
+export const SequenceEditElement = $dom.defineView('sequence-edit', SequenceEdit)
 
-/** @type {SequenceEditElement} */
+/** @type {InstanceType<SequenceEditElement>} */
 let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
-    testElem = new SequenceEditElement({
+    testElem = new SequenceEditElement()
+    testElem.controller._callbacks = {
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
-            testElem._setSequence(module.sequence)
-            testElem._setPatterns(module.patterns)
+            testElem.controller._setSequence(module.sequence)
+            testElem.controller._setPatterns(module.patterns)
         },
         onSelect() {
             console.log('Select')
         }
-    })
+    }
     $dom.displayMain(testElem)
-    testElem._setSequence(module.sequence)
-    testElem._setPatterns(module.patterns)
+    testElem.controller._setSequence(module.sequence)
+    testElem.controller._setPatterns(module.patterns)
 }

@@ -9,7 +9,7 @@ import * as $audio from '../file/Audio.js'
 import * as $ext from '../file/External.js'
 import * as $wav from '../file/Wav.js'
 import * as $icons from '../gen/Icons.js'
-import {AlertDialogElement, InputDialogElement, WaitDialogElement} from './dialogs/UtilDialogs.js'
+import {AlertDialog, InputDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
 import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
 import {clamp, minMax} from '../Util.js'
@@ -112,15 +112,18 @@ const template = $dom.html`
 </div>
 `
 
-export class SampleEditElement extends HTMLElement {
+export class SampleEdit {
     /**
-     * @param {JamCallbacks & {
-     *      onChange(sample: Readonly<Sample>, commit: boolean): void
-     * }} callbacks
+     * @param {HTMLElement} view
      */
-    constructor(callbacks = null) {
-        super()
-        this._callbacks = callbacks
+    constructor(view) {
+        this.view = view
+        /**
+         * @type {JamCallbacks & {
+         *      onChange(sample: Readonly<Sample>, commit: boolean): void
+         * }}
+         */
+        this._callbacks = null
 
         this._selectA = -1
         this._selectB = -1
@@ -270,26 +273,26 @@ export class SampleEditElement extends HTMLElement {
         this._jamCell = fragment.querySelector('#jamCell')
         this._piano = fragment.querySelector('piano-keyboard')
 
-        this.addEventListener('contextmenu', () => {
+        this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('sample', 'object', this._viewSample,
                 sample => this._callbacks.onChange(Object.freeze(sample), true))
         })
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
 
-        this._piano._callbacks = {
+        this._piano.controller._callbacks = {
             jamPlay: (...args) => this._callbacks.jamPlay(...args),
             jamRelease: (...args) => this._callbacks.jamRelease(...args),
             pitchChanged() {},
             getJamCell: this._getJamCell.bind(this),
         }
-        this._piano._useChannel = false
-        this._piano._scrollToSelPitch()
+        this._piano.controller._useChannel = false
+        this._piano.controller._scrollToSelPitch()
     }
 
     _onVisible() {
-        this._piano._scrollToSelPitch()
+        this._piano.controller._scrollToSelPitch()
     }
 
     /**
@@ -478,7 +481,7 @@ export class SampleEditElement extends HTMLElement {
                         newSample.name = name
                         this._callbacks.onChange(newSample, true)
                     } catch (error) {
-                        if (error instanceof Error) { AlertDialogElement.open(error.message) }
+                        if (error instanceof Error) { AlertDialog.open(error.message) }
                     }
                 } else {
                     let dialog = $dialog.open(new WaitDialogElement())
@@ -493,7 +496,7 @@ export class SampleEditElement extends HTMLElement {
                         }, true, true)
                     }).catch(/** @param {DOMException} error */ error => {
                         $dialog.close(dialog)
-                        AlertDialogElement.open(`Error reading audio file.\n${error.message}`)
+                        AlertDialog.open(`Error reading audio file.\n${error.message}`)
                     })
                 }
             }
@@ -520,7 +523,7 @@ export class SampleEditElement extends HTMLElement {
      * @returns {Cell}
      */
     _getJamCell() {
-        let pitch = this._piano._getPitch()
+        let pitch = this._piano.controller._getPitch()
         let inst = this._index
         let effect = 0, param0 = 0, param1 = 0
         if (this._anySelected()) {
@@ -550,7 +553,7 @@ export class SampleEditElement extends HTMLElement {
 
         let ctx = this._wavePreview.getContext('2d')
         // 'currentColor' doesn't work in Chrome or Safari
-        ctx.strokeStyle = window.getComputedStyle(this).getPropertyValue('--color-fg')
+        ctx.strokeStyle = window.getComputedStyle(this.view).getPropertyValue('--color-fg')
         ctx.clearRect(0, 0, width, height)
 
         /**
@@ -672,7 +675,7 @@ export class SampleEditElement extends HTMLElement {
         if (!Sample.hasLoop(this._viewSample)) {
             return
         }
-        InputDialogElement.open('Count:', 'Repeat Loop', global.lastLoopRepeat).then(count => {
+        InputDialog.open('Count:', 'Repeat Loop', global.lastLoopRepeat).then(count => {
             let {loopStart} = this._viewSample
             let loopWave = this._viewSample.wave.subarray(loopStart, this._viewSample.loopEnd)
             // TODO: this could be much more efficient
@@ -709,13 +712,15 @@ export class SampleEditElement extends HTMLElement {
     /** @private */
     _amplify() {
         let dialog = $dialog.open(new AmplifyEffectElement(), {dismissable: true})
-        dialog._onComplete = params => this._applyEffect($wave.amplify.bind(null, params))
+        dialog.controller._onComplete = params => {
+            this._applyEffect($wave.amplify.bind(null, params))
+        }
     }
 
     /** @private */
     _resample() {
         let defaultValue = global.lastResampleSemitones
-        InputDialogElement.open('Semitones:', 'Resample', defaultValue).then(semitones => {
+        InputDialog.open('Semitones:', 'Resample', defaultValue).then(semitones => {
             let [start, end] = this._selRangeOrAll()
             let length = (end - start) * (2 ** (-semitones / 12))
             let newWave = $sample.spliceEffect(this._viewSample, start, end, length, $wave.resample)
@@ -730,7 +735,7 @@ export class SampleEditElement extends HTMLElement {
     /** @private */
     _filter() {
         let dialog = $dialog.open(new FilterEffectElement(), {dismissable: true})
-        dialog._onComplete = params => {
+        dialog.controller._onComplete = params => {
             let [start, end] = this._selRangeOrAll()
             let waitDialog = $dialog.open(new WaitDialogElement())
             $sample.applyNode(this._viewSample, start, end, params.dither,
@@ -753,12 +758,13 @@ export class SampleEditElement extends HTMLElement {
         }
     }
 }
-$dom.defineUnique('sample-edit', SampleEditElement)
+export const SampleEditElement = $dom.defineView('sample-edit', SampleEdit)
 
-/** @type {SampleEditElement} */
+/** @type {InstanceType<typeof SampleEditElement>} */
 let testElem
 if (import.meta.main) {
-    testElem = new SampleEditElement({
+    testElem = new SampleEditElement()
+    testElem.controller._callbacks = {
         jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
         },
@@ -767,9 +773,9 @@ if (import.meta.main) {
         },
         onChange(sample, commit) {
             console.log('Change', commit)
-            testElem._setSample(sample)
+            testElem.controller._setSample(sample)
         },
-    })
+    }
     $dom.displayMain(testElem)
-    testElem._setSample(Sample.empty)
+    testElem.controller._setSample(Sample.empty)
 }

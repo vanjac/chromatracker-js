@@ -5,7 +5,7 @@ import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
-import {ConfirmDialogElement} from './dialogs/UtilDialogs.js'
+import {ConfirmDialog} from './dialogs/UtilDialogs.js'
 import {Cell, Module} from '../Model.js'
 import appVersion from '../gen/Version.js'
 import './FileToolbar.js'
@@ -79,9 +79,12 @@ const template = $dom.html`
 </div>
 `
 
-export class TrackerMainElement extends HTMLElement {
-    constructor() {
-        super()
+export class TrackerMain {
+    /**
+     * @param {HTMLElement} view
+     */
+    constructor(view) {
+        this.view = view
 
         this._module = new Undoable($module.defaultNew)
 
@@ -121,9 +124,9 @@ export class TrackerMainElement extends HTMLElement {
                         element.classList.toggle('hide', element.id != tabName)
                     }
                     if (tabName == 'sequence') {
-                        this._patternEdit._onVisible()
+                        this._patternEdit.controller._onVisible()
                     } else if (tabName == 'samples') {
-                        this._samplesList._onVisible()
+                        this._samplesList.controller._onVisible()
                     }
                 })
             }
@@ -131,11 +134,11 @@ export class TrackerMainElement extends HTMLElement {
 
         fragment.querySelector('#version').textContent = appVersion
 
-        this.addEventListener('contextmenu', () => {
+        this.view.addEventListener('contextmenu', () => {
             console.log('Selected:')
             $cli.resetSel()
         }, {capture: true})
-        this.addEventListener('contextmenu', e => {
+        this.view.addEventListener('contextmenu', e => {
             $cli.addSelProp('module', 'object', this._module.value,
                 module => this._changeModule(_ => Object.freeze(module)))
             if (!(e.target instanceof HTMLInputElement || e.target instanceof HTMLOutputElement)) {
@@ -148,31 +151,31 @@ export class TrackerMainElement extends HTMLElement {
             }
         })
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
 
-        this._fileToolbar._callbacks = {
+        this._fileToolbar.controller._callbacks = {
             getModule: () => this._module.value,
             moduleLoaded: this._moduleLoaded.bind(this),
             moduleSaved: () => this._module.saved(),
         }
-        this._moduleProperties._callbacks = {
+        this._moduleProperties.controller._callbacks = {
             changeModule: this._changeModule.bind(this),
         }
-        this._playbackControls._callbacks = {
+        this._playbackControls.controller._callbacks = {
             resetPlayback: this._resetPlayback.bind(this),
             play: this._play.bind(this),
             pause: this._pause.bind(this),
             updatePlaySettings: this._updatePlaySettings.bind(this),
             undo: this._undo.bind(this),
         }
-        this._patternEdit._callbacks = {
+        this._patternEdit.controller._callbacks = {
             jamPlay: this._jamPlay.bind(this),
             jamRelease: this._jamRelease.bind(this),
             setMute: this._setMute.bind(this),
             changeModule: this._changeModule.bind(this),
         }
-        this._samplesList._callbacks = {
+        this._samplesList.controller._callbacks = {
             jamPlay: this._jamPlay.bind(this),
             jamRelease: this._jamRelease.bind(this),
             changeModule: this._changeModule.bind(this),
@@ -191,15 +194,15 @@ export class TrackerMainElement extends HTMLElement {
         this._module.reset(module)
 
         this._refreshModule()
-        this._patternEdit._resetState()
-        this._samplesList._setSelSample(1)
+        this._patternEdit.controller._resetState()
+        this._samplesList.controller._setSelSample(1)
     }
 
     /** @private */
     _askUnsavedChanges() {
         if (this._module.isUnsaved()) {
             let message = 'You will lose your unsaved changes. Continue?'
-            return ConfirmDialogElement.open(message, 'Unsaved Changes')
+            return ConfirmDialog.open(message, 'Unsaved Changes')
         } else {
             return Promise.resolve()
         }
@@ -230,19 +233,19 @@ export class TrackerMainElement extends HTMLElement {
         this._playback.time += playbackDelay // avoid "catching up"
 
         for (let c = 0; c < this._module.value.numChannels; c++) {
-            if (this._patternEdit._isChannelMuted(c)) {
+            if (this._patternEdit.controller._isChannelMuted(c)) {
                 $play.setChannelMute(this._playback, c, true)
             }
         }
         if (restoreSpeed) {
-            this._playback.tempo = this._patternEdit._getTempo()
-            this._playback.speed = this._patternEdit._getSpeed()
+            this._playback.tempo = this._patternEdit.controller._getTempo()
+            this._playback.speed = this._patternEdit.controller._getSpeed()
         }
         if (restorePos) {
-            this._playback.pos = this._patternEdit._selPos()
+            this._playback.pos = this._patternEdit.controller._selPos()
         }
         if (restoreRow) {
-            this._playback.row = this._patternEdit._selRow()
+            this._playback.row = this._patternEdit.controller._selRow()
         }
 
         this._updatePlaySettings()
@@ -267,7 +270,7 @@ export class TrackerMainElement extends HTMLElement {
         this._processPlayback()
         this._intervalHandle = window.setInterval(() => this._processPlayback(), processInterval)
         this._enableAnimation()
-        this._playbackControls._setPlayState(true)
+        this._playbackControls.controller._setPlayState(true)
     }
 
     _pause() {
@@ -280,7 +283,7 @@ export class TrackerMainElement extends HTMLElement {
                 this._disableAnimation() // should be called after clearing queuedStates
             }
             this._intervalHandle = 0
-            this._playbackControls._setPlayState(false)
+            this._playbackControls.controller._setPlayState(false)
         }
     }
 
@@ -306,7 +309,7 @@ export class TrackerMainElement extends HTMLElement {
 
     _updatePlaySettings() {
         if (this._playback) {
-            this._playback.userPatternLoop = this._playbackControls._getPatternLoop()
+            this._playback.userPatternLoop = this._playbackControls.controller._getPatternLoop()
         }
     }
 
@@ -327,7 +330,7 @@ export class TrackerMainElement extends HTMLElement {
     _jamPlay(id, cell, {useChannel = true} = {}) {
         this._enablePlayback()
         this._enableAnimation()
-        let channel = useChannel ? this._patternEdit._selChannel() : -1
+        let channel = useChannel ? this._patternEdit.controller._selChannel() : -1
         $play.jamPlay(this._playback, id, channel, cell)
     }
 
@@ -373,7 +376,7 @@ export class TrackerMainElement extends HTMLElement {
         }
         if (!this._queuedStates.length) {
             this._viewState = null
-            this._samplesList._setChannelStates(this._playback, [], curTime)
+            this._samplesList.controller._setChannelStates(this._playback, [], curTime)
         } else {
             let i = 0
             while (i < (this._queuedStates.length - 1)
@@ -386,24 +389,26 @@ export class TrackerMainElement extends HTMLElement {
             if (curState != this._viewState) {
                 this._viewState = curState
 
-                this._patternEdit._setTempoSpeed(curState.tempo, curState.speed)
-                if (this._playbackControls._getFollow()) {
-                    this._patternEdit._setSelPos(curState.pos)
-                    this._patternEdit._setSelCell(
-                        this._patternEdit._selChannel(), curState.row, true)
+                this._patternEdit.controller._setTempoSpeed(curState.tempo, curState.speed)
+                if (this._playbackControls.controller._getFollow()) {
+                    this._patternEdit.controller._setSelPos(curState.pos)
+                    this._patternEdit.controller._setSelCell(
+                        this._patternEdit.controller._selChannel(), curState.row, true)
                 }
-                this._patternEdit._setPlaybackPos(curState.pos, curState.row)
+                this._patternEdit.controller._setPlaybackPos(curState.pos, curState.row)
             }
-            this._samplesList._setChannelStates(this._playback, curState.channels, curTime)
+            this._samplesList.controller._setChannelStates(
+                this._playback, curState.channels, curTime
+            )
         }
     }
 
     /** @private */
     _refreshModule() {
         console.debug('=== begin refresh ===')
-        this._moduleProperties._setModule(this._module.value)
-        this._patternEdit._setModule(this._module.value)
-        this._samplesList._setSamples(this._module.value.samples)
+        this._moduleProperties.controller._setModule(this._module.value)
+        this._patternEdit.controller._setModule(this._module.value)
+        this._samplesList.controller._setSamples(this._module.value.samples)
         if (this._playback) {
             $play.setModule(this._playback, this._module.value)
         }
@@ -425,7 +430,7 @@ export class TrackerMainElement extends HTMLElement {
         }
     }
 }
-$dom.defineUnique('tracker-main', TrackerMainElement)
+export const TrackerMainElement = $dom.defineView('tracker-main', TrackerMain)
 
 let testElem
 if (import.meta.main) {

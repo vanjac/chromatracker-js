@@ -1,7 +1,7 @@
 import * as $dom from '../DOMUtil.js'
 import * as $cli from '../CLI.js'
 import * as $dialog from '../Dialog.js'
-import {FormDialogElement} from '../Dialog.js'
+import {FormDialog} from '../Dialog.js'
 
 const template = $dom.html`
 <form class="vflex dialog">
@@ -14,16 +14,20 @@ const template = $dom.html`
 </form>
 `
 
-export class CLIDialogElement extends FormDialogElement {
-    connectedCallback() {
+export class CLIDialog extends FormDialog {
+    /**
+     * @param {HTMLElement} view
+     */
+    constructor(view) {
+        super(view)
         let fragment = template.cloneNode(true)
 
         this._initForm(fragment.querySelector('form'))
 
         fragment.querySelector('#cancel').addEventListener('click', () => this._dismiss())
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
     }
 
     /**
@@ -31,10 +35,10 @@ export class CLIDialogElement extends FormDialogElement {
      */
     _dismiss() {
         $cli.cancelSel()
-        $dialog.close(this)
+        $dialog.close(this.view)
     }
 }
-$dom.defineUnique('cli-dialog', CLIDialogElement)
+export const CLIDialogElement = $dom.defineView('cli-dialog', CLIDialog)
 
 let testElem
 if (import.meta.main) {

@@ -1,6 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {FormDialogElement} from '../Dialog.js'
+import {FormDialog} from '../Dialog.js'
 import {defaultSampleRate} from '../../Util.js'
 import global from '../GlobalState.js'
 
@@ -83,9 +83,12 @@ const template = $dom.html`
 </form>
 `
 
-export class FilterEffectElement extends FormDialogElement {
-    constructor() {
-        super()
+export class FilterEffect extends FormDialog {
+    /**
+     * @param {HTMLElement} view
+     */
+    constructor(view) {
+        super(view)
         /** @param {FilterEffectParams} params */
         this._onComplete = params => {}
     }
@@ -130,8 +133,8 @@ export class FilterEffectElement extends FormDialogElement {
         this._qInput.addEventListener('input', () => this._updateGraph())
         this._gainInput.addEventListener('input', () => this._updateGraph())
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
     }
 
     /** @private */
@@ -174,7 +177,7 @@ export class FilterEffectElement extends FormDialogElement {
 
         let ctx = this._graph.getContext('2d')
         // 'currentColor' doesn't work in Chrome or Safari
-        ctx.strokeStyle = window.getComputedStyle(this).getPropertyValue('--color-fg')
+        ctx.strokeStyle = window.getComputedStyle(this.view).getPropertyValue('--color-fg')
         let {width, height} = this._graph
         ctx.clearRect(0, 0, width, height)
 
@@ -201,10 +204,10 @@ export class FilterEffectElement extends FormDialogElement {
             dither: this._ditherInput.checked
         })
         $dom.saveFormData(this._form, this._inputNames(), global.effectFormData)
-        $dialog.close(this)
+        $dialog.close(this.view)
     }
 }
-$dom.defineUnique('filter-effect', FilterEffectElement)
+export const FilterEffectElement = $dom.defineView('filter-effect', FilterEffect)
 
 let testElem
 if (import.meta.main) {

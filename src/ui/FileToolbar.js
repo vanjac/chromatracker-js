@@ -5,7 +5,7 @@ import * as $ext from '../file/External.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
 import {Module} from '../Model.js'
-import {AlertDialogElement, WaitDialogElement} from './dialogs/UtilDialogs.js'
+import {AlertDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
 
 const template = $dom.html`
 <div class="hflex">
@@ -28,17 +28,20 @@ const template = $dom.html`
 </div>
 `
 
-export class FileToolbarElement extends HTMLElement {
+export class FileToolbar {
     /**
-     * @param {{
-     *      getModule(): Readonly<Module>
-     *      moduleLoaded(module: Readonly<Module>): void
-     *      moduleSaved(): void
-     * }} callbacks
+     * @param {HTMLElement} view
      */
-    constructor(callbacks = null) {
-        super()
-        this._callbacks = callbacks
+    constructor(view) {
+        this.view = view
+        /**
+         * @type {{
+         *      getModule(): Readonly<Module>
+         *      moduleLoaded(module: Readonly<Module>): void
+         *      moduleSaved(): void
+         * }}
+         */
+        this._callbacks = null
     }
 
     connectedCallback() {
@@ -62,13 +65,13 @@ export class FileToolbarElement extends HTMLElement {
                 .then(() => $dialog.close(dialog))
                 .catch(/** @param {Error} error */ error => {
                     $dialog.close(dialog)
-                    AlertDialogElement.open(error.message)
+                    AlertDialog.open(error.message)
                 })
         })
         fragment.querySelector('#fileSave').addEventListener('click', () => this._saveFile())
 
-        this.style.display = 'contents'
-        this.appendChild(fragment)
+        this.view.style.display = 'contents'
+        this.view.appendChild(fragment)
     }
 
     /**
@@ -94,11 +97,12 @@ export class FileToolbarElement extends HTMLElement {
         this._callbacks.moduleSaved()
     }
 }
-$dom.defineUnique('file-toolbar', FileToolbarElement)
+export const FileToolbarElement = $dom.defineView('file-toolbar', FileToolbar)
 
 let testElem
 if (import.meta.main) {
-    testElem = new FileToolbarElement({
+    testElem = new FileToolbarElement()
+    testElem.controller._callbacks = {
         getModule() { return $module.defaultNew },
         moduleLoaded(module) {
             console.log('Module loaded:', module)
@@ -106,6 +110,6 @@ if (import.meta.main) {
         moduleSaved() {
             console.log('Module saved')
         },
-    })
+    }
     $dom.displayMain(testElem)
 }
