@@ -19,9 +19,11 @@ const template = $dom.html`
         <span>I</span>
     </label>
     <div class="hflex">
-        <button id="sampleLeft">&lt;</button>
+        <label class="label-button">
+            <input id="sampleScrollLock" type="checkbox">
+            <span>L</span>
+        </label>
         <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
-        <button id="sampleRight">&gt;</button>
     </div>
 
     <label class="label-button">
@@ -151,17 +153,15 @@ export class CellEntry {
                 this.callbacks.jamPlay(id, this.getJamCell())
             }
         }, id => this.callbacks.jamRelease(id))
-        /** @type {HTMLElement} */
-        let sampleLeft = fragment.querySelector('#sampleLeft')
-        sampleLeft.addEventListener('click', e => {
-            let width = this.sampleList.clientWidth
-            this.sampleList.scrollBy({left: -e.detail * width * .75, behavior: 'smooth'})
-        })
-        /** @type {HTMLElement} */
-        let sampleRight = fragment.querySelector('#sampleRight')
-        sampleRight.addEventListener('click', e => {
-            let width = this.sampleList.clientWidth
-            this.sampleList.scrollBy({left: e.detail * width * .75, behavior: 'smooth'})
+
+        /** @type {HTMLInputElement} */
+        let scrollLockCheck = fragment.querySelector('#sampleScrollLock')
+        scrollLockCheck.addEventListener('change', () => {
+            if (scrollLockCheck.checked) {
+                this.sampleList.classList.add('scroll-lock')
+            } else {
+                this.sampleList.classList.remove('scroll-lock')
+            }
         })
 
         $keyPad.makeKeyButton(fragment.querySelector('#writeEffect'), id => {
@@ -297,6 +297,6 @@ if (import.meta.main) {
         },
     }
     $dom.displayMain(testElem)
-    testElem.controller.setSamples(Object.freeze([]))
+    testElem.controller.setSamples(Object.freeze([null, ...Array(30).fill(Sample.empty)]))
     testElem.controller.onVisible()
 }

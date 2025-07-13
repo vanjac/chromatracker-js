@@ -325,7 +325,6 @@ td,
 
 .keypad-key {
     width: 24pt;
-    touch-action: none;
     flex-shrink: 0;
     margin: 0;
 }
@@ -336,6 +335,10 @@ td,
 .keypad-key span {
     padding-left: 0;
     padding-right: 0;
+}
+
+.scroll-lock {
+    touch-action: none;
 }
 
 .black-key :not(:checked) + span {

@@ -8,14 +8,16 @@ import periodTable from '../PeriodTable.js'
 
 const template = $dom.html`
 <div class="hflex">
-    <button id="pianoLeft">&lt;</button>
-    <form id="piano" class="vflex flex-grow hscrollable" autocomplete="off">
+    <label class="label-button">
+        <input id="scrollLock" type="checkbox" checked>
+        <span>L</span>
+    </label>
+    <form id="piano" class="vflex flex-grow hscrollable scroll-lock" autocomplete="off">
         <div id="blackKeys" class="hflex">
             <div class="keypad-half-key"></div>
         </div>
         <div id="whiteKeys" class="hflex"></div>
     </form>
-    <button id="pianoRight">&gt;</button>
 </div>
 `
 
@@ -58,17 +60,15 @@ export class PianoKeyboard {
                     id, this.callbacks.getJamCell(), {useChannel: this.useChannel})
             }
         }, id => this.callbacks.jamRelease(id))
-        /** @type {HTMLElement} */
-        let pianoLeft = fragment.querySelector('#pianoLeft')
-        pianoLeft.addEventListener('click', e => {
-            let keyWidth = this.pianoKeys[0].clientWidth
-            this.piano.scrollBy({left: -e.detail * keyWidth * 7, behavior: 'smooth'})
-        })
-        /** @type {HTMLElement} */
-        let pianoRight = fragment.querySelector('#pianoRight')
-        pianoRight.addEventListener('click', e => {
-            let keyWidth = this.pianoKeys[0].clientWidth
-            this.piano.scrollBy({left: e.detail * keyWidth * 7, behavior: 'smooth'})
+
+        /** @type {HTMLInputElement} */
+        let scrollLockCheck = fragment.querySelector('#scrollLock')
+        scrollLockCheck.addEventListener('change', () => {
+            if (scrollLockCheck.checked) {
+                this.piano.classList.add('scroll-lock')
+            } else {
+                this.piano.classList.remove('scroll-lock')
+            }
         })
 
         this.view.style.display = 'contents'
@@ -141,4 +141,5 @@ if (import.meta.main) {
         },
     }
     $dom.displayMain(testElem)
+    testElem.controller.scrollToSelPitch()
 }

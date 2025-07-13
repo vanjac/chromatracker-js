@@ -73,8 +73,7 @@ export class PlaybackControls {
             this.callbacks.play()
         })
         this.pauseButton.addEventListener('click', () => this.callbacks.pause())
-        fragment.querySelector('#patternLoop').addEventListener('click',
-            () => this.callbacks.updatePlaySettings())
+        this.patternLoopInput.addEventListener('change', () => this.callbacks.updatePlaySettings())
         fragment.querySelector('#undo').addEventListener('click', () => this.callbacks.undo())
 
         this.view.style.display = 'contents'
