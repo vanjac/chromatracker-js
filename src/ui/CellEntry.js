@@ -7,17 +7,9 @@ import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
-<div class="properties-grid">
-    <label class="label-button">
-        <input id="pitchEnable" type="checkbox" checked>
-        <span>P</span>
-    </label>
+<div class="vflex">
     <piano-keyboard></piano-keyboard>
 
-    <label class="label-button">
-        <input id="sampleEnable" type="checkbox" checked>
-        <span>I</span>
-    </label>
     <div class="hflex">
         <label class="label-button">
             <input id="sampleScrollLock" type="checkbox">
@@ -26,10 +18,6 @@ const template = $dom.html`
         <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
     </div>
 
-    <label class="label-button">
-        <input id="effectEnable" type="checkbox">
-        <span>E</span>
-    </label>
     <div class="hflex">
         <select id="effectSelect">
             <option>0: Arpeggio</option>
@@ -105,7 +93,7 @@ export class CellEntry {
          *      putCell(cell: Readonly<Cell>, parts: CellPart): void
          *      updateCell(): void
          *      selCell(): Readonly<Cell>
-         *      updateEntryParts(): void
+                cellParts(): CellPart
          * }}
          */
         this.callbacks
@@ -116,12 +104,6 @@ export class CellEntry {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        /** @type {HTMLInputElement} */
-        this.pitchEnable = fragment.querySelector('#pitchEnable')
-        /** @type {HTMLInputElement} */
-        this.sampleEnable = fragment.querySelector('#sampleEnable')
-        /** @type {HTMLInputElement} */
-        this.effectEnable = fragment.querySelector('#effectEnable')
         this.piano = fragment.querySelector('piano-keyboard')
         /** @type {HTMLFormElement} */
         this.sampleList = fragment.querySelector('#sampleList')
@@ -133,10 +115,6 @@ export class CellEntry {
         this.param0Select = fragment.querySelector('#param0Select')
         /** @type {HTMLSelectElement} */
         this.param1Select = fragment.querySelector('#param1Select')
-
-        this.pitchEnable.addEventListener('change', () => this.callbacks.updateEntryParts())
-        this.sampleEnable.addEventListener('change', () => this.callbacks.updateEntryParts())
-        this.effectEnable.addEventListener('change', () => this.callbacks.updateEntryParts())
 
         this.effectSelect.addEventListener('input', () => {
             this.param0Select.selectedIndex = this.param1Select.selectedIndex = 0
@@ -198,24 +176,10 @@ export class CellEntry {
 
     getJamCell() {
         let cell = this.getCell()
-        if (!this.effectEnable.checked) {
+        if (!(this.callbacks.cellParts() & CellPart.effect)) {
             cell.effect = cell.param0 = cell.param1 = 0
         }
         return cell
-    }
-
-    getCellParts() {
-        let parts = CellPart.none
-        if (this.pitchEnable.checked) {
-            parts |= CellPart.pitch
-        }
-        if (this.sampleEnable.checked) {
-            parts |= CellPart.inst
-        }
-        if (this.effectEnable.checked) {
-            parts |= CellPart.effect | CellPart.param
-        }
-        return parts
     }
 
     /**
@@ -255,15 +219,16 @@ export class CellEntry {
 
     /**
      * @param {Readonly<Cell>} cell
+     * @param {CellPart} parts
      */
-    liftCell(cell) {
-        if (this.pitchEnable.checked && cell.pitch >= 0) {
+    liftCell(cell, parts) {
+        if ((parts & CellPart.pitch) && cell.pitch >= 0) {
             this.piano.controller.setPitch(cell.pitch)
         }
-        if (this.sampleEnable.checked && cell.inst) {
+        if ((parts & CellPart.inst) && cell.inst) {
             $dom.selectRadioButton(this.sampleInput, cell.inst.toString())
         }
-        if (this.effectEnable.checked) {
+        if (parts & CellPart.effect) {
             this.effectSelect.selectedIndex = cell.effect
             this.param0Select.selectedIndex = cell.param0
             this.param1Select.selectedIndex = cell.param1
@@ -286,8 +251,8 @@ if (import.meta.main) {
         selCell() {
             return Cell.empty
         },
-        updateEntryParts() {
-            console.log('Update entry parts')
+        cellParts() {
+            return CellPart.all
         },
         jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)

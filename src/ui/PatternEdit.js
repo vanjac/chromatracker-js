@@ -5,7 +5,7 @@ import * as $keyPad from './KeyPad.js'
 import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
-import {Cell, CellPart, mod, Module, Pattern} from '../Model.js'
+import {Cell, CellPart, mod, Module, Pattern, Sample} from '../Model.js'
 import global from './GlobalState.js'
 import './CellEntry.js'
 import './PatternTable.js'
@@ -64,6 +64,20 @@ const template = $dom.html`
             ${$icons.backspace_reverse_outline}
         </button>
     </div>
+    <div class="hflex">
+        <label class="label-button flex-grow">
+            <input id="pitchEnable" type="checkbox" checked>
+            <span>Pitch</span>
+        </label>
+        <label class="label-button flex-grow">
+            <input id="sampleEnable" type="checkbox" checked>
+            <span>Inst.</span>
+        </label>
+        <label class="label-button flex-grow">
+            <input id="effectEnable" type="checkbox">
+            <span>FX</span>
+        </label>
+    </div>
     <cell-entry></cell-entry>
 </div>
 `
@@ -104,6 +118,13 @@ export class PatternEdit {
         /** @type {HTMLElement} */
         this.entryCell = fragment.querySelector('#entryCell')
 
+        /** @type {HTMLInputElement} */
+        this.pitchEnable = fragment.querySelector('#pitchEnable')
+        /** @type {HTMLInputElement} */
+        this.sampleEnable = fragment.querySelector('#sampleEnable')
+        /** @type {HTMLInputElement} */
+        this.effectEnable = fragment.querySelector('#effectEnable')
+
         this.selectInput.addEventListener('change', () => {
             this.selectTools.classList.toggle('hide', !this.selectInput.checked)
             this.playbackStatus.classList.toggle('hide', this.selectInput.checked)
@@ -121,20 +142,20 @@ export class PatternEdit {
         $keyPad.makeKeyButton(fragment.querySelector('#write'), id => {
             this.putCell(
                 this.cellEntry.controller.getCell(),
-                this.cellEntry.controller.getCellParts()
+                this.getCellParts()
             )
             this.callbacks.jamPlay(id, this.selCell())
             this.advance()
         }, id => this.callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#clear'), id => {
-            this.putCell(Cell.empty, this.cellEntry.controller.getCellParts())
+            this.putCell(Cell.empty, this.getCellParts())
             this.callbacks.jamPlay(id, this.selCell())
             this.advance()
         }, id => this.callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#lift'), id => {
-            this.cellEntry.controller.liftCell(this.selCell())
+            this.cellEntry.controller.liftCell(this.selCell(), this.getCellParts())
             this.callbacks.jamPlay(id, this.cellEntry.controller.getJamCell())
         }, id => this.callbacks.jamRelease(id))
 
@@ -143,6 +164,10 @@ export class PatternEdit {
         fragment.querySelector('#paste').addEventListener('click', () => this.paste())
         fragment.querySelector('#insert').addEventListener('click', () => this.insert(1))
         fragment.querySelector('#delete').addEventListener('click', () => this.delete(1))
+
+        this.pitchEnable.addEventListener('change', this.updateEntryParts.bind(this))
+        this.sampleEnable.addEventListener('change', this.updateEntryParts.bind(this))
+        this.effectEnable.addEventListener('change', this.updateEntryParts.bind(this))
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('seqpos', 'number', this.selPos(), pos => this.setSelPos(pos))
@@ -167,7 +192,7 @@ export class PatternEdit {
             putCell: this.putCell.bind(this),
             updateCell: this.updateCell.bind(this),
             selCell: this.selCell.bind(this),
-            updateEntryParts: this.updateEntryParts.bind(this),
+            cellParts: this.getCellParts.bind(this),
         }
         this.updateCell()
         this.updateEntryParts()
@@ -301,7 +326,7 @@ export class PatternEdit {
         this.copy()
         let [minChannel, maxChannel] = this.patternTable.controller.channelRange()
         let [minRow, maxRow] = this.patternTable.controller.rowRange()
-        let parts = this.cellEntry.controller.getCellParts()
+        let parts = this.getCellParts()
         this.changePattern(pattern => $pattern.fill(
             pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, Cell.empty, parts))
     }
@@ -322,7 +347,7 @@ export class PatternEdit {
             channel,
             row,
             global.patternClipboard,
-            this.cellEntry.controller.getCellParts()
+            this.getCellParts()
         ))
     }
 
@@ -330,8 +355,23 @@ export class PatternEdit {
         $cell.setContents(this.entryCell, this.cellEntry.controller.getCell())
     }
 
+    getCellParts() {
+        /** @type {CellPart} */
+        let parts = CellPart.none
+        if (this.pitchEnable.checked) {
+            parts |= CellPart.pitch
+        }
+        if (this.sampleEnable.checked) {
+            parts |= CellPart.inst
+        }
+        if (this.effectEnable.checked) {
+            parts |= CellPart.effect | CellPart.param
+        }
+        return parts
+    }
+
     updateEntryParts() {
-        let parts = this.cellEntry.controller.getCellParts()
+        let parts = this.getCellParts()
         $cell.toggleParts(this.entryCell, parts)
         this.patternTable.controller.setEntryParts(parts)
     }
@@ -386,7 +426,8 @@ export const PatternEditElement = $dom.defineView('pattern-edit', PatternEdit)
 /** @type {InstanceType<typeof PatternEditElement>} */
 let testElem
 if (import.meta.main) {
-    let module = $module.defaultNew
+    let samples = Object.freeze([null, ...Array(30).fill(Sample.empty)])
+    let module = Object.freeze({...$module.defaultNew, samples})
     testElem = new PatternEditElement()
     testElem.controller.callbacks = {
         changeModule(callback, commit) {
@@ -406,4 +447,5 @@ if (import.meta.main) {
     }
     $dom.displayMain(testElem)
     testElem.controller.setModule(module)
+    testElem.controller.onVisible()
 }
