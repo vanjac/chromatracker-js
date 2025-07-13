@@ -216,7 +216,7 @@ export class TrackerMain {
             console.log('Loaded module:', module)
             this.resetEditorState(module)
             this.resetPlayback()
-        })
+        }).catch(console.warn)
     }
 
     /**

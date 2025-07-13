@@ -676,7 +676,7 @@ export class SampleEdit {
             newSample = Object.freeze({...newSample, loopStart})
             this.callbacks.onChange(newSample, true)
             global.lastLoopRepeat = count
-        })
+        }).catch(console.warn)
     }
 
     /** @private */
@@ -719,7 +719,7 @@ export class SampleEdit {
                 this.setSel(start, start + length)
             }
             global.lastResampleSemitones = semitones
-        })
+        }).catch(console.warn)
     }
 
     /** @private */
