@@ -136,7 +136,7 @@ export class PatternEdit {
         })
 
         $keyPad.makeKeyButton(this.entryCell,
-            id => this.callbacks.jamPlay(id, this.cellEntry.controller.getJamCell()),
+            id => this.callbacks.jamPlay(id, this.cellEntry.controller.getCell()),
             id => this.callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#write'), id => {
@@ -156,7 +156,7 @@ export class PatternEdit {
 
         $keyPad.makeKeyButton(fragment.querySelector('#lift'), id => {
             this.cellEntry.controller.liftCell(this.selCell(), this.getCellParts())
-            this.callbacks.jamPlay(id, this.cellEntry.controller.getJamCell())
+            this.callbacks.jamPlay(id, this.cellEntry.controller.getCell())
         }, id => this.callbacks.jamRelease(id))
 
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
@@ -190,7 +190,6 @@ export class PatternEdit {
             jamPlay: (...args) => this.callbacks.jamPlay(...args),
             jamRelease: (...args) => this.callbacks.jamRelease(...args),
             updateCell: this.updateCell.bind(this),
-            cellParts: this.getCellParts.bind(this),
         }
         this.updateCell()
         this.updateEntryParts()

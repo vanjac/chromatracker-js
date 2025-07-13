@@ -19,8 +19,11 @@ const template = $dom.html`
     </div>
 
     <div class="hflex">
+        <button id="resetEffect">
+            ${$icons.close}
+        </button>
         <select id="effectSelect">
-            <option>0: Arpeggio</option>
+            <option selected>0: Arpeggio</option>
             <option>1: Port Up</option>
             <option>2: Port Down</option>
             <option>3: Tone Port</option>
@@ -32,7 +35,7 @@ const template = $dom.html`
             <option>9: Offset</option>
             <option>A: Volume Slide</option>
             <option>B: Pos. Jump</option>
-            <option selected>C: Volume</option>
+            <option>C: Volume</option>
             <option>D: Pat. Break</option>
             <option>E: Extended</option>
             <option>F: Tempo</option>
@@ -86,7 +89,6 @@ export class CellEntry {
         /**
          * @type {JamCallbacks & {
          *      updateCell(): void
-                cellParts(): CellPart
          * }}
          */
         this.callbacks
@@ -121,7 +123,7 @@ export class CellEntry {
             if (elem.parentElement && elem.parentElement.parentElement == this.sampleList) {
                 let input = elem.parentElement.querySelector('input')
                 this.setSelSample(Number(input.value))
-                this.callbacks.jamPlay(id, this.getJamCell())
+                this.callbacks.jamPlay(id, this.getCell())
             }
         }, id => this.callbacks.jamRelease(id))
 
@@ -135,6 +137,9 @@ export class CellEntry {
             }
         })
 
+        let resetEffectButton = fragment.querySelector('#resetEffect')
+        resetEffectButton.addEventListener('click', this.resetEffect.bind(this))
+
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
 
@@ -142,7 +147,7 @@ export class CellEntry {
             jamPlay: (...args) => this.callbacks.jamPlay(...args),
             jamRelease: (...args) => this.callbacks.jamRelease(...args),
             pitchChanged: () => this.callbacks.updateCell(),
-            getJamCell: this.getJamCell.bind(this),
+            getJamCell: this.getCell.bind(this),
         }
     }
 
@@ -160,14 +165,6 @@ export class CellEntry {
         let param0 = this.param0Select.selectedIndex
         let param1 = this.param1Select.selectedIndex
         return {pitch, inst, effect, param0, param1}
-    }
-
-    getJamCell() {
-        let cell = this.getCell()
-        if (!(this.callbacks.cellParts() & CellPart.effect)) {
-            cell.effect = cell.param0 = cell.param1 = 0
-        }
-        return cell
     }
 
     /**
@@ -223,6 +220,13 @@ export class CellEntry {
         }
         this.callbacks.updateCell()
     }
+
+    resetEffect() {
+        this.effectSelect.selectedIndex = 0
+        this.param0Select.selectedIndex = 0
+        this.param1Select.selectedIndex = 0
+        this.callbacks.updateCell()
+    }
 }
 export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)
 
@@ -232,9 +236,6 @@ if (import.meta.main) {
     testElem.controller.callbacks = {
         updateCell() {
             console.log('Update cell')
-        },
-        cellParts() {
-            return CellPart.all
         },
         jamPlay(id, cell, _options) {
             console.log('Jam play', id, cell)
