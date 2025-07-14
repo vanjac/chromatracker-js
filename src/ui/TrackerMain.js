@@ -350,7 +350,7 @@ export class TrackerMain {
     jamPlay(id, cell) {
         this.enablePlayback()
         this.enableAnimation()
-        let useChannel = !this.patternEdit.classList.contains('hide')
+        let useChannel = this.patternEdit.parentElement.offsetParent != null // Sequence tab visible
         let channel = useChannel ? this.patternEdit.controller.selChannel() : -1
         $play.jamPlay(this.playback, id, channel, cell)
     }
