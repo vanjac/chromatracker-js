@@ -133,9 +133,10 @@ export class CellEntry {
             this.sampleList.classList.toggle('scroll-lock', scrollLockCheck.checked)
         })
 
-        let resetEffectButton = fragment.querySelector('#resetEffect')
-        resetEffectButton.addEventListener('click',
-            () => this.setCell(Cell.empty, CellPart.effect | CellPart.param))
+        $keyPad.makeKeyButton(fragment.querySelector('#resetEffect'), id => {
+            this.setCell(Cell.empty, CellPart.effect | CellPart.param)
+            this.callbacks.jamPlay(id, this.getCell())
+        }, id => this.callbacks.jamRelease(id))
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
