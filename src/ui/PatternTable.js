@@ -74,6 +74,16 @@ export class PatternTable {
             this.patternScroll.classList.toggle('scroll-lock', scrollLockCheck.checked)
         })
 
+        $keyPad.create(this.tbody, (id, elem) => {
+            let td = elem.closest('td')
+            if (td) {
+                let c = Number(td.dataset.c)
+                let row = Number(td.dataset.row)
+                this.setSelCell(c, row)
+                this.callbacks.jamPlay(id, this.viewPattern[c][row])
+            }
+        }, id => this.callbacks.jamRelease(id))
+
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('row', 'number', this.selRow,
                 row => this.setSelCell(this.selChannel, row))
@@ -157,10 +167,8 @@ export class PatternTable {
                     $cell.setContents(cellFrag, cell)
 
                     let td = cellFrag.querySelector('td')
-                    $keyPad.makeKeyButton(td, id => {
-                        this.setSelCell(c, row)
-                        this.callbacks.jamPlay(id, this.viewPattern[c][row])
-                    }, id => this.callbacks.jamRelease(id))
+                    td.dataset.c = c.toString()
+                    td.dataset.row = row.toString()
                     td.addEventListener('contextmenu', () => {
                         $cli.addSelProp('cell', 'object', this.viewPattern[c][row], cell => {
                             this.callbacks.onChange($pattern.putCell(
