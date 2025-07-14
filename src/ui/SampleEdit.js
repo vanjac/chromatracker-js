@@ -1,4 +1,3 @@
-import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
@@ -64,8 +63,8 @@ const template = $dom.html`
     </div>
     <div class="vflex">
         <label for="loopStart">Loop:</label>
-        <input id="loopStart" type="range" min="0" autocomplete="off">
-        <input id="loopEnd" type="range" min="0" autocomplete="off">
+        <input id="loopStart" type="range" min="0" step="2" autocomplete="off">
+        <input id="loopEnd" type="range" min="0" step="2" autocomplete="off">
     </div>
     <div class="hflex">
         <select id="selectMenu" class="med-menu">
