@@ -61,10 +61,12 @@ export class PlaybackControls {
         this.followInput = fragment.querySelector('#follow')
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
+            this.patternLoopInput.checked = false
             this.callbacks.resetPlayback()
             this.callbacks.play()
         })
         fragment.querySelector('#playPattern').addEventListener('click', () => {
+            this.patternLoopInput.checked = true
             this.callbacks.resetPlayback({restoreSpeed: true, restorePos: true})
             this.callbacks.play()
         })
