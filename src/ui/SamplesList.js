@@ -4,7 +4,7 @@ import * as $module from '../edit/Module.js'
 import * as $sample from '../edit/Sample.js'
 import * as $icons from '../gen/Icons.js'
 import {SampleEditElement} from './SampleEdit.js'
-import {Sample} from '../Model.js'
+import {Cell, Sample, CellPart} from '../Model.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
@@ -29,7 +29,12 @@ export class SamplesList {
      */
     constructor(view) {
         this.view = view
-        /** @type {ModuleEditCallbacks & JamCallbacks} */
+        /**
+         * @type {ModuleEditCallbacks & JamCallbacks & {
+                getEntryCell(): Readonly<Cell>
+         *      setEntryCell(cell: Readonly<Cell>, parts: CellPart): void
+         * }}
+         */
         this.callbacks = null
         /** @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
@@ -54,12 +59,6 @@ export class SamplesList {
         this.view.appendChild(fragment)
     }
 
-    onVisible() {
-        if (this.sampleEdit) {
-            this.sampleEdit.controller.onVisible()
-        }
-    }
-
     /**
      * @private
      * @param {number} idx
@@ -74,10 +73,13 @@ export class SamplesList {
                 this.callbacks.changeModule(
                     module => $sample.update(module, idx, sample), commit)
             },
+            getEntryCell: () => this.callbacks.getEntryCell(),
+            setEntryCell: (...args) => this.callbacks.setEntryCell(...args),
         }
         this.sampleEditContainer.appendChild(this.sampleEdit)
         this.sampleEdit.controller.setIndex(idx)
         this.sampleEdit.controller.setSample(this.viewSamples[idx])
+        this.callbacks.setEntryCell({...Cell.empty, inst: idx}, CellPart.inst)
     }
 
     /** @private */
@@ -185,16 +187,22 @@ if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new SamplesListElement()
     testElem.controller.callbacks = {
+        jamPlay(id, cell) {
+            console.log('Jam play', id, cell)
+        },
+        jamRelease(id) {
+            console.log('Jam release', id)
+        },
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
             testElem.controller.setSamples(module.samples)
         },
-        jamPlay(id, cell, _options) {
-            console.log('Jam play', id, cell)
+        getEntryCell() {
+            return Cell.empty
         },
-        jamRelease(id) {
-            console.log('Jam release', id)
+        setEntryCell(cell, parts) {
+            console.log('Set cell', parts, cell)
         },
     }
     $dom.displayMain(testElem)

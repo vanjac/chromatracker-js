@@ -34,7 +34,6 @@ export class PianoKeyboard {
          * }}
          */
         this.callbacks = null
-        this.useChannel = true
     }
 
     connectedCallback() {
@@ -56,19 +55,14 @@ export class PianoKeyboard {
                 let input = elem.parentElement.querySelector('input')
                 $dom.selectRadioButton(this.pitchInput, input.value)
                 this.callbacks.pitchChanged()
-                this.callbacks.jamPlay(
-                    id, this.callbacks.getJamCell(), {useChannel: this.useChannel})
+                this.callbacks.jamPlay(id, this.callbacks.getJamCell())
             }
         }, id => this.callbacks.jamRelease(id))
 
         /** @type {HTMLInputElement} */
         let scrollLockCheck = fragment.querySelector('#scrollLock')
         scrollLockCheck.addEventListener('change', () => {
-            if (scrollLockCheck.checked) {
-                this.piano.classList.add('scroll-lock')
-            } else {
-                this.piano.classList.remove('scroll-lock')
-            }
+            this.piano.classList.toggle('scroll-lock', scrollLockCheck.checked)
         })
 
         this.view.style.display = 'contents'
@@ -133,7 +127,7 @@ if (import.meta.main) {
         getJamCell() {
             return Cell.empty
         },
-        jamPlay(id, cell, _options) {
+        jamPlay(id, cell) {
             console.log('Jam play', id, cell)
         },
         jamRelease(id) {

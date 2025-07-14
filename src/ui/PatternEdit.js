@@ -5,9 +5,8 @@ import * as $keyPad from './KeyPad.js'
 import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
-import {Cell, CellPart, mod, Module, Pattern, Sample} from '../Model.js'
+import {Cell, CellPart, mod, Module, Pattern, Sample, Effect} from '../Model.js'
 import global from './GlobalState.js'
-import './CellEntry.js'
 import './PatternTable.js'
 import './SequenceEdit.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './TrackerMain.js' */
@@ -78,7 +77,6 @@ const template = $dom.html`
             <span>FX</span>
         </label>
     </div>
-    <cell-entry></cell-entry>
 </div>
 `
 
@@ -91,6 +89,8 @@ export class PatternEdit {
         /**
          * @type {ModuleEditCallbacks & JamCallbacks & {
          *      setMute(c: number, mute: boolean): void
+                getEntryCell(): Readonly<Cell>
+                setEntryCell(cell: Readonly<Cell>, parts: CellPart): void
          * }}
          */
         this.callbacks = null
@@ -105,7 +105,6 @@ export class PatternEdit {
 
         this.sequenceEdit = fragment.querySelector('sequence-edit')
         this.patternTable = fragment.querySelector('pattern-table')
-        this.cellEntry = fragment.querySelector('cell-entry')
 
         /** @type {HTMLInputElement} */
         this.tempoInput = fragment.querySelector('#tempo')
@@ -136,12 +135,12 @@ export class PatternEdit {
         })
 
         $keyPad.makeKeyButton(this.entryCell,
-            id => this.callbacks.jamPlay(id, this.cellEntry.controller.getCell()),
+            id => this.callbacks.jamPlay(id, this.callbacks.getEntryCell()),
             id => this.callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#write'), id => {
             this.putCell(
-                this.cellEntry.controller.getCell(),
+                this.callbacks.getEntryCell(),
                 this.getCellParts()
             )
             this.callbacks.jamPlay(id, this.selCell())
@@ -155,8 +154,12 @@ export class PatternEdit {
         }, id => this.callbacks.jamRelease(id))
 
         $keyPad.makeKeyButton(fragment.querySelector('#lift'), id => {
-            this.cellEntry.controller.liftCell(this.selCell(), this.getCellParts())
-            this.callbacks.jamPlay(id, this.cellEntry.controller.getCell())
+            let cell = this.selCell()
+            let parts = this.getCellParts()
+            if (cell.pitch < 0) { parts &= ~CellPart.pitch }
+            if (!cell.inst) { parts &= ~CellPart.inst }
+            this.callbacks.setEntryCell(cell, parts)
+            this.callbacks.jamPlay(id, this.callbacks.getEntryCell())
         }, id => this.callbacks.jamRelease(id))
 
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
@@ -186,17 +189,7 @@ export class PatternEdit {
             onChange: (pattern) => this.changePattern(_ => pattern),
             setMute: (...args) => this.callbacks.setMute(...args),
         }
-        this.cellEntry.controller.callbacks = {
-            jamPlay: (...args) => this.callbacks.jamPlay(...args),
-            jamRelease: (...args) => this.callbacks.jamRelease(...args),
-            updateCell: this.updateCell.bind(this),
-        }
-        this.updateCell()
         this.updateEntryParts()
-    }
-
-    onVisible() {
-        this.cellEntry.controller.onVisible()
     }
 
     resetState() {
@@ -206,7 +199,6 @@ export class PatternEdit {
         this.selectTools.classList.add('hide')
         this.playbackStatus.classList.remove('hide')
         this.patternTable.controller.scrollToSelCell()
-        this.cellEntry.controller.setSelSample(1)
         this.setTempoSpeed(mod.defaultTempo, mod.defaultSpeed)
     }
 
@@ -215,7 +207,6 @@ export class PatternEdit {
      */
     setModule(module) {
         this.patternTable.controller.setNumChannels(module.numChannels)
-        this.cellEntry.controller.setSamples(module.samples)
         this.sequenceEdit.controller.setSequence(module.sequence)
         this.sequenceEdit.controller.setPatterns(module.patterns)
 
@@ -349,7 +340,7 @@ export class PatternEdit {
     }
 
     updateCell() {
-        $cell.setContents(this.entryCell, this.cellEntry.controller.getCell())
+        $cell.setContents(this.entryCell, this.callbacks.getEntryCell())
     }
 
     getCellParts() {
@@ -432,17 +423,28 @@ if (import.meta.main) {
             module = callback(module)
             testElem.controller.setModule(module)
         },
-        setMute(c, mute) {
-            console.log('Set mute', c, mute)
-        },
-        jamPlay(id, cell, _options) {
+        jamPlay(id, cell) {
             console.log('Jam play', id, cell)
         },
         jamRelease(id) {
             console.log('Jam release', id)
         },
+        setMute(c, mute) {
+            console.log('Set mute', c, mute)
+        },
+        getEntryCell() {
+            return {
+                pitch: 48,
+                inst: 1,
+                effect: Effect.Volume,
+                param0: 0x4,
+                param1: 0x0,
+            }
+        },
+        setEntryCell(cell, parts) {
+            console.log('Set cell', parts, cell)
+        },
     }
     $dom.displayMain(testElem)
     testElem.controller.setModule(module)
-    testElem.controller.onVisible()
 }

@@ -130,15 +130,12 @@ export class CellEntry {
         /** @type {HTMLInputElement} */
         let scrollLockCheck = fragment.querySelector('#sampleScrollLock')
         scrollLockCheck.addEventListener('change', () => {
-            if (scrollLockCheck.checked) {
-                this.sampleList.classList.add('scroll-lock')
-            } else {
-                this.sampleList.classList.remove('scroll-lock')
-            }
+            this.sampleList.classList.toggle('scroll-lock', scrollLockCheck.checked)
         })
 
         let resetEffectButton = fragment.querySelector('#resetEffect')
-        resetEffectButton.addEventListener('click', this.resetEffect.bind(this))
+        resetEffectButton.addEventListener('click',
+            () => this.setCell(Cell.empty, CellPart.effect | CellPart.param))
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -149,10 +146,15 @@ export class CellEntry {
             pitchChanged: () => this.callbacks.updateCell(),
             getJamCell: this.getCell.bind(this),
         }
+
+        this.firstVisible = false
     }
 
     onVisible() {
-        this.piano.controller.scrollToSelPitch()
+        if (!this.firstVisible) {
+            this.piano.controller.scrollToSelPitch()
+        }
+        this.firstVisible = true
     }
 
     /**
@@ -206,11 +208,11 @@ export class CellEntry {
      * @param {Readonly<Cell>} cell
      * @param {CellPart} parts
      */
-    liftCell(cell, parts) {
-        if ((parts & CellPart.pitch) && cell.pitch >= 0) {
+    setCell(cell, parts) {
+        if (parts & CellPart.pitch) {
             this.piano.controller.setPitch(cell.pitch)
         }
-        if ((parts & CellPart.inst) && cell.inst) {
+        if (parts & CellPart.inst) {
             $dom.selectRadioButton(this.sampleInput, cell.inst.toString())
         }
         if (parts & CellPart.effect) {
@@ -218,13 +220,6 @@ export class CellEntry {
             this.param0Select.selectedIndex = cell.param0
             this.param1Select.selectedIndex = cell.param1
         }
-        this.callbacks.updateCell()
-    }
-
-    resetEffect() {
-        this.effectSelect.selectedIndex = 0
-        this.param0Select.selectedIndex = 0
-        this.param1Select.selectedIndex = 0
         this.callbacks.updateCell()
     }
 }
@@ -237,7 +232,7 @@ if (import.meta.main) {
         updateCell() {
             console.log('Update cell')
         },
-        jamPlay(id, cell, _options) {
+        jamPlay(id, cell) {
             console.log('Jam play', id, cell)
         },
         jamRelease(id) {

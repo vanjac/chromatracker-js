@@ -298,7 +298,7 @@ if (import.meta.main) {
         onChange(_pattern) {
             console.log('Change pattern')
         },
-        jamPlay(id, cell, _options) {
+        jamPlay(id, cell) {
             console.log('Jam play', id, cell)
         },
         jamRelease(id) {

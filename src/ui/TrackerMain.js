@@ -6,8 +6,9 @@ import * as $module from '../edit/Module.js'
 import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
 import {ConfirmDialog} from './dialogs/UtilDialogs.js'
-import {Cell, Module} from '../Model.js'
+import {Cell, Module, CellPart} from '../Model.js'
 import appVersion from '../gen/Version.js'
+import './CellEntry.js'
 import './FileToolbar.js'
 import './ModuleProperties.js'
 import './PatternEdit.js'
@@ -28,7 +29,7 @@ const processInterval = 200
 
 /**
  * @typedef {{
- *      jamPlay(id: number, cell: Readonly<Cell>, options?: {useChannel?: boolean}): void
+ *      jamPlay(id: number, cell: Readonly<Cell>): void
         jamRelease(id: number): void
  * }} JamCallbacks
  */
@@ -77,6 +78,9 @@ const template = $dom.html`
         <samples-list></samples-list>
     </div>
 </div>
+<div class="vflex hide">
+    <cell-entry></cell-entry>
+</div>
 `
 
 export class TrackerMain {
@@ -111,6 +115,7 @@ export class TrackerMain {
         this.playbackControls = fragment.querySelector('playback-controls')
         this.patternEdit = fragment.querySelector('pattern-edit')
         this.samplesList = fragment.querySelector('samples-list')
+        this.cellEntry = fragment.querySelector('cell-entry')
 
         /** @type {HTMLFormElement} */
         let tabForm = fragment.querySelector('#appTabs')
@@ -123,10 +128,11 @@ export class TrackerMain {
                     for (let element of tabBody.children) {
                         element.classList.toggle('hide', element.id != tabName)
                     }
-                    if (tabName == 'sequence') {
-                        this.patternEdit.controller.onVisible()
-                    } else if (tabName == 'samples') {
-                        this.samplesList.controller.onVisible()
+                    if (tabName == 'sequence' || tabName == 'samples') {
+                        this.cellEntry.parentElement.classList.remove('hide')
+                        this.cellEntry.controller.onVisible()
+                    } else {
+                        this.cellEntry.parentElement.classList.add('hide')
                     }
                 })
             }
@@ -170,16 +176,29 @@ export class TrackerMain {
             undo: this.undo.bind(this),
         }
         this.patternEdit.controller.callbacks = {
+            changeModule: this.changeModule.bind(this),
             jamPlay: this.jamPlay.bind(this),
             jamRelease: this.jamRelease.bind(this),
             setMute: this.setMute.bind(this),
-            changeModule: this.changeModule.bind(this),
+            getEntryCell: this.getEntryCell.bind(this),
+            setEntryCell: this.setEntryCell.bind(this),
         }
         this.samplesList.controller.callbacks = {
             jamPlay: this.jamPlay.bind(this),
             jamRelease: this.jamRelease.bind(this),
             changeModule: this.changeModule.bind(this),
+            getEntryCell: this.getEntryCell.bind(this),
+            setEntryCell: this.setEntryCell.bind(this),
         }
+        this.cellEntry.controller.callbacks = {
+            jamPlay: this.jamPlay.bind(this),
+            jamRelease: this.jamRelease.bind(this),
+            updateCell: () => {
+                this.patternEdit.controller.updateCell()
+                this.samplesList.controller.setSelSample(this.getEntryCell().inst)
+            },
+        }
+        this.patternEdit.controller.updateCell()
 
         window.onbeforeunload = () => (this.module.isUnsaved() ? 'You have unsaved changes' : null)
 
@@ -196,6 +215,7 @@ export class TrackerMain {
         this.refreshModule()
         this.patternEdit.controller.resetState()
         this.samplesList.controller.setSelSample(1)
+        this.cellEntry.controller.setSelSample(1)
     }
 
     /** @private */
@@ -327,9 +347,10 @@ export class TrackerMain {
      * @param {number} id
      * @param {Readonly<Cell>} cell
      */
-    jamPlay(id, cell, {useChannel = true} = {}) {
+    jamPlay(id, cell) {
         this.enablePlayback()
         this.enableAnimation()
+        let useChannel = !this.patternEdit.classList.contains('hide')
         let channel = useChannel ? this.patternEdit.controller.selChannel() : -1
         $play.jamPlay(this.playback, id, channel, cell)
     }
@@ -342,6 +363,18 @@ export class TrackerMain {
         if (!this.isPlaying() && this.playback.jamChannels.size == 0) {
             this.disableAnimation()
         }
+    }
+
+    getEntryCell() {
+        return this.cellEntry.controller.getCell()
+    }
+
+    /**
+     * @param {Readonly<Cell>} cell
+     * @param {CellPart} parts
+     */
+    setEntryCell(cell, parts) {
+        this.cellEntry.controller.setCell(cell, parts)
     }
 
     /** @private */
@@ -409,6 +442,7 @@ export class TrackerMain {
         this.moduleProperties.controller.setModule(this.module.value)
         this.patternEdit.controller.setModule(this.module.value)
         this.samplesList.controller.setSamples(this.module.value.samples)
+        this.cellEntry.controller.setSamples(this.module.value.samples)
         if (this.playback) {
             $play.setModule(this.playback, this.module.value)
         }

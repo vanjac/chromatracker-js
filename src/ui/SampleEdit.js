@@ -2,6 +2,7 @@ import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
+import * as $keyPad from './KeyPad.js'
 import * as $play from '../Playback.js'
 import * as $sample from '../edit/Sample.js'
 import * as $wave from '../edit/Wave.js'
@@ -13,9 +14,8 @@ import {AlertDialog, InputDialog, WaitDialogElement} from './dialogs/UtilDialogs
 import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
 import {clamp, minMax} from '../Util.js'
-import {Cell, Effect, mod, Sample} from '../Model.js'
+import {Cell, Effect, mod, Sample, CellPart} from '../Model.js'
 import global from './GlobalState.js'
-import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
@@ -101,14 +101,8 @@ const template = $dom.html`
     <div class="flex-grow"></div>
     <div class="hflex">
         <div class="flex-grow"></div>
-        <span id="jamCell" class="pattern-cell">
-            <span id="pitch" class="cell-pitch">...</span>
-            <span id="inst" class="cell-inst">..</span>
-            <span id="effect" class="cell-effect">...</span>
-        </span>
-        <div class="flex-grow"></div>
+        <button id="useOffset">Offset</button>
     </div>
-    <piano-keyboard></piano-keyboard>
 </div>
 `
 
@@ -121,6 +115,8 @@ export class SampleEdit {
         /**
          * @type {JamCallbacks & {
          *      onChange(sample: Readonly<Sample>, commit: boolean): void
+                getEntryCell(): Readonly<Cell>
+                setEntryCell(cell: Readonly<Cell>, parts: CellPart): void
          * }}
          */
         this.callbacks = null
@@ -260,8 +256,10 @@ export class SampleEdit {
         /** @type {HTMLInputElement} */
         this.sampleRateInput = fragment.querySelector('#sampleRate')
 
-        this.jamCell = fragment.querySelector('#jamCell')
-        this.piano = fragment.querySelector('piano-keyboard')
+        $keyPad.makeKeyButton(fragment.querySelector('#useOffset'), id => {
+            this.useSampleOffset()
+            this.callbacks.jamPlay(id, this.callbacks.getEntryCell())
+        }, id => this.callbacks.jamRelease(id))
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('sample', 'object', this.viewSample,
@@ -270,19 +268,6 @@ export class SampleEdit {
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
-
-        this.piano.controller.callbacks = {
-            jamPlay: (...args) => this.callbacks.jamPlay(...args),
-            jamRelease: (...args) => this.callbacks.jamRelease(...args),
-            pitchChanged: this.updateJamCell.bind(this),
-            getJamCell: this.getJamCell.bind(this),
-        }
-        this.piano.controller.useChannel = false
-        this.piano.controller.scrollToSelPitch()
-    }
-
-    onVisible() {
-        this.piano.controller.scrollToSelPitch()
     }
 
     /**
@@ -290,7 +275,6 @@ export class SampleEdit {
      */
     setIndex(index) {
         this.index = index
-        this.updateJamCell()
     }
 
     /**
@@ -323,6 +307,7 @@ export class SampleEdit {
         this.fileInput.value = ''
 
         if (!this.viewSample || sample.wave != this.viewSample.wave) {
+            // TODO: async and only when visible!
             this.createSamplePreview(sample.wave)
         }
 
@@ -424,8 +409,6 @@ export class SampleEdit {
             let waveLen = this.viewSample.wave.length
             this.selectRange.style.width = (100 * this.selLen() / waveLen) + '%'
         }
-
-        this.updateJamCell()
     }
 
     /**
@@ -509,12 +492,7 @@ export class SampleEdit {
         return clamp(Math.round(pos), 0, this.viewSample.wave.length)
     }
 
-    /**
-     * @returns {Cell}
-     */
-    getJamCell() {
-        let pitch = this.piano.controller.getPitch()
-        let inst = this.index
+    useSampleOffset() {
         let effect = 0, param0 = 0, param1 = 0
         if (this.anySelected()) {
             let offset = Math.min(255, Math.floor(this.selMin() / 256))
@@ -524,12 +502,8 @@ export class SampleEdit {
                 param1 = offset & 0xf
             }
         }
-        return {pitch, inst, effect, param0, param1}
-    }
-
-    /** @private */
-    updateJamCell() {
-        $cell.setContents(this.jamCell, this.getJamCell())
+        this.callbacks.setEntryCell({...Cell.empty, effect, param0, param1},
+            CellPart.effect | CellPart.param)
     }
 
     /**
@@ -755,7 +729,7 @@ let testElem
 if (import.meta.main) {
     testElem = new SampleEditElement()
     testElem.controller.callbacks = {
-        jamPlay(id, cell, _options) {
+        jamPlay(id, cell) {
             console.log('Jam play', id, cell)
         },
         jamRelease(id) {
@@ -764,6 +738,12 @@ if (import.meta.main) {
         onChange(sample, commit) {
             console.log('Change', commit)
             testElem.controller.setSample(sample)
+        },
+        getEntryCell() {
+            return Cell.empty
+        },
+        setEntryCell(cell, parts) {
+            console.log('Set cell', parts, cell)
         },
     }
     $dom.displayMain(testElem)
