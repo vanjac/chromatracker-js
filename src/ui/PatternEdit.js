@@ -16,9 +16,9 @@ const template = $dom.html`
     <sequence-edit></sequence-edit>
     <div class="hflex">
         <div id="playbackStatus" class="hflex">
-            <label for="tempo">Tempo:</label>
+            <label for="tempo">BPM:</label>
             <input id="tempo" type="number" class="small-input" value="125" autocomplete="off">
-            <label for="speed">Speed:</label>
+            <label for="speed">Spd:</label>
             <input id="speed" type="number" class="small-input" value="6" autocomplete="off">
         </div>
         <div class="flex-grow"></div>
@@ -36,6 +36,10 @@ const template = $dom.html`
         <label class="label-button">
             <input id="select" type="checkbox">
             <span>${$icons.selection}</span>
+        </label>
+        <label class="label-button">
+            <input id="scrollLock" type="checkbox">
+            <span>L</span>
         </label>
     </div>
     <pattern-table></pattern-table>
@@ -114,6 +118,8 @@ export class PatternEdit {
         this.selectInput = fragment.querySelector('#select')
         this.playbackStatus = fragment.querySelector('#playbackStatus')
         this.selectTools = fragment.querySelector('#selectTools')
+        /** @type {HTMLInputElement} */
+        let scrollLockCheck = fragment.querySelector('#scrollLock')
         /** @type {HTMLElement} */
         this.entryCell = fragment.querySelector('#entryCell')
 
@@ -132,6 +138,10 @@ export class PatternEdit {
             } else {
                 this.patternTable.controller.clearMark()
             }
+        })
+
+        scrollLockCheck.addEventListener('change', () => {
+            this.patternTable.controller.setScrollLock(scrollLockCheck.checked)
         })
 
         $keyPad.makeKeyButton(this.entryCell,

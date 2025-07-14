@@ -8,21 +8,15 @@ import {minMax} from '../Util.js'
 /** @import {JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
-<div class="vflex flex-grow pos-relative">
-    <label class="label-button pos-absolute top right z-above">
-        <input id="scrollLock" type="checkbox">
-        <span>L</span>
-    </label>
-    <div id="patternScroll" class="hscrollable vscrollable flex-grow">
-        <div class="pattern-table-space"></div>
-        <table>
-            <thead>
-                <tr></tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <div class="pattern-table-space"></div>
-    </div>
+<div id="patternScroll" class="hscrollable vscrollable flex-grow">
+    <div class="pattern-table-space"></div>
+    <table>
+        <thead>
+            <tr></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <div class="pattern-table-space"></div>
 </div>
 `
 
@@ -67,12 +61,6 @@ export class PatternTable {
         this.tbody = fragment.querySelector('tbody')
         /** @type {HTMLInputElement[]} */
         this.muteInputs = []
-
-        /** @type {HTMLInputElement} */
-        let scrollLockCheck = fragment.querySelector('#scrollLock')
-        scrollLockCheck.addEventListener('change', () => {
-            this.patternScroll.classList.toggle('scroll-lock', scrollLockCheck.checked)
-        })
 
         $keyPad.create(this.tbody, (id, elem) => {
             let td = elem.closest('td')
@@ -301,6 +289,13 @@ export class PatternTable {
             return false
         }
         return ! this.muteInputs[channel].checked
+    }
+
+    /**
+     * @param {boolean} scrollLock
+     */
+    setScrollLock(scrollLock) {
+        this.patternScroll.classList.toggle('scroll-lock', scrollLock)
     }
 }
 export const PatternTableElement = $dom.defineView('pattern-table', PatternTable)
