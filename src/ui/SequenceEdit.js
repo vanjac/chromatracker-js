@@ -151,6 +151,10 @@ export class SequenceEdit {
         }
     }
 
+    scrollToSelPos() {
+        this.select.scrollIntoView({inline: 'center', behavior: 'instant'})
+    }
+
     /**
      * @private
      * @param {number} p
@@ -164,6 +168,7 @@ export class SequenceEdit {
         this.selPos++
         this.callbacks.changeModule(module =>
             $sequence.insert(module, this.selPos, module.sequence[this.selPos - 1]))
+        this.scrollToSelPos()
     }
 
     /** @private */
@@ -173,6 +178,7 @@ export class SequenceEdit {
             module = $pattern.clone(module, module.sequence[this.selPos - 1])
             return $sequence.insert(module, this.selPos, module.patterns.length - 1)
         })
+        this.scrollToSelPos()
     }
 
     /** @private */

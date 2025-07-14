@@ -264,9 +264,12 @@ export class PatternEdit {
     /**
      * @param {number} pos
      */
-    setSelPos(pos) {
+    setSelPos(pos, scroll = false) {
         this.sequenceEdit.controller.setSelPos(pos)
         this.refreshPattern()
+        if (scroll) {
+            this.sequenceEdit.controller.scrollToSelPos()
+        }
     }
 
     selCell() {

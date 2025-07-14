@@ -424,9 +424,11 @@ export class TrackerMain {
 
                 this.patternEdit.controller.setTempoSpeed(curState.tempo, curState.speed)
                 if (this.playbackControls.controller.getFollow()) {
-                    this.patternEdit.controller.setSelPos(curState.pos)
                     this.patternEdit.controller.setSelCell(
                         this.patternEdit.controller.selChannel(), curState.row, true)
+                    if (this.patternEdit.controller.selPos() != curState.pos) {
+                        this.patternEdit.controller.setSelPos(curState.pos, true)
+                    }
                 }
                 this.patternEdit.controller.setPlaybackPos(curState.pos, curState.row)
             }
