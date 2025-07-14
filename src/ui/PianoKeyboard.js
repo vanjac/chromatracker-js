@@ -109,10 +109,7 @@ export class PianoKeyboard {
     scrollToSelPitch() {
         let selPitch = Number($dom.getRadioButtonValue(this.pitchInput, '0'))
         selPitch -= (selPitch % 12)
-        let parentRect = this.piano.getBoundingClientRect()
-        let childRect = this.pianoKeys[selPitch].getBoundingClientRect()
-        let scrollAmount = childRect.left - parentRect.left
-        this.piano.scrollBy({left: scrollAmount, behavior: 'instant'})
+        this.pianoKeys[selPitch].scrollIntoView({inline: 'start', behavior: 'instant'})
     }
 }
 export const PianoKeyboardElement = $dom.defineView('piano-keyboard', PianoKeyboard)

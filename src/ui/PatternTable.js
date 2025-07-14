@@ -289,11 +289,8 @@ export class PatternTable {
     }
 
     scrollToSelCell() {
-        let parentRect = this.patternScroll.getBoundingClientRect()
-        let childRect = this.tbody.children[this.selRow].getBoundingClientRect()
-        let centerY = this.patternScroll.clientHeight / 2
-        let scrollAmount = (childRect.top - parentRect.top) - centerY
-        this.patternScroll.scrollBy({top: scrollAmount, behavior: 'instant'})
+        let tr = this.tbody.children[this.selRow]
+        tr.scrollIntoView({block: 'center', behavior: 'instant'})
     }
 
     /**
