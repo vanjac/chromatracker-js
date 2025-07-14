@@ -100,7 +100,7 @@ export const Effect = Object.freeze({
     VolSlidePort:   0x5,
     VolSlideVib:    0x6,
     Tremolo:        0x7,
-    Panning:        0x8,
+    Panning:        0x8, // not supported by Protracker
     SampleOffset:   0x9,
     VolumeSlide:    0xA,
     PositionJump:   0xB,
