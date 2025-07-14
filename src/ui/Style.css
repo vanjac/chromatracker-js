@@ -29,6 +29,37 @@
     display: none;
 }
 
+.pos-relative {
+    /* Forms a Stacking Context, and a Containing Block for absolute-positioned elements. */
+    position: relative;
+}
+.pos-absolute {
+    position: absolute;
+}
+
+.top {
+    top: 0;
+}
+.left {
+    left: 0;
+}
+.bottom {
+    bottom: 0;
+}
+.right {
+    right: 0;
+}
+
+.z-0 {
+    z-index: 0;
+}
+.z-above {
+    z-index: 1;
+}
+.z-below {
+    z-index: -1;
+}
+
 hr {
     height: 6pt;
     border: none;

@@ -8,15 +8,21 @@ import {minMax} from '../Util.js'
 /** @import {JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
-<div id="patternScroll" class="hscrollable vscrollable flex-grow">
-    <div class="pattern-table-space"></div>
-    <table>
-        <thead>
-            <tr></tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <div class="pattern-table-space"></div>
+<div class="vflex flex-grow pos-relative">
+    <label class="label-button pos-absolute top right z-above">
+        <input id="scrollLock" type="checkbox">
+        <span>L</span>
+    </label>
+    <div id="patternScroll" class="hscrollable vscrollable flex-grow">
+        <div class="pattern-table-space"></div>
+        <table>
+            <thead>
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div class="pattern-table-space"></div>
+    </div>
 </div>
 `
 
@@ -61,6 +67,12 @@ export class PatternTable {
         this.tbody = fragment.querySelector('tbody')
         /** @type {HTMLInputElement[]} */
         this.muteInputs = []
+
+        /** @type {HTMLInputElement} */
+        let scrollLockCheck = fragment.querySelector('#scrollLock')
+        scrollLockCheck.addEventListener('change', () => {
+            this.patternScroll.classList.toggle('scroll-lock', scrollLockCheck.checked)
+        })
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('row', 'number', this.selRow,
