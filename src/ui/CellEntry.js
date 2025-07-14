@@ -2,7 +2,7 @@ import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
-import {Cell, CellPart, Sample} from '../Model.js'
+import {Cell, CellPart, Sample, Effect} from '../Model.js'
 import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './TrackerMain.js' */
 
@@ -29,16 +29,30 @@ const template = $dom.html`
             <option>3: Tone Port</option>
             <option>4: Vibrato</option>
             <option>5: Volslide+Port</option>
-            <option>6: Volslide+Vib</option>
+            <option>6: Volslide+Vibrato</option>
             <option>7: Tremolo</option>
             <option>8: Panning</option>
             <option>9: Offset</option>
             <option>A: Volume Slide</option>
-            <option>B: Pos. Jump</option>
+            <option>B: Position Jump</option>
             <option>C: Volume</option>
-            <option>D: Pat. Break</option>
+            <option>D: Pattern Break</option>
             <option>E: Extended</option>
             <option>F: Tempo</option>
+            <optgroup label="Extended">
+                <option value="1" name="1">E1: Port Up</option>
+                <option value="2" name="2">E2: Port Down</option>
+                <option value="4" name="4">E4: Vib. Wave</option>
+                <option value="5" name="5">E5: Finetune</option>
+                <option value="6" name="6">E6: Pat. Loop</option>
+                <option value="7" name="7">E7: Trem. Wave</option>
+                <option value="9" name="9">E9: Retrigger</option>
+                <option value="10" name="10">EA: Vol. Up</option>
+                <option value="11" name="11">EB: Vol. Down</option>
+                <option value="12" name="12">EC: Note Cut</option>
+                <option value="13" name="13">ED: Note Delay</option>
+                <option value="14" name="14">EE: Pat. Delay</option>
+            </optgroup>
         </select>
         <select id="param0Select">
             <option>0</option>
@@ -113,9 +127,13 @@ export class CellEntry {
 
         this.effectSelect.addEventListener('input', () => {
             this.param0Select.selectedIndex = this.param1Select.selectedIndex = 0
+            this.updateEffect()
             this.callbacks.updateCell()
         })
-        this.param0Select.addEventListener('input', () => this.callbacks.updateCell())
+        this.param0Select.addEventListener('input', () => {
+            this.updateEffect()
+            this.callbacks.updateCell()
+        })
         this.param1Select.addEventListener('input', () => this.callbacks.updateCell())
 
         $dom.disableFormSubmit(this.sampleList)
@@ -167,6 +185,10 @@ export class CellEntry {
         let effect = this.effectSelect.selectedIndex
         let param0 = this.param0Select.selectedIndex
         let param1 = this.param1Select.selectedIndex
+        if (effect > 15) {
+            effect = Effect.Extended
+            param0 = Number(this.effectSelect.value)
+        }
         return {pitch, inst, effect, param0, param1}
     }
 
@@ -218,20 +240,36 @@ export class CellEntry {
         }
         if (parts & CellPart.effect) {
             this.effectSelect.selectedIndex = cell.effect
+        }
+        if (parts & CellPart.param) {
             this.param0Select.selectedIndex = cell.param0
             this.param1Select.selectedIndex = cell.param1
         }
+        this.updateEffect()
         this.callbacks.updateCell()
+    }
+
+    /** @private */
+    updateEffect() {
+        if (this.effectSelect.selectedIndex == Effect.Extended) {
+            let param0 = this.param0Select.selectedIndex
+            if (this.effectSelect.namedItem(param0.toString())) {
+                this.effectSelect.value = param0.toString()
+            }
+        }
+        let hideParam0 = this.effectSelect.selectedIndex > 15
+        this.param0Select.classList.toggle('hide', hideParam0)
     }
 }
 export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)
 
+/** @type {InstanceType<typeof CellEntryElement>} */
 let testElem
 if (import.meta.main) {
     testElem = new CellEntryElement()
     testElem.controller.callbacks = {
         updateCell() {
-            console.log('Update cell')
+            console.log('Update cell', testElem.controller.getCell())
         },
         jamPlay(id, cell) {
             console.log('Jam play', id, cell)
