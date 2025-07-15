@@ -18,10 +18,14 @@ export function read(buf, sampleRate) {
             maxAmp = Math.min(maxAmp, 1)
             if (maxAmp == 0) { maxAmp = 1 }
 
-            let wave = new Int8Array(data.length)
+            let wave = new Int8Array(data.length % 2 ? (data.length + 1) : data.length)
             let error = 0
             for (let i = 0; i < data.length; i++) {
                 ;[wave[i], error] = $wave.dither(data[i] * 127.0 / maxAmp, error)
+            }
+            if (data.length % 2) {
+                // add extra sample to make length even
+                wave[wave.length - 1] = wave[wave.length - 2]
             }
             resolve(Object.freeze(
                 {...Sample.empty, wave, volume: Math.round(mod.maxVolume * maxAmp)}))

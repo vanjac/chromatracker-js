@@ -99,7 +99,9 @@ export function spliceEffect(sample, start, end, length, effect) {
     /** @param {number} pos */
     let transform = pos => {
         if (pos >= end) { return pos - (end - start) + length }
-        else if (pos > start) { return start + (pos - start) * length / (end - start) }
+        else if (pos > start) {
+            return Sample.roundToNearest(start + (pos - start) * length / (end - start))
+        }
         else { return pos }
     }
     let loopStart = transform(sample.loopStart)

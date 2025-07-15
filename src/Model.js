@@ -15,8 +15,8 @@ export const emptyArray = Object.freeze([])
 /**
  * @typedef {{
  *      name: string
- *      wave: Readonly<Int8Array>
- *      loopStart: number
+ *      wave: Readonly<Int8Array> // MOD format requires length to be even
+ *      loopStart: number // MOD format requires loop points to be even
  *      loopEnd: number
  *      finetune: number // -8 to 7
  *      volume: number
@@ -40,6 +40,20 @@ export const Sample = Object.freeze({
     hasLoop(s) {
         return s.loopEnd > s.loopStart
     },
+
+    /**
+     * @param {number} pos
+     */
+    roundToNearest(pos) {
+        return Math.round(pos / 2) * 2
+    },
+
+    /**
+     * @param {number} pos
+     */
+    roundDown(pos) {
+        return pos & ~1
+    }
 })
 
 /**

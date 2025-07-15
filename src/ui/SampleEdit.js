@@ -488,7 +488,7 @@ export class SampleEdit {
     pointerToWavePos(clientX) {
         let waveRect = this.wavePreview.getBoundingClientRect()
         let pos = (clientX - waveRect.left) * this.viewSample.wave.length / waveRect.width
-        return clamp(Math.round(pos), 0, this.viewSample.wave.length)
+        return clamp(Sample.roundToNearest(pos), 0, this.viewSample.wave.length)
     }
 
     useSampleOffset() {
@@ -685,7 +685,7 @@ export class SampleEdit {
         let defaultValue = global.lastResampleSemitones
         InputDialog.open('Semitones:', 'Resample', defaultValue).then(semitones => {
             let [start, end] = this.selRangeOrAll()
-            let length = (end - start) * (2 ** (-semitones / 12))
+            let length = Sample.roundToNearest((end - start) * (2 ** (-semitones / 12)))
             let newWave = $sample.spliceEffect(this.viewSample, start, end, length, $wave.resample)
             this.callbacks.onChange(newWave, true)
             if (this.rangeSelected()) {

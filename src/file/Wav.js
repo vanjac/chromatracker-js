@@ -75,7 +75,7 @@ export function read(buf) {
     let dataChunk = chunks['data']
     if (!dataChunk) { throw Error('Missing data chunk') }
     let numFrames = Math.floor(dataChunk.size / frameSize)
-    let wave = new Int8Array(numFrames)
+    let wave = new Int8Array(numFrames % 2 ? (numFrames + 1) : numFrames)
     if (sampleSize == 1 && fmtCode == formatPCM) {
         console.info('8-bit PCM')
         for (let i = 0; i < numFrames; i++) {
@@ -112,6 +112,10 @@ export function read(buf) {
             ;[wave[i], error] = $wave.dither(getSampleValue(i) / maxAmp, error)
         }
     }
+    if (numFrames % 2) {
+        // add extra sample to make length even
+        wave[wave.length - 1] = wave[wave.length - 2]
+    }
 
     let finetune = 0
     let loopStart = 0
@@ -124,8 +128,8 @@ export function read(buf) {
         let numLoops = view.getUint32(smplChunk.pos + 28, true)
         if (numLoops >= 1 && smplChunk.size >= smplChunkBaseSize + smplChunkLoopSize) {
             let loopPos = smplChunk.pos + smplChunkBaseSize
-            loopStart = view.getUint32(loopPos + 8, true)
-            loopEnd = view.getUint32(loopPos + 12, true)
+            loopStart = Sample.roundDown(view.getUint32(loopPos + 8, true))
+            loopEnd = Sample.roundDown(view.getUint32(loopPos + 12, true))
         }
     } else {
         // TODO: calculate finetune from sample rate
