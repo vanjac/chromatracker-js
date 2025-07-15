@@ -114,7 +114,7 @@ export const Effect = Object.freeze({
     VolSlidePort:   0x5,
     VolSlideVib:    0x6,
     Tremolo:        0x7,
-    Panning:        0x8,
+    Panning:        0x8, // not supported by Protracker
     SampleOffset:   0x9,
     VolumeSlide:    0xA,
     PositionJump:   0xB,
@@ -134,7 +134,7 @@ export const ExtEffect = Object.freeze({
     Finetune:       0x5,
     PatternLoop:    0x6,
     TremoloWave:    0x7,
-    Panning:        0x8, // effect 8xx is preferred
+    Panning:        0x8, // not supported by FastTracker, 8xx is preferred
     Retrigger:      0x9,
     FineVolumeUp:   0xA,
     FineVolumeDown: 0xB,
