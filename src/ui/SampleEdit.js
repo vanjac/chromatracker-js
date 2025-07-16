@@ -61,10 +61,11 @@ const template = $dom.html`
             <div id="loopEndMark" class="wave-mark wave-loop hide"></div>
         </div>
     </div>
-    <div class="vflex">
+    <div class="hflex">
         <label for="loopStart">Loop:</label>
-        <input id="loopStart" type="range" min="0" step="2" autocomplete="off">
-        <input id="loopEnd" type="range" min="0" step="2" autocomplete="off">
+        <input id="loopStart" type="number" class="med-input" min="0" step="2" autocomplete="off">
+        <span>&nbsp;to&nbsp;</span>
+        <input id="loopEnd" type="number" class="med-input" min="0" step="2" autocomplete="off">
     </div>
     <div class="hflex">
         <select id="selectMenu" class="med-menu">
@@ -181,13 +182,15 @@ export class SampleEdit {
         /** @type {HTMLInputElement} */
         this.loopStartInput = fragment.querySelector('#loopStart')
         $dom.addInputListeners(this.loopStartInput, commit =>
-            this.changeSample(sample => {sample.loopStart = this.loopStartInput.valueAsNumber},
-                commit, true))
+            this.changeSample(sample => {
+                sample.loopStart = Sample.roundToNearest(this.loopStartInput.valueAsNumber)
+            }, commit, true))
         /** @type {HTMLInputElement} */
         this.loopEndInput = fragment.querySelector('#loopEnd')
         $dom.addInputListeners(this.loopEndInput, commit =>
-            this.changeSample(sample => {sample.loopEnd = this.loopEndInput.valueAsNumber},
-                commit, true))
+            this.changeSample(sample => {
+                sample.loopEnd = Sample.roundToNearest(this.loopEndInput.valueAsNumber)
+            }, commit, true))
 
         $dom.addMenuListener(fragment.querySelector('#selectMenu'), value => {
             switch (value) {
