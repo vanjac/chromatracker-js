@@ -100,7 +100,7 @@ export function read(buf) {
         let loopEnd = loopStart + repLen * 2
 
         // The first two bytes will "always" (usually) be zeros but they should still be included
-        // TODO: is that correct?
+        // TODO: is that correct? need to write these also?
         let wave = new Int8Array(buf, wavePos, sampleLength).slice()
         wavePos += sampleLength
 

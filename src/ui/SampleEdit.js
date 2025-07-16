@@ -243,6 +243,11 @@ export class SampleEdit {
             this.changeSample(sample => {sample.finetune = this.finetuneInput.valueAsNumber},
                 commit)
             this.finetuneOutput.value = this.finetuneInput.value
+            if (!commit) {
+                this.callbacks.jamPlay(-1, this.callbacks.getEntryCell())
+            } else {
+                this.callbacks.jamRelease(-1)
+            }
         })
 
         /** @type {HTMLInputElement} */
