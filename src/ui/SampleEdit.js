@@ -183,13 +183,19 @@ export class SampleEdit {
         this.loopStartInput = fragment.querySelector('#loopStart')
         $dom.addInputListeners(this.loopStartInput, commit =>
             this.changeSample(sample => {
-                sample.loopStart = Sample.roundToNearest(this.loopStartInput.valueAsNumber)
+                sample.loopStart = this.loopStartInput.valueAsNumber
+                if (commit) {
+                    sample.loopStart = Sample.roundToNearest(sample.loopStart)
+                }
             }, commit, true))
         /** @type {HTMLInputElement} */
         this.loopEndInput = fragment.querySelector('#loopEnd')
         $dom.addInputListeners(this.loopEndInput, commit =>
             this.changeSample(sample => {
-                sample.loopEnd = Sample.roundToNearest(this.loopEndInput.valueAsNumber)
+                sample.loopEnd = this.loopEndInput.valueAsNumber
+                if (commit) {
+                    sample.loopEnd = Sample.roundToNearest(sample.loopEnd)
+                }
             }, commit, true))
 
         $dom.addMenuListener(fragment.querySelector('#selectMenu'), value => {
