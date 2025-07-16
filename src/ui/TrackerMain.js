@@ -210,7 +210,7 @@ export class TrackerMain {
      * @param {Readonly<Module>} module
      */
     resetEditorState(module) {
-        this.module.reset(module)
+        this.module = new Undoable(module)
 
         this.refreshModule()
         this.patternEdit.controller.resetState()

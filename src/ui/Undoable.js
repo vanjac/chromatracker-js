@@ -17,17 +17,6 @@ export class Undoable {
 
     /**
      * @param {T} value
-     */
-    reset(value) {
-        this.value = value
-        this.undoStack = []
-        this.redoStack = []
-        this.isCommitted = true
-        this.unsavedCount = 0
-    }
-
-    /**
-     * @param {T} value
      * @param {boolean} commit
      * @returns {boolean} Value was changed
      */
