@@ -53,7 +53,9 @@ export class SamplesList {
             () => this.createSampleEdit(Number(this.select.value)))
 
         fragment.querySelector('#addSample').addEventListener('click', () => this.addSample())
-        fragment.querySelector('#delSample').addEventListener('click', () => this.deleteSample())
+        /** @type {HTMLButtonElement} */
+        this.deleteButton = fragment.querySelector('#delSample')
+        this.deleteButton.addEventListener('click', () => this.deleteSample())
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -109,6 +111,7 @@ export class SamplesList {
             this.select.appendChild($dom.createElem('option', {value: i.toString(), textContent}))
         }
         this.setSelSample(selSample ? selSample : 1)
+        this.deleteButton.disabled = this.sampleEdit == null
     }
 
     /**

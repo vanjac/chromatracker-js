@@ -58,7 +58,9 @@ export class SequenceEdit {
         $dom.disableFormSubmit(this.sequenceList)
         fragment.querySelector('#seqInsSame').addEventListener('click', () => this.seqInsSame())
         fragment.querySelector('#seqInsClone').addEventListener('click', () => this.seqInsClone())
-        fragment.querySelector('#seqDel').addEventListener('click', () => this.seqDel())
+        /** @type {HTMLButtonElement} */
+        this.delButton = fragment.querySelector('#seqDel')
+        this.delButton.addEventListener('click', () => this.seqDel())
 
         this.select.addEventListener('input', () => this.seqSet(this.select.selectedIndex))
         this.select.addEventListener('contextmenu', () => {
@@ -109,6 +111,7 @@ export class SequenceEdit {
         }
         this.sequenceInput = this.sequenceList.elements.namedItem('sequence')
         $dom.selectRadioButton(this.sequenceInput, this.selPos.toString())
+        this.delButton.disabled = sequence.length <= 1
         this.updateSel()
     }
 
@@ -183,7 +186,7 @@ export class SequenceEdit {
 
     /** @private */
     seqDel() {
-        if (this.viewSequence.length == 1) {
+        if (this.viewSequence.length <= 1) {
             return
         }
         let pos = this.selPos

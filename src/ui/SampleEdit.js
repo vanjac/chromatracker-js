@@ -201,7 +201,9 @@ export class SampleEdit {
                 }
             }, commit, true))
 
-        fragment.querySelector('#trim').addEventListener('click', () => this.trim())
+        /** @type {HTMLButtonElement} */
+        this.trimButton = fragment.querySelector('#trim')
+        this.trimButton.addEventListener('click', () => this.trim())
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
         fragment.querySelector('#paste').addEventListener('click', () => this.paste())
@@ -413,12 +415,14 @@ export class SampleEdit {
             this.setMarkPos(this.selectMarkB, this.viewSample, this.selectB)
         }
 
-        this.selectRange.classList.toggle('hide', !this.rangeSelected())
-        if (this.rangeSelected()) {
+        let rangeSelected = this.rangeSelected()
+        this.selectRange.classList.toggle('hide', !rangeSelected)
+        if (rangeSelected) {
             this.setMarkPos(this.selectRange, this.viewSample, this.selMin())
             let waveLen = this.viewSample.wave.length
             this.selectRange.style.width = (100 * this.selLen() / waveLen) + '%'
         }
+        this.trimButton.disabled = !rangeSelected
     }
 
     /**
@@ -617,7 +621,8 @@ export class SampleEdit {
     /** @private */
     trim() {
         if (this.rangeSelected()) {
-            this.callbacks.onChange($sample.trim(this.viewSample, this.selMin(), this.selMax()), true)
+            this.callbacks.onChange(
+                $sample.trim(this.viewSample, this.selMin(), this.selMax()), true)
             this.selectNone()
         }
     }
@@ -630,12 +635,10 @@ export class SampleEdit {
 
     /** @private */
     cut() {
-        if (this.rangeSelected()) {
-            this.copy()
-            let [start, end] = this.sel()
-            this.callbacks.onChange($sample.del(this.viewSample, start, end), true)
-            this.setSel(start, start)
-        }
+        this.copy()
+        let [start, end] = this.selRangeOrAll()
+        this.callbacks.onChange($sample.del(this.viewSample, start, end), true)
+        this.setSel(start, start)
     }
 
     /**

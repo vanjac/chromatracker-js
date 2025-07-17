@@ -77,10 +77,12 @@ export class ModuleProperties {
         this.sequenceCountOutput = fragment.querySelector('#sequenceCount')
         /** @type {HTMLOutputElement} */
         this.fileSizeOutput = fragment.querySelector('#fileSize')
+        /** @type {HTMLButtonElement} */
+        this.delChannelsButton = fragment.querySelector('#delChannels')
 
         fragment.querySelector('#addChannels').addEventListener('click',
             () => this.callbacks.changeModule(module => $module.addChannels(module, 2)))
-        fragment.querySelector('#delChannels').addEventListener('click',
+        this.delChannelsButton.addEventListener('click',
             () => this.callbacks.changeModule(
                 module => $module.delChannels(module, module.numChannels - 2, 2)))
 
@@ -106,6 +108,7 @@ export class ModuleProperties {
         if (!this.viewModule || module.numChannels != this.viewModule.numChannels) {
             console.debug('update channel count')
             this.channelCountOutput.value = module.numChannels.toString()
+            this.delChannelsButton.disabled = module.numChannels <= 2
         }
         if (!this.viewModule || module.samples != this.viewModule.samples) {
             console.debug('update sample count')
