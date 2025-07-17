@@ -14,7 +14,7 @@ const template = $dom.html`
         <button id="addSample">
             ${$icons.plus}
         </button>
-        <button id="delSample">
+        <button id="delSample" disabled>
             ${$icons.close}
         </button>
     </div>
@@ -82,12 +82,14 @@ export class SamplesList {
         this.sampleEdit.controller.setIndex(idx)
         this.sampleEdit.controller.setSample(this.viewSamples[idx])
         this.callbacks.setEntryCell({...Cell.empty, inst: idx}, CellPart.inst)
+        this.deleteButton.disabled = false
     }
 
     /** @private */
     destroySampleEdit() {
         this.sampleEditContainer.textContent = ''
         this.sampleEdit = null
+        this.deleteButton.disabled = true
     }
 
     /**
@@ -111,7 +113,6 @@ export class SamplesList {
             this.select.appendChild($dom.createElem('option', {value: i.toString(), textContent}))
         }
         this.setSelSample(selSample ? selSample : 1)
-        this.deleteButton.disabled = this.sampleEdit == null
     }
 
     /**
