@@ -45,7 +45,7 @@ const template = $dom.html`
     <pattern-table></pattern-table>
     <div class="hflex">
         <button id="lift">
-            ${$icons.eyedropper}
+            ${$icons.export_}
         </button>
         <div class="flex-grow"></div>
         <span id="entryCell" class="pattern-cell">
