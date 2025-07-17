@@ -13,7 +13,7 @@ const template = $dom.html`
     <div class="hflex">
         <label class="label-button">
             <input id="sampleScrollLock" type="checkbox">
-            <span>L</span>
+            <span>${$icons.arrow_horizontal_lock}</span>
         </label>
         <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
     </div>

@@ -2,6 +2,7 @@ import * as $cell from './Cell.js'
 import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
+import * as $icons from '../gen/Icons.js'
 import {Cell} from '../Model.js'
 import periodTable from '../PeriodTable.js'
 /** @import {JamCallbacks} from './TrackerMain.js' */
@@ -10,7 +11,7 @@ const template = $dom.html`
 <div class="hflex">
     <label class="label-button">
         <input id="scrollLock" type="checkbox" checked>
-        <span>L</span>
+        <span>${$icons.arrow_horizontal_lock}</span>
     </label>
     <form id="piano" class="vflex flex-grow hscrollable scroll-lock" autocomplete="off">
         <div id="blackKeys" class="hflex">

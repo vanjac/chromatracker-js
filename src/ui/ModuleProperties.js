@@ -15,7 +15,7 @@ const template = $dom.html`
 
     <label for="channelCount">Channels:</label>
     <div class="hflex">
-        <output id="channelCount" class="small-input"></output>
+        <output id="channelCount" class="med-input"></output>
         <button id="delChannels">
             ${$icons.minus}
         </button>
@@ -29,7 +29,7 @@ const template = $dom.html`
 
     <label for="patternCount">Patterns:</label>
     <div class="hflex">
-        <output id="patternCount" class="small-input"></output>
+        <output id="patternCount" class="med-input"></output>
         <button id="patternZap">
             ${$icons.playlist_remove}
         </button>

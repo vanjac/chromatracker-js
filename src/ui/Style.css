@@ -100,10 +100,10 @@ input:disabled {
 }
 
 .small-input {
-    width: 48pt;
+    width: 4em;
 }
 .med-input {
-    width: 80pt;
+    width: 6em;
 }
 
 textarea {

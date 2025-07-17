@@ -72,13 +72,20 @@ const template = $dom.html`
             <option value="none">None</option>
             <option value="loop">Loop</option>
         </select>
-        <select id="editMenu" class="med-menu">
-            <option selected disabled hidden>Edit</option>
-            <option value="trim">Trim</option>
-            <option value="cut">Cut</option>
-            <option value="copy">Copy</option>
-            <option value="paste">Paste</option>
-        </select>
+        <button id="trim">
+            ${$icons.crop}
+        </button>
+        <button id="cut">
+            ${$icons.content_cut}
+        </button>
+        <button id="copy">
+            ${$icons.content_copy}
+        </button>
+        <button id="paste">
+            ${$icons.content_paste}
+        </button>
+    </div>
+    <div class="hflex">
         <select id="loopMenu" class="med-menu">
             <option selected disabled hidden>Loop</option>
             <option value="set">Set</option>
@@ -95,12 +102,10 @@ const template = $dom.html`
             <option value="resample">Resample</option>
             <option value="filter">Filter / EQ</option>
         </select>
+        <div class="flex-grow"></div>
+        <button id="useOffset">9xx Offset</button>
     </div>
     <div class="flex-grow"></div>
-    <div class="hflex">
-        <div class="flex-grow"></div>
-        <button id="useOffset">Offset</button>
-    </div>
 </div>
 `
 
@@ -196,19 +201,16 @@ export class SampleEdit {
                 }
             }, commit, true))
 
+        fragment.querySelector('#trim').addEventListener('click', () => this.trim())
+        fragment.querySelector('#cut').addEventListener('click', () => this.cut())
+        fragment.querySelector('#copy').addEventListener('click', () => this.copy())
+        fragment.querySelector('#paste').addEventListener('click', () => this.paste())
+
         $dom.addMenuListener(fragment.querySelector('#selectMenu'), value => {
             switch (value) {
                 case 'all': this.selectAll(); break
                 case 'none': this.selectNone(); break
                 case 'loop': this.selectLoop(); break
-            }
-        })
-        $dom.addMenuListener(fragment.querySelector('#editMenu'), value => {
-            switch (value) {
-                case 'trim': this.trim(); break
-                case 'cut': this.cut(); break
-                case 'copy': this.copy(); break
-                case 'paste': this.paste(); break
             }
         })
         $dom.addMenuListener(fragment.querySelector('#loopMenu'), value => {

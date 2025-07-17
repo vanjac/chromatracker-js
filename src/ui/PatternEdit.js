@@ -16,9 +16,9 @@ const template = $dom.html`
     <sequence-edit></sequence-edit>
     <div class="hflex">
         <div id="playbackStatus" class="hflex">
-            <label for="tempo">BPM:</label>
+            <label for="tempo">BPM</label>
             <input id="tempo" type="number" class="small-input" value="125" autocomplete="off">
-            <label for="speed">Spd:</label>
+            <label for="speed">Spd</label>
             <input id="speed" type="number" class="small-input" value="6" autocomplete="off">
         </div>
         <div class="flex-grow"></div>
@@ -39,7 +39,7 @@ const template = $dom.html`
         </label>
         <label class="label-button">
             <input id="scrollLock" type="checkbox">
-            <span>L</span>
+            <span>${$icons.arrow_vertical_lock}</span>
         </label>
     </div>
     <pattern-table></pattern-table>
@@ -64,7 +64,7 @@ const template = $dom.html`
             ${$icons.arrow_expand_down}
         </button>
         <button id="delete">
-            ${$icons.backspace_reverse_outline}
+            ${$icons.arrow_collapse_up}
         </button>
     </div>
     <div class="hflex">
