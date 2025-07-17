@@ -9,16 +9,16 @@ const template = $dom.html`
     <button id="playPattern">
         ${$icons.playlist_play}
     </button>
+    <label class="label-button hide">
+        <input id="patternLoop" type="checkbox">
+        <span>${$icons.repeat_variant}</span>
+    </label>
     <button id="playRow">
         ${$icons.play}
     </button>
     <button id="pause" class="hide show-checked">
         ${$icons.pause}
     </button>
-    <label class="label-button">
-        <input id="patternLoop" type="checkbox">
-        <span>${$icons.repeat_variant}</span>
-    </label>
     <label class="label-button">
         <input id="follow" type="checkbox" checked>
         <span>${$icons.format_indent_increase}</span>
@@ -53,6 +53,7 @@ export class PlaybackControls {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        this.playPatternButton = fragment.querySelector('#playPattern')
         this.playRowButton = fragment.querySelector('#playRow')
         this.pauseButton = fragment.querySelector('#pause')
         /** @type {HTMLInputElement} */
@@ -67,7 +68,7 @@ export class PlaybackControls {
             this.callbacks.resetPlayback()
             this.callbacks.play()
         })
-        fragment.querySelector('#playPattern').addEventListener('click', () => {
+        this.playPatternButton.addEventListener('click', () => {
             this.patternLoopInput.checked = true
             this.callbacks.resetPlayback({restoreSpeed: true, restorePos: true})
             this.callbacks.play()
@@ -96,8 +97,10 @@ export class PlaybackControls {
      * @param {boolean} playing
      */
     setPlayState(playing) {
+        this.playPatternButton.classList.toggle('hide', playing)
         this.playRowButton.classList.toggle('hide', playing)
         this.pauseButton.classList.toggle('hide', !playing)
+        this.patternLoopInput.parentElement.classList.toggle('hide', !playing)
     }
 
     /**
@@ -109,6 +112,7 @@ export class PlaybackControls {
 }
 export const PlaybackControlsElement = $dom.defineView('playback-controls', PlaybackControls)
 
+/** @type {InstanceType<typeof PlaybackControlsElement>} */
 let testElem
 if (import.meta.main) {
     testElem = new PlaybackControlsElement()
@@ -118,9 +122,11 @@ if (import.meta.main) {
         },
         play() {
             console.log('Play')
+            testElem.controller.setPlayState(true)
         },
         pause() {
             console.log('Pause')
+            testElem.controller.setPlayState(false)
         },
         updatePlaySettings() {
             console.log('Update play settings')
