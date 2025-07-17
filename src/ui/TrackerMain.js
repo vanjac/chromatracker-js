@@ -448,6 +448,7 @@ export class TrackerMain {
         if (this.playback) {
             $play.setModule(this.playback, this.module.value)
         }
+        this.playbackControls.controller.setUndoEnabled(this.module.canUndo())
         console.debug('===  end refresh  ===')
     }
 

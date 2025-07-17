@@ -51,6 +51,10 @@ export class Undoable {
         return this.change(fn(this.value), commit)
     }
 
+    canUndo() {
+        return this.undoStack.length != 0
+    }
+
     undo() {
         if (this.undoStack.length) {
             this.redoStack.push(this.value)

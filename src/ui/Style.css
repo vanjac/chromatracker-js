@@ -174,7 +174,10 @@ select,
 
 button:active,
 select:active,
-.label-button :active + span {
+.label-button :active + span,
+button:disabled,
+select:disabled
+.label-button :disabled + span {
     background: var(--color-bg-btn-press);
 }
 

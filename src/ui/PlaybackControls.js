@@ -59,6 +59,8 @@ export class PlaybackControls {
         this.patternLoopInput = fragment.querySelector('#patternLoop')
         /** @type {HTMLInputElement} */
         this.followInput = fragment.querySelector('#follow')
+        /** @type {HTMLButtonElement} */
+        this.undoButton = fragment.querySelector('#undo')
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
             this.patternLoopInput.checked = false
@@ -76,7 +78,7 @@ export class PlaybackControls {
         })
         this.pauseButton.addEventListener('click', () => this.callbacks.pause())
         this.patternLoopInput.addEventListener('change', () => this.callbacks.updatePlaySettings())
-        fragment.querySelector('#undo').addEventListener('click', () => this.callbacks.undo())
+        this.undoButton.addEventListener('click', () => this.callbacks.undo())
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -96,6 +98,13 @@ export class PlaybackControls {
     setPlayState(playing) {
         this.playRowButton.classList.toggle('hide', playing)
         this.pauseButton.classList.toggle('hide', !playing)
+    }
+
+    /**
+     * @param {boolean} enabled
+     */
+    setUndoEnabled(enabled) {
+        this.undoButton.disabled = !enabled
     }
 }
 export const PlaybackControlsElement = $dom.defineView('playback-controls', PlaybackControls)
