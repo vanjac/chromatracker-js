@@ -46,8 +46,6 @@ const template = $dom.html`
             <button id="save">
                 ${$icons.download}
             </button>
-            <label for="sampleRate">Resample:</label>
-            <input id="sampleRate" type="number" class="med-input" value="16574.27">
         </div>
     </div>
 
@@ -266,9 +264,6 @@ export class SampleEdit {
 
         fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
 
-        /** @type {HTMLInputElement} */
-        this.sampleRateInput = fragment.querySelector('#sampleRate')
-
         $keyPad.makeKeyButton(fragment.querySelector('#useOffset'), id => {
             this.useSampleOffset()
             this.callbacks.jamPlay(id, this.callbacks.getEntryCell())
@@ -459,7 +454,7 @@ export class SampleEdit {
         name = name.slice(0, mod.maxSampleNameLength)
 
         let reader = new FileReader()
-        reader.onload = () => {
+        reader.onload = async () => {
             if (reader.result instanceof ArrayBuffer) {
                 if ($wav.identify(reader.result)) {
                     try {
@@ -470,20 +465,32 @@ export class SampleEdit {
                         if (error instanceof Error) { AlertDialog.open(error.message) }
                     }
                 } else {
-                    let dialog = $dialog.open(new WaitDialogElement())
-                    let promise = $audio.read(reader.result, this.sampleRateInput.valueAsNumber)
-                    promise.then(({wave, volume}) => {
-                        $dialog.close(dialog)
-                        this.changeSample(sample => {
-                            sample.wave = wave
-                            sample.volume = volume
-                            sample.name = name
-                            sample.loopStart = sample.loopEnd = 0
-                        }, true, true)
-                    }).catch(/** @param {DOMException} error */ error => {
-                        $dialog.close(dialog)
-                        AlertDialog.open(`Error reading audio file.\n${error.message}`)
-                    })
+                    let sampleRate
+                    try {
+                        sampleRate = await InputDialog.open(
+                            'Resample (Hz)', 'Importing sample...', global.importSampleRate)
+                    } catch {
+                        return
+                    }
+                    global.importSampleRate = sampleRate
+                    let waitDialog = $dialog.open(new WaitDialogElement())
+                    let wave, volume
+                    try {
+                        ;({wave, volume} = await $audio.read(reader.result, sampleRate))
+                        $dialog.close(waitDialog)
+                    } catch(error) {
+                        $dialog.close(waitDialog)
+                        if (error instanceof DOMException) {
+                            AlertDialog.open(`Error reading audio file.\n${error.message}`)
+                        }
+                        return
+                    }
+                    this.changeSample(sample => {
+                        sample.wave = wave
+                        sample.volume = volume
+                        sample.name = name
+                        sample.loopStart = sample.loopEnd = 0
+                    }, true, true)
                 }
             }
         }
@@ -652,18 +659,19 @@ export class SampleEdit {
         if (!Sample.hasLoop(this.viewSample)) {
             return
         }
-        InputDialog.open('Count:', 'Repeat Loop', global.lastLoopRepeat).then(count => {
-            let {loopStart} = this.viewSample
-            let loopWave = this.viewSample.wave.subarray(loopStart, this.viewSample.loopEnd)
-            // TODO: this could be much more efficient
-            let newSample = this.viewSample
-            for (let i = 1; i < count; i++) {
-                newSample = $sample.splice(newSample, loopStart, loopStart, loopWave)
-            }
-            newSample = Object.freeze({...newSample, loopStart})
-            this.callbacks.onChange(newSample, true)
-            global.lastLoopRepeat = count
-        }).catch(console.warn)
+        InputDialog.open('Count:', 'Repeat Loop', global.lastLoopRepeat, {integerOnly: true})
+            .then(count => {
+                let {loopStart} = this.viewSample
+                let loopWave = this.viewSample.wave.subarray(loopStart, this.viewSample.loopEnd)
+                // TODO: this could be much more efficient
+                let newSample = this.viewSample
+                for (let i = 1; i < count; i++) {
+                    newSample = $sample.splice(newSample, loopStart, loopStart, loopWave)
+                }
+                newSample = Object.freeze({...newSample, loopStart})
+                this.callbacks.onChange(newSample, true)
+                global.lastLoopRepeat = count
+            }).catch(console.warn)
     }
 
     /** @private */

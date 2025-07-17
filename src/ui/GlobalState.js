@@ -7,6 +7,7 @@ export default {
     patternClipboard: emptyArray,
     /** @type {Record<string, string>} */
     effectFormData: Object.create(null),
+    importSampleRate: 16574.27,
     // Effect parameters
     lastResampleSemitones: 12,
     lastLoopRepeat: 2,
