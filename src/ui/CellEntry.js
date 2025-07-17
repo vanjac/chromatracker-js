@@ -19,7 +19,7 @@ const template = $dom.html`
     </div>
 
     <div class="hflex">
-        <button id="resetEffect">
+        <button id="resetEffect" disabled>
             ${$icons.close}
         </button>
         <select id="effectSelect">
@@ -118,6 +118,8 @@ export class CellEntry {
         this.sampleList = fragment.querySelector('#sampleList')
         /** @type {NamedFormItem} */
         this.sampleInput = null
+        /** @type {HTMLButtonElement} */
+        this.resetEffectButton = fragment.querySelector('#resetEffect')
         /** @type {HTMLSelectElement} */
         this.effectSelect = fragment.querySelector('#effectSelect')
         /** @type {HTMLSelectElement} */
@@ -128,13 +130,9 @@ export class CellEntry {
         this.effectSelect.addEventListener('input', () => {
             this.param0Select.selectedIndex = this.param1Select.selectedIndex = 0
             this.updateEffect()
-            this.callbacks.updateCell()
         })
-        this.param0Select.addEventListener('input', () => {
-            this.updateEffect()
-            this.callbacks.updateCell()
-        })
-        this.param1Select.addEventListener('input', () => this.callbacks.updateCell())
+        this.param0Select.addEventListener('input', () => this.updateEffect())
+        this.param1Select.addEventListener('input', () => this.updateEffect())
 
         $dom.disableFormSubmit(this.sampleList)
         $keyPad.create(this.sampleList, (id, elem) => {
@@ -151,7 +149,7 @@ export class CellEntry {
             this.sampleList.classList.toggle('scroll-lock', scrollLockCheck.checked)
         })
 
-        $keyPad.makeKeyButton(fragment.querySelector('#resetEffect'), id => {
+        $keyPad.makeKeyButton(this.resetEffectButton, id => {
             this.setCell(Cell.empty, CellPart.effect | CellPart.param)
             this.callbacks.jamPlay(id, this.getCell())
         }, id => this.callbacks.jamRelease(id))
@@ -246,7 +244,6 @@ export class CellEntry {
             this.param1Select.selectedIndex = cell.param1
         }
         this.updateEffect()
-        this.callbacks.updateCell()
     }
 
     /** @private */
@@ -259,6 +256,10 @@ export class CellEntry {
         }
         let hideParam0 = this.effectSelect.selectedIndex > 15
         this.param0Select.classList.toggle('hide', hideParam0)
+        this.resetEffectButton.disabled = this.effectSelect.selectedIndex == 0
+            && this.param0Select.selectedIndex == 0
+            && this.param1Select.selectedIndex == 0
+        this.callbacks.updateCell()
     }
 }
 export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)
