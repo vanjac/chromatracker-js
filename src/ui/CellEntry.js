@@ -203,16 +203,21 @@ export class CellEntry {
         let selSample = Number($dom.getRadioButtonValue(this.sampleInput, '1'))
 
         this.sampleList.textContent = ''
+        let anySamples = false
         for (let [i, sample] of samples.entries()) {
             if (!sample) {
                 continue
             }
+            anySamples = true
             let label = $util.makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key')
             this.sampleList.appendChild(label)
         }
         this.sampleInput = this.sampleList.elements.namedItem('sample')
         this.setSelSample(selSample)
+        if (!anySamples) {
+            this.sampleList.textContent = 'No instruments.'
+        }
     }
 
     /**
