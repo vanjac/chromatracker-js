@@ -23,40 +23,9 @@ const template = $dom.html`
         <button id="resetEffect" disabled>
             ${$icons.close}
         </button>
-        <select id="effectSelect">
-            <option selected>0: Arpeggio</option>
-            <option>1: Port Up</option>
-            <option>2: Port Down</option>
-            <option>3: Tone Port</option>
-            <option>4: Vibrato</option>
-            <option>5: Volslide+Port</option>
-            <option>6: Volslide+Vibrato</option>
-            <option>7: Tremolo</option>
-            <option>8: Panning</option>
-            <option>9: Offset</option>
-            <option>A: Volume Slide</option>
-            <option>B: Position Jump</option>
-            <option>C: Volume</option>
-            <option>D: Pattern Break</option>
-            <option>E: Extended</option>
-            <option>F: Tempo</option>
-            <optgroup label="Extended">
-                <option value="1" name="1">E1: Port Up</option>
-                <option value="2" name="2">E2: Port Down</option>
-                <option value="4" name="4">E4: Vib. Wave</option>
-                <option value="5" name="5">E5: Finetune</option>
-                <option value="6" name="6">E6: Pat. Loop</option>
-                <option value="7" name="7">E7: Trem. Wave</option>
-                <option value="9" name="9">E9: Retrigger</option>
-                <option value="10" name="10">EA: Vol. Up</option>
-                <option value="11" name="11">EB: Vol. Down</option>
-                <option value="12" name="12">EC: Note Cut</option>
-                <option value="13" name="13">ED: Note Delay</option>
-                <option value="14" name="14">EE: Pat. Delay</option>
-            </optgroup>
-        </select>
-        <button id="param0">0</button>
-        <button id="param1">0</button>
+        <button id="effect" class="flex-grow justify-start"></button>
+        <button id="param0"></button>
+        <button id="param1"></button>
     </div>
 
     <div id="effectKeyboard" class="hide hflex">
@@ -85,6 +54,20 @@ const template = $dom.html`
 </div>
 `
 
+const effectNames = Object.freeze([
+    'Arpeggio', 'Port Up', 'Port Down', 'Tone Port',
+    'Vibrato', 'Vol + Port', 'Vol + Vibrato', 'Tremolo',
+    'Panning', 'Offset', 'Volume Slide', 'Pos. Jump',
+    'Volume', 'Pat. Break', 'Extended...', 'Tempo',
+])
+
+const extEffectNames = Object.freeze([
+    '', 'Port Up', 'Port Down', '',
+    'Vib. Wave', 'Finetune', 'Pat. Loop', 'Trem. Wave',
+    '', 'Retrigger', 'Volume Up', 'Volume Down',
+    'Note Cut', 'Note Delay', 'Pat. Delay', '',
+])
+
 export class CellEntry {
     /**
      * @param {HTMLElement} view
@@ -100,6 +83,8 @@ export class CellEntry {
         /** @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
 
+        /** @type {number} */
+        this.effect = Effect.Arpeggio
         this.param0 = 0
         this.param1 = 0
 
@@ -116,16 +101,13 @@ export class CellEntry {
         this.sampleInput = null
         this.effectSection = fragment.querySelector('#effectSection')
         this.resetEffectButton = type(HTMLButtonElement, fragment.querySelector('#resetEffect'))
-        this.effectSelect = type(HTMLSelectElement, fragment.querySelector('#effectSelect'))
+        this.effectButton = type(HTMLButtonElement, fragment.querySelector('#effect'))
         this.param0Button = type(HTMLButtonElement, fragment.querySelector('#param0'))
         this.param1Button = type(HTMLButtonElement, fragment.querySelector('#param1'))
         this.effectKeyboard = fragment.querySelector('#effectKeyboard')
         this.effectGrid = fragment.querySelector('#effectGrid')
 
-        this.effectSelect.addEventListener('input', () => {
-            this.param0 = this.param1 = 0
-            this.updateEffect()
-        })
+        this.effectButton.addEventListener('click', () => this.openEffectKeyboard(0))
         this.param0Button.addEventListener('click', () => this.openEffectKeyboard(1))
         this.param1Button.addEventListener('click', () => this.openEffectKeyboard(2))
 
@@ -166,6 +148,7 @@ export class CellEntry {
         }
 
         this.firstVisible = false
+        this.updateEffect()
     }
 
     onVisible() {
@@ -181,12 +164,7 @@ export class CellEntry {
     getCell() {
         let pitch = this.piano.controller.getPitch()
         let inst = Number($dom.getRadioButtonValue(this.sampleInput, '0'))
-        let effect = this.effectSelect.selectedIndex
-        let {param0, param1} = this
-        if (effect > 15) {
-            effect = Effect.Extended
-            param0 = Number(this.effectSelect.value)
-        }
+        let {effect, param0, param1} = this
         return {pitch, inst, effect, param0, param1}
     }
 
@@ -242,29 +220,29 @@ export class CellEntry {
             $dom.selectRadioButton(this.sampleInput, cell.inst.toString())
         }
         if (parts & CellPart.effect) {
-            this.effectSelect.selectedIndex = cell.effect
+            this.effect = cell.effect
         }
         if (parts & CellPart.param) {
             this.param0 = cell.param0
             this.param1 = cell.param1
         }
         this.updateEffect()
+        this.callbacks.updateCell()
     }
 
     /** @private */
     updateEffect() {
+        let effectString
+        if (this.effect == Effect.Extended && extEffectNames[this.param0]) {
+            effectString = (this.effect.toString(16) + this.param0.toString(16)).toUpperCase()
+                + ': ' + extEffectNames[this.param0]
+        } else {
+            effectString = this.effect.toString(16).toUpperCase() + ': ' + effectNames[this.effect]
+        }
+        this.effectButton.textContent = effectString
         this.param0Button.textContent = this.param0.toString(16).toUpperCase()
         this.param1Button.textContent = this.param1.toString(16).toUpperCase()
-        if (this.effectSelect.selectedIndex == Effect.Extended) {
-            if (this.effectSelect.namedItem(this.param0.toString())) {
-                this.effectSelect.value = this.param0.toString()
-            }
-        }
-        let hideParam0 = this.effectSelect.selectedIndex > 15
-        this.param0Button.classList.toggle('hide', hideParam0)
-        this.resetEffectButton.disabled = this.effectSelect.selectedIndex == 0
-            && this.param0 == 0 && this.param1 == 0
-        this.callbacks.updateCell()
+        this.resetEffectButton.disabled = this.effect == 0 && this.param0 == 0 && this.param1 == 0
     }
 
     /**
@@ -280,18 +258,18 @@ export class CellEntry {
 
         let value = 0
         let desc = Object.freeze(Array(16).fill(''))
-        let cell = this.getCell()
         switch (this.editDigit) {
         case 0:
-            value = this.effectSelect.selectedIndex
+            value = this.effect
+            desc = effectNames
             break
         case 1:
             value = this.param0
-            desc = this.getParam0Descriptions(cell.effect)
+            desc = this.getParam0Descriptions(this.effect)
             break
         case 2:
             value = this.param1
-            desc = this.getParam1Descriptions(cell.effect, cell.param0)
+            desc = this.getParam1Descriptions(this.effect, this.param0)
             break
         }
         for (let i = 0; i < this.effectGrid.children.length; i++) {
@@ -315,11 +293,12 @@ export class CellEntry {
      */
     effectKeyboardButton(num) {
         switch (this.editDigit) {
-        case 0: this.effectSelect.selectedIndex = num; break
+        case 0: this.effect = num; break
         case 1: this.param0 = num; break
         case 2: this.param1 = num; break
         }
         this.updateEffect()
+        this.callbacks.updateCell()
         if (this.editDigit < 2) {
             this.openEffectKeyboard(this.editDigit + 1)
         } else {
@@ -357,12 +336,7 @@ export class CellEntry {
         case Effect.Speed:
             return keys.map(d => (d < 2) ? `${d * 16} ticks...` : `${d * 16} BPM...`)
         case Effect.Extended:
-            return [
-                '', 'Port Up', 'Port Down', '',
-                'Vib. Wave', 'Finetune', 'Pat. Loop', 'Trem. Wave',
-                '', 'Retrigger', 'Volume Up', 'Volume Down',
-                'Note Cut', 'Note Delay', 'Pat. Delay', ''
-            ]
+            return extEffectNames
         default:
             return keys.map(d => `${d * 16}...`)
         }
