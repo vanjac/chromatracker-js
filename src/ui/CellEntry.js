@@ -328,6 +328,8 @@ export class CellEntry {
             return keys.map(d => (d == 0) ? 'Same Speed' : `Speed ${d}`)
         case Effect.Panning:
             return keys.map(d => (d < 8) ? `L ${128 - d * 16}...` : `R ${d * 16 - 128}...`)
+        case Effect.SampleOffset:
+            return keys.map(d => `${d * 256 * 16}...`)
         case Effect.VolumeSlide:
         case Effect.VolSlidePort:
         case Effect.VolSlideVib:
@@ -364,13 +366,14 @@ export class CellEntry {
         case Effect.SlideDown:
             return keys.map(d => `- ${hexVal(d)}`)
         case Effect.Portamento:
-        case Effect.SampleOffset:
             return keys.map(d => (hexVal(d) == 0) ? 'Same' : `${hexVal(d)}`)
         case Effect.Vibrato:
         case Effect.Tremolo:
             return keys.map(d => (d == 0) ? 'Same Depth' :`Depth ${d}`)
         case Effect.Panning:
             return keys.map(d => (param0 < 8) ? `L ${128 - hexVal(d)}` : `R ${hexVal(d) - 128}`)
+        case Effect.SampleOffset:
+            return keys.map(d => (hexVal(d) == 0) ? 'Same' : `${hexVal(d) * 256}`)
         case Effect.VolumeSlide:
         case Effect.VolSlidePort:
         case Effect.VolSlideVib:
