@@ -4,7 +4,7 @@
 // https://github.com/libxmp/libxmp/blob/master/docs/tracker_notes.txt
 // https://padenot.github.io/web-audio-perf/
 
-import {clamp} from './Util.js'
+import {type, clamp} from './Util.js'
 import {Cell, Effect, emptyArray, ExtEffect, mod, Module, Sample} from './Model.js'
 import periodTable from './PeriodTable.js'
 
@@ -22,8 +22,7 @@ const minPeriod = 15
 
 function playback() {
     return {
-        /** @type {BaseAudioContext} */
-        ctx: null,
+        ctx: type(BaseAudioContext, null),
         /** @type {Readonly<Module>} */
         mod: null,
         /** @type {SamplePlayback[]} */
@@ -54,8 +53,7 @@ function playback() {
 function samplePlayback() {
     return {
         wave: Object.freeze(new Int8Array()),
-        /** @type {AudioBuffer} */
-        buffer: null, // null = empty wave
+        buffer: type(AudioBuffer, null), // null = empty wave
     }
 }
 
@@ -63,14 +61,11 @@ function samplePlayback() {
 
 function channelPlayback() {
     return {
-        /** @type {AudioBufferSourceNode} */
-        source: null,
+        source: type(AudioBufferSourceNode, null),
         /** @type {Sample} */
         sourceSample: null,
-        /** @type {GainNode} */
-        gain: null,
-        /** @type {StereoPannerNode} */
-        panner: null,
+        gain: type(GainNode, null),
+        panner: type(StereoPannerNode, null),
         sample: 0,
         sampleOffset: 0,
         period: 0,

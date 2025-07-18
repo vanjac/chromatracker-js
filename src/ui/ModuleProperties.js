@@ -3,6 +3,7 @@ import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
+import {type} from '../Util.js'
 import {Module} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './TrackerMain.js' */
 
@@ -60,25 +61,18 @@ export class ModuleProperties {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        /** @type {HTMLInputElement} */
-        this.titleInput = fragment.querySelector('#title')
+        this.titleInput = type(HTMLInputElement, fragment.querySelector('#title'))
         $dom.addInputListeners(this.titleInput, commit => {
             this.callbacks.changeModule(
                 module => $module.setName(module, this.titleInput.value), commit)
         })
 
-        /** @type {HTMLOutputElement} */
-        this.channelCountOutput = fragment.querySelector('#channelCount')
-        /** @type {HTMLOutputElement} */
-        this.sampleCountOutput = fragment.querySelector('#sampleCount')
-        /** @type {HTMLOutputElement} */
-        this.patternCountOutput = fragment.querySelector('#patternCount')
-        /** @type {HTMLOutputElement} */
-        this.sequenceCountOutput = fragment.querySelector('#sequenceCount')
-        /** @type {HTMLOutputElement} */
-        this.fileSizeOutput = fragment.querySelector('#fileSize')
-        /** @type {HTMLButtonElement} */
-        this.delChannelsButton = fragment.querySelector('#delChannels')
+        this.channelCountOutput = type(HTMLOutputElement, fragment.querySelector('#channelCount'))
+        this.sampleCountOutput = type(HTMLOutputElement, fragment.querySelector('#sampleCount'))
+        this.patternCountOutput = type(HTMLOutputElement, fragment.querySelector('#patternCount'))
+        this.sequenceCountOutput = type(HTMLOutputElement, fragment.querySelector('#sequenceCount'))
+        this.fileSizeOutput = type(HTMLOutputElement, fragment.querySelector('#fileSize'))
+        this.delChannelsButton = type(HTMLButtonElement, fragment.querySelector('#delChannels'))
 
         fragment.querySelector('#addChannels').addEventListener('click',
             () => this.callbacks.changeModule(module => $module.addChannels(module, 2)))

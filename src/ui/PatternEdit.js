@@ -5,6 +5,7 @@ import * as $keyPad from './KeyPad.js'
 import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
+import {type} from '../Util.js'
 import {Cell, CellPart, mod, Module, Pattern, Sample, Effect} from '../Model.js'
 import global from './GlobalState.js'
 import './PatternTable.js'
@@ -110,25 +111,17 @@ export class PatternEdit {
         this.sequenceEdit = fragment.querySelector('sequence-edit')
         this.patternTable = fragment.querySelector('pattern-table')
 
-        /** @type {HTMLInputElement} */
-        this.tempoInput = fragment.querySelector('#tempo')
-        /** @type {HTMLInputElement} */
-        this.speedInput = fragment.querySelector('#speed')
-        /** @type {HTMLInputElement} */
-        this.selectInput = fragment.querySelector('#select')
+        this.tempoInput = type(HTMLInputElement, fragment.querySelector('#tempo'))
+        this.speedInput = type(HTMLInputElement, fragment.querySelector('#speed'))
+        this.selectInput = type(HTMLInputElement, fragment.querySelector('#select'))
         this.playbackStatus = fragment.querySelector('#playbackStatus')
         this.selectTools = fragment.querySelector('#selectTools')
-        /** @type {HTMLInputElement} */
-        let scrollLockCheck = fragment.querySelector('#scrollLock')
-        /** @type {HTMLElement} */
-        this.entryCell = fragment.querySelector('#entryCell')
+        let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
+        this.entryCell = type(HTMLElement, fragment.querySelector('#entryCell'))
 
-        /** @type {HTMLInputElement} */
-        this.pitchEnable = fragment.querySelector('#pitchEnable')
-        /** @type {HTMLInputElement} */
-        this.sampleEnable = fragment.querySelector('#sampleEnable')
-        /** @type {HTMLInputElement} */
-        this.effectEnable = fragment.querySelector('#effectEnable')
+        this.pitchEnable = type(HTMLInputElement, fragment.querySelector('#pitchEnable'))
+        this.sampleEnable = type(HTMLInputElement, fragment.querySelector('#sampleEnable'))
+        this.effectEnable = type(HTMLInputElement, fragment.querySelector('#effectEnable'))
 
         this.selectInput.addEventListener('change', () => {
             this.selectTools.classList.toggle('hide', !this.selectInput.checked)

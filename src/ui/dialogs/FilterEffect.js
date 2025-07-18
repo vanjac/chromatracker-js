@@ -1,6 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {defaultSampleRate} from '../../Util.js'
+import {type, defaultSampleRate} from '../../Util.js'
 import global from '../GlobalState.js'
 
 const minGraphFreq = 20
@@ -96,22 +96,14 @@ export class FilterEffect {
         let fragment = template.cloneNode(true)
 
         this.form = fragment.querySelector('form')
-        /** @type {HTMLInputElement} */
-        this.typeInput = fragment.querySelector('#filterType')
-        /** @type {HTMLInputElement} */
-        this.envelopeEnableInput = fragment.querySelector('#freqEnvelope')
-        /** @type {HTMLInputElement} */
-        this.freqStartInput = fragment.querySelector('#frequency')
-        /** @type {HTMLInputElement} */
-        this.freqEndInput = fragment.querySelector('#freqEnd')
-        /** @type {HTMLInputElement} */
-        this.qInput = fragment.querySelector('#q')
-        /** @type {HTMLInputElement} */
-        this.gainInput = fragment.querySelector('#gain')
-        /** @type {HTMLInputElement} */
-        this.ditherInput = fragment.querySelector('#dither')
-        /** @type {HTMLCanvasElement} */
-        this.graph = fragment.querySelector('#graph')
+        this.typeInput = type(HTMLInputElement, fragment.querySelector('#filterType'))
+        this.envelopeEnableInput = type(HTMLInputElement, fragment.querySelector('#freqEnvelope'))
+        this.freqStartInput = type(HTMLInputElement, fragment.querySelector('#frequency'))
+        this.freqEndInput = type(HTMLInputElement, fragment.querySelector('#freqEnd'))
+        this.qInput = type(HTMLInputElement, fragment.querySelector('#q'))
+        this.gainInput = type(HTMLInputElement, fragment.querySelector('#gain'))
+        this.ditherInput = type(HTMLInputElement, fragment.querySelector('#dither'))
+        this.graph = type(HTMLCanvasElement, fragment.querySelector('#graph'))
 
         $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
         $dom.restoreFormData(this.form, this.inputNames(), global.effectFormData)

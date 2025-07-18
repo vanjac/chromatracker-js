@@ -1,6 +1,15 @@
 export const defaultSampleRate = 44100
 
 /**
+ * @template T
+ * @param {{ new(...args: any): T }} constructor
+ * @param {T} value
+ */
+export function type(constructor, value) {
+    return value
+}
+
+/**
  * @param {number} value
  * @param {number} min
  * @param {number} max

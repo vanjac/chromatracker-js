@@ -6,6 +6,7 @@ import * as $module from '../edit/Module.js'
 import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
 import {ConfirmDialog} from './dialogs/UtilDialogs.js'
+import {type} from '../Util.js'
 import {Cell, Module, CellPart} from '../Model.js'
 import appVersion from '../gen/Version.js'
 import './CellEntry.js'
@@ -92,8 +93,7 @@ export class TrackerMain {
 
         this.module = new Undoable($module.defaultNew)
 
-        /** @type {AudioContext} */
-        this.context = null
+        this.context = type(AudioContext, null)
         /** @type {$play.Playback} */
         this.playback = null
 
@@ -117,8 +117,7 @@ export class TrackerMain {
         this.samplesList = fragment.querySelector('samples-list')
         this.cellEntry = fragment.querySelector('cell-entry')
 
-        /** @type {HTMLFormElement} */
-        let tabForm = fragment.querySelector('#appTabs')
+        let tabForm = type(HTMLFormElement, fragment.querySelector('#appTabs'))
         $dom.disableFormSubmit(tabForm)
         let tabBody = fragment.querySelector('#appTabBody')
         for (let tabButton of tabForm.elements) {

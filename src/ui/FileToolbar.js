@@ -4,6 +4,7 @@ import * as $module from '../edit/Module.js'
 import * as $ext from '../file/External.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
+import {type} from '../Util.js'
 import {Module} from '../Model.js'
 import {AlertDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
 
@@ -52,8 +53,7 @@ export class FileToolbar {
         fragment.querySelector('#newModule').addEventListener('click',
             () => this.callbacks.moduleLoaded($module.defaultNew))
 
-        /** @type {HTMLInputElement} */
-        let fileSelect = fragment.querySelector('#fileSelect')
+        let fileSelect = type(HTMLInputElement, fragment.querySelector('#fileSelect'))
         fileSelect.addEventListener('change', () => {
             if (fileSelect.files.length == 1) {
                 this.readModuleBlob(fileSelect.files[0])

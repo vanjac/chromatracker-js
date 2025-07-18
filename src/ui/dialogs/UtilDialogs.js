@@ -1,5 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
+import {type} from '../../Util.js'
 
 const alertDialogTemplate = $dom.html`
 <form class="vflex dialog message-dialog">
@@ -28,8 +29,7 @@ export class AlertDialog {
 
         $dialog.addFormListener(this.view, fragment.querySelector('form'), this.submit.bind(this))
         fragment.querySelector('#title').textContent = this.title
-        /** @type {HTMLOutputElement} */
-        let messageOut = fragment.querySelector('#message')
+        let messageOut = type(HTMLOutputElement, fragment.querySelector('#message'))
         messageOut.value = this.message
 
         this.view.style.display = 'contents'
@@ -86,8 +86,7 @@ export class ConfirmDialog {
 
         $dialog.addFormListener(this.view, fragment.querySelector('form'), this.submit.bind(this))
         fragment.querySelector('#title').textContent = this.title
-        /** @type {HTMLOutputElement} */
-        let messageOut = fragment.querySelector('#message')
+        let messageOut = type(HTMLOutputElement, fragment.querySelector('#message'))
         messageOut.value = this.message
 
         fragment.querySelector('#cancel').addEventListener('click', () => {

@@ -1,5 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
+import {type} from '../../Util.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -32,10 +33,8 @@ export class AmplifyEffect {
         let fragment = template.cloneNode(true)
 
         this.form = fragment.querySelector('form')
-        /** @type {HTMLInputElement} */
-        this.amountInput = fragment.querySelector('#amp')
-        /** @type {HTMLInputElement} */
-        this.ditherInput = fragment.querySelector('#dither')
+        this.amountInput = type(HTMLInputElement, fragment.querySelector('#amp'))
+        this.ditherInput = type(HTMLInputElement, fragment.querySelector('#dither'))
 
         $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
         $dom.restoreFormData(this.form, this.inputNames(), global.effectFormData)

@@ -3,6 +3,7 @@ import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
+import {type} from '../Util.js'
 import {Cell} from '../Model.js'
 import periodTable from '../PeriodTable.js'
 /** @import {JamCallbacks} from './TrackerMain.js' */
@@ -40,8 +41,7 @@ export class PianoKeyboard {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        /** @type {HTMLFormElement} */
-        this.piano = fragment.querySelector('#piano')
+        this.piano = type(HTMLFormElement, fragment.querySelector('#piano'))
         /** @type {NamedFormItem} */
         this.pitchInput = null
 
@@ -60,8 +60,7 @@ export class PianoKeyboard {
             }
         }, id => this.callbacks.jamRelease(id))
 
-        /** @type {HTMLInputElement} */
-        let scrollLockCheck = fragment.querySelector('#scrollLock')
+        let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
         scrollLockCheck.addEventListener('change', () => {
             this.piano.classList.toggle('scroll-lock', scrollLockCheck.checked)
         })

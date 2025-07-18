@@ -2,6 +2,7 @@ import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
+import {type} from '../Util.js'
 import {Cell, CellPart, Sample, Effect} from '../Model.js'
 import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './TrackerMain.js' */
@@ -114,18 +115,13 @@ export class CellEntry {
         let fragment = template.cloneNode(true)
 
         this.piano = fragment.querySelector('piano-keyboard')
-        /** @type {HTMLFormElement} */
-        this.sampleList = fragment.querySelector('#sampleList')
+        this.sampleList = type(HTMLFormElement, fragment.querySelector('#sampleList'))
         /** @type {NamedFormItem} */
         this.sampleInput = null
-        /** @type {HTMLButtonElement} */
-        this.resetEffectButton = fragment.querySelector('#resetEffect')
-        /** @type {HTMLSelectElement} */
-        this.effectSelect = fragment.querySelector('#effectSelect')
-        /** @type {HTMLSelectElement} */
-        this.param0Select = fragment.querySelector('#param0Select')
-        /** @type {HTMLSelectElement} */
-        this.param1Select = fragment.querySelector('#param1Select')
+        this.resetEffectButton = type(HTMLButtonElement, fragment.querySelector('#resetEffect'))
+        this.effectSelect = type(HTMLSelectElement, fragment.querySelector('#effectSelect'))
+        this.param0Select = type(HTMLSelectElement, fragment.querySelector('#param0Select'))
+        this.param1Select = type(HTMLSelectElement, fragment.querySelector('#param1Select'))
 
         this.effectSelect.addEventListener('input', () => {
             this.param0Select.selectedIndex = this.param1Select.selectedIndex = 0
@@ -143,8 +139,7 @@ export class CellEntry {
             }
         }, id => this.callbacks.jamRelease(id))
 
-        /** @type {HTMLInputElement} */
-        let scrollLockCheck = fragment.querySelector('#sampleScrollLock')
+        let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#sampleScrollLock'))
         scrollLockCheck.addEventListener('change', () => {
             this.sampleList.classList.toggle('scroll-lock', scrollLockCheck.checked)
         })

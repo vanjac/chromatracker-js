@@ -3,6 +3,7 @@ import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import * as $sample from '../edit/Sample.js'
 import * as $icons from '../gen/Icons.js'
+import {type} from '../Util.js'
 import {SampleEditElement} from './SampleEdit.js'
 import {Cell, Sample, CellPart} from '../Model.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './TrackerMain.js' */
@@ -43,8 +44,7 @@ export class SamplesList {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        /** @type {HTMLSelectElement} */
-        this.select = fragment.querySelector('#sampleSelect')
+        this.select = type(HTMLSelectElement, fragment.querySelector('#sampleSelect'))
         this.sampleEditContainer = fragment.querySelector('#sampleEditContainer')
         /** @type {InstanceType<typeof SampleEditElement>} */
         this.sampleEdit = null
@@ -53,8 +53,7 @@ export class SamplesList {
             () => this.createSampleEdit(Number(this.select.value)))
 
         fragment.querySelector('#addSample').addEventListener('click', () => this.addSample())
-        /** @type {HTMLButtonElement} */
-        this.deleteButton = fragment.querySelector('#delSample')
+        this.deleteButton = type(HTMLButtonElement, fragment.querySelector('#delSample'))
         this.deleteButton.addEventListener('click', () => this.deleteSample())
 
         this.view.style.display = 'contents'
@@ -151,6 +150,7 @@ export class SamplesList {
         } else if (!this.sampleEdit || idx != this.sampleEdit.controller.index) {
             this.createSampleEdit(idx)
         } else {
+            // TODO: recreate when index changed?
             this.sampleEdit.controller.setSample(this.viewSamples[idx])
         }
     }

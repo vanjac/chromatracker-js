@@ -1,5 +1,6 @@
 import * as $dom from './DOMUtil.js'
 import * as $icons from '../gen/Icons.js'
+import {type} from '../Util.js'
 
 const template = $dom.html`
 <div class="hflex">
@@ -56,12 +57,9 @@ export class PlaybackControls {
         this.playPatternButton = fragment.querySelector('#playPattern')
         this.playRowButton = fragment.querySelector('#playRow')
         this.pauseButton = fragment.querySelector('#pause')
-        /** @type {HTMLInputElement} */
-        this.patternLoopInput = fragment.querySelector('#patternLoop')
-        /** @type {HTMLInputElement} */
-        this.followInput = fragment.querySelector('#follow')
-        /** @type {HTMLButtonElement} */
-        this.undoButton = fragment.querySelector('#undo')
+        this.patternLoopInput = type(HTMLInputElement, fragment.querySelector('#patternLoop'))
+        this.followInput = type(HTMLInputElement, fragment.querySelector('#follow'))
+        this.undoButton = type(HTMLButtonElement, fragment.querySelector('#undo'))
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
             this.patternLoopInput.checked = false

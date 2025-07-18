@@ -5,6 +5,7 @@ import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $icons from '../gen/Icons.js'
+import {type} from '../Util.js'
 import {Pattern} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './TrackerMain.js' */
 
@@ -46,20 +47,17 @@ export class SequenceEdit {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        /** @type {HTMLFormElement} */
-        this.sequenceList = fragment.querySelector('#seqList')
+        this.sequenceList = type(HTMLFormElement, fragment.querySelector('#seqList'))
         /** @type {Element[]} */
         this.sequenceButtons = []
         /** @type {NamedFormItem} */
         this.sequenceInput = null
-        /** @type {HTMLSelectElement} */
-        this.select = fragment.querySelector('#patternSelect')
+        this.select = type(HTMLSelectElement, fragment.querySelector('#patternSelect'))
 
         $dom.disableFormSubmit(this.sequenceList)
         fragment.querySelector('#seqInsSame').addEventListener('click', () => this.seqInsSame())
         fragment.querySelector('#seqInsClone').addEventListener('click', () => this.seqInsClone())
-        /** @type {HTMLButtonElement} */
-        this.delButton = fragment.querySelector('#seqDel')
+        this.delButton = type(HTMLButtonElement, fragment.querySelector('#seqDel'))
         this.delButton.addEventListener('click', () => this.seqDel())
 
         this.select.addEventListener('input', () => this.seqSet(this.select.selectedIndex))
