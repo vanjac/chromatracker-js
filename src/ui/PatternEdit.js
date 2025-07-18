@@ -68,7 +68,7 @@ const template = $dom.html`
             ${$icons.arrow_collapse_up}
         </button>
     </div>
-    <div class="hflex">
+    <div id="partToggles" class="hflex">
         <label class="label-button flex-grow">
             <input id="pitchEnable" type="checkbox" checked>
             <span>Pitch</span>
@@ -119,6 +119,7 @@ export class PatternEdit {
         let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
         this.entryCell = type(HTMLElement, fragment.querySelector('#entryCell'))
 
+        this.partToggles = type(HTMLElement, fragment.querySelector('#partToggles'))
         this.pitchEnable = type(HTMLInputElement, fragment.querySelector('#pitchEnable'))
         this.sampleEnable = type(HTMLInputElement, fragment.querySelector('#sampleEnable'))
         this.effectEnable = type(HTMLInputElement, fragment.querySelector('#effectEnable'))
@@ -368,6 +369,13 @@ export class PatternEdit {
         let parts = this.getCellParts()
         $cell.toggleParts(this.entryCell, parts)
         this.patternTable.controller.setEntryParts(parts)
+    }
+
+    /**
+     * @param {boolean} visible
+     */
+    setPartTogglesVisible(visible) {
+        this.partToggles.classList.toggle('hide', !visible)
     }
 
     /**
