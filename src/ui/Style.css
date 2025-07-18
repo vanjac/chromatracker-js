@@ -29,6 +29,11 @@
     display: none !important;
 }
 
+.shrink-clip-y {
+    min-height: 0;
+    overflow-y: clip;
+}
+
 .pos-relative {
     /* Forms a Stacking Context, and a Containing Block for absolute-positioned elements. */
     position: relative;

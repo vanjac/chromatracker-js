@@ -72,10 +72,10 @@ const template = $dom.html`
         <div class="flex-grow"></div>
         <em>Version:&nbsp;<code id="version"></code></em>
     </div>
-    <div id="sequence" class="vflex flex-grow hide">
+    <div id="sequence" class="vflex flex-grow shrink-clip-y hide">
         <pattern-edit></pattern-edit>
     </div>
-    <div id="samples" class="vflex flex-grow hide">
+    <div id="samples" class="vflex flex-grow shrink-clip-y hide">
         <samples-list></samples-list>
     </div>
 </div>
