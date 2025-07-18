@@ -55,14 +55,14 @@ const template = $dom.html`
 `
 
 const effectNames = Object.freeze([
-    'Arpeggio', 'Port Up', 'Port Down', 'Tone Port',
-    'Vibrato', 'Vol + Port', 'Vol + Vibrato', 'Tremolo',
+    'Arpeggio', 'Slide Up', 'Slide Down', 'Portamento',
+    'Vibrato', 'Port + Vol', 'Vibrato + Vol', 'Tremolo',
     'Panning', 'Offset', 'Volume Slide', 'Pos. Jump',
     'Volume', 'Pat. Break', 'Extended...', 'Tempo',
 ])
 
 const extEffectNames = Object.freeze([
-    '', 'Port Up', 'Port Down', '',
+    '', 'Slide Up', 'Slide Down', '',
     'Vib. Wave', 'Finetune', 'Pat. Loop', 'Trem. Wave',
     '', 'Retrigger', 'Volume Up', 'Volume Down',
     'Note Cut', 'Note Delay', 'Pat. Delay', '',
