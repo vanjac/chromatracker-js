@@ -11,7 +11,7 @@ const template = $dom.html`
 <div class="vflex">
     <piano-keyboard></piano-keyboard>
 
-    <div class="hflex">
+    <div id="sampleSection" class="hflex">
         <label class="label-button">
             <input id="sampleScrollLock" type="checkbox">
             <span>${$icons.arrow_horizontal_lock}</span>
@@ -19,7 +19,7 @@ const template = $dom.html`
         <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
     </div>
 
-    <div class="hflex">
+    <div id="effectSection" class="hflex">
         <button id="resetEffect" disabled>
             ${$icons.close}
         </button>
@@ -55,42 +55,32 @@ const template = $dom.html`
                 <option value="14" name="14">EE: Pat. Delay</option>
             </optgroup>
         </select>
-        <select id="param0Select">
-            <option>0</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-            <option>5</option>
-            <option>6</option>
-            <option>7</option>
-            <option>8</option>
-            <option>9</option>
-            <option>A</option>
-            <option>B</option>
-            <option>C</option>
-            <option>D</option>
-            <option>E</option>
-            <option>F</option>
-        </select>
-        <select id="param1Select">
-            <option>0</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-            <option>5</option>
-            <option>6</option>
-            <option>7</option>
-            <option>8</option>
-            <option>9</option>
-            <option>A</option>
-            <option>B</option>
-            <option>C</option>
-            <option>D</option>
-            <option>E</option>
-            <option>F</option>
-        </select>
+        <button id="param0">0</button>
+        <button id="param1">0</button>
+    </div>
+
+    <div id="effectKeyboard" class="hide hflex">
+        <button id="closeEffectKeyboard">
+            ${$icons.arrow_left}
+        </button>
+        <div id="effectGrid" class="hex-grid flex-grow">
+            <button>0</button>
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>4</button>
+            <button>5</button>
+            <button>6</button>
+            <button>7</button>
+            <button>8</button>
+            <button>9</button>
+            <button>A</button>
+            <button>B</button>
+            <button>C</button>
+            <button>D</button>
+            <button>E</button>
+            <button>F</button>
+        </div>
     </div>
 </div>
 `
@@ -109,26 +99,35 @@ export class CellEntry {
         this.callbacks
         /** @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
+
+        this.param0 = 0
+        this.param1 = 0
+
+        this.editDigit = 0
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
         this.piano = fragment.querySelector('piano-keyboard')
+        this.sampleSection = fragment.querySelector('#sampleSection')
         this.sampleList = type(HTMLFormElement, fragment.querySelector('#sampleList'))
         /** @type {NamedFormItem} */
         this.sampleInput = null
+        this.effectSection = fragment.querySelector('#effectSection')
         this.resetEffectButton = type(HTMLButtonElement, fragment.querySelector('#resetEffect'))
         this.effectSelect = type(HTMLSelectElement, fragment.querySelector('#effectSelect'))
-        this.param0Select = type(HTMLSelectElement, fragment.querySelector('#param0Select'))
-        this.param1Select = type(HTMLSelectElement, fragment.querySelector('#param1Select'))
+        this.param0Button = type(HTMLButtonElement, fragment.querySelector('#param0'))
+        this.param1Button = type(HTMLButtonElement, fragment.querySelector('#param1'))
+        this.effectKeyboard = fragment.querySelector('#effectKeyboard')
+        this.effectGrid = fragment.querySelector('#effectGrid')
 
         this.effectSelect.addEventListener('input', () => {
-            this.param0Select.selectedIndex = this.param1Select.selectedIndex = 0
+            this.param0 = this.param1 = 0
             this.updateEffect()
         })
-        this.param0Select.addEventListener('input', () => this.updateEffect())
-        this.param1Select.addEventListener('input', () => this.updateEffect())
+        this.param0Button.addEventListener('click', () => this.openEffectKeyboard(1))
+        this.param1Button.addEventListener('click', () => this.openEffectKeyboard(2))
 
         $dom.disableFormSubmit(this.sampleList)
         $keyPad.create(this.sampleList, (id, elem) => {
@@ -148,6 +147,13 @@ export class CellEntry {
             this.setCell(Cell.empty, CellPart.effect | CellPart.param)
             this.callbacks.jamPlay(id, this.getCell())
         }, id => this.callbacks.jamRelease(id))
+
+        fragment.querySelector('#closeEffectKeyboard').addEventListener('click',
+            () => this.closeEffectKeyboard())
+        for (let i = 0; i < this.effectGrid.children.length; i++) {
+            let button = this.effectGrid.children[i]
+            button.addEventListener('click', () => this.effectKeyboardButton(i))
+        }
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
@@ -176,8 +182,7 @@ export class CellEntry {
         let pitch = this.piano.controller.getPitch()
         let inst = Number($dom.getRadioButtonValue(this.sampleInput, '0'))
         let effect = this.effectSelect.selectedIndex
-        let param0 = this.param0Select.selectedIndex
-        let param1 = this.param1Select.selectedIndex
+        let {param0, param1} = this
         if (effect > 15) {
             effect = Effect.Extended
             param0 = Number(this.effectSelect.value)
@@ -211,7 +216,7 @@ export class CellEntry {
         this.sampleInput = this.sampleList.elements.namedItem('sample')
         this.setSelSample(selSample)
         if (!anySamples) {
-            this.sampleList.textContent = 'No instruments.'
+            this.sampleList.textContent = 'No samples.'
         }
     }
 
@@ -240,26 +245,74 @@ export class CellEntry {
             this.effectSelect.selectedIndex = cell.effect
         }
         if (parts & CellPart.param) {
-            this.param0Select.selectedIndex = cell.param0
-            this.param1Select.selectedIndex = cell.param1
+            this.param0 = cell.param0
+            this.param1 = cell.param1
         }
         this.updateEffect()
     }
 
     /** @private */
     updateEffect() {
+        this.param0Button.textContent = this.param0.toString(16).toUpperCase()
+        this.param1Button.textContent = this.param1.toString(16).toUpperCase()
         if (this.effectSelect.selectedIndex == Effect.Extended) {
-            let param0 = this.param0Select.selectedIndex
-            if (this.effectSelect.namedItem(param0.toString())) {
-                this.effectSelect.value = param0.toString()
+            if (this.effectSelect.namedItem(this.param0.toString())) {
+                this.effectSelect.value = this.param0.toString()
             }
         }
         let hideParam0 = this.effectSelect.selectedIndex > 15
-        this.param0Select.classList.toggle('hide', hideParam0)
+        this.param0Button.classList.toggle('hide', hideParam0)
         this.resetEffectButton.disabled = this.effectSelect.selectedIndex == 0
-            && this.param0Select.selectedIndex == 0
-            && this.param1Select.selectedIndex == 0
+            && this.param0 == 0 && this.param1 == 0
         this.callbacks.updateCell()
+    }
+
+    /**
+     * @private
+     * @param {number} digit
+     */
+    openEffectKeyboard(digit) {
+        this.editDigit = digit
+        this.piano.classList.add('hide')
+        this.sampleSection.classList.add('hide')
+        this.effectSection.classList.add('hide')
+        this.effectKeyboard.classList.remove('hide')
+
+        let value = 0
+        switch (this.editDigit) {
+        case 0: value = this.effectSelect.selectedIndex; break
+        case 1: value = this.param0; break
+        case 2: value = this.param1; break
+        }
+        for (let i = 0; i < this.effectGrid.children.length; i++) {
+            this.effectGrid.children[i].classList.toggle('show-checked', i == value)
+        }
+    }
+
+    /** @private */
+    closeEffectKeyboard() {
+        this.piano.classList.remove('hide')
+        this.sampleSection.classList.remove('hide')
+        this.effectSection.classList.remove('hide')
+        this.effectKeyboard.classList.add('hide')
+    }
+
+    /**
+     * @private
+     * @param {number} num
+     */
+    effectKeyboardButton(num) {
+        switch (this.editDigit) {
+        case 0: this.effectSelect.selectedIndex = num; break
+        case 1: this.param0 = num; break
+        case 2: this.param1 = num; break
+        }
+        this.updateEffect()
+        if (this.editDigit < 2) {
+            this.openEffectKeyboard(this.editDigit + 1)
+        } else {
+            this.closeEffectKeyboard()
+        }
     }
 }
 export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)
