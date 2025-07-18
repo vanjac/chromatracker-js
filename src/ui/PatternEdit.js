@@ -75,11 +75,11 @@ const template = $dom.html`
         </label>
         <label class="label-button flex-grow">
             <input id="sampleEnable" type="checkbox" checked>
-            <span>Inst.</span>
+            <span>Sample</span>
         </label>
         <label class="label-button flex-grow">
             <input id="effectEnable" type="checkbox">
-            <span>FX</span>
+            <span>Effect</span>
         </label>
     </div>
 </div>
