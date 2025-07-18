@@ -335,7 +335,7 @@ export class CellEntry {
         case Effect.VolSlideVib:
             return keys.map(d => (d == 0) ? 'Down...' : `Up ${d}`)
         case Effect.PositionJump:
-            return keys.map(d => `Pos ${d * 16}...`)
+            return keys.map(d => (d < 8) ? `Pos ${d * 16}...` : 'X')
         case Effect.Volume:
             return keys.map(d => (d <= 4) ? `${d * 16}...` : 'X')
         case Effect.PatternBreak:
@@ -359,6 +359,8 @@ export class CellEntry {
         let keys = [...Array(16).keys()]
         /** @param {number} d */
         const hexVal = d => (param0 * 16 + d)
+        /** @param {number} d */
+        const decVal = d => (param0 * 10 + d)
 
         switch (effect) {
         case Effect.Arpeggio:
@@ -381,11 +383,11 @@ export class CellEntry {
         case Effect.VolSlideVib:
             return keys.map(d => (d == 0) ? 'Up' : `Down ${d}`)
         case Effect.PositionJump:
-            return keys.map(d => `Pos ${hexVal(d)}`)
+            return keys.map(d => (param0 < 8) ? `Pos ${hexVal(d)}` : 'X')
         case Effect.Volume:
             return keys.map(d => (hexVal(d) <= 64) ? `${hexVal(d)}` : 'X')
         case Effect.PatternBreak:
-            return keys.map(d => (d < 10) ? `Row ${param0 * 10 + d}` : 'X')
+            return keys.map(d => (d < 10 && decVal(d) < 64) ? `Row ${decVal(d)}` : 'X')
         case Effect.Speed:
             return keys.map(d => (param0 < 2) ? `${hexVal(d)} ticks` : `${hexVal(d)} BPM`)
         case Effect.Extended:
