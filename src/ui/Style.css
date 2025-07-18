@@ -382,8 +382,12 @@ td,
 }
 
 .hex-grid {
-	display: grid;
-	grid: auto / 1fr 1fr 1fr 1fr;
+    display: grid;
+    grid: auto / 1fr 1fr 1fr 1fr;
+}
+
+.effect-desc {
+    font-size: 0.5em;
 }
 
 /* wave editor */

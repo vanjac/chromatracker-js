@@ -3,7 +3,7 @@ import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
 import {type} from '../Util.js'
-import {Cell, CellPart, Sample, Effect} from '../Model.js'
+import {Cell, CellPart, Sample, Effect, ExtEffect} from '../Model.js'
 import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './TrackerMain.js' */
 
@@ -64,22 +64,22 @@ const template = $dom.html`
             ${$icons.arrow_left}
         </button>
         <div id="effectGrid" class="hex-grid flex-grow">
-            <button>0</button>
-            <button>1</button>
-            <button>2</button>
-            <button>3</button>
-            <button>4</button>
-            <button>5</button>
-            <button>6</button>
-            <button>7</button>
-            <button>8</button>
-            <button>9</button>
-            <button>A</button>
-            <button>B</button>
-            <button>C</button>
-            <button>D</button>
-            <button>E</button>
-            <button>F</button>
+            <button class="vflex">0<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">1<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">2<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">3<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">4<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">5<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">6<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">7<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">8<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">9<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">A<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">B<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">C<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">D<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">E<span id="desc" class="effect-desc"></span></button>
+            <button class="vflex">F<span id="desc" class="effect-desc"></span></button>
         </div>
     </div>
 </div>
@@ -279,13 +279,25 @@ export class CellEntry {
         this.effectKeyboard.classList.remove('hide')
 
         let value = 0
+        let desc = Object.freeze(Array(16).fill(''))
+        let cell = this.getCell()
         switch (this.editDigit) {
-        case 0: value = this.effectSelect.selectedIndex; break
-        case 1: value = this.param0; break
-        case 2: value = this.param1; break
+        case 0:
+            value = this.effectSelect.selectedIndex
+            break
+        case 1:
+            value = this.param0
+            desc = this.getParam0Descriptions(cell.effect)
+            break
+        case 2:
+            value = this.param1
+            desc = this.getParam1Descriptions(cell.effect, cell.param0)
+            break
         }
         for (let i = 0; i < this.effectGrid.children.length; i++) {
-            this.effectGrid.children[i].classList.toggle('show-checked', i == value)
+            let button = this.effectGrid.children[i]
+            button.classList.toggle('show-checked', i == value)
+            button.querySelector('#desc').textContent = desc[i]
         }
     }
 
@@ -312,6 +324,112 @@ export class CellEntry {
             this.openEffectKeyboard(this.editDigit + 1)
         } else {
             this.closeEffectKeyboard()
+        }
+    }
+
+    /**
+     * @private
+     * @param {Effect} effect
+     * @returns {readonly string[]}
+     */
+    getParam0Descriptions(effect) {
+        let keys = [...Array(16).keys()]
+        switch (effect) {
+        case Effect.Arpeggio:
+            return keys.map(d => `+${d} semi`)
+        case Effect.SlideUp:
+            return keys.map(d => `+ ${d * 16}...`)
+        case Effect.SlideDown:
+            return keys.map(d => `- ${d * 16}...`)
+        case Effect.Vibrato:
+        case Effect.Tremolo:
+            return keys.map(d => `Speed ${d}`)
+        case Effect.Panning:
+            return keys.map(d => (d < 8) ? `L ${128 - d * 16}...` : `R ${d * 16 - 128}...`)
+        case Effect.VolumeSlide:
+        case Effect.VolSlidePort:
+        case Effect.VolSlideVib:
+            return keys.map(d => (d == 0) ? 'Down...' : `Up ${d}`)
+        case Effect.PositionJump:
+            return keys.map(d => `Pos ${d * 16}...`)
+        case Effect.PatternBreak:
+            return keys.map(d => (d <= 6) ? `Row ${d * 10}...` : 'X')
+        case Effect.Speed:
+            return keys.map(d => (d < 2) ? `${d * 16} ticks...` : `${d * 16} BPM...`)
+        case Effect.Extended:
+            return [
+                '', 'Port Up', 'Port Down', '',
+                'Vib. Wave', 'Finetune', 'Pat. Loop', 'Trem. Wave',
+                '', 'Retrigger', 'Volume Up', 'Volume Down',
+                'Note Cut', 'Note Delay', 'Pat. Delay', ''
+            ]
+        default:
+            return keys.map(d => `${d * 16}...`)
+        }
+    }
+
+    /**
+     * @private
+     * @param {Effect} effect
+     * @param {number} param0
+     * @returns {readonly string[]}
+     */
+    getParam1Descriptions(effect, param0) {
+        let keys = [...Array(16).keys()]
+        /** @param {number} d */
+        const hexVal = d => (param0 * 16 + d)
+
+        switch (effect) {
+        case Effect.Arpeggio:
+            return keys.map(d => `+${d} semi`)
+        case Effect.SlideUp:
+            return keys.map(d => `+ ${hexVal(d)}`)
+        case Effect.SlideDown:
+            return keys.map(d => `- ${hexVal(d)}`)
+        case Effect.Vibrato:
+        case Effect.Tremolo:
+            return keys.map(d => `Depth ${d}`)
+        case Effect.Panning:
+            return keys.map(d => (param0 < 8) ? `L ${128 - hexVal(d)}` : `R ${hexVal(d) - 128}`)
+        case Effect.VolumeSlide:
+        case Effect.VolSlidePort:
+        case Effect.VolSlideVib:
+            return keys.map(d => (d == 0) ? 'Up' : `Down ${d}`)
+        case Effect.PositionJump:
+            return keys.map(d => `Pos ${hexVal(d)}`)
+        case Effect.PatternBreak:
+            return keys.map(d => (d < 10) ? `Row ${param0 * 10 + d}` : 'X')
+        case Effect.Speed:
+            return keys.map(d => (param0 < 2) ? `${hexVal(d)} ticks` : `${hexVal(d)} BPM`)
+        case Effect.Extended:
+            switch (param0) {
+            case ExtEffect.FineSlideUp:
+                return keys.map(d => `+ ${d}`)
+            case ExtEffect.FineSlideDown:
+                return keys.map(d => `- ${d}`)
+            case ExtEffect.VibratoWave:
+            case ExtEffect.TremoloWave:
+                return [
+                    'Sine trig', 'Saw trig', 'Square trig', 'Random trig',
+                    'Sine cont', 'Saw cont', 'Square cont', 'Random cont',
+                    'X', 'X', 'X', 'X',
+                    'X', 'X', 'X', 'X',
+                ]
+            case ExtEffect.Finetune:
+                return keys.map(d => (d < 8) ? `+ ${d}` : `- ${16 - d}`)
+            case ExtEffect.PatternLoop:
+                return keys.map(d => (d == 0) ? 'Start' : `${d} times`)
+            case ExtEffect.Retrigger:
+            case ExtEffect.NoteCut:
+            case ExtEffect.NoteDelay:
+                return keys.map(d => `${d} ticks`)
+            case ExtEffect.PatternDelay:
+                return keys.map(d => `${d} times`)
+            default:
+                return keys.map(d => `${d}`)
+            }
+        default:
+            return keys.map(d => `${hexVal(d)}`)
         }
     }
 }
