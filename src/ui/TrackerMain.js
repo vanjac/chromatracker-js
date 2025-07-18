@@ -197,6 +197,9 @@ export class TrackerMain {
                 this.patternEdit.controller.updateCell()
                 this.samplesList.controller.setSelSample(this.getEntryCell().inst)
             },
+            setPartTogglesVisible: visible => {
+                this.patternEdit.controller.setPartTogglesVisible(visible)
+            },
         }
         this.patternEdit.controller.updateCell()
 

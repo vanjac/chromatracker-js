@@ -77,6 +77,7 @@ export class CellEntry {
         /**
          * @type {JamCallbacks & {
          *      updateCell(): void
+         *      setPartTogglesVisible(visible: boolean): void
          * }}
          */
         this.callbacks
@@ -277,6 +278,7 @@ export class CellEntry {
             button.classList.toggle('show-checked', i == value)
             button.querySelector('#desc').textContent = desc[i]
         }
+        this.callbacks.setPartTogglesVisible(false)
     }
 
     /** @private */
@@ -285,6 +287,7 @@ export class CellEntry {
         this.sampleSection.classList.remove('hide')
         this.effectSection.classList.remove('hide')
         this.effectKeyboard.classList.add('hide')
+        this.callbacks.setPartTogglesVisible(true)
     }
 
     /**
@@ -419,6 +422,9 @@ if (import.meta.main) {
     testElem.controller.callbacks = {
         updateCell() {
             console.log('Update cell', testElem.controller.getCell())
+        },
+        setPartTogglesVisible(visible) {
+            console.log('Part toggles visible', visible)
         },
         jamPlay(id, cell) {
             console.log('Jam play', id, cell)
