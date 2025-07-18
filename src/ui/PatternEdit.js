@@ -414,6 +414,10 @@ export class PatternEdit {
         this.tempoInput.valueAsNumber = tempo
         this.speedInput.valueAsNumber = speed
     }
+
+    onVisible() {
+        this.patternTable.controller.onVisible()
+    }
 }
 export const PatternEditElement = $dom.defineView('pattern-edit', PatternEdit)
 

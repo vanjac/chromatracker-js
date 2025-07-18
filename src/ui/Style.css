@@ -295,12 +295,12 @@ thead th {
 tbody th {
     left: 0;
 }
-tbody tr:nth-child(4n+1),
-tbody tr:nth-child(4n+1) th {
+tbody tr:nth-child(4n+2),
+tbody tr:nth-child(4n+2) th {
     background: var(--color-bg-btn);
 }
-tbody tr:nth-child(16n+1),
-tbody tr:nth-child(16n+1) th {
+tbody tr:nth-child(16n+2),
+tbody tr:nth-child(16n+2) th {
     background: var(--color-bg-btn-press);
 }
 .sel-cell {

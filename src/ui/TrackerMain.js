@@ -128,6 +128,7 @@ export class TrackerMain {
                         element.classList.toggle('hide', element.id != tabName)
                     }
                     if (tabName == 'sequence' || tabName == 'samples') {
+                        this.patternEdit.controller.onVisible()
                         this.cellEntry.parentElement.classList.remove('hide')
                         this.cellEntry.controller.onVisible()
                     } else {

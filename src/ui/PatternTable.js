@@ -4,19 +4,18 @@ import * as $dom from './DOMUtil.js'
 import * as $keyPad from './KeyPad.js'
 import * as $pattern from '../edit/Pattern.js'
 import {CellPart, Pattern} from '../Model.js'
-import {minMax} from '../Util.js'
+import {type, minMax} from '../Util.js'
 /** @import {JamCallbacks} from './TrackerMain.js' */
 
 const template = $dom.html`
 <div id="patternScroll" class="hscrollable vscrollable flex-grow">
-    <div class="pattern-table-space"></div>
     <table>
         <thead>
             <tr></tr>
         </thead>
         <tbody></tbody>
     </table>
-    <div class="pattern-table-space"></div>
+    <div id="tableSpace" class="pattern-table-space"></div>
 </div>
 `
 
@@ -59,12 +58,14 @@ export class PatternTable {
         this.patternScroll = fragment.querySelector('#patternScroll')
         this.theadRow = fragment.querySelector('tr')
         this.tbody = fragment.querySelector('tbody')
+        this.spacerRow = type(HTMLElement, null)
+        this.tableSpace = fragment.querySelector('#tableSpace')
         /** @type {HTMLInputElement[]} */
         this.muteInputs = []
 
         $keyPad.create(this.tbody, (id, elem) => {
             let td = elem.closest('td')
-            if (td) {
+            if (td && td.dataset.c != null) {
                 let c = Number(td.dataset.c)
                 let row = Number(td.dataset.row)
                 this.setSelCell(c, row)
@@ -81,8 +82,15 @@ export class PatternTable {
                 pattern => this.callbacks.onChange(Object.freeze(pattern)))
         })
 
+        this.resizeListener = () => this.updateSize()
+        window.addEventListener('resize', this.resizeListener)
+
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('resize', this.resizeListener)
     }
 
     /**
@@ -134,7 +142,7 @@ export class PatternTable {
                 if (channel != this.viewPattern[c]) {
                     for (let [row, cell] of channel.entries()) {
                         if (cell != this.viewPattern[c][row]) {
-                            $cell.setContents(this.tbody.children[row].children[c + 1], cell)
+                            $cell.setContents(this.tbody.children[row + 1].children[c + 1], cell)
                         }
                     }
                 }
@@ -143,6 +151,15 @@ export class PatternTable {
             this.viewNumRows = pattern[0].length
             this.tbody.textContent = ''
             let tableFrag = document.createDocumentFragment()
+
+            this.spacerRow = tableFrag.appendChild($dom.createElem('tr'))
+            let spacerHead = this.spacerRow.appendChild($dom.createElem('th'))
+            spacerHead.classList.add('pattern-row-head')
+            for (let c = 0; c < pattern.length; c++) {
+                let spacerData = this.spacerRow.appendChild($dom.createElem('td'))
+                spacerData.classList.add('pattern-cell')
+            }
+
             for (let row = 0; row < pattern[0].length; row++) {
                 let tr = tableFrag.appendChild($dom.createElem('tr'))
                 let th = $dom.createElem('th', {textContent: row.toString()})
@@ -169,8 +186,15 @@ export class PatternTable {
             }
             this.tbody.appendChild(tableFrag)
             this.setSelCell(this.selChannel, this.selRow)
+            this.updateSize()
         }
         this.viewPattern = pattern
+    }
+
+    updateSize() {
+        if (this.spacerRow) {
+            this.spacerRow.style.height = this.tableSpace.clientHeight + 'px'
+        }
     }
 
     /**
@@ -227,7 +251,7 @@ export class PatternTable {
             cell.classList.remove('sel-effect')
         }
         if (this.selRow >= 0 && this.selChannel >= 0) {
-            let selTr = this.tbody.children[this.selRow]
+            let selTr = this.tbody.children[this.selRow + 1]
             let selCell = selTr && selTr.children[this.selChannel + 1]
             if (selCell) { $cell.toggleParts(selCell, this.viewEntryParts) }
 
@@ -237,7 +261,7 @@ export class PatternTable {
                 let [minChannel, maxChannel] = minMax(this.selChannel, this.markChannel)
                 let [minRow, maxRow] = minMax(this.selRow, this.markRow)
                 for (let row = minRow; row <= maxRow; row++) {
-                    let tr = this.tbody.children[row]
+                    let tr = this.tbody.children[row + 1]
                     if (!tr) { continue }
                     for (let channel = minChannel; channel <= maxChannel; channel++) {
                         let cell = tr.children[channel + 1]
@@ -272,12 +296,13 @@ export class PatternTable {
             oldHilite.classList.remove('hilite-row')
         }
         if (row >= 0) {
-            this.tbody.children[row].classList.add('hilite-row')
+            this.tbody.children[row + 1].classList.add('hilite-row')
         }
     }
 
     scrollToSelCell() {
-        let tr = this.tbody.children[this.selRow]
+        this.updateSize()
+        let tr = this.tbody.children[this.selRow + 1]
         tr.scrollIntoView({block: 'center', behavior: 'instant'})
     }
 
@@ -296,6 +321,10 @@ export class PatternTable {
      */
     setScrollLock(scrollLock) {
         this.patternScroll.classList.toggle('scroll-lock', scrollLock)
+    }
+
+    onVisible() {
+        window.requestAnimationFrame(() => this.scrollToSelCell()) // TODO: jank
     }
 }
 export const PatternTableElement = $dom.defineView('pattern-table', PatternTable)
