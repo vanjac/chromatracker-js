@@ -315,7 +315,7 @@ export class CellEntry {
         let keys = [...Array(16).keys()]
         switch (effect) {
         case Effect.Arpeggio:
-            return keys.map(d => `+${d} semi`)
+            return keys.map(d => (d == 12) ? '+ octave' : `+${d} semi`)
         case Effect.SlideUp:
             return keys.map(d => `+ ${d * 16}...`)
         case Effect.SlideDown:
@@ -355,7 +355,7 @@ export class CellEntry {
 
         switch (effect) {
         case Effect.Arpeggio:
-            return keys.map(d => `+${d} semi`)
+            return keys.map(d => (d == 12) ? '+ octave' : `+${d} semi`)
         case Effect.SlideUp:
             return keys.map(d => `+ ${hexVal(d)}`)
         case Effect.SlideDown:
