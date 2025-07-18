@@ -336,6 +336,8 @@ export class CellEntry {
             return keys.map(d => (d == 0) ? 'Down...' : `Up ${d}`)
         case Effect.PositionJump:
             return keys.map(d => `Pos ${d * 16}...`)
+        case Effect.Volume:
+            return keys.map(d => (d <= 4) ? `${d * 16}...` : 'X')
         case Effect.PatternBreak:
             return keys.map(d => (d <= 6) ? `Row ${d * 10}...` : 'X')
         case Effect.Speed:
@@ -380,6 +382,8 @@ export class CellEntry {
             return keys.map(d => (d == 0) ? 'Up' : `Down ${d}`)
         case Effect.PositionJump:
             return keys.map(d => `Pos ${hexVal(d)}`)
+        case Effect.Volume:
+            return keys.map(d => (hexVal(d) <= 64) ? `${hexVal(d)}` : 'X')
         case Effect.PatternBreak:
             return keys.map(d => (d < 10) ? `Row ${param0 * 10 + d}` : 'X')
         case Effect.Speed:
