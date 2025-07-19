@@ -20,7 +20,7 @@ const template = $dom.html`
     </div>
 
     <div id="effectSection" class="hflex">
-        <button id="resetEffect" disabled>
+        <button id="resetEffect" disabled="">
             ${$icons.close}
         </button>
         <button id="effect" class="flex-grow justify-start"></button>

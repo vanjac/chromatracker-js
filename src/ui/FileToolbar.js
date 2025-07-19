@@ -22,7 +22,7 @@ const template = $dom.html`
     </button>
     <div class="flex-grow"></div>
     <select id="demoMenu" class="large-menu">
-        <option selected disabled hidden>Demo Files</option>
+        <option selected="" disabled="" hidden="">Demo Files</option>
         <optgroup label="(TODO)">
             <option value="https://chroma.zone/share/space_debris.mod">space debris</option>
             <option value="https://chroma.zone/share/pixipack1.mod">pixipack 1</option>

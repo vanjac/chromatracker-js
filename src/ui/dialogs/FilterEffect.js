@@ -75,7 +75,7 @@ const template = $dom.html`
 
         <label for="dither">Dither:</label>
         <div class="hflex">
-            <input id="dither" name="dither" type="checkbox" checked>
+            <input id="dither" name="dither" type="checkbox" checked="">
         </div>
     </div>
     <button>Apply</button>

@@ -15,7 +15,7 @@ const template = $dom.html`
         <button id="addSample">
             ${$icons.plus}
         </button>
-        <button id="delSample" disabled>
+        <button id="delSample" disabled="">
             ${$icons.close}
         </button>
     </div>

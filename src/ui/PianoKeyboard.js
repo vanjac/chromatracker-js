@@ -11,7 +11,7 @@ import periodTable from '../PeriodTable.js'
 const template = $dom.html`
 <div class="hflex">
     <label class="label-button">
-        <input id="scrollLock" type="checkbox" checked>
+        <input id="scrollLock" type="checkbox" checked="">
         <span>${$icons.arrow_horizontal_lock}</span>
     </label>
     <form id="piano" class="vflex flex-grow hscrollable scroll-lock" autocomplete="off">

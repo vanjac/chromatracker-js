@@ -21,7 +21,7 @@ const template = $dom.html`
         ${$icons.pause}
     </button>
     <label class="label-button">
-        <input id="follow" type="checkbox" checked>
+        <input id="follow" type="checkbox" checked="">
         <span>${$icons.format_indent_increase}</span>
     </label>
     <div class="flex-grow"></div>

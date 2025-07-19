@@ -70,11 +70,11 @@ const template = $dom.html`
     </div>
     <div id="partToggles" class="hflex">
         <label class="label-button flex-grow">
-            <input id="pitchEnable" type="checkbox" checked>
+            <input id="pitchEnable" type="checkbox" checked="">
             <span>Pitch</span>
         </label>
         <label class="label-button flex-grow">
-            <input id="sampleEnable" type="checkbox" checked>
+            <input id="sampleEnable" type="checkbox" checked="">
             <span>Sample</span>
         </label>
         <label class="label-button flex-grow">

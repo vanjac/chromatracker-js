@@ -67,7 +67,7 @@ const template = $dom.html`
     </div>
     <div class="hflex">
         <select id="selectMenu" class="med-menu">
-            <option selected disabled hidden>Select</option>
+            <option selected="" disabled="" hidden="">Select</option>
             <option value="all">All</option>
             <option value="none">None</option>
             <option value="loop">Loop</option>
@@ -87,14 +87,14 @@ const template = $dom.html`
     </div>
     <div class="hflex">
         <select id="loopMenu" class="med-menu">
-            <option selected disabled hidden>Loop</option>
+            <option selected="" disabled="" hidden="">Loop</option>
             <option value="set">Set</option>
             <option value="clear">Clear</option>
             <option value="repeat">Repeat</option>
             <option value="pingpong">Ping-Pong</option>
         </select>
         <select id="effectMenu" class="med-menu">
-            <option selected disabled hidden>Effect</option>
+            <option selected="" disabled="" hidden="">Effect</option>
             <option value="amplify">Amplify</option>
             <option value="fadeIn">Fade In</option>
             <option value="fadeOut">Fade Out</option>

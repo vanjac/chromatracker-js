@@ -51,7 +51,7 @@ const template = $dom.html`
 
 <form id="appTabs" class="hflex tab-group" autocomplete="off">
     <label class="label-button flex-grow">
-        <input type="radio" name="app-tab" value="arrange" checked>
+        <input type="radio" name="app-tab" value="arrange" checked="">
         <span>Arrange</span>
     </label>
     <label class="label-button flex-grow">
