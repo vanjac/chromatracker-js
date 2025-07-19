@@ -10,7 +10,8 @@ import {Module, Sample} from '../Model.js'
 export function create(module) {
     let emptyIndex = module.samples.findIndex((sample, i) => i != 0 && !sample)
     if (emptyIndex == -1) { emptyIndex = module.samples.length }
-    let samples = immSplice(module.samples, emptyIndex, 1, Sample.empty)
+    let sample = Object.freeze({...Sample.empty, name: 'untitled'})
+    let samples = immSplice(module.samples, emptyIndex, 1, sample)
     return [Object.freeze({...module, samples}), emptyIndex]
 }
 
