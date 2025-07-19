@@ -72,13 +72,17 @@ export function html(parts, ...values) {
                 str += `<div id="${id}"></div>`
                 placeholders[id] = v
             } else {
-                str += String(values[i])
+                str += String(v)
             }
         }
     }
 
     let template = document.createElement('template')
     template.innerHTML = str
+    if (template.innerHTML != str) {
+        console.warn('HTML parse mismatch:')
+        console.warn(template.innerHTML)
+    }
     let fragment = template.content
 
     for (let [id, node] of Object.entries(placeholders)) {
@@ -87,6 +91,26 @@ export function html(parts, ...values) {
         }
         fragment.getElementById(id).replaceWith(node)
     }
+    return fragment
+}
+
+/**
+ * @template {unknown[]} TValues
+ * @param {TemplateStringsArray} parts
+ * @param {TValues} values
+ */
+export function xhtml(parts, ...values) {
+    let str = ''
+    for (let [i, part] of parts.entries()) {
+        str += part
+        if (i < values.length) {
+            str += String(values[i])
+        }
+    }
+
+    let xml = new DOMParser().parseFromString(str, 'application/xhtml+xml')
+    let fragment = new DocumentFragment()
+    fragment.appendChild(xml.documentElement)
     return fragment
 }
 

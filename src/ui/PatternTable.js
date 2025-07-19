@@ -106,7 +106,7 @@ export class PatternTable {
 
         this.theadRow.textContent = ''
         let newMuteInputs = []
-        let rowFrag = document.createDocumentFragment()
+        let rowFrag = new DocumentFragment()
 
         let cornerHead = $dom.createElem('th')
         cornerHead.classList.add('pattern-row-head')
@@ -150,7 +150,7 @@ export class PatternTable {
         } else {
             this.viewNumRows = pattern[0].length
             this.tbody.textContent = ''
-            let tableFrag = document.createDocumentFragment()
+            let tableFrag = new DocumentFragment()
 
             this.spacerRow = tableFrag.appendChild($dom.createElem('tr'))
             let spacerHead = this.spacerRow.appendChild($dom.createElem('th'))
