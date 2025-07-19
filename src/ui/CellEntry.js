@@ -28,10 +28,15 @@ const template = $dom.html`
         <button id="param1"></button>
     </div>
 
-    <div id="effectKeyboard" class="hide hflex">
-        <button id="closeEffectKeyboard">
-            ${$icons.arrow_left}
-        </button>
+    <div id="effectKeyboard" class="hide vflex">
+        <div class="hflex">
+            <button id="closeEffectKeyboard">
+                ${$icons.arrow_left}
+            </button>
+            <div class="flex-grow"></div>
+            <strong id="effectKeyboardTitle"></strong>
+            <div class="flex-grow"></div>
+        </div>
         <div id="effectGrid" class="hex-grid flex-grow">
             <button class="vflex">0<span id="desc" class="effect-desc"></span></button>
             <button class="vflex">1<span id="desc" class="effect-desc"></span></button>
@@ -106,6 +111,7 @@ export class CellEntry {
         this.param0Button = type(HTMLButtonElement, fragment.querySelector('#param0'))
         this.param1Button = type(HTMLButtonElement, fragment.querySelector('#param1'))
         this.effectKeyboard = fragment.querySelector('#effectKeyboard')
+        this.effectKeyboardTitle = fragment.querySelector('#effectKeyboardTitle')
         this.effectGrid = fragment.querySelector('#effectGrid')
 
         this.effectButton.addEventListener('click', () => this.openEffectKeyboard(0))
@@ -233,17 +239,19 @@ export class CellEntry {
 
     /** @private */
     updateEffect() {
-        let effectString
-        if (this.effect == Effect.Extended && extEffectNames[this.param0]) {
-            effectString = (this.effect.toString(16) + this.param0.toString(16)).toUpperCase()
-                + ': ' + extEffectNames[this.param0]
-        } else {
-            effectString = this.effect.toString(16).toUpperCase() + ': ' + effectNames[this.effect]
-        }
-        this.effectButton.textContent = effectString
+        this.effectButton.textContent = this.getEffectTitle()
         this.param0Button.textContent = this.param0.toString(16).toUpperCase()
         this.param1Button.textContent = this.param1.toString(16).toUpperCase()
         this.resetEffectButton.disabled = this.effect == 0 && this.param0 == 0 && this.param1 == 0
+    }
+
+    getEffectTitle() {
+        if (this.effect == Effect.Extended && extEffectNames[this.param0]) {
+            return (this.effect.toString(16) + this.param0.toString(16)).toUpperCase()
+                + ': ' + extEffectNames[this.param0]
+        } else {
+            return this.effect.toString(16).toUpperCase() + ': ' + effectNames[this.effect]
+        }
     }
 
     /**
@@ -257,22 +265,27 @@ export class CellEntry {
         this.effectSection.classList.add('hide')
         this.effectKeyboard.classList.remove('hide')
 
+        let title = ''
         let value = 0
         let desc = Object.freeze(Array(16).fill(''))
         switch (this.editDigit) {
         case 0:
+            title = 'Effect'
             value = this.effect
             desc = effectNames
             break
         case 1:
+            title = this.effect.toString(16).toUpperCase() + ': ' + effectNames[this.effect]
             value = this.param0
             desc = this.getParam0Descriptions(this.effect)
             break
         case 2:
+            title = this.getEffectTitle()
             value = this.param1
             desc = this.getParam1Descriptions(this.effect, this.param0)
             break
         }
+        this.effectKeyboardTitle.textContent = title
         for (let i = 0; i < this.effectGrid.children.length; i++) {
             let button = this.effectGrid.children[i]
             button.classList.toggle('show-checked', i == value)
