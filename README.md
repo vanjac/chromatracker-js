@@ -2,10 +2,12 @@ This will (eventually) be a web-based [MOD](https://en.wikipedia.org/wiki/MOD_(f
 
 This shares a name with [a previous project](https://github.com/vanjac/chromatracker) I attempted -- this new iteration of ChromaTracker is more limited in scope.
 
+The design is inspired by Alexander Zolotov's apps [SunVox](https://www.warmplace.ru/soft/sunvox/) and [PixiTracker](https://www.warmplace.ru/soft/pixitracker/), as well as [MilkyTracker](https://milkytracker.org/).
+
 Currently implemented:
 
 - Custom MOD playback engine, mostly complete
-- Supports MODs with extra channels
+  - Supports MOD extensions like extra channels, panning effects, and expanded frequency limits
 - Basic pattern editor
 - Sample editor with basic audio effects, 8-bit dithering
 - Full undo support
