@@ -18,7 +18,7 @@ export default "${version}"
 function makeIcons() {
     let iconsScript = `// GENERATED
 
-import {xhtml} from '../ui/DOMUtil.js'
+import {html, xhtml} from '../ui/DOMUtil.js'
 
 `
 
@@ -26,7 +26,8 @@ import {xhtml} from '../ui/DOMUtil.js'
     for (let file of iconFiles) {
         let content = fs.readFileSync(path.join('assets/icons', file), {encoding: 'utf8'})
         let var_name = file.replaceAll('-', '_').replaceAll('.svg', '')
-        iconsScript += `export const ${var_name}${' '.repeat(27 - var_name.length)}= xhtml${'`'}<div class="icon">${content.trim()}</div>${'`'}
+        let q = '`', $ = '$'
+        iconsScript += `export const ${var_name}${' '.repeat(27 - var_name.length)}= html${q}<div class="icon">${$}{xhtml${q}${content.trim()}${q}}</div>${q}
 `
     }
 
