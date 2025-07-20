@@ -61,14 +61,28 @@ const template = $dom.html`
 
 const effectNames = Object.freeze([
     'Arpeggio', 'Slide Up', 'Slide Down', 'Portamento',
+    'Vibrato', 'Portamento + Vol Slide', 'Vibrato + Vol Slide', 'Tremolo',
+    'Set Panning', 'Sample Offset', 'Volume Slide', 'Position Jump',
+    'Set Volume', 'Pattern Break', 'Extended...', 'Speed / Tempo',
+])
+
+const effectShortNames = Object.freeze([
+    'Arpeggio', 'Slide Up', 'Slide Down', 'Portamento',
     'Vibrato', 'Port + Vol', 'Vibrato + Vol', 'Tremolo',
-    'Panning', 'Offset', 'Volume Slide', 'Pos. Jump',
-    'Volume', 'Pat. Break', 'Extended...', 'Tempo',
+    'Set Panning', 'Offset', 'Volume Slide', 'Pos. Jump',
+    'Set Volume', 'Pat. Break', 'Extended...', 'Tempo',
 ])
 
 const extEffectNames = Object.freeze([
+    '', 'Fine Slide Up', 'Fine Slide Down', '',
+    'Vibrato Waveform', 'Set Finetune', 'Pattern Loop', 'Tremolo Waveform',
+    '', 'Retrigger', 'Fine Volume Up', 'Fine Volume Down',
+    'Note Cut', 'Note Delay', 'Pattern Delay', '',
+])
+
+const extEffectShortNames = Object.freeze([
     '', 'Slide Up', 'Slide Down', '',
-    'Vib. Wave', 'Finetune', 'Pat. Loop', 'Trem. Wave',
+    'Vib. Wave', 'Set Finetune', 'Pat. Loop', 'Trem. Wave',
     '', 'Retrigger', 'Volume Up', 'Volume Down',
     'Note Cut', 'Note Delay', 'Pat. Delay', '',
 ])
@@ -272,7 +286,7 @@ export class CellEntry {
         case 0:
             title = 'Effect'
             value = this.effect
-            desc = effectNames
+            desc = effectShortNames
             break
         case 1:
             title = this.effect.toString(16).toUpperCase() + ': ' + effectNames[this.effect]
@@ -356,7 +370,7 @@ export class CellEntry {
         case Effect.Speed:
             return keys.map(d => (d < 2) ? `${d * 16} ticks...` : `${d * 16} BPM...`)
         case Effect.Extended:
-            return extEffectNames
+            return extEffectShortNames
         default:
             return keys.map(d => `${d * 16}...`)
         }
