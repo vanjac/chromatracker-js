@@ -33,7 +33,8 @@ jobs:
         with:
           node-version: '20.x'
       - run: npm ci
-      - run: node build.mjs ${{ github.sha }}
+      - run: echo "${{ github.sha }}" > version
+      - run: node build.mjs
       - run: npm run check
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
