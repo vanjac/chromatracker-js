@@ -15,4 +15,4 @@ ChromaTracker is targeting the following browsers:
 
 ## Building
 
-You must have [npm](https://www.npmjs.com/) and [GNU Make](https://www.gnu.org/software/make/) installed. Run `make` to rebuild all generated files and run the type-checker/linter.
+You must have [npm](https://www.npmjs.com/) and [GNU Make](https://www.gnu.org/software/make/) installed. Run `make` to install packages, rebuild generated files, and run the type-checker/linter.
