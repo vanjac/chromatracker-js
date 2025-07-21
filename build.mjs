@@ -7,7 +7,8 @@ import path from 'node:path'
 /**
  * @param {string} version
  */
-function makeVersion(version) {
+function makeVersion() {
+    let version = fs.readFileSync('version', {encoding: 'utf8'}).trim()
     let versionScript = `// GENERATED
 
 export default "${version}"
@@ -34,5 +35,5 @@ import {html, xhtml} from '../ui/DOMUtil.js'
     fs.writeFileSync('src/gen/Icons.js', iconsScript)
 }
 
-makeVersion(process.argv[2] || 'develop')
+makeVersion()
 makeIcons()
