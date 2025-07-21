@@ -12,6 +12,9 @@ export const defaultNew = Object.freeze({
     restartPos: 0,
 })
 
+/**
+ * @returns {Readonly<Module>}
+ */
 export function createNew() {
     let date = new Date(Date.now())
     let year = date.getFullYear()
