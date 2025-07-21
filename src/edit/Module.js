@@ -12,6 +12,15 @@ export const defaultNew = Object.freeze({
     restartPos: 0,
 })
 
+export function createNew() {
+    let date = new Date(Date.now())
+    let year = date.getFullYear()
+    let month = (date.getMonth() + 1).toString().padStart(2, '0')
+    let day = date.getDate().toString().padStart(2, '0')
+    let name = `untitled ${year}-${month}-${day}`
+    return Object.freeze({...defaultNew, name})
+}
+
 /**
  * @param {Readonly<Module>} module
  * @param {string} name

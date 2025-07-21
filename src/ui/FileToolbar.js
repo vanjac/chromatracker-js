@@ -51,7 +51,7 @@ export class FileToolbar {
         let fragment = template.cloneNode(true)
 
         fragment.querySelector('#newModule').addEventListener('click',
-            () => this.callbacks.moduleLoaded($module.defaultNew))
+            () => this.callbacks.moduleLoaded($module.createNew()))
 
         let fileSelect = type(HTMLInputElement, fragment.querySelector('#fileSelect'))
         fileSelect.addEventListener('change', () => {

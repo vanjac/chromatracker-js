@@ -91,7 +91,7 @@ export class TrackerMain {
     constructor(view) {
         this.view = view
 
-        this.module = new Undoable($module.defaultNew)
+        this.module = new Undoable($module.createNew())
 
         this.context = type(AudioContext, null)
         /** @type {$play.Playback} */
