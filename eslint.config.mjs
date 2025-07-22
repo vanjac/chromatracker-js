@@ -1,12 +1,8 @@
 import {defineConfig} from 'eslint/config'
 import js from '@eslint/js'
-import stylistic from '@stylistic/eslint-plugin'
 
 export default defineConfig([{
-    plugins: {
-        js,
-        "@stylistic": stylistic,
-    },
+    plugins: {js},
     extends: ["js/recommended"],
     languageOptions: {
         ecmaVersion: 2020,
@@ -17,7 +13,8 @@ export default defineConfig([{
         "curly": "error",
         "strict": ["error", "global"],
         "no-restricted-globals": ["error", "length"],
-        "@stylistic/semi": ["error", "never", {"beforeStatementContinuationChars": "always"}],
+        // Deprecated stylistic rules (TODO)
+        "semi": ["error", "never", {"beforeStatementContinuationChars": "always"}],
         // TypeScript handles these:
         "no-undef": "off",
         "no-unused-vars": "off",
