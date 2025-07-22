@@ -206,8 +206,8 @@ export function stop(playback) {
             // https://github.com/webaudio/web-audio-api/issues/15
             // will this leak memory for looping samples?
             console.error(e)
-            source.disconnect()
         }
+        source.disconnect()
     }
     playback.activeSources.clear()
 }
