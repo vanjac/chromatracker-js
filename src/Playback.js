@@ -207,9 +207,9 @@ export function stop(playback) {
             // will this leak memory for looping samples?
             console.error(e)
             source.disconnect()
-            playback.activeSources.delete(source)
         }
     }
+    playback.activeSources.clear()
 }
 
 /**
