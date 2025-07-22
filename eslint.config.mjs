@@ -15,7 +15,6 @@ export default defineConfig([{
         "no-restricted-globals": ["error", "length"],
         // Deprecated stylistic rules (TODO)
         "semi": ["error", "never", {"beforeStatementContinuationChars": "always"}],
-        "no-extra-semi": "off",
         // TypeScript handles these:
         "no-undef": "off",
         "no-unused-vars": "off",
