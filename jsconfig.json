@@ -11,4 +11,7 @@
         "noImplicitReturns": true,
         "noImplicitOverride": true,
     },
+    "exclude": [
+        "eslint.config.mjs",
+    ],
 }

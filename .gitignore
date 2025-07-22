@@ -2,7 +2,6 @@
 /.*
 !/.gitignore
 !/.editorconfig
-!/.eslintrc.json
 !/.github/
 
 /node_modules/
