@@ -188,7 +188,7 @@ export function addMenuListener(menu, listener) {
 
 /**
  * @param {HTMLFormElement} form
- * @param {string[]} names
+ * @param {readonly string[]} names
  * @param {Record<string, string>} record
  */
 export function saveFormData(form, names, record) {
@@ -204,7 +204,7 @@ export function saveFormData(form, names, record) {
 
 /**
  * @param {HTMLFormElement} form
- * @param {string[]} names
+ * @param {readonly string[]} names
  * @param {Record<string, string>} record
  */
 export function restoreFormData(form, names, record) {

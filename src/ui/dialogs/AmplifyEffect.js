@@ -19,6 +19,8 @@ const template = $dom.html`
 </form>
 `
 
+const inputNames = Object.freeze(['amp', 'dither'])
+
 export class AmplifyEffect {
     /**
      * @param {HTMLElement} view
@@ -37,21 +39,18 @@ export class AmplifyEffect {
         this.ditherInput = type(HTMLInputElement, fragment.querySelector('#dither'))
 
         $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
-        $dom.restoreFormData(this.form, this.inputNames(), global.effectFormData)
+        $dom.restoreFormData(this.form, inputNames, global.effectFormData)
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
-
-    /** @private */
-    inputNames() { return ['amp', 'dither'] }
 
     submit() {
         this.onComplete({
             amount: this.amountInput.valueAsNumber,
             dithering: this.ditherInput.checked
         })
-        $dom.saveFormData(this.form, this.inputNames(), global.effectFormData)
+        $dom.saveFormData(this.form, inputNames, global.effectFormData)
     }
 }
 export const AmplifyEffectElement = $dom.defineView('amplify-effect', AmplifyEffect)

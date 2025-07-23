@@ -82,6 +82,10 @@ const template = $dom.html`
 </form>
 `
 
+const inputNames = Object.freeze([
+    'filterType', 'freqEnvelope', 'frequency', 'freqEnd', 'q', 'gain', 'dither'
+])
+
 export class FilterEffect {
     /**
      * @param {HTMLElement} view
@@ -106,7 +110,7 @@ export class FilterEffect {
         this.graph = type(HTMLCanvasElement, fragment.querySelector('#graph'))
 
         $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
-        $dom.restoreFormData(this.form, this.inputNames(), global.effectFormData)
+        $dom.restoreFormData(this.form, inputNames, global.effectFormData)
 
         this.context = new OfflineAudioContext(1, 1, defaultSampleRate)
         this.filter = this.context.createBiquadFilter()
@@ -126,11 +130,6 @@ export class FilterEffect {
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
-    }
-
-    /** @private */
-    inputNames() {
-        return ['filterType', 'freqEnvelope', 'frequency', 'freqEnd', 'q', 'gain', 'dither']
     }
 
     /** @private */
@@ -191,7 +190,7 @@ export class FilterEffect {
             gain: this.gainInput.valueAsNumber,
             dither: this.ditherInput.checked
         })
-        $dom.saveFormData(this.form, this.inputNames(), global.effectFormData)
+        $dom.saveFormData(this.form, inputNames, global.effectFormData)
     }
 }
 export const FilterEffectElement = $dom.defineView('filter-effect', FilterEffect)

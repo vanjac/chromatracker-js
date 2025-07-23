@@ -44,6 +44,16 @@ const template = $dom.html`
 </div>
 `
 
+/**
+ * @param {number} size
+ */
+function formatFileSize(size) {
+    // https://stackoverflow.com/a/20732091
+    let i = size ? Math.floor(Math.log(size) / Math.log(1024)) : 0
+    let n = size / (1024 ** i)
+    return ((i > 0 && n < 1000) ? n.toPrecision(3) : n) + ' ' + ['bytes', 'kB', 'MB'][i]
+}
+
 export class ModuleProperties {
     /**
      * @param {HTMLElement} view
@@ -124,20 +134,9 @@ export class ModuleProperties {
             this.viewPatternsSize = $mod.calcPatternsSize(module)
         }
         let fileSize = $mod.headerSize + this.viewPatternsSize + this.viewSamplesSize
-        this.fileSizeOutput.value = this.formatFileSize(fileSize)
+        this.fileSizeOutput.value = formatFileSize(fileSize)
 
         this.viewModule = module
-    }
-
-    /**
-     * @private
-     * @param {number} size
-     */
-    formatFileSize(size) {
-        // https://stackoverflow.com/a/20732091
-        let i = size ? Math.floor(Math.log(size) / Math.log(1024)) : 0
-        let n = size / (1024 ** i)
-        return ((i > 0 && n < 1000) ? n.toPrecision(3) : n) + ' ' + ['bytes', 'kB', 'MB'][i]
     }
 }
 export const ModulePropertiesElement = $dom.defineView('module-properties', ModuleProperties)

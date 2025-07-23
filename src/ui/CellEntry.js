@@ -87,6 +87,117 @@ const extEffectShortNames = Object.freeze([
     'Note Cut', 'Note Delay', 'Pat. Delay', '',
 ])
 
+/**
+ * @param {Effect} effect
+ * @returns {readonly string[]}
+ */
+function getParam0Descriptions(effect) {
+    let keys = [...Array(16).keys()]
+    switch (effect) {
+    case Effect.Arpeggio:
+        return keys.map(d => (d == 12) ? '+ octave' : `+${d} semi`)
+    case Effect.SlideUp:
+        return keys.map(d => `+ ${d * 16}...`)
+    case Effect.SlideDown:
+        return keys.map(d => `- ${d * 16}...`)
+    case Effect.Vibrato:
+    case Effect.Tremolo:
+        return keys.map(d => (d == 0) ? 'Same Speed' : `Speed ${d}`)
+    case Effect.Panning:
+        return keys.map(d => (d < 8) ? `L ${128 - d * 16}...` : `R ${d * 16 - 128}...`)
+    case Effect.SampleOffset:
+        return keys.map(d => `${d * 256 * 16}...`)
+    case Effect.VolumeSlide:
+    case Effect.VolSlidePort:
+    case Effect.VolSlideVib:
+        return keys.map(d => (d == 0) ? 'Down...' : `Up ${d}`)
+    case Effect.PositionJump:
+        return keys.map(d => (d < 8) ? `Pos ${d * 16}...` : 'X')
+    case Effect.Volume:
+        return keys.map(d => (d <= 4) ? `${d * 16}...` : 'X')
+    case Effect.PatternBreak:
+        return keys.map(d => (d <= 6) ? `Row ${d * 10}...` : 'X')
+    case Effect.Speed:
+        return keys.map(d => (d < 2) ? `${d * 16} ticks...` : `${d * 16} BPM...`)
+    case Effect.Extended:
+        return extEffectShortNames
+    default:
+        return keys.map(d => `${d * 16}...`)
+    }
+}
+
+/**
+ * @param {Effect} effect
+ * @param {number} param0
+ * @returns {readonly string[]}
+ */
+function getParam1Descriptions(effect, param0) {
+    let keys = [...Array(16).keys()]
+    /** @param {number} d */
+    const hexVal = d => (param0 * 16 + d)
+    /** @param {number} d */
+    const decVal = d => (param0 * 10 + d)
+
+    switch (effect) {
+    case Effect.Arpeggio:
+        return keys.map(d => (d == 12) ? '+ octave' : `+${d} semi`)
+    case Effect.SlideUp:
+        return keys.map(d => `+ ${hexVal(d)}`)
+    case Effect.SlideDown:
+        return keys.map(d => `- ${hexVal(d)}`)
+    case Effect.Portamento:
+        return keys.map(d => (hexVal(d) == 0) ? 'Same' : `${hexVal(d)}`)
+    case Effect.Vibrato:
+    case Effect.Tremolo:
+        return keys.map(d => (d == 0) ? 'Same Depth' :`Depth ${d}`)
+    case Effect.Panning:
+        return keys.map(d => (param0 < 8) ? `L ${128 - hexVal(d)}` : `R ${hexVal(d) - 128}`)
+    case Effect.SampleOffset:
+        return keys.map(d => (hexVal(d) == 0) ? 'Same' : `${hexVal(d) * 256}`)
+    case Effect.VolumeSlide:
+    case Effect.VolSlidePort:
+    case Effect.VolSlideVib:
+        return keys.map(d => (d == 0) ? 'Up' : `Down ${d}`)
+    case Effect.PositionJump:
+        return keys.map(d => (param0 < 8) ? `Pos ${hexVal(d)}` : 'X')
+    case Effect.Volume:
+        return keys.map(d => (hexVal(d) <= 64) ? `${hexVal(d)}` : 'X')
+    case Effect.PatternBreak:
+        return keys.map(d => (d < 10 && decVal(d) < 64) ? `Row ${decVal(d)}` : 'X')
+    case Effect.Speed:
+        return keys.map(d => (param0 < 2) ? `${hexVal(d)} ticks` : `${hexVal(d)} BPM`)
+    case Effect.Extended:
+        switch (param0) {
+        case ExtEffect.FineSlideUp:
+            return keys.map(d => `+ ${d}`)
+        case ExtEffect.FineSlideDown:
+            return keys.map(d => `- ${d}`)
+        case ExtEffect.VibratoWave:
+        case ExtEffect.TremoloWave:
+            return [
+                'Sine trig', 'Saw trig', 'Square trig', 'Random trig',
+                'Sine cont', 'Saw cont', 'Square cont', 'Random cont',
+                'X', 'X', 'X', 'X',
+                'X', 'X', 'X', 'X',
+            ]
+        case ExtEffect.Finetune:
+            return keys.map(d => (d < 8) ? `+ ${d}` : `- ${16 - d}`)
+        case ExtEffect.PatternLoop:
+            return keys.map(d => (d == 0) ? 'Start' : `${d} times`)
+        case ExtEffect.Retrigger:
+        case ExtEffect.NoteCut:
+        case ExtEffect.NoteDelay:
+            return keys.map(d => `${d} ticks`)
+        case ExtEffect.PatternDelay:
+            return keys.map(d => `${d} times`)
+        default:
+            return keys.map(d => `${d}`)
+        }
+    default:
+        return keys.map(d => `${hexVal(d)}`)
+    }
+}
+
 export class CellEntry {
     /**
      * @param {HTMLElement} view
@@ -291,12 +402,12 @@ export class CellEntry {
         case 1:
             title = this.effect.toString(16).toUpperCase() + ': ' + effectNames[this.effect]
             value = this.param0
-            desc = this.getParam0Descriptions(this.effect)
+            desc = getParam0Descriptions(this.effect)
             break
         case 2:
             title = this.getEffectTitle()
             value = this.param1
-            desc = this.getParam1Descriptions(this.effect, this.param0)
+            desc = getParam1Descriptions(this.effect, this.param0)
             break
         }
         this.effectKeyboardTitle.textContent = title
@@ -333,119 +444,6 @@ export class CellEntry {
             this.openEffectKeyboard(this.editDigit + 1)
         } else {
             this.closeEffectKeyboard()
-        }
-    }
-
-    /**
-     * @private
-     * @param {Effect} effect
-     * @returns {readonly string[]}
-     */
-    getParam0Descriptions(effect) {
-        let keys = [...Array(16).keys()]
-        switch (effect) {
-        case Effect.Arpeggio:
-            return keys.map(d => (d == 12) ? '+ octave' : `+${d} semi`)
-        case Effect.SlideUp:
-            return keys.map(d => `+ ${d * 16}...`)
-        case Effect.SlideDown:
-            return keys.map(d => `- ${d * 16}...`)
-        case Effect.Vibrato:
-        case Effect.Tremolo:
-            return keys.map(d => (d == 0) ? 'Same Speed' : `Speed ${d}`)
-        case Effect.Panning:
-            return keys.map(d => (d < 8) ? `L ${128 - d * 16}...` : `R ${d * 16 - 128}...`)
-        case Effect.SampleOffset:
-            return keys.map(d => `${d * 256 * 16}...`)
-        case Effect.VolumeSlide:
-        case Effect.VolSlidePort:
-        case Effect.VolSlideVib:
-            return keys.map(d => (d == 0) ? 'Down...' : `Up ${d}`)
-        case Effect.PositionJump:
-            return keys.map(d => (d < 8) ? `Pos ${d * 16}...` : 'X')
-        case Effect.Volume:
-            return keys.map(d => (d <= 4) ? `${d * 16}...` : 'X')
-        case Effect.PatternBreak:
-            return keys.map(d => (d <= 6) ? `Row ${d * 10}...` : 'X')
-        case Effect.Speed:
-            return keys.map(d => (d < 2) ? `${d * 16} ticks...` : `${d * 16} BPM...`)
-        case Effect.Extended:
-            return extEffectShortNames
-        default:
-            return keys.map(d => `${d * 16}...`)
-        }
-    }
-
-    /**
-     * @private
-     * @param {Effect} effect
-     * @param {number} param0
-     * @returns {readonly string[]}
-     */
-    getParam1Descriptions(effect, param0) {
-        let keys = [...Array(16).keys()]
-        /** @param {number} d */
-        const hexVal = d => (param0 * 16 + d)
-        /** @param {number} d */
-        const decVal = d => (param0 * 10 + d)
-
-        switch (effect) {
-        case Effect.Arpeggio:
-            return keys.map(d => (d == 12) ? '+ octave' : `+${d} semi`)
-        case Effect.SlideUp:
-            return keys.map(d => `+ ${hexVal(d)}`)
-        case Effect.SlideDown:
-            return keys.map(d => `- ${hexVal(d)}`)
-        case Effect.Portamento:
-            return keys.map(d => (hexVal(d) == 0) ? 'Same' : `${hexVal(d)}`)
-        case Effect.Vibrato:
-        case Effect.Tremolo:
-            return keys.map(d => (d == 0) ? 'Same Depth' :`Depth ${d}`)
-        case Effect.Panning:
-            return keys.map(d => (param0 < 8) ? `L ${128 - hexVal(d)}` : `R ${hexVal(d) - 128}`)
-        case Effect.SampleOffset:
-            return keys.map(d => (hexVal(d) == 0) ? 'Same' : `${hexVal(d) * 256}`)
-        case Effect.VolumeSlide:
-        case Effect.VolSlidePort:
-        case Effect.VolSlideVib:
-            return keys.map(d => (d == 0) ? 'Up' : `Down ${d}`)
-        case Effect.PositionJump:
-            return keys.map(d => (param0 < 8) ? `Pos ${hexVal(d)}` : 'X')
-        case Effect.Volume:
-            return keys.map(d => (hexVal(d) <= 64) ? `${hexVal(d)}` : 'X')
-        case Effect.PatternBreak:
-            return keys.map(d => (d < 10 && decVal(d) < 64) ? `Row ${decVal(d)}` : 'X')
-        case Effect.Speed:
-            return keys.map(d => (param0 < 2) ? `${hexVal(d)} ticks` : `${hexVal(d)} BPM`)
-        case Effect.Extended:
-            switch (param0) {
-            case ExtEffect.FineSlideUp:
-                return keys.map(d => `+ ${d}`)
-            case ExtEffect.FineSlideDown:
-                return keys.map(d => `- ${d}`)
-            case ExtEffect.VibratoWave:
-            case ExtEffect.TremoloWave:
-                return [
-                    'Sine trig', 'Saw trig', 'Square trig', 'Random trig',
-                    'Sine cont', 'Saw cont', 'Square cont', 'Random cont',
-                    'X', 'X', 'X', 'X',
-                    'X', 'X', 'X', 'X',
-                ]
-            case ExtEffect.Finetune:
-                return keys.map(d => (d < 8) ? `+ ${d}` : `- ${16 - d}`)
-            case ExtEffect.PatternLoop:
-                return keys.map(d => (d == 0) ? 'Start' : `${d} times`)
-            case ExtEffect.Retrigger:
-            case ExtEffect.NoteCut:
-            case ExtEffect.NoteDelay:
-                return keys.map(d => `${d} ticks`)
-            case ExtEffect.PatternDelay:
-                return keys.map(d => `${d} times`)
-            default:
-                return keys.map(d => `${d}`)
-            }
-        default:
-            return keys.map(d => `${hexVal(d)}`)
         }
     }
 }
