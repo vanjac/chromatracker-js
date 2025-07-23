@@ -191,6 +191,7 @@ export class PatternTable {
         this.viewPattern = pattern
     }
 
+    /** @private */
     updateSize() {
         if (this.spacerRow) {
             this.spacerRow.style.height = this.tableSpace.clientHeight + 'px'
