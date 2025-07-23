@@ -17,6 +17,7 @@ export class ViewElement extends HTMLElement {
     }
 
     connectedCallback() {
+		this.classList.add('custom-element')
         if (this.controller.connectedCallback) {
             this.controller.connectedCallback(this)
         }

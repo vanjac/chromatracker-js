@@ -4,6 +4,7 @@
 }
 * {
     margin: 0;
+    contain: content; /* for performance only, don't depend on this! */
 }
 input, button, textarea, select {
     font: inherit;
@@ -14,6 +15,11 @@ select {
 }
 
 html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+
     /* no pinch to zoom */
     touch-action: none;
     /* no swipe to go back or refresh */
@@ -21,11 +27,6 @@ html, body {
 }
 
 body {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    position: fixed;
-
     user-select: none;
     -webkit-user-select: none;
 }

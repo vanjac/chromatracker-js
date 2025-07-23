@@ -34,14 +34,6 @@
     overflow-y: clip;
 }
 
-.pos-relative {
-    /* Forms a Stacking Context, and a Containing Block for absolute-positioned elements. */
-    position: relative;
-}
-.pos-absolute {
-    position: absolute;
-}
-
 .top {
     top: 0;
 }
@@ -413,6 +405,7 @@ td,
 .wave-mark,
 .wave-mark:before,
 .wave-range {
+    contain: none;
     position: absolute;
     height: 100%;
 }

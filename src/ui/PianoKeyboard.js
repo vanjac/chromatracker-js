@@ -14,11 +14,13 @@ const template = $dom.html`
         <input id="scrollLock" type="checkbox" checked="">
         <span>${$icons.arrow_horizontal_lock}</span>
     </label>
-    <form id="piano" class="vflex flex-grow hscrollable scroll-lock" autocomplete="off">
-        <div id="blackKeys" class="hflex">
-            <div class="keypad-half-key"></div>
+    <form id="piano" class="hflex flex-grow hscrollable scroll-lock" autocomplete="off">
+        <div class="vflex">
+            <div id="blackKeys" class="hflex">
+                <div class="keypad-half-key"></div>
+            </div>
+            <div id="whiteKeys" class="hflex"></div>
         </div>
-        <div id="whiteKeys" class="hflex"></div>
     </form>
 </div>
 `
@@ -51,9 +53,9 @@ export class PianoKeyboard {
 
         $dom.disableFormSubmit(this.piano)
         $keyPad.create(this.piano, (id, elem) => {
-            if (elem.parentElement && elem.parentElement.parentElement
-                    && elem.parentElement.parentElement.parentElement == this.piano) {
-                let input = elem.parentElement.querySelector('input')
+            let label = elem.closest('label')
+            if (label) {
+                let input = label.querySelector('input')
                 $dom.selectRadioButton(this.pitchInput, input.value)
                 this.callbacks.pitchChanged()
                 this.callbacks.jamPlay(id, this.callbacks.getJamCell())
