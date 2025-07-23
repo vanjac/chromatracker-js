@@ -172,6 +172,7 @@ export class TrackerMain {
             resetPlayback: this.resetPlayback.bind(this),
             play: this.play.bind(this),
             pause: this.pause.bind(this),
+            destroyPlayback: this.destroyPlayback.bind(this),
             updatePlaySettings: this.updatePlaySettings.bind(this),
             undo: this.undo.bind(this),
         }
@@ -274,6 +275,19 @@ export class TrackerMain {
         this.updatePlaySettings()
     }
 
+    destroyPlayback() {
+        this.pause()
+        if (this.playback) {
+            $play.cleanup(this.playback)
+            this.disableAnimation()
+            this.playback = null
+        }
+        if (this.context) {
+            this.context.close()
+            this.context = null
+        }
+    }
+
     /**
      * Must be called as result of user interaction
      * @private
@@ -362,6 +376,9 @@ export class TrackerMain {
      * @param {number} id
      */
     jamRelease(id) {
+        if (!this.playback) {
+            return
+        }
         $play.jamRelease(this.playback, id)
         if (!this.isPlaying() && this.playback.jamChannels.size == 0) {
             this.disableAnimation()

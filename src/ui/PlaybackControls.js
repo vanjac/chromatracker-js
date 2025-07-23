@@ -44,6 +44,7 @@ export class PlaybackControls {
          *      ): void
          *      play(): void
          *      pause(): void
+         *      destroyPlayback(): void
          *      updatePlaySettings(): void
          *      undo(): void
          * }}
@@ -76,6 +77,8 @@ export class PlaybackControls {
             this.callbacks.play()
         })
         this.pauseButton.addEventListener('click', () => this.callbacks.pause())
+        this.playRowButton.addEventListener('contextmenu', () => this.callbacks.destroyPlayback())
+        this.pauseButton.addEventListener('contextmenu', () => this.callbacks.destroyPlayback())
         this.patternLoopInput.addEventListener('change', () => this.callbacks.updatePlaySettings())
         this.undoButton.addEventListener('click', () => this.callbacks.undo())
 
@@ -124,6 +127,10 @@ if (import.meta.main) {
         },
         pause() {
             console.log('Pause')
+            testElem.controller.setPlayState(false)
+        },
+        destroyPlayback() {
+            console.log('Destroy playback')
             testElem.controller.setPlayState(false)
         },
         updatePlaySettings() {

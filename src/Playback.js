@@ -130,6 +130,20 @@ export function init(context, module) {
 
 /**
  * @param {Playback} playback
+ */
+export function cleanup(playback) {
+    for (let channel of playback.channels) {
+        disconnectChannel(channel)
+    }
+    playback.channels = []
+    for (let channel of playback.jamChannels.values()) {
+        disconnectChannel(channel)
+    }
+    playback.jamChannels.clear()
+}
+
+/**
+ * @param {Playback} playback
  * @param {Readonly<Module>} module
  */
 export function setModule(playback, module) {
