@@ -39,10 +39,9 @@ const template = $dom.html`
 
         <label class="hflex" for="file">Wave file:</label>
         <div class="hflex">
-            <label class="label-button">
-                <input id="file" type="file" accept="audio/*" autocomplete="off">
-                <span>${$icons.folder_open}</span>
-            </label>
+            <button id="open">
+                ${$icons.folder_open}
+            </button>
             <button id="save">
                 ${$icons.download}
             </button>
@@ -242,13 +241,7 @@ export class SampleEdit {
             }
         })
 
-        this.fileInput = type(HTMLInputElement, fragment.querySelector('#file'))
-        this.fileInput.addEventListener('change', () => {
-            if (this.fileInput.files.length == 1) {
-                this.readAudioFile(this.fileInput.files[0])
-            }
-        })
-
+        fragment.querySelector('#open').addEventListener('click', () => this.openAudioFile())
         fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
 
         $keyPad.makeKeyButton(fragment.querySelector('#useOffset'), id => {
@@ -292,7 +285,6 @@ export class SampleEdit {
         this.volumeOutput.value = sample.volume.toString()
         this.finetuneInput.valueAsNumber = sample.finetune
         this.finetuneOutput.value = sample.finetune.toString()
-        this.fileInput.value = ''
 
         if (!this.viewSample || sample.wave != this.viewSample.wave) {
             // TODO: async and only when visible!
@@ -479,6 +471,16 @@ export class SampleEdit {
         reader.readAsArrayBuffer(file)
     }
 
+    /** @private */
+    openAudioFile() {
+        $ext.pickFiles('audio/*').then(files => {
+            if (files.length == 1) {
+                this.readAudioFile(files[0])
+            }
+        }).catch(() => {})
+    }
+
+    /** @private */
     saveAudioFile() {
         let blob = new Blob([$wav.write(this.viewSample)], {type: 'application/octet-stream'})
         $ext.download(blob, (this.viewSample.name || 'sample') + '.wav')
@@ -497,6 +499,7 @@ export class SampleEdit {
         return clamp(Sample.roundToNearest(pos), 0, this.viewSample.wave.length)
     }
 
+    /** @private */
     useSampleOffset() {
         let effect = 0, param0 = 0, param1 = 0
         if (this.anySelected()) {

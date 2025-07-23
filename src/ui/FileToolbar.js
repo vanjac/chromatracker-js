@@ -4,7 +4,6 @@ import * as $module from '../edit/Module.js'
 import * as $ext from '../file/External.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
-import {type} from '../Util.js'
 import {Module} from '../Model.js'
 import {AlertDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
 
@@ -13,10 +12,9 @@ const template = $dom.html`
     <button id="newModule">
         ${$icons.file_plus_outline}
     </button>
-    <label class="label-button">
-        <input id="fileSelect" type="file" autocomplete="off">
-        <span>${$icons.folder_open}</span>
-    </label>
+    <button id="fileOpen">
+        ${$icons.folder_open}
+    </button>
     <button id="fileSave">
         ${$icons.download}
     </button>
@@ -53,17 +51,20 @@ export class FileToolbar {
         fragment.querySelector('#newModule').addEventListener('click',
             () => this.callbacks.moduleLoaded($module.createNew()))
 
-        let fileSelect = type(HTMLInputElement, fragment.querySelector('#fileSelect'))
-        fileSelect.addEventListener('change', () => {
-            if (fileSelect.files.length == 1) {
-                this.readModuleBlob(fileSelect.files[0])
-            }
-        })
+        fragment.querySelector('#fileOpen').addEventListener('click', () => this.openFile())
         $dom.addMenuListener(fragment.querySelector('#demoMenu'), value => this.loadFromUrl(value))
         fragment.querySelector('#fileSave').addEventListener('click', () => this.saveFile())
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
+    }
+
+    openFile() {
+        $ext.pickFiles().then(files => {
+            if (files.length == 1) {
+                this.readModuleBlob(files[0])
+            }
+        }).catch(() => {})
     }
 
     /**
