@@ -39,6 +39,7 @@ export class SamplesList {
         this.callbacks = null
         /** @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
+        this.viewIndex = -1
     }
 
     connectedCallback() {
@@ -66,6 +67,7 @@ export class SamplesList {
      */
     createSampleEdit(idx) {
         this.destroySampleEdit()
+        this.viewIndex = idx
         this.sampleEdit = new SampleEditElement()
         this.sampleEdit.controller.callbacks = {
             jamPlay: (...args) => this.callbacks.jamPlay(...args),
@@ -78,7 +80,6 @@ export class SamplesList {
             setEntryCell: (...args) => this.callbacks.setEntryCell(...args),
         }
         this.sampleEditContainer.appendChild(this.sampleEdit)
-        this.sampleEdit.controller.setIndex(idx)
         this.sampleEdit.controller.setSample(this.viewSamples[idx])
         this.callbacks.setEntryCell({...Cell.empty, inst: idx}, CellPart.inst)
         this.deleteButton.disabled = false
@@ -147,10 +148,9 @@ export class SamplesList {
         let idx = this.getSelSample()
         if (!this.select.value) {
             this.destroySampleEdit()
-        } else if (!this.sampleEdit || idx != this.sampleEdit.controller.index) {
+        } else if (!this.sampleEdit || idx != this.viewIndex) {
             this.createSampleEdit(idx)
         } else {
-            // TODO: recreate when index changed?
             this.sampleEdit.controller.setSample(this.viewSamples[idx])
         }
     }

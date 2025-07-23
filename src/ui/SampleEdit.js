@@ -129,7 +129,6 @@ export class SampleEdit {
 
         /** @type {Readonly<Sample>} */
         this.viewSample = null
-        this.index = 0
     }
 
     connectedCallback() {
@@ -264,13 +263,6 @@ export class SampleEdit {
 
         this.view.style.display = 'contents'
         this.view.appendChild(fragment)
-    }
-
-    /**
-     * @param {number} index
-     */
-    setIndex(index) {
-        this.index = index
     }
 
     /**
@@ -576,6 +568,7 @@ export class SampleEdit {
     }
 
     /**
+     * @private
      * @param {number} a
      * @param {number} b
      */
