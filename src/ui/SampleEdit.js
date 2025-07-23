@@ -490,6 +490,9 @@ export class SampleEdit {
      */
     pointerToWavePos(clientX) {
         let waveRect = this.wavePreview.getBoundingClientRect()
+        if (waveRect.width == 0) {
+            return 0
+        }
         let pos = (clientX - waveRect.left) * this.viewSample.wave.length / waveRect.width
         return clamp(Sample.roundToNearest(pos), 0, this.viewSample.wave.length)
     }
@@ -720,8 +723,7 @@ export class SampleEdit {
                     return node
                 })
                 .then(s => this.callbacks.onChange(s, true))
-                .then(() => $dialog.close(waitDialog))
-                .catch(() => $dialog.close(waitDialog))
+                .finally(() => $dialog.close(waitDialog))
         }
     }
 }
