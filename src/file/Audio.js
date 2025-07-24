@@ -2,17 +2,20 @@ import * as $wave from '../edit/Wave.js'
 import {mod, Sample} from '../Model.js'
 
 /**
+ * Sample rate must be between 44100 and 96000 Hz.
  * @param {ArrayBuffer} buf
- * @param {number} sampleRate Sample rate, must be between 44100 and 96000 Hz.
+ * @param {{sampleRate: number, channel: number, dithering: boolean}} params
  * @returns {Promise<Readonly<Sample>>}
  */
-export function read(buf, sampleRate) {
+export function read(buf, {sampleRate, channel, dithering}) {
+    let ditherFn = dithering ? $wave.dither : $wave.dontDither
     return new Promise((resolve, reject) => {
         // https://stackoverflow.com/a/55022825
         let context = new OfflineAudioContext(1, 1, sampleRate)
 
         context.decodeAudioData(buf, audioBuffer => {
-            let data = audioBuffer.getChannelData(0)
+            channel = Math.min(channel, audioBuffer.numberOfChannels - 1)
+            let data = audioBuffer.getChannelData(channel)
             // normalize
             let maxAmp = data.reduce((acc, s) => Math.max(acc, Math.abs(s)), 0)
             maxAmp = Math.min(maxAmp, 1)
@@ -21,7 +24,7 @@ export function read(buf, sampleRate) {
             let wave = new Int8Array(data.length % 2 ? (data.length + 1) : data.length)
             let error = 0
             for (let i = 0; i < data.length; i++) {
-                ;[wave[i], error] = $wave.dither(data[i] * 127.0 / maxAmp, error)
+                ;[wave[i], error] = ditherFn(data[i] * 127.0 / maxAmp, error)
             }
             if (data.length % 2) {
                 // add extra sample to make length even

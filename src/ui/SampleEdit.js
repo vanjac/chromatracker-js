@@ -11,6 +11,7 @@ import * as $wav from '../file/Wav.js'
 import * as $icons from '../gen/Icons.js'
 import {AlertDialog, InputDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
 import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
+import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
 import {type, clamp, minMax} from '../Util.js'
 import {Cell, Effect, mod, Sample, CellPart} from '../Model.js'
@@ -427,7 +428,7 @@ export class SampleEdit {
         name = name.slice(0, mod.maxSampleNameLength)
 
         let reader = new FileReader()
-        reader.onload = async () => {
+        reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
                 if ($wav.identify(reader.result)) {
                     try {
@@ -438,36 +439,39 @@ export class SampleEdit {
                         if (error instanceof Error) { AlertDialog.open(error.message) }
                     }
                 } else {
-                    let sampleRate
-                    try {
-                        sampleRate = await InputDialog.open(
-                            'Resample (Hz)', 'Importing sample...', global.importSampleRate)
-                    } catch {
-                        return
-                    }
-                    global.importSampleRate = sampleRate
-                    let waitDialog = $dialog.open(new WaitDialogElement())
-                    let wave, volume
-                    try {
-                        ;({wave, volume} = await $audio.read(reader.result, sampleRate))
-                        $dialog.close(waitDialog)
-                    } catch(error) {
-                        $dialog.close(waitDialog)
-                        if (error instanceof DOMException) {
-                            AlertDialog.open(`Error reading audio file.\n${error.message}`)
-                        }
-                        return
-                    }
-                    this.changeSample(sample => {
-                        sample.wave = wave
-                        sample.volume = volume
-                        sample.name = name
-                        sample.loopStart = sample.loopEnd = 0
-                    }, true, true)
+                    this.importAudio(reader.result, name)
                 }
             }
         }
         reader.readAsArrayBuffer(file)
+    }
+
+    /**
+     * @param {ArrayBuffer} buffer
+     * @param {string} name
+     */
+    importAudio(buffer, name) {
+        let dialog = $dialog.open(new AudioImportElement(), {dismissable: true})
+        dialog.controller.onComplete = async params => {
+            let waitDialog = $dialog.open(new WaitDialogElement())
+            let wave, volume
+            try {
+                ;({wave, volume} = await $audio.read(buffer, params))
+                $dialog.close(waitDialog)
+            } catch(error) {
+                $dialog.close(waitDialog)
+                if (error instanceof DOMException) {
+                    AlertDialog.open(`Error reading audio file.\n${error.message}`)
+                }
+                return
+            }
+            this.changeSample(sample => {
+                sample.wave = wave
+                sample.volume = volume
+                sample.name = name
+                sample.loopStart = sample.loopEnd = 0
+            }, true, true)
+        }
     }
 
     /** @private */
