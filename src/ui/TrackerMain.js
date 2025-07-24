@@ -208,6 +208,10 @@ export class TrackerMain {
         this.refreshModule()
     }
 
+    disconnectedCallback() {
+        window.onbeforeunload = null
+    }
+
     /**
      * @private
      * @param {Readonly<Module>} module
