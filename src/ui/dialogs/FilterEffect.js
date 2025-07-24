@@ -56,11 +56,11 @@ const template = $dom.html`
 
         <label for="frequency">Frequency:</label>
         <div class="hflex">
-            <input id="frequency" name="frequency" type="number" class="small-input" step="any" value="350">
+            <input id="frequency" name="frequency" type="number" class="small-input" min="10" max="22050" step="any" value="350">
             &nbsp;Hz
             <div class="flex-grow"></div>
             <label for="freqEnd">To:</label>
-            <input id="freqEnd" name="freqEnd" type="number" class="small-input" step="any" value="350">
+            <input id="freqEnd" name="freqEnd" type="number" class="small-input" min="10" max="22050" step="any" value="350">
             &nbsp;Hz
         </div>
 
@@ -69,7 +69,7 @@ const template = $dom.html`
 
         <label for="gain">Gain:</label>
         <div class="hflex">
-            <input id="gain" name="gain" type="number" step="any" value="2">
+            <input id="gain" name="gain" type="number" min="-40" max="40" step="any" value="2">
             &nbsp;dB
         </div>
 

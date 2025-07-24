@@ -8,7 +8,7 @@ const template = $dom.html`
     <h3>Import Audio</h3>
     <div class="properties-grid">
         <label for="resample">Resample (Hz):</label>
-        <input id="sampleRate" name="sampleRate" type="number" step="any" value="16574.27">
+        <input id="sampleRate" name="sampleRate" type="number" min="8000" max="96000" step="any" value="16574.27">
 
         <label for="channel">Channel(s):</label>
         <select id="channel" name="channel">
