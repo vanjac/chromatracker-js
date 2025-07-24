@@ -39,20 +39,19 @@ export function amplify({amount, dithering}, src, dst) {
 }
 
 /**
- * @param {number} startAmp
- * @param {number} endAmp
- * @param {number} exp
+ * @param {{startAmp: number, endAmp: number, dithering: boolean, exp: number}} params
  * @param {Readonly<Int8Array>} src
  * @param {Int8Array} dst
  */
-export function fade(startAmp, endAmp, exp, src, dst) {
+export function fade({startAmp, endAmp, dithering, exp}, src, dst) {
+    let ditherFn = dithering ? dither : dontDither
     startAmp **= 1 / exp
     endAmp **= 1 / exp
     let error = 0
     for (let i = 0; i < dst.length; i++) {
         let t = i / dst.length
         let x = (startAmp * (t - 1) + endAmp * t) ** exp
-        ;[dst[i], error] = dither(src[i] * x, error)
+        ;[dst[i], error] = ditherFn(src[i] * x, error)
     }
 }
 

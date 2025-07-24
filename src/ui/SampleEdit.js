@@ -12,6 +12,7 @@ import * as $icons from '../gen/Icons.js'
 import {AlertDialog, InputDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
 import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {AudioImportElement} from './dialogs/AudioImport.js'
+import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
 import {type, clamp, minMax} from '../Util.js'
 import {Cell, Effect, mod, Sample, CellPart} from '../Model.js'
@@ -96,8 +97,7 @@ const template = $dom.html`
         <select id="effectMenu" class="med-menu">
             <option selected="" disabled="" hidden="">Effect</option>
             <option value="amplify">Amplify</option>
-            <option value="fadeIn">Fade In</option>
-            <option value="fadeOut">Fade Out</option>
+            <option value="fade">Fade</option>
             <option value="reverse">Reverse</option>
             <option value="resample">Resample</option>
             <option value="filter">Filter / EQ</option>
@@ -214,8 +214,7 @@ export class SampleEdit {
         $dom.addMenuListener(fragment.querySelector('#effectMenu'), value => {
             switch (value) {
                 case 'amplify': this.amplify(); break
-                case 'fadeIn': this.applyEffect($wave.fade.bind(null, 0, 1, 2)); break
-                case 'fadeOut': this.applyEffect($wave.fade.bind(null, 1, 0, 2)); break
+                case 'fade': this.fade(); break
                 case 'reverse': this.applyEffect($wave.reverse); break
                 case 'resample': this.resample(); break
                 case 'filter': this.filter(); break
@@ -700,6 +699,14 @@ export class SampleEdit {
         let dialog = $dialog.open(new AmplifyEffectElement(), {dismissable: true})
         dialog.controller.onComplete = params => {
             this.applyEffect($wave.amplify.bind(null, params))
+        }
+    }
+
+    /** @private */
+    fade() {
+        let dialog = $dialog.open(new FadeEffectElement(), {dismissable: true})
+        dialog.controller.onComplete = params => {
+            this.applyEffect($wave.fade.bind(null, {...params, exp: 2}))
         }
     }
 
