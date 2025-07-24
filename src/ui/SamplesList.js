@@ -16,7 +16,7 @@ const template = $dom.html`
             ${$icons.plus}
         </button>
         <button id="delSample" disabled="">
-            ${$icons.close}
+            ${$icons.delete_outline}
         </button>
     </div>
     <hr>
