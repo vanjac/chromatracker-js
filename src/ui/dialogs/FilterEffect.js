@@ -128,7 +128,6 @@ export class FilterEffect {
         this.qInput.addEventListener('input', () => this.updateGraph())
         this.gainInput.addEventListener('input', () => this.updateGraph())
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

@@ -67,7 +67,6 @@ export class SequenceEdit {
                     module => $sequence.set(module, this.selPos, num)))
         })
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

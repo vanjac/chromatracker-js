@@ -93,7 +93,6 @@ export class ModuleProperties {
         fragment.querySelector('#patternZap').addEventListener('click',
             () => this.callbacks.changeModule(module => $sequence.zap(module)))
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

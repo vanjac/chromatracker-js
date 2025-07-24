@@ -32,7 +32,6 @@ export class AlertDialog {
         let messageOut = type(HTMLOutputElement, fragment.querySelector('#message'))
         messageOut.value = this.message
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 
@@ -94,7 +93,6 @@ export class ConfirmDialog {
             $dialog.close(this.view)
         })
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 
@@ -166,7 +164,6 @@ export class InputDialog {
             $dialog.close(this.view)
         })
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 
@@ -217,7 +214,6 @@ export class WaitDialog {
     connectedCallback() {
         let fragment = waitDialogTemplate.cloneNode(true)
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 }

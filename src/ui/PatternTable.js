@@ -85,7 +85,6 @@ export class PatternTable {
         this.resizeListener = () => this.updateSize()
         window.addEventListener('resize', this.resizeListener)
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

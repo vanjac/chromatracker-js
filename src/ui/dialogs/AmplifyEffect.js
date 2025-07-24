@@ -41,7 +41,6 @@ export class AmplifyEffect {
         $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
         $dom.restoreFormData(this.form, inputNames, global.effectFormData)
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

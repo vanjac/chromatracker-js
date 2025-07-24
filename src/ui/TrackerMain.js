@@ -157,7 +157,6 @@ export class TrackerMain {
             }
         })
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
 
         this.fileToolbar.controller.callbacks = {

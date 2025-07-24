@@ -82,7 +82,6 @@ export class PlaybackControls {
         this.patternLoopInput.addEventListener('change', () => this.callbacks.updatePlaySettings())
         this.undoButton.addEventListener('click', () => this.callbacks.undo())
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

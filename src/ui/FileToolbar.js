@@ -55,7 +55,6 @@ export class FileToolbar {
         $dom.addMenuListener(fragment.querySelector('#demoMenu'), value => this.loadFromUrl(value))
         fragment.querySelector('#fileSave').addEventListener('click', () => this.saveFile())
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

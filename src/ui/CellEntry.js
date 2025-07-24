@@ -269,7 +269,6 @@ export class CellEntry {
             button.addEventListener('click', () => this.effectKeyboardButton(i))
         }
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
 
         this.piano.controller.callbacks = {

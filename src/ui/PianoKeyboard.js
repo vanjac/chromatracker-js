@@ -67,7 +67,6 @@ export class PianoKeyboard {
             this.piano.classList.toggle('scroll-lock', scrollLockCheck.checked)
         })
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

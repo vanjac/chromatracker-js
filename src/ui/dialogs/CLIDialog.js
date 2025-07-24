@@ -28,7 +28,6 @@ export class CLIDialog {
             $dialog.close(this.view)
         })
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

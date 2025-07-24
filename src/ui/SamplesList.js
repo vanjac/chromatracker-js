@@ -57,7 +57,6 @@ export class SamplesList {
         this.deleteButton = type(HTMLButtonElement, fragment.querySelector('#delSample'))
         this.deleteButton.addEventListener('click', () => this.deleteSample())
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

@@ -254,7 +254,6 @@ export class SampleEdit {
                 sample => this.callbacks.onChange(Object.freeze(sample), true))
         })
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
     }
 

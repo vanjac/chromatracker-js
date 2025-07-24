@@ -180,7 +180,6 @@ export class PatternEdit {
             $cli.addSelProp('seqpos', 'number', this.selPos(), pos => this.setSelPos(pos))
         })
 
-        this.view.style.display = 'contents'
         this.view.appendChild(fragment)
 
         this.sequenceEdit.controller.callbacks = {

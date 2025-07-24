@@ -1,5 +1,8 @@
 /* utility */
 
+.custom-element {
+    display: contents;
+}
 .hflex {
     display: flex;
     flex-direction: row;
