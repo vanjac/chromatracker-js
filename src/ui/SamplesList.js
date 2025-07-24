@@ -15,6 +15,8 @@ const template = $dom.html`
             ${$icons.menu}
         </button>
         <div class="flex-grow"></div>
+        <strong id="title"></strong>
+        <div class="flex-grow"></div>
         <button id="delSample" class="hide">
             ${$icons.delete_outline}
         </button>
@@ -47,6 +49,8 @@ export class SamplesList {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
+
+        this.titleElem = fragment.querySelector('#title')
 
         this.sampleList = fragment.querySelector('#sampleList')
         this.sampleEditContainer = fragment.querySelector('#sampleEditContainer')
@@ -89,6 +93,7 @@ export class SamplesList {
         this.deleteButton.classList.remove('hide')
         this.sampleList.classList.add('hide')
         this.sampleEditContainer.classList.remove('hide')
+        this.updateTitle()
     }
 
     /** @private */
@@ -100,6 +105,18 @@ export class SamplesList {
         this.deleteButton.classList.add('hide')
         this.sampleList.classList.remove('hide')
         this.sampleEditContainer.classList.add('hide')
+        this.updateTitle()
+    }
+
+    /** @private */
+    updateTitle() {
+        if (this.sampleEdit) {
+            this.titleElem.textContent = `Sample ${this.viewIndex}`
+        } else {
+            let sampleCount = this.viewSamples.reduce(
+                (count, item) => (item ? (count + 1) : count), 0)
+            this.titleElem.textContent = `${sampleCount} Sample${(sampleCount != 1) ? 's' : ''}`
+        }
     }
 
     /**
@@ -123,6 +140,7 @@ export class SamplesList {
             button.addEventListener('click', () => this.openSampleEdit(i))
         }
         this.setSelSample(this.viewIndex)
+        this.updateTitle()
     }
 
     /**
