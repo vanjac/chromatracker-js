@@ -67,12 +67,12 @@ const template = $dom.html`
         <input id="loopEnd" type="number" class="med-input" min="0" step="2" autocomplete="off">
     </div>
     <div class="hflex">
-        <select id="selectMenu" class="med-menu">
-            <option selected="" disabled="" hidden="">Select</option>
-            <option value="all">All</option>
-            <option value="none">None</option>
-            <option value="loop">Loop</option>
-        </select>
+        <button id="selectAll">
+            ${$icons.select_all}
+        </button>
+        <button id="selectNone" class="hide">
+            ${$icons.select_off}
+        </button>
         <button id="trim">
             ${$icons.crop}
         </button>
@@ -91,6 +91,7 @@ const template = $dom.html`
             <option selected="" disabled="" hidden="">Loop</option>
             <option value="set">Set</option>
             <option value="clear">Clear</option>
+            <option value="select">Select</option>
             <option value="repeat">Repeat</option>
             <option value="pingpong">Ping-Pong</option>
         </select>
@@ -190,23 +191,22 @@ export class SampleEdit {
                 }
             }, commit, true))
 
+        this.selectAllButton = type(HTMLButtonElement, fragment.querySelector('#selectAll'))
+        this.selectAllButton.addEventListener('click', () => this.selectAll())
+        this.selectNoneButton = type(HTMLButtonElement, fragment.querySelector('#selectNone'))
+        this.selectNoneButton.addEventListener('click', () => this.selectNone())
+
         this.trimButton = type(HTMLButtonElement, fragment.querySelector('#trim'))
         this.trimButton.addEventListener('click', () => this.trim())
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
         fragment.querySelector('#paste').addEventListener('click', () => this.paste())
 
-        $dom.addMenuListener(fragment.querySelector('#selectMenu'), value => {
-            switch (value) {
-                case 'all': this.selectAll(); break
-                case 'none': this.selectNone(); break
-                case 'loop': this.selectLoop(); break
-            }
-        })
         $dom.addMenuListener(fragment.querySelector('#loopMenu'), value => {
             switch (value) {
                 case 'set': this.loopSelection(); break
                 case 'clear': this.clearLoop(); break
+                case 'select': this.selectLoop(); break
                 case 'repeat': this.loopRepeat(); break
                 case 'pingpong': this.loopPingPong(); break
             }
@@ -390,6 +390,10 @@ export class SampleEdit {
             this.selectRange.style.width = (100 * this.selLen() / waveLen) + '%'
         }
         this.trimButton.disabled = !rangeSelected
+
+        let anySelected = this.anySelected()
+        this.selectAllButton.classList.toggle('hide', anySelected)
+        this.selectNoneButton.classList.toggle('hide', !anySelected)
     }
 
     /**
