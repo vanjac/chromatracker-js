@@ -11,16 +11,19 @@ import {Cell, Sample, CellPart} from '../Model.js'
 const template = $dom.html`
 <div class="vflex flex-grow">
     <div class="hflex">
-        <select id="sampleSelect" class="flex-grow" autocomplete="off"></select>
+        <button id="showList" class="hide">
+            ${$icons.menu}
+        </button>
+        <div class="flex-grow"></div>
+        <button id="delSample" class="hide">
+            ${$icons.delete_outline}
+        </button>
         <button id="addSample">
             ${$icons.plus}
         </button>
-        <button id="delSample" disabled="">
-            ${$icons.delete_outline}
-        </button>
     </div>
-    <hr>
-    <div id="sampleEditContainer" class="vflex flex-grow"></div>
+    <div id="sampleList" class="vflex flex-grow vscrollable"></div>
+    <div id="sampleEditContainer" class="vflex flex-grow hide"></div>
 </div>
 `
 
@@ -45,14 +48,13 @@ export class SamplesList {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this.select = type(HTMLSelectElement, fragment.querySelector('#sampleSelect'))
+        this.sampleList = fragment.querySelector('#sampleList')
         this.sampleEditContainer = fragment.querySelector('#sampleEditContainer')
         /** @type {InstanceType<typeof SampleEditElement>} */
         this.sampleEdit = null
 
-        this.select.addEventListener('input',
-            () => this.createSampleEdit(Number(this.select.value)))
-
+        this.showListButton = type(HTMLButtonElement, fragment.querySelector('#showList'))
+        this.showListButton.addEventListener('click', () => this.closeSampleEdit())
         fragment.querySelector('#addSample').addEventListener('click', () => this.addSample())
         this.deleteButton = type(HTMLButtonElement, fragment.querySelector('#delSample'))
         this.deleteButton.addEventListener('click', () => this.deleteSample())
@@ -64,9 +66,10 @@ export class SamplesList {
      * @private
      * @param {number} idx
      */
-    createSampleEdit(idx) {
-        this.destroySampleEdit()
+    openSampleEdit(idx) {
+        this.closeSampleEdit()
         this.viewIndex = idx
+
         this.sampleEdit = new SampleEditElement()
         this.sampleEdit.controller.callbacks = {
             jamPlay: (...args) => this.callbacks.jamPlay(...args),
@@ -81,14 +84,22 @@ export class SamplesList {
         this.sampleEditContainer.appendChild(this.sampleEdit)
         this.sampleEdit.controller.setSample(this.viewSamples[idx])
         this.callbacks.setEntryCell({...Cell.empty, inst: idx}, CellPart.inst)
-        this.deleteButton.disabled = false
+
+        this.showListButton.classList.remove('hide')
+        this.deleteButton.classList.remove('hide')
+        this.sampleList.classList.add('hide')
+        this.sampleEditContainer.classList.remove('hide')
     }
 
     /** @private */
-    destroySampleEdit() {
+    closeSampleEdit() {
+        this.viewIndex = -1
         this.sampleEditContainer.textContent = ''
         this.sampleEdit = null
-        this.deleteButton.disabled = true
+        this.showListButton.classList.add('hide')
+        this.deleteButton.classList.add('hide')
+        this.sampleList.classList.remove('hide')
+        this.sampleEditContainer.classList.add('hide')
     }
 
     /**
@@ -101,17 +112,17 @@ export class SamplesList {
         console.debug('update samples list')
         this.viewSamples = samples
 
-        let selSample = this.getSelSample()
-
-        this.select.textContent = ''
+        this.sampleList.textContent = ''
         for (let [i, sample] of samples.entries()) {
             if (!sample) {
                 continue
             }
             let textContent = `${i}: ${sample.name}`
-            this.select.appendChild($dom.createElem('option', {value: i.toString(), textContent}))
+            let button = this.sampleList.appendChild($dom.createElem('button', {textContent}))
+            button.classList.add('justify-start')
+            button.addEventListener('click', () => this.openSampleEdit(i))
         }
-        this.setSelSample(selSample ? selSample : 1)
+        this.setSelSample(this.viewIndex)
     }
 
     /**
@@ -123,62 +134,49 @@ export class SamplesList {
         if (!this.sampleEdit) { return }
         let positions = []
         for (let channel of channels) {
-            if (channel.volume && channel.sample == this.getSelSample()) {
+            if (channel.volume && channel.sample == this.viewIndex) {
                 positions.push($play.getSamplePredictedPos(channel, time))
             }
         }
         for (let [_, channel] of playback.jamChannels) {
-            if (channel.sample == this.getSelSample()) {
+            if (channel.sample == this.viewIndex) {
                 positions.push($play.getSamplePredictedPos(channel, time))
             }
         }
         this.sampleEdit.controller.setPlayPos(positions)
     }
 
-    getSelSample() {
-        return Number(this.select.value)
-    }
-
     /**
      * @param {number} s
      */
     setSelSample(s) {
-        this.select.value = s.toString()
-        let idx = this.getSelSample()
-        if (!this.select.value) {
-            this.destroySampleEdit()
-        } else if (!this.sampleEdit || idx != this.viewIndex) {
-            this.createSampleEdit(idx)
+        if (!this.sampleEdit || !this.viewSamples[s]) {
+            this.closeSampleEdit()
+        } else if (s != this.viewIndex) {
+            this.openSampleEdit(s)
         } else {
-            this.sampleEdit.controller.setSample(this.viewSamples[idx])
+            this.viewIndex = s
+            this.sampleEdit.controller.setSample(this.viewSamples[s])
         }
     }
 
     /** @private */
     addSample() {
-        let selSample = this.getSelSample()
+        let selSample = -1
         this.callbacks.changeModule(module => {
             let [newMod, idx] = $sample.create(module)
             selSample = idx
             return newMod
         })
-        this.setSelSample(selSample)
+        if (selSample != -1) {
+            this.openSampleEdit(selSample)
+        }
     }
 
     /** @private */
     deleteSample() {
-        let idx = this.getSelSample()
-        let selIdx = this.viewSamples.findIndex((sample, i) => i > idx && sample)
-        if (selIdx != -1) {
-            this.setSelSample(selIdx)
-        } else {
-            for (let i = idx - 1; i >= 0; i--) {
-                if (this.viewSamples[i]) {
-                    this.setSelSample(i)
-                    break
-                }
-            }
-        }
+        let idx = this.viewIndex
+        this.closeSampleEdit()
         this.callbacks.changeModule(module => $sample.update(module, idx, null))
     }
 }
