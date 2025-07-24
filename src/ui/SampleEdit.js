@@ -105,8 +105,8 @@ const template = $dom.html`
             <option value="resample">Resample</option>
             <option value="filter">Filter / EQ</option>
             <optgroup label="Loop">
-                <option value="repeat">Repeat</option>
-                <option value="pingpong">Ping-Pong</option>
+                <option id="loopRepeat" value="repeat">Repeat</option>
+                <option id="loopPingPong" value="pingpong">Ping-Pong</option>
             </optgroup>
         </select>
         <div class="flex-grow"></div>
@@ -218,6 +218,9 @@ export class SampleEdit {
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
         fragment.querySelector('#paste').addEventListener('click', () => this.paste())
 
+        this.loopRepeatOption = type(HTMLOptionElement, fragment.querySelector('#loopRepeat'))
+        this.loopPingPongOption = type(HTMLOptionElement, fragment.querySelector('#loopPingPong'))
+
         $dom.addMenuListener(fragment.querySelector('#effectMenu'), value => {
             switch (value) {
                 case 'amplify': this.amplify(); break
@@ -287,6 +290,8 @@ export class SampleEdit {
         this.selectLoopButton.disabled = !showLoop
         this.loopStartInput.disabled = !showLoop
         this.loopEndInput.disabled = !showLoop
+        this.loopRepeatOption.disabled = !showLoop
+        this.loopPingPongOption.disabled = !showLoop
         this.loopStartMark.classList.toggle('hide', !showLoop)
         this.loopEndMark.classList.toggle('hide', !showLoop)
         if (showLoop) {
