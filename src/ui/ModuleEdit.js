@@ -87,7 +87,7 @@ const template = $dom.html`
 </div>
 `
 
-export class TrackerMain {
+export class ModuleEdit {
     /**
      * @param {HTMLElement} view
      */
@@ -500,11 +500,11 @@ export class TrackerMain {
         }
     }
 }
-export const TrackerMainElement = $dom.defineView('tracker-main', TrackerMain)
+export const ModuleEditElement = $dom.defineView('module-edit', ModuleEdit)
 
 let testElem
 if (import.meta.main) {
-    testElem = new TrackerMainElement()
+    testElem = new ModuleEditElement()
     $dom.displayMain(testElem)
     testElem.controller.setModule($module.createNew())
 }

@@ -6,7 +6,7 @@ import * as $icons from '../gen/Icons.js'
 import {type} from '../Util.js'
 import {SampleEditElement} from './SampleEdit.js'
 import {Cell, Sample, CellPart} from '../Model.js'
-/** @import {ModuleEditCallbacks, JamCallbacks} from './TrackerMain.js' */
+/** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
 <div class="vflex flex-grow">

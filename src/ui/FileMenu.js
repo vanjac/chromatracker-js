@@ -5,7 +5,7 @@ import * as $icons from '../gen/Icons.js'
 import * as $ext from '../file/External.js'
 import * as $mod from '../file/Mod.js'
 import {Module} from '../Model.js'
-import {TrackerMainElement} from './TrackerMain.js'
+import {ModuleEditElement} from './ModuleEdit.js'
 import {AlertDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
 import appVersion from '../gen/Version.js'
 
@@ -108,7 +108,7 @@ export class FileMenu {
      * @param {Readonly<Module>} module
      */
     openEditor(module) {
-        let editor = new TrackerMainElement()
+        let editor = new ModuleEditElement()
         this.editorContainer.textContent = ''
         this.editorContainer.appendChild(editor)
         editor.controller.setModule(module)

@@ -5,7 +5,7 @@ import * as $icons from '../gen/Icons.js'
 import {type} from '../Util.js'
 import {Cell, CellPart, Sample, Effect, ExtEffect} from '../Model.js'
 import './PianoKeyboard.js'
-/** @import {JamCallbacks} from './TrackerMain.js' */
+/** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
 <div class="vflex">

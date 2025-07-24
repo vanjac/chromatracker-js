@@ -10,7 +10,7 @@ import {Cell, CellPart, mod, Module, Pattern, Sample, Effect} from '../Model.js'
 import global from './GlobalState.js'
 import './PatternTable.js'
 import './SequenceEdit.js'
-/** @import {ModuleEditCallbacks, JamCallbacks} from './TrackerMain.js' */
+/** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
 <div class="vflex flex-grow">

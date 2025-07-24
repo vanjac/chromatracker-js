@@ -5,7 +5,7 @@ import * as $keyPad from './KeyPad.js'
 import * as $pattern from '../edit/Pattern.js'
 import {CellPart, Pattern} from '../Model.js'
 import {type, minMax} from '../Util.js'
-/** @import {JamCallbacks} from './TrackerMain.js' */
+/** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
 <div id="patternScroll" class="hscrollable vscrollable flex-grow">

@@ -6,7 +6,7 @@ import * as $icons from '../gen/Icons.js'
 import {type} from '../Util.js'
 import {Cell} from '../Model.js'
 import periodTable from '../PeriodTable.js'
-/** @import {JamCallbacks} from './TrackerMain.js' */
+/** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
 <div class="hflex">

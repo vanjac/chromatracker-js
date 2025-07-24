@@ -17,7 +17,7 @@ import {FilterEffectElement} from './dialogs/FilterEffect.js'
 import {type, clamp, minMax} from '../Util.js'
 import {Cell, Effect, mod, Sample, CellPart} from '../Model.js'
 import global from './GlobalState.js'
-/** @import {JamCallbacks} from './TrackerMain.js' */
+/** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
 <div class="vflex flex-grow">

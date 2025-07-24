@@ -7,7 +7,7 @@ import * as $sequence from '../edit/Sequence.js'
 import * as $icons from '../gen/Icons.js'
 import {type} from '../Util.js'
 import {Pattern} from '../Model.js'
-/** @import {ModuleEditCallbacks} from './TrackerMain.js' */
+/** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
 <div class="hflex">
