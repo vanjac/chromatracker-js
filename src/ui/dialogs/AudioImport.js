@@ -16,6 +16,11 @@ const template = $dom.html`
             <option>Right</option>
         </select>
 
+        <label for="normalize">Normalize:</label>
+        <div class="hflex">
+            <input id="normalize" name="normalize" type="checkbox" checked="">
+        </div>
+
         <label for="dither">Dither:</label>
         <div class="hflex">
             <input id="dither" name="dither" type="checkbox" checked="">
@@ -25,7 +30,7 @@ const template = $dom.html`
 </form>
 `
 
-const inputNames = Object.freeze(['sampleRate', 'channel', 'dither'])
+const inputNames = Object.freeze(['sampleRate', 'channel', 'dither', 'normalize'])
 
 export class AudioImport {
     /**
@@ -33,8 +38,15 @@ export class AudioImport {
      */
     constructor(view) {
         this.view = view
-        /** @param {{sampleRate: number, channel: number, dithering: boolean}} params */
-        this.onComplete = ({sampleRate, channel, dithering}) => {}
+        /**
+         * @param {{
+         *      sampleRate: number,
+         *      channel: number,
+         *      dithering: boolean,
+         *      normalize: boolean
+         * }} params
+         */
+        this.onComplete = ({sampleRate, channel, dithering, normalize}) => {}
     }
 
     connectedCallback() {
@@ -44,6 +56,7 @@ export class AudioImport {
         this.sampleRateInput = type(HTMLInputElement, fragment.querySelector('#sampleRate'))
         this.channelSelect = type(HTMLSelectElement, fragment.querySelector('#channel'))
         this.ditherInput = type(HTMLInputElement, fragment.querySelector('#dither'))
+        this.normalizeInput = type(HTMLInputElement, fragment.querySelector('#normalize'))
 
         $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
         $dom.restoreFormData(this.form, inputNames, global.effectFormData)
@@ -56,6 +69,7 @@ export class AudioImport {
             sampleRate: this.sampleRateInput.valueAsNumber,
             channel: this.channelSelect.selectedIndex,
             dithering: this.ditherInput.checked,
+            normalize: this.normalizeInput.checked,
         })
         $dom.saveFormData(this.form, inputNames, global.effectFormData)
     }
