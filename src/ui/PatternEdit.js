@@ -195,16 +195,6 @@ export class PatternEdit {
         this.updateEntryParts()
     }
 
-    resetState() {
-        this.setSelPos(0)
-        this.patternTable.controller.setSelCell(0, 0, true)
-        this.selectInput.checked = false
-        this.selectTools.classList.add('hide')
-        this.playbackStatus.classList.remove('hide')
-        this.patternTable.controller.scrollToSelCell()
-        this.setTempoSpeed(mod.defaultTempo, mod.defaultSpeed)
-    }
-
     /**
      * @param {Readonly<Module>} module
      */

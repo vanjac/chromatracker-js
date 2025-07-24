@@ -331,6 +331,7 @@ export class CellEntry {
     }
 
     /**
+     * @private
      * @param {number} s
      */
     setSelSample(s) {

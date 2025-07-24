@@ -3,14 +3,15 @@ import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
 import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
+import * as $ext from '../file/External.js'
+import * as $mod from '../file/Mod.js'
+import * as $icons from '../gen/Icons.js'
 import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
 import {ConfirmDialog} from './dialogs/UtilDialogs.js'
 import {type} from '../Util.js'
 import {Cell, Module, CellPart} from '../Model.js'
-import appVersion from '../gen/Version.js'
 import './CellEntry.js'
-import './FileToolbar.js'
 import './ModuleProperties.js'
 import './PatternEdit.js'
 import './PlaybackControls.js'
@@ -66,11 +67,13 @@ const template = $dom.html`
 <div id="appTabBody" class="vflex flex-grow">
     <div id="arrange" class="vflex flex-grow">
         <hr>
-        <file-toolbar></file-toolbar>
+        <div class="hflex">
+            <button id="saveModule">
+                ${$icons.content_save_outline}
+            </button>
+        </div>
         <hr>
         <module-properties></module-properties>
-        <div class="flex-grow"></div>
-        <em>Version:&nbsp;<code id="version"></code></em>
     </div>
     <div id="sequence" class="vflex flex-grow shrink-clip-y hide">
         <pattern-edit></pattern-edit>
@@ -91,7 +94,7 @@ export class TrackerMain {
     constructor(view) {
         this.view = view
 
-        this.module = new Undoable($module.createNew())
+        this.module = new Undoable($module.defaultNew)
 
         this.context = type(AudioContext, null)
         /** @type {$play.Playback} */
@@ -110,12 +113,13 @@ export class TrackerMain {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this.fileToolbar = fragment.querySelector('file-toolbar')
         this.moduleProperties = fragment.querySelector('module-properties')
         this.playbackControls = fragment.querySelector('playback-controls')
         this.patternEdit = fragment.querySelector('pattern-edit')
         this.samplesList = fragment.querySelector('samples-list')
         this.cellEntry = fragment.querySelector('cell-entry')
+
+        fragment.querySelector('#saveModule').addEventListener('click', () => this.saveFile())
 
         let tabForm = type(HTMLFormElement, fragment.querySelector('#appTabs'))
         $dom.disableFormSubmit(tabForm)
@@ -138,8 +142,6 @@ export class TrackerMain {
             }
         }
 
-        fragment.querySelector('#version').textContent = appVersion
-
         this.view.addEventListener('contextmenu', () => {
             console.log('Selected:')
             $cli.resetSel()
@@ -159,15 +161,11 @@ export class TrackerMain {
 
         this.view.appendChild(fragment)
 
-        this.fileToolbar.controller.callbacks = {
-            getModule: () => this.module.value,
-            moduleLoaded: this.moduleLoaded.bind(this),
-            moduleSaved: () => this.module.saved(),
-        }
         this.moduleProperties.controller.callbacks = {
             changeModule: this.changeModule.bind(this),
         }
         this.playbackControls.controller.callbacks = {
+            close: this.close.bind(this),
             resetPlayback: this.resetPlayback.bind(this),
             play: this.play.bind(this),
             pause: this.pause.bind(this),
@@ -204,8 +202,6 @@ export class TrackerMain {
         this.patternEdit.controller.updateCell()
 
         window.onbeforeunload = () => (this.module.isUnsaved() ? 'You have unsaved changes' : null)
-
-        this.refreshModule()
     }
 
     disconnectedCallback() {
@@ -213,16 +209,20 @@ export class TrackerMain {
     }
 
     /**
-     * @private
      * @param {Readonly<Module>} module
      */
-    resetEditorState(module) {
+    setModule(module) {
         this.module = new Undoable(module)
 
         this.refreshModule()
-        this.patternEdit.controller.resetState()
-        this.samplesList.controller.setSelSample(1)
-        this.cellEntry.controller.setSelSample(1)
+    }
+
+    /** @private */
+    close() {
+        this.askUnsavedChanges().then(() => {
+            this.destroyPlayback()
+            this.view.remove()
+        }).catch(console.warn)
     }
 
     /** @private */
@@ -235,19 +235,17 @@ export class TrackerMain {
         }
     }
 
-    /**
-     * @param {Readonly<Module>} module
-     */
-    moduleLoaded(module) {
-        this.askUnsavedChanges().then(() => {
-            console.log('Loaded module:', module)
-            this.resetEditorState(module)
-            this.resetPlayback()
-        }).catch(console.warn)
+    /** @private */
+    saveFile() {
+        let module = this.module.value
+        let blob = new Blob([$mod.write(module)], {type: 'application/octet-stream'})
+        $ext.download(blob, (module.name || 'Untitled') + '.mod')
+        this.module.saved()
     }
 
     /**
      * Must be called as result of user interaction
+     * @private
      */
     resetPlayback({restoreSpeed = false, restorePos = false, restoreRow = false} = {}) {
         this.pause()
@@ -278,6 +276,7 @@ export class TrackerMain {
         this.updatePlaySettings()
     }
 
+    /** @private */
     destroyPlayback() {
         this.pause()
         if (this.playback) {
@@ -305,6 +304,7 @@ export class TrackerMain {
 
     /**
      * Must call resetPlayback() first
+     * @private
      */
     play() {
         this.processPlayback()
@@ -313,6 +313,7 @@ export class TrackerMain {
         this.playbackControls.controller.setPlayState(true)
     }
 
+    /** @private */
     pause() {
         if (this.isPlaying()) {
             $play.stop(this.playback)
@@ -327,6 +328,7 @@ export class TrackerMain {
         }
     }
 
+    /** @private */
     isPlaying() {
         return !!this.intervalHandle
     }
@@ -347,6 +349,7 @@ export class TrackerMain {
         }
     }
 
+    /** @private */
     updatePlaySettings() {
         if (this.playback) {
             this.playback.userPatternLoop = this.playbackControls.controller.getPatternLoop()
@@ -354,6 +357,7 @@ export class TrackerMain {
     }
 
     /**
+     * @private
      * @param {number} c
      * @param {boolean} mute
      */
@@ -364,6 +368,7 @@ export class TrackerMain {
     }
 
     /**
+     * @private
      * @param {number} id
      * @param {Readonly<Cell>} cell
      */
@@ -376,6 +381,7 @@ export class TrackerMain {
     }
 
     /**
+     * @private
      * @param {number} id
      */
     jamRelease(id) {
@@ -388,11 +394,13 @@ export class TrackerMain {
         }
     }
 
+    /** @private */
     getEntryCell() {
         return this.cellEntry.controller.getCell()
     }
 
     /**
+     * @private
      * @param {Readonly<Cell>} cell
      * @param {CellPart} parts
      */
@@ -476,6 +484,7 @@ export class TrackerMain {
     }
 
     /**
+     * @private
      * @param {(module: Readonly<Module>) => Readonly<Module>} callback
      */
     changeModule(callback, commit = true) {
@@ -484,6 +493,7 @@ export class TrackerMain {
         }
     }
 
+    /** @private */
     undo() {
         if (this.module.undo()) {
             this.refreshModule()
@@ -496,4 +506,5 @@ let testElem
 if (import.meta.main) {
     testElem = new TrackerMainElement()
     $dom.displayMain(testElem)
+    testElem.controller.setModule($module.createNew())
 }

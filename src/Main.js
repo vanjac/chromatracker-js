@@ -1,5 +1,5 @@
 import * as $dom from './ui/DOMUtil.js'
-import {TrackerMainElement} from './ui/TrackerMain.js'
+import {FileMenuElement} from './ui/FileMenu.js'
 import './ui/WebApp.js'
 
-$dom.displayMain(new TrackerMainElement())
+$dom.displayMain(new FileMenuElement())

@@ -21,6 +21,7 @@ import global from './GlobalState.js'
 
 const template = $dom.html`
 <div class="vflex flex-grow">
+    <hr>
     <div class="properties-grid">
         <label for="name">Name:</label>
         <div class="hflex">
@@ -512,7 +513,7 @@ export class SampleEdit {
             if (files.length == 1) {
                 this.readAudioFile(files[0])
             }
-        }).catch(() => {})
+        }).catch(console.warn)
     }
 
     /** @private */

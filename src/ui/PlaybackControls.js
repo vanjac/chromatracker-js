@@ -4,6 +4,10 @@ import {type} from '../Util.js'
 
 const template = $dom.html`
 <div class="hflex">
+    <button id="close">
+        ${$icons.arrow_left}
+    </button>
+    <div class="flex-grow"></div>
     <button id="playStart">
         ${$icons.step_forward}
     </button>
@@ -39,6 +43,7 @@ export class PlaybackControls {
         this.view = view
         /**
          * @type {{
+         *      close(): void
          *      resetPlayback(
          *          options?: {restoreSpeed?: boolean, restorePos?: boolean, restoreRow?: boolean}
          *      ): void
@@ -61,6 +66,8 @@ export class PlaybackControls {
         this.patternLoopInput = type(HTMLInputElement, fragment.querySelector('#patternLoop'))
         this.followInput = type(HTMLInputElement, fragment.querySelector('#follow'))
         this.undoButton = type(HTMLButtonElement, fragment.querySelector('#undo'))
+
+        fragment.querySelector('#close').addEventListener('click', () => this.callbacks.close())
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
             this.patternLoopInput.checked = false
@@ -117,6 +124,9 @@ let testElem
 if (import.meta.main) {
     testElem = new PlaybackControlsElement()
     testElem.controller.callbacks = {
+        close() {
+            console.log('Close')
+        },
         resetPlayback(options) {
             console.log('Reset playback', options)
         },
