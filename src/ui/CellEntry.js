@@ -245,8 +245,9 @@ export class CellEntry {
 
         $dom.disableFormSubmit(this.sampleList)
         $keyPad.create(this.sampleList, (id, elem) => {
-            if (elem.parentElement && elem.parentElement.parentElement == this.sampleList) {
-                let input = elem.parentElement.querySelector('input')
+            let label = elem.closest('label')
+            if (label) {
+                let input = label.querySelector('input')
                 this.setSelSample(Number(input.value))
                 this.callbacks.jamPlay(id, this.getCell())
             }

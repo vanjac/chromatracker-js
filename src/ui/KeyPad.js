@@ -39,7 +39,7 @@ export function create(container, onPress, onRelease) {
  */
 function press(self, id, x, y) {
     let elem = document.elementFromPoint(x, y)
-    let valid = elem && elem != self.container
+    let valid = elem && elem != self.container && self.container.contains(elem)
     if (elem != self.pressed.get(id)) {
         self.pressed.set(id, elem)
         if (valid) {
