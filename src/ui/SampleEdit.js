@@ -431,13 +431,7 @@ export class SampleEdit {
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
                 if ($wav.identify(reader.result)) {
-                    try {
-                        let newSample = $wav.read(reader.result)
-                        newSample.name = name
-                        this.callbacks.onChange(newSample, true)
-                    } catch (error) {
-                        if (error instanceof Error) { AlertDialog.open(error.message) }
-                    }
+                    this.importWav(reader.result, name)
                 } else {
                     this.importAudio(reader.result, name)
                 }
@@ -447,6 +441,22 @@ export class SampleEdit {
     }
 
     /**
+     * @private
+     * @param {ArrayBuffer} buffer
+     * @param {string} name
+     */
+    importWav(buffer, name) {
+        try {
+            let newSample = $wav.read(buffer)
+            newSample.name = name
+            this.callbacks.onChange(newSample, true)
+        } catch (error) {
+            if (error instanceof Error) { AlertDialog.open(error.message) }
+        }
+    }
+
+    /**
+     * @private
      * @param {ArrayBuffer} buffer
      * @param {string} name
      */
