@@ -61,12 +61,6 @@ const template = $dom.html`
         </div>
     </div>
     <div class="hflex">
-        <label for="loopStart">Loop:</label>
-        <input id="loopStart" type="number" class="med-input" min="0" step="2" autocomplete="off">
-        <span>&nbsp;to&nbsp;</span>
-        <input id="loopEnd" type="number" class="med-input" min="0" step="2" autocomplete="off">
-    </div>
-    <div class="hflex">
         <button id="selectAll">
             ${$icons.select_all}
         </button>
@@ -87,14 +81,19 @@ const template = $dom.html`
         </button>
     </div>
     <div class="hflex">
-        <select id="loopMenu" class="med-menu">
-            <option selected="" disabled="" hidden="">Loop</option>
-            <option value="set">Set</option>
-            <option value="clear">Clear</option>
-            <option value="select">Select</option>
-            <option value="repeat">Repeat</option>
-            <option value="pingpong">Ping-Pong</option>
-        </select>
+        <label class="label-button">
+            <input id="loopToggle" type="checkbox">
+            <span>${$icons.repeat}</span>
+        </label>
+        <button id="selectLoop">
+            ${$icons.select}
+        </button>
+        <span>&nbsp;</span>
+        <input id="loopStart" type="number" class="med-input" min="0" step="2" autocomplete="off">
+        <span>&nbsp;to&nbsp;</span>
+        <input id="loopEnd" type="number" class="med-input" min="0" step="2" autocomplete="off">
+    </div>
+    <div class="hflex">
         <select id="effectMenu" class="med-menu">
             <option selected="" disabled="" hidden="">Effect</option>
             <option value="amplify">Amplify</option>
@@ -102,6 +101,10 @@ const template = $dom.html`
             <option value="reverse">Reverse</option>
             <option value="resample">Resample</option>
             <option value="filter">Filter / EQ</option>
+            <optgroup label="Loop">
+                <option value="repeat">Repeat</option>
+                <option value="pingpong">Ping-Pong</option>
+            </optgroup>
         </select>
         <div class="flex-grow"></div>
         <button id="useOffset">9xx Offset</button>
@@ -174,6 +177,16 @@ export class SampleEdit {
             })
         })
 
+        this.loopToggle = type(HTMLInputElement, fragment.querySelector('#loopToggle'))
+        this.loopToggle.addEventListener('change', () => {
+            if (this.loopToggle.checked) {
+                this.loopSelection()
+            } else {
+                this.clearLoop()
+            }
+        })
+        this.selectLoopButton = type(HTMLButtonElement, fragment.querySelector('#selectLoop'))
+        this.selectLoopButton.addEventListener('click', () => this.selectLoop())
         this.loopStartInput = type(HTMLInputElement, fragment.querySelector('#loopStart'))
         $dom.addInputListeners(this.loopStartInput, commit =>
             this.changeSample(sample => {
@@ -202,15 +215,6 @@ export class SampleEdit {
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
         fragment.querySelector('#paste').addEventListener('click', () => this.paste())
 
-        $dom.addMenuListener(fragment.querySelector('#loopMenu'), value => {
-            switch (value) {
-                case 'set': this.loopSelection(); break
-                case 'clear': this.clearLoop(); break
-                case 'select': this.selectLoop(); break
-                case 'repeat': this.loopRepeat(); break
-                case 'pingpong': this.loopPingPong(); break
-            }
-        })
         $dom.addMenuListener(fragment.querySelector('#effectMenu'), value => {
             switch (value) {
                 case 'amplify': this.amplify(); break
@@ -218,6 +222,9 @@ export class SampleEdit {
                 case 'reverse': this.applyEffect($wave.reverse); break
                 case 'resample': this.resample(); break
                 case 'filter': this.filter(); break
+                // Loop
+                case 'repeat': this.loopRepeat(); break
+                case 'pingpong': this.loopPingPong(); break
             }
         })
 
@@ -273,6 +280,10 @@ export class SampleEdit {
         this.loopStartInput.valueAsNumber = sample.loopStart
         this.loopEndInput.valueAsNumber = sample.loopEnd
         let showLoop = sample.wave.length && Sample.hasLoop(sample)
+        this.loopToggle.checked = showLoop
+        this.selectLoopButton.disabled = !showLoop
+        this.loopStartInput.disabled = !showLoop
+        this.loopEndInput.disabled = !showLoop
         this.loopStartMark.classList.toggle('hide', !showLoop)
         this.loopEndMark.classList.toggle('hide', !showLoop)
         if (showLoop) {
