@@ -245,9 +245,8 @@ export class CellEntry {
 
         $dom.disableFormSubmit(this.sampleList)
         $keyPad.create(this.sampleList, (id, elem) => {
-            let label = elem.closest('label')
-            if (label) {
-                let input = label.querySelector('input')
+            let input = elem.querySelector('input')
+            if (input) {
                 this.setSelSample(Number(input.value))
                 this.callbacks.jamPlay(id, this.getCell())
             }
@@ -320,7 +319,7 @@ export class CellEntry {
             }
             anySamples = true
             let label = $util.makeRadioButton('sample', i.toString(), i.toString())
-            label.classList.add('keypad-key')
+            label.classList.add('keypad-key', 'keypad-target')
             this.sampleList.appendChild(label)
         }
         this.sampleInput = this.sampleList.elements.namedItem('sample')

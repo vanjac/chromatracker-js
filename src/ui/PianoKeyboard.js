@@ -53,9 +53,8 @@ export class PianoKeyboard {
 
         $dom.disableFormSubmit(this.piano)
         $keyPad.create(this.piano, (id, elem) => {
-            let label = elem.closest('label')
-            if (label) {
-                let input = label.querySelector('input')
+            let input = elem.querySelector('input')
+            if (input) {
                 $dom.selectRadioButton(this.pitchInput, input.value)
                 this.callbacks.pitchChanged()
                 this.callbacks.jamPlay(id, this.callbacks.getJamCell())
@@ -81,7 +80,7 @@ export class PianoKeyboard {
                 noteStr += Math.floor(i / 12)
             }
             let label = $util.makeRadioButton('pitch', i.toString(), noteStr)
-            label.classList.add('keypad-key')
+            label.classList.add('keypad-key', 'keypad-target')
             let isBlackKey = [1, 3, 6, 8, 10].includes(note)
             label.classList.add(isBlackKey ? 'black-key' : 'white-key')
             ;(isBlackKey ? blackKeys : whiteKeys).appendChild(label)

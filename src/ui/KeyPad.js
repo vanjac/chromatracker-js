@@ -1,14 +1,15 @@
+import {type} from '../Util.js'
 /** @typedef {ReturnType<create>} KeyPad */
 
 /**
  * @param {HTMLElement} container
- * @param {(id: number, elem: Element) => void} onPress
+ * @param {(id: number, elem: HTMLElement) => void} onPress
  * @param {(id: number) => void} onRelease
  */
 export function create(container, onPress, onRelease) {
     const self = {
         container,
-        /** @type {Map<number, Element>} */
+        /** @type {Map<number, HTMLElement>} */
         pressed: new Map(),
         onPress,
         onRelease,
@@ -38,8 +39,8 @@ export function create(container, onPress, onRelease) {
  * @param {number} y
  */
 function press(self, id, x, y) {
-    let elem = document.elementFromPoint(x, y)
-    let valid = elem && elem != self.container && self.container.contains(elem)
+    let elem = type(HTMLElement, document.elementFromPoint(x, y).closest('.keypad-target'))
+    let valid = elem && self.container.contains(elem)
     if (elem != self.pressed.get(id)) {
         self.pressed.set(id, elem)
         if (valid) {

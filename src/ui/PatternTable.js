@@ -20,7 +20,7 @@ const template = $dom.html`
 `
 
 const cellTemplate = $dom.html`
-<td class="pattern-cell">
+<td class="pattern-cell keypad-target">
     <span id="pitch" class="cell-pitch">...</span>
     <span id="inst" class="cell-inst">..</span>
     <span id="effect" class="cell-effect">...</span>
@@ -64,10 +64,9 @@ export class PatternTable {
         this.muteInputs = []
 
         $keyPad.create(this.tbody, (id, elem) => {
-            let td = elem.closest('td')
-            if (td && td.dataset.c != null) {
-                let c = Number(td.dataset.c)
-                let row = Number(td.dataset.row)
+            if (elem.dataset.c != null) {
+                let c = Number(elem.dataset.c)
+                let row = Number(elem.dataset.row)
                 this.setSelCell(c, row)
                 this.callbacks.jamPlay(id, this.viewPattern[c][row])
             }
