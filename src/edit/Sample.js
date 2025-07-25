@@ -1,7 +1,7 @@
 import * as $wave from '../edit/Wave.js'
 import {immSplice} from './EditUtil.js'
 import {clamp, defaultSampleRate} from '../Util.js'
-import {Module, Sample} from '../Model.js'
+import {mod, Module, Sample} from '../Model.js'
 
 /**
  * @param {Readonly<Module>} module
@@ -10,6 +10,9 @@ import {Module, Sample} from '../Model.js'
 export function create(module) {
     let emptyIndex = module.samples.findIndex((sample, i) => i != 0 && !sample)
     if (emptyIndex == -1) { emptyIndex = module.samples.length }
+    if (emptyIndex >= mod.numSamples) {
+        return [module, -1]
+    }
     let sample = Object.freeze({...Sample.empty, name: 'untitled'})
     let samples = immSplice(module.samples, emptyIndex, 1, sample)
     return [Object.freeze({...module, samples}), emptyIndex]

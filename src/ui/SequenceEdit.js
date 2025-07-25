@@ -6,7 +6,7 @@ import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $icons from '../gen/Icons.js'
 import {type} from '../Util.js'
-import {Pattern} from '../Model.js'
+import {mod, Pattern} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -124,7 +124,8 @@ export class SequenceEdit {
 
         this.select.textContent = ''
         // last option = create pattern
-        for (let i = 0; i < patterns.length + 1; i++) {
+        let numListedPatterns = Math.min(patterns.length + 1, mod.maxPatterns)
+        for (let i = 0; i < numListedPatterns; i++) {
             this.select.appendChild($dom.createElem('option', {textContent: i.toString()}))
         }
         this.select.selectedIndex = this.viewSequence[this.selPos]
@@ -165,6 +166,9 @@ export class SequenceEdit {
 
     /** @private */
     seqInsSame() {
+        if (this.viewSequence.length >= mod.numSongPositions) {
+            return
+        }
         this.selPos++
         this.callbacks.changeModule(module =>
             $sequence.insert(module, this.selPos, module.sequence[this.selPos - 1]))
@@ -173,6 +177,10 @@ export class SequenceEdit {
 
     /** @private */
     seqInsClone() {
+        if (this.viewSequence.length >= mod.numSongPositions
+            || this.viewNumPatterns >= mod.maxPatterns) {
+            return
+        }
         this.selPos++
         this.callbacks.changeModule(module => {
             module = $pattern.clone(module, module.sequence[this.selPos - 1])

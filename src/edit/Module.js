@@ -40,6 +40,7 @@ export function setName(module, name) {
  */
 export function addChannels(module, count) {
     let numChannels = module.numChannels + count
+    if (numChannels > mod.maxChannels) { return module }
     let patterns = module.patterns.map(pattern => {
         let numRows = pattern[0].length
         let newChannels = Array(count).fill(Object.freeze(Array(numRows).fill(Cell.empty)))
@@ -55,8 +56,8 @@ export function addChannels(module, count) {
  * @returns {Readonly<Module>}
  */
 export function delChannels(module, index, count) {
-    if (module.numChannels <= count) { return module }
     let numChannels = module.numChannels - count
+    if (numChannels <= 0) { return module }
     let patterns = module.patterns.map(pattern => immSplice(pattern, index, count))
     return Object.freeze({...module, numChannels, patterns})
 }

@@ -1,6 +1,8 @@
 export const mod = Object.freeze({
     numSamples: 32, // 0th sample is empty!
     numSongPositions: 128,
+    maxPatterns: 128,
+    maxChannels: 32,
     numRows: 64,
     maxVolume: 64,
     maxSampleNameLength: 22,
