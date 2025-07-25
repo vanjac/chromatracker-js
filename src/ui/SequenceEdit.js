@@ -55,8 +55,10 @@ export class SequenceEdit {
         this.select = type(HTMLSelectElement, fragment.querySelector('#patternSelect'))
 
         $dom.disableFormSubmit(this.sequenceList)
-        fragment.querySelector('#seqInsSame').addEventListener('click', () => this.seqInsSame())
-        fragment.querySelector('#seqInsClone').addEventListener('click', () => this.seqInsClone())
+        this.insSameButton = type(HTMLButtonElement, fragment.querySelector('#seqInsSame'))
+        this.insSameButton.addEventListener('click', () => this.seqInsSame())
+        this.insCloneButton = type(HTMLButtonElement, fragment.querySelector('#seqInsClone'))
+        this.insCloneButton.addEventListener('click', () => this.seqInsClone())
         this.delButton = type(HTMLButtonElement, fragment.querySelector('#seqDel'))
         this.delButton.addEventListener('click', () => this.seqDel())
 
@@ -108,6 +110,8 @@ export class SequenceEdit {
         }
         this.sequenceInput = this.sequenceList.elements.namedItem('sequence')
         $dom.selectRadioButton(this.sequenceInput, this.selPos.toString())
+        this.insSameButton.disabled = sequence.length >= mod.numSongPositions
+        this.insCloneButton.disabled = !this.canInsClone()
         this.delButton.disabled = sequence.length <= 1
         this.updateSel()
     }
@@ -129,6 +133,8 @@ export class SequenceEdit {
             this.select.appendChild($dom.createElem('option', {textContent: i.toString()}))
         }
         this.select.selectedIndex = this.viewSequence[this.selPos]
+
+        this.insCloneButton.disabled = !this.canInsClone()
     }
 
     /** @private */
@@ -176,9 +182,14 @@ export class SequenceEdit {
     }
 
     /** @private */
+    canInsClone() {
+        return this.viewSequence.length < mod.numSongPositions
+            && this.viewNumPatterns < mod.maxPatterns
+    }
+
+    /** @private */
     seqInsClone() {
-        if (this.viewSequence.length >= mod.numSongPositions
-            || this.viewNumPatterns >= mod.maxPatterns) {
+        if (!this.canInsClone()) {
             return
         }
         this.selPos++

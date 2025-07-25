@@ -5,7 +5,7 @@ import * as $sample from '../edit/Sample.js'
 import * as $icons from '../gen/Icons.js'
 import {type} from '../Util.js'
 import {SampleEditElement} from './SampleEdit.js'
-import {Cell, Sample, CellPart} from '../Model.js'
+import {mod, Cell, Sample, CellPart} from '../Model.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -44,6 +44,7 @@ export class SamplesList {
         this.callbacks = null
         /** @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
+        this.viewSampleCount = 0
         this.viewIndex = -1
     }
 
@@ -59,7 +60,8 @@ export class SamplesList {
 
         this.showListButton = type(HTMLButtonElement, fragment.querySelector('#showList'))
         this.showListButton.addEventListener('click', () => this.closeSampleEdit())
-        fragment.querySelector('#addSample').addEventListener('click', () => this.addSample())
+        this.addButton = type(HTMLButtonElement, fragment.querySelector('#addSample'))
+        this.addButton.addEventListener('click', () => this.addSample())
         this.deleteButton = type(HTMLButtonElement, fragment.querySelector('#delSample'))
         this.deleteButton.addEventListener('click', () => this.deleteSample())
 
@@ -113,8 +115,7 @@ export class SamplesList {
         if (this.sampleEdit) {
             this.titleElem.textContent = `Sample ${this.viewIndex}`
         } else {
-            let sampleCount = this.viewSamples.reduce(
-                (count, item) => (item ? (count + 1) : count), 0)
+            let sampleCount = this.viewSampleCount
             this.titleElem.textContent = `${sampleCount} Sample${(sampleCount != 1) ? 's' : ''}`
         }
     }
@@ -130,16 +131,19 @@ export class SamplesList {
         this.viewSamples = samples
 
         this.sampleList.textContent = ''
+        this.viewSampleCount = 0
         for (let [i, sample] of samples.entries()) {
             if (!sample) {
                 continue
             }
-            let textContent = `${i}: ${sample.name}`
+            this.viewSampleCount++
+            let textContent = `${i.toString().padStart(2, '0')}: ${sample.name}`
             let button = this.sampleList.appendChild($dom.createElem('button', {textContent}))
             button.classList.add('justify-start')
             button.addEventListener('click', () => this.openSampleEdit(i))
         }
         this.setSelSample(this.viewIndex)
+        this.addButton.disabled = this.viewSampleCount >= mod.numSamples - 1
         this.updateTitle()
     }
 

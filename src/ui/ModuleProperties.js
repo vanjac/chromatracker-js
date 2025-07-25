@@ -4,7 +4,7 @@ import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
 import {type} from '../Util.js'
-import {Module} from '../Model.js'
+import {mod, Module} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -82,9 +82,10 @@ export class ModuleProperties {
         this.patternCountOutput = type(HTMLOutputElement, fragment.querySelector('#patternCount'))
         this.sequenceCountOutput = type(HTMLOutputElement, fragment.querySelector('#sequenceCount'))
         this.fileSizeOutput = type(HTMLOutputElement, fragment.querySelector('#fileSize'))
+        this.addChannelsButton = type(HTMLButtonElement, fragment.querySelector('#addChannels'))
         this.delChannelsButton = type(HTMLButtonElement, fragment.querySelector('#delChannels'))
 
-        fragment.querySelector('#addChannels').addEventListener('click',
+        this.addChannelsButton.addEventListener('click',
             () => this.callbacks.changeModule(module => $module.addChannels(module, 2)))
         this.delChannelsButton.addEventListener('click',
             () => this.callbacks.changeModule(
@@ -112,6 +113,7 @@ export class ModuleProperties {
             console.debug('update channel count')
             this.channelCountOutput.value = module.numChannels.toString()
             this.delChannelsButton.disabled = module.numChannels <= 2
+            this.addChannelsButton.disabled = module.numChannels >= mod.maxChannels
         }
         if (!this.viewModule || module.samples != this.viewModule.samples) {
             console.debug('update sample count')
