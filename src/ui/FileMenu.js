@@ -108,12 +108,13 @@ export class FileMenu {
      * @param {Readonly<Module>} module
      */
     openEditor(module) {
+        this.menu.classList.add('hide')
+        this.editorContainer.classList.remove('hide')
+
         let editor = new ModuleEditElement()
         this.editorContainer.textContent = ''
         this.editorContainer.appendChild(editor)
         editor.controller.setModule(module)
-        this.menu.classList.add('hide')
-        this.editorContainer.classList.remove('hide')
 
         editor.addEventListener('disconnected', () => {
             this.menu.classList.remove('hide')
