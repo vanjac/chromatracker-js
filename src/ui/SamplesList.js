@@ -76,6 +76,12 @@ export class SamplesList {
         this.closeSampleEdit()
         this.viewIndex = idx
 
+        this.showListButton.classList.remove('hide')
+        this.deleteButton.classList.remove('hide')
+        this.sampleList.classList.add('hide')
+        this.sampleEditContainer.classList.remove('hide')
+        this.updateTitle()
+
         this.sampleEdit = new SampleEditElement()
         this.sampleEdit.controller.callbacks = {
             jamPlay: (...args) => this.callbacks.jamPlay(...args),
@@ -90,12 +96,6 @@ export class SamplesList {
         this.sampleEditContainer.appendChild(this.sampleEdit)
         this.sampleEdit.controller.setSample(this.viewSamples[idx])
         this.callbacks.setEntryCell({...Cell.empty, inst: idx}, CellPart.inst)
-
-        this.showListButton.classList.remove('hide')
-        this.deleteButton.classList.remove('hide')
-        this.sampleList.classList.add('hide')
-        this.sampleEditContainer.classList.remove('hide')
-        this.updateTitle()
     }
 
     /** @private */
