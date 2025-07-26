@@ -14,36 +14,53 @@ for (let p = 0; p < periodTable[8].length; p++) {
     periodToPitch.set(periodTable[8][p], p)
 }
 
+const genericError = 'Unrecognized file format.'
+
 /**
  * @param {ArrayBuffer} buf
  * @returns {Module}
  */
 export function read(buf) {
+    if (buf.byteLength < headerSize + 1024) {throw Error(genericError)}
     let view = new DataView(buf)
-    let textDecode = new TextDecoder() // TODO: determine encoding from file
-    let asciiDecode = new TextDecoder('ascii')
+    let textDecode = new TextDecoder('utf-8', {fatal: true}) // TODO: determine encoding from file
+    let asciiDecode = new TextDecoder('ascii', {fatal: true})
 
-    let name = textDecode.decode($file.readStringZ(buf, 0, 20))
+    let name
+    try {
+        name = textDecode.decode($file.readStringZ(buf, 0, 20))
+    } catch (error) {
+        if (error instanceof TypeError) {throw Error(genericError)}
+    }
 
-    let songLen = Math.min(view.getUint8(950), mod.numSongPositions)
+    let songLen = view.getUint8(950)
+    if (songLen < 1 || songLen > mod.numSongPositions) {throw Error(genericError)}
     let restartPos = view.getUint8(951)
     if (restartPos >= songLen) {
         restartPos = 0
     }
     let seq = Array.from(new Uint8Array(buf, 952, mod.numSongPositions))
     let numPatterns = Math.max(...seq) + 1
+    if (numPatterns > mod.maxPatterns) {throw Error(genericError)}
     let sequence = Object.freeze(seq.slice(0, songLen))
 
     /** @type {number} */
     let numChannels = mod.defaultChannels
-    let initials = asciiDecode.decode(new DataView(buf, 1080, 4))
+    let initials
+    try {
+        initials = asciiDecode.decode(new DataView(buf, 1080, 4))
+    } catch (error) {
+        if (error instanceof TypeError) {throw Error(genericError)}
+    }
     // TODO: support old 15-sample formats?
     let chanStr = initials.replace(/\D/g, '') // remove non-digits
     if (chanStr) {
         numChannels = parseInt(chanStr)
     }
+    if (numChannels > 99) {throw Error(genericError)}
 
     let patternSize = numChannels * mod.numRows * 4
+    if (buf.byteLength < headerSize + patternSize * numPatterns) {throw Error(genericError)}
     /** @type {Readonly<Pattern>[]} */
     let patterns = []
     for (let p = 0; p < numPatterns; p++) {
@@ -86,7 +103,13 @@ export function read(buf) {
             samples.push(null)
             continue
         }
-        let name = textDecode.decode($file.readStringZ(buf, offset, mod.maxSampleNameLength))
+        if (buf.byteLength < wavePos + sampleLength) {throw Error(genericError)}
+        let name
+        try {
+            name = textDecode.decode($file.readStringZ(buf, offset, mod.maxSampleNameLength))
+        } catch (error) {
+            if (error instanceof TypeError) {throw Error(genericError)}
+        }
         let finetune = view.getUint8(offset + 24) & 0xf
         if (finetune >= 8) {
             finetune -= 16 // sign-extend nibble
