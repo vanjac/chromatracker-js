@@ -110,7 +110,7 @@ const template = $dom.html`
     </div>
     <div class="flex-grow"></div>
     <div class="hflex">
-        <button id="useOffset">9xx Offset</button>
+        <button id="useOffset">Offset:&nbsp;<span id="offsetEffect">000</span></button>
     </div>
 </div>
 `
@@ -258,6 +258,7 @@ export class SampleEdit {
             this.useSampleOffset()
             this.callbacks.jamPlay(id, this.callbacks.getEntryCell())
         }, id => this.callbacks.jamRelease(id))
+        this.offsetEffectSpan = fragment.querySelector('#offsetEffect')
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('sample', 'object', this.viewSample,
@@ -410,6 +411,10 @@ export class SampleEdit {
         let anySelected = this.anySelected()
         this.selectAllButton.classList.toggle('hide', anySelected)
         this.selectNoneButton.classList.toggle('hide', !anySelected)
+
+        let {effect, param0, param1} = this.getOffsetEffect()
+        this.offsetEffectSpan.textContent =
+            (effect.toString(16) + param0.toString(16) + param1.toString(16)).toUpperCase()
     }
 
     /**
@@ -533,6 +538,13 @@ export class SampleEdit {
 
     /** @private */
     useSampleOffset() {
+        let {effect, param0, param1} = this.getOffsetEffect()
+        this.callbacks.setEntryCell({...Cell.empty, effect, param0, param1},
+            CellPart.effect | CellPart.param)
+    }
+
+    /** @private */
+    getOffsetEffect() {
         let effect = 0, param0 = 0, param1 = 0
         if (this.anySelected()) {
             let offset = Math.min(255, Math.floor(this.selMin() / 256))
@@ -542,8 +554,7 @@ export class SampleEdit {
                 param1 = offset & 0xf
             }
         }
-        this.callbacks.setEntryCell({...Cell.empty, effect, param0, param1},
-            CellPart.effect | CellPart.param)
+        return {effect, param0, param1}
     }
 
     /**
