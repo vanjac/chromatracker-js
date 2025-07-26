@@ -248,6 +248,8 @@ export class SampleEdit {
                 this.callbacks.jamRelease(-1)
             }
         })
+        this.finetuneInput.addEventListener('pointerup', () => this.callbacks.jamRelease(-1))
+        this.finetuneInput.addEventListener('pointerleave', () => this.callbacks.jamRelease(-1))
 
         fragment.querySelector('#open').addEventListener('click', () => this.openAudioFile())
         fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
