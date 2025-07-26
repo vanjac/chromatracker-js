@@ -1,10 +1,10 @@
 import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
-import * as $keyPad from './KeyPad.js'
 import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
+import {makeKeyButton} from './KeyPad.js'
 import {type} from '../Util.js'
 import {Cell, CellPart, mod, Module, Pattern, Sample, Effect} from '../Model.js'
 import global from './GlobalState.js'
@@ -138,11 +138,11 @@ export class PatternEdit {
             this.patternTable.controller.setScrollLock(scrollLockCheck.checked)
         })
 
-        $keyPad.makeKeyButton(this.entryCell,
+        makeKeyButton(this.entryCell,
             id => this.callbacks.jamPlay(id, this.callbacks.getEntryCell()),
             id => this.callbacks.jamRelease(id))
 
-        $keyPad.makeKeyButton(fragment.querySelector('#write'), id => {
+        makeKeyButton(fragment.querySelector('#write'), id => {
             this.putCell(
                 this.callbacks.getEntryCell(),
                 this.getCellParts()
@@ -151,13 +151,13 @@ export class PatternEdit {
             this.advance()
         }, id => this.callbacks.jamRelease(id))
 
-        $keyPad.makeKeyButton(fragment.querySelector('#clear'), id => {
+        makeKeyButton(fragment.querySelector('#clear'), id => {
             this.putCell(Cell.empty, this.getCellParts())
             this.callbacks.jamPlay(id, this.selCell())
             this.advance()
         }, id => this.callbacks.jamRelease(id))
 
-        $keyPad.makeKeyButton(fragment.querySelector('#lift'), id => {
+        makeKeyButton(fragment.querySelector('#lift'), id => {
             let cell = this.selCell()
             let parts = this.getCellParts()
             if (cell.pitch < 0) { parts &= ~CellPart.pitch }

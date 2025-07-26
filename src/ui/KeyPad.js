@@ -1,63 +1,61 @@
-import {type} from '../Util.js'
-/** @typedef {ReturnType<create>} KeyPad */
+export class KeyPad {
+    /**
+     * @param {HTMLElement} container
+     * @param {(id: number, elem: HTMLElement) => void} onPress
+     * @param {(id: number) => void} onRelease
+     */
+    constructor(container, onPress, onRelease) {
+        /** @private */
+        this.container = container
+        /** @private @type {Map<number, Element>} */
+        this.pressed = new Map()
+        /** @private */
+        this.onPress = onPress
+        /** @private */
+        this.onRelease = onRelease
 
-/**
- * @param {HTMLElement} container
- * @param {(id: number, elem: HTMLElement) => void} onPress
- * @param {(id: number) => void} onRelease
- */
-export function create(container, onPress, onRelease) {
-    const self = {
-        container,
-        /** @type {Map<number, Element>} */
-        pressed: new Map(),
-        onPress,
-        onRelease,
+        container.addEventListener('pointerdown', e => {
+            if (e.pointerType != 'mouse' || e.button == 0) {
+                if (this.press(e.pointerId, e.clientX, e.clientY)) {
+                    container.setPointerCapture(e.pointerId)
+                }
+            }
+        })
+        container.addEventListener('pointermove', e => {
+            if (container.hasPointerCapture(e.pointerId)) {
+                this.press(e.pointerId, e.clientX, e.clientY)
+            }
+        })
+        container.addEventListener('lostpointercapture', e => this.release(e.pointerId))
     }
 
-    container.addEventListener('pointerdown', e => {
-        if (e.pointerType != 'mouse' || e.button == 0) {
-            if (press(self, e.pointerId, e.clientX, e.clientY)) {
-                container.setPointerCapture(e.pointerId)
+    /**
+     * @private
+     * @param {number} id
+     * @param {number} x
+     * @param {number} y
+     */
+    press(id, x, y) {
+        let elem = document.elementFromPoint(x, y)
+        let valid = elem && elem != this.container && this.container.contains(elem)
+        let target = valid ? elem.closest('.keypad-target') : null
+        if (target != this.pressed.get(id)) {
+            this.pressed.set(id, target)
+            if (target instanceof HTMLElement) {
+                this.onPress(id, target)
             }
         }
-    })
-    container.addEventListener('pointermove', e => {
-        if (container.hasPointerCapture(e.pointerId)) {
-            press(self, e.pointerId, e.clientX, e.clientY)
-        }
-    })
-    container.addEventListener('lostpointercapture', e => release(self, e.pointerId))
-
-    return self
-}
-
-/**
- * @param {KeyPad} self
- * @param {number} id
- * @param {number} x
- * @param {number} y
- */
-function press(self, id, x, y) {
-    let elem = document.elementFromPoint(x, y)
-    let valid = elem && elem != self.container && self.container.contains(elem)
-    let target = valid ? elem.closest('.keypad-target') : null
-    if (target != self.pressed.get(id)) {
-        self.pressed.set(id, target)
-        if (target instanceof HTMLElement) {
-            self.onPress(id, target)
-        }
+        return valid
     }
-    return valid
-}
 
-/**
- * @param {KeyPad} self
- * @param {number} id
- */
-function release(self, id) {
-    if (self.pressed.delete(id)) {
-        self.onRelease(id)
+    /**
+     * @private
+     * @param {number} id
+     */
+    release(id) {
+        if (this.pressed.delete(id)) {
+            this.onRelease(id)
+        }
     }
 }
 

@@ -1,7 +1,7 @@
 import * as $dom from './DOMUtil.js'
-import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
+import {KeyPad, makeKeyButton} from './KeyPad.js'
 import {type} from '../Util.js'
 import {Cell, CellPart, Sample, Effect, ExtEffect} from '../Model.js'
 import './PianoKeyboard.js'
@@ -244,7 +244,7 @@ export class CellEntry {
         this.param1Button.addEventListener('click', () => this.openEffectKeyboard(2))
 
         $dom.disableFormSubmit(this.sampleList)
-        $keyPad.create(this.sampleList, (id, elem) => {
+        new KeyPad(this.sampleList, (id, elem) => {
             let input = elem.querySelector('input')
             if (input) {
                 this.setSelSample(Number(input.value))
@@ -257,7 +257,7 @@ export class CellEntry {
             this.sampleList.classList.toggle('scroll-lock', scrollLockCheck.checked)
         })
 
-        $keyPad.makeKeyButton(this.resetEffectButton, id => {
+        makeKeyButton(this.resetEffectButton, id => {
             this.setCell(Cell.empty, CellPart.effect | CellPart.param)
             this.callbacks.jamPlay(id, this.getCell())
         }, id => this.callbacks.jamRelease(id))

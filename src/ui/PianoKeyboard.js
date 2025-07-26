@@ -1,8 +1,8 @@
 import * as $cell from './Cell.js'
 import * as $dom from './DOMUtil.js'
-import * as $keyPad from './KeyPad.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
+import {KeyPad} from './KeyPad.js'
 import {type} from '../Util.js'
 import {Cell} from '../Model.js'
 import periodTable from '../PeriodTable.js'
@@ -52,7 +52,7 @@ export class PianoKeyboard {
         this.createPiano()
 
         $dom.disableFormSubmit(this.piano)
-        $keyPad.create(this.piano, (id, elem) => {
+        new KeyPad(this.piano, (id, elem) => {
             let input = elem.querySelector('input')
             if (input) {
                 $dom.selectRadioButton(this.pitchInput, input.value)

@@ -1,7 +1,6 @@
 import * as $cli from './CLI.js'
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
-import * as $keyPad from './KeyPad.js'
 import * as $play from '../Playback.js'
 import * as $sample from '../edit/Sample.js'
 import * as $wave from '../edit/Wave.js'
@@ -9,6 +8,7 @@ import * as $audio from '../file/Audio.js'
 import * as $ext from '../file/External.js'
 import * as $wav from '../file/Wav.js'
 import * as $icons from '../gen/Icons.js'
+import {makeKeyButton} from './KeyPad.js'
 import {AlertDialog, InputDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
 import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {AudioImportElement} from './dialogs/AudioImport.js'
@@ -254,7 +254,7 @@ export class SampleEdit {
         fragment.querySelector('#open').addEventListener('click', () => this.openAudioFile())
         fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
 
-        $keyPad.makeKeyButton(fragment.querySelector('#useOffset'), id => {
+        makeKeyButton(fragment.querySelector('#useOffset'), id => {
             this.useSampleOffset()
             this.callbacks.jamPlay(id, this.callbacks.getEntryCell())
         }, id => this.callbacks.jamRelease(id))

@@ -1,8 +1,8 @@
 import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
-import * as $keyPad from './KeyPad.js'
 import * as $pattern from '../edit/Pattern.js'
+import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
 import {type, minMax} from '../Util.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
@@ -63,7 +63,7 @@ export class PatternTable {
         /** @type {HTMLInputElement[]} */
         this.muteInputs = []
 
-        $keyPad.create(this.tbody, (id, elem) => {
+        new KeyPad(this.tbody, (id, elem) => {
             if (elem.dataset.c != null) {
                 let c = Number(elem.dataset.c)
                 let row = Number(elem.dataset.row)
