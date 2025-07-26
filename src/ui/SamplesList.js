@@ -80,7 +80,6 @@ export class SamplesList {
         this.deleteButton.classList.remove('hide')
         this.sampleList.classList.add('hide')
         this.sampleEditContainer.classList.remove('hide')
-        this.updateTitle()
 
         this.sampleEdit = new SampleEditElement()
         this.sampleEdit.controller.callbacks = {
@@ -96,6 +95,8 @@ export class SamplesList {
         this.sampleEditContainer.appendChild(this.sampleEdit)
         this.sampleEdit.controller.setSample(this.viewSamples[idx])
         this.callbacks.setEntryCell({...Cell.empty, inst: idx}, CellPart.inst)
+
+        this.updateTitle()
     }
 
     /** @private */
