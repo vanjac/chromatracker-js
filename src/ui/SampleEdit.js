@@ -189,22 +189,18 @@ export class SampleEdit {
         })
         this.selectLoopButton = type(HTMLButtonElement, fragment.querySelector('#selectLoop'))
         this.selectLoopButton.addEventListener('click', () => this.selectLoop())
-        this.loopStartInput = type(HTMLInputElement, fragment.querySelector('#loopStart'))
-        $dom.addInputListeners(this.loopStartInput, commit =>
-            this.changeSample(sample => {
-                sample.loopStart = this.loopStartInput.valueAsNumber
+        this.loopStartInput = new $dom.ValidatedNumberInput(
+            fragment.querySelector('#loopStart'), (value, commit) => {
                 if (commit) {
-                    sample.loopStart = Sample.roundToNearest(sample.loopStart)
+                    this.changeSample(sample => {sample.loopStart = value}, true, true)
                 }
-            }, commit, true))
-        this.loopEndInput = type(HTMLInputElement, fragment.querySelector('#loopEnd'))
-        $dom.addInputListeners(this.loopEndInput, commit =>
-            this.changeSample(sample => {
-                sample.loopEnd = this.loopEndInput.valueAsNumber
+            })
+        this.loopEndInput = new $dom.ValidatedNumberInput(
+            fragment.querySelector('#loopEnd'), (value, commit) => {
                 if (commit) {
-                    sample.loopEnd = Sample.roundToNearest(sample.loopEnd)
+                    this.changeSample(sample => {sample.loopEnd = value}, true, true)
                 }
-            }, commit, true))
+            })
 
         this.selectAllButton = type(HTMLButtonElement, fragment.querySelector('#selectAll'))
         this.selectAllButton.addEventListener('click', () => this.selectAll())
@@ -281,14 +277,14 @@ export class SampleEdit {
 
         this.nameInput.value = sample.name
 
-        this.loopStartInput.max = this.loopEndInput.max = sample.wave.length.toString()
-        this.loopStartInput.valueAsNumber = sample.loopStart
-        this.loopEndInput.valueAsNumber = sample.loopEnd
+        this.loopStartInput.input.max = this.loopEndInput.input.max = sample.wave.length.toString()
+        this.loopStartInput.setValue(sample.loopStart)
+        this.loopEndInput.setValue(sample.loopEnd)
         let showLoop = sample.wave.length && Sample.hasLoop(sample)
         this.loopToggle.checked = showLoop
         this.selectLoopButton.disabled = !showLoop
-        this.loopStartInput.disabled = !showLoop
-        this.loopEndInput.disabled = !showLoop
+        this.loopStartInput.input.disabled = !showLoop
+        this.loopEndInput.input.disabled = !showLoop
         this.loopRepeatOption.disabled = !showLoop
         this.loopPingPongOption.disabled = !showLoop
         this.loopStartMark.classList.toggle('hide', !showLoop)
@@ -681,19 +677,20 @@ export class SampleEdit {
         if (!Sample.hasLoop(this.viewSample)) {
             return
         }
-        InputDialog.open('Count:', 'Repeat Loop', global.lastLoopRepeat, {integerOnly: true})
-            .then(count => {
-                let {loopStart} = this.viewSample
-                let loopWave = this.viewSample.wave.subarray(loopStart, this.viewSample.loopEnd)
-                // TODO: this could be much more efficient
-                let newSample = this.viewSample
-                for (let i = 1; i < count; i++) {
-                    newSample = $sample.splice(newSample, loopStart, loopStart, loopWave)
-                }
-                newSample = Object.freeze({...newSample, loopStart})
-                this.callbacks.onChange(newSample, true)
-                global.lastLoopRepeat = count
-            }).catch(console.warn)
+        InputDialog.open(
+            'Count:', 'Repeat Loop', global.lastLoopRepeat, {integerOnly: true, positiveOnly: true}
+        ).then(count => {
+            let {loopStart} = this.viewSample
+            let loopWave = this.viewSample.wave.subarray(loopStart, this.viewSample.loopEnd)
+            // TODO: this could be much more efficient
+            let newSample = this.viewSample
+            for (let i = 1; i < count; i++) {
+                newSample = $sample.splice(newSample, loopStart, loopStart, loopWave)
+            }
+            newSample = Object.freeze({...newSample, loopStart})
+            this.callbacks.onChange(newSample, true)
+            global.lastLoopRepeat = count
+        }).catch(console.warn)
     }
 
     /** @private */

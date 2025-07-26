@@ -111,8 +111,8 @@ export class PatternEdit {
         this.sequenceEdit = fragment.querySelector('sequence-edit')
         this.patternTable = fragment.querySelector('pattern-table')
 
-        this.tempoInput = type(HTMLInputElement, fragment.querySelector('#tempo'))
-        this.speedInput = type(HTMLInputElement, fragment.querySelector('#speed'))
+        this.tempoInput = new $dom.ValidatedNumberInput(fragment.querySelector('#tempo'))
+        this.speedInput = new $dom.ValidatedNumberInput(fragment.querySelector('#speed'))
         this.selectInput = type(HTMLInputElement, fragment.querySelector('#select'))
         this.playbackStatus = fragment.querySelector('#playbackStatus')
         this.selectTools = fragment.querySelector('#selectTools')
@@ -396,11 +396,11 @@ export class PatternEdit {
     }
 
     getTempo() {
-        return this.tempoInput.valueAsNumber
+        return this.tempoInput.getValue()
     }
 
     getSpeed() {
-        return this.speedInput.valueAsNumber
+        return this.speedInput.getValue()
     }
 
     /**
@@ -408,8 +408,8 @@ export class PatternEdit {
      * @param {number} speed
      */
     setTempoSpeed(tempo, speed) {
-        this.tempoInput.valueAsNumber = tempo
-        this.speedInput.valueAsNumber = speed
+        this.tempoInput.setValue(tempo)
+        this.speedInput.setValue(speed)
     }
 
     onVisible() {

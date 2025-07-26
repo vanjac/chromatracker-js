@@ -143,6 +143,7 @@ export class InputDialog {
         this.prompt = ''
         this.defaultValue = 0
         this.integerOnly = false
+        this.positiveOnly = false
         /** @param {number} value */
         this.onConfirm = value => {}
         this.onDismiss = () => {}
@@ -158,6 +159,9 @@ export class InputDialog {
         this.input = fragment.querySelector('input')
         this.input.valueAsNumber = this.defaultValue
         this.input.step = this.integerOnly ? '1' : 'any'
+        if (this.positiveOnly) {
+            this.input.min = '0'
+        }
 
         fragment.querySelector('#cancel').addEventListener('click', () => {
             this.onDismiss()
@@ -183,13 +187,16 @@ export const InputDialogElement = $dom.defineView('input-dialog', InputDialog)
  * @param {number} defaultValue
  * @returns {Promise<number>}
  */
-InputDialog.open = function(prompt, title = '', defaultValue = 0, {integerOnly = false} = {}) {
+InputDialog.open = function(
+    prompt, title = '', defaultValue = 0, {integerOnly = false, positiveOnly = false} = {}
+) {
     return new Promise((resolve, reject) => {
         let dialog = new InputDialogElement()
         dialog.controller.prompt = prompt
         dialog.controller.title = title
         dialog.controller.defaultValue = defaultValue
         dialog.controller.integerOnly = integerOnly
+        dialog.controller.positiveOnly = positiveOnly
         dialog.controller.onConfirm = resolve
         dialog.controller.onDismiss = reject
         $dialog.open(dialog, {dismissable: true})

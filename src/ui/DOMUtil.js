@@ -168,12 +168,12 @@ export function getRadioButtonValue(namedItem, defaultValue) {
 }
 
 /**
- * @param {HTMLInputElement} elem
+ * @param {HTMLInputElement} input
  * @param {(commit: boolean) => void} listener
  */
-export function addInputListeners(elem, listener) {
-    elem.addEventListener('input', () => listener(false))
-    elem.addEventListener('change', () => listener(true))
+export function addInputListeners(input, listener) {
+    input.addEventListener('input', () => listener(false))
+    input.addEventListener('change', () => listener(true))
 }
 
 /**
@@ -219,5 +219,60 @@ export function restoreFormData(form, names, record) {
                 elem.value = value
             }
         }
+    }
+}
+
+/**
+ * Use for number inputs that are *not* part of a form.
+ */
+export class ValidatedNumberInput {
+    /**
+     * @param {HTMLInputElement} input
+     * @param {(value: number, commit: boolean) => void} onChange
+     */
+    constructor(input, onChange=(()=>{})) {
+        this.input = input
+        /** @private @type {number | null} */
+        this.value = null
+        this.updateValue()
+
+        input.addEventListener('input', () => {
+            if (this.updateValue()) {
+                onChange(this.value, false)
+            }
+        })
+        input.addEventListener('change', () => {
+            if (this.updateValue()) {
+                onChange(this.value, true)
+            } else if (!input.reportValidity() && this.value != null) {
+                input.valueAsNumber = this.value
+                onChange(this.value, true)
+            }
+        })
+    }
+
+    getValue() {
+        return this.value
+    }
+
+    /**
+     * Does not validate!
+     * @param {number} value
+     */
+    setValue(value) {
+        this.value = value
+        this.input.valueAsNumber = value
+    }
+
+    /** @private */
+    updateValue() {
+        if (this.input.checkValidity()) {
+            let value = this.input.valueAsNumber
+            if (!Number.isNaN(value)) {
+                this.value = value
+                return true
+            }
+        }
+        return false
     }
 }
