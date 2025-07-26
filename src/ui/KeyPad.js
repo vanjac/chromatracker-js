@@ -9,7 +9,7 @@ import {type} from '../Util.js'
 export function create(container, onPress, onRelease) {
     const self = {
         container,
-        /** @type {Map<number, HTMLElement>} */
+        /** @type {Map<number, Element>} */
         pressed: new Map(),
         onPress,
         onRelease,
@@ -39,12 +39,13 @@ export function create(container, onPress, onRelease) {
  * @param {number} y
  */
 function press(self, id, x, y) {
-    let elem = type(HTMLElement, document.elementFromPoint(x, y).closest('.keypad-target'))
-    let valid = elem && self.container.contains(elem)
-    if (elem != self.pressed.get(id)) {
-        self.pressed.set(id, elem)
-        if (valid) {
-            self.onPress(id, elem)
+    let elem = document.elementFromPoint(x, y)
+    let valid = elem && elem != self.container && self.container.contains(elem)
+    let target = valid ? elem.closest('.keypad-target') : null
+    if (target != self.pressed.get(id)) {
+        self.pressed.set(id, target)
+        if (target instanceof HTMLElement) {
+            self.onPress(id, target)
         }
     }
     return valid
