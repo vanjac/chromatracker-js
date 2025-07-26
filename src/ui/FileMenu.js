@@ -65,7 +65,7 @@ export class FileMenu {
 
     /** @private */
     openFile() {
-        $ext.pickFiles('.mod,audio/mod,audio/x-mod').then(files => {
+        $ext.pickFiles().then(files => {
             if (files.length == 1) {
                 this.readModuleBlob(files[0])
             }
