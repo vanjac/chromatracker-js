@@ -5,7 +5,7 @@ import {type} from '../../Util.js'
 const alertDialogTemplate = $dom.html`
 <form class="vflex dialog message-dialog">
     <h3 id="title"></h3>
-    <output id="message" class="message-out"></output>
+    <output id="message" class="message-out selectable"></output>
     <div class="hflex">
         <div class="flex-grow"></div>
         <button class="show-checked">OK</button>
@@ -60,7 +60,7 @@ AlertDialog.open = function(message, title = 'Error') {
 const confirmDialogTemplate = $dom.html`
 <form class="vflex dialog message-dialog">
     <h3 id="title"></h3>
-    <output id="message" class="message-out"></output>
+    <output id="message" class="message-out selectable"></output>
     <div class="hflex">
         <div class="flex-grow"></div>
         <button class="show-checked">OK</button>

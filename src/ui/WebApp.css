@@ -30,7 +30,7 @@ body, select {
     user-select: none;
     -webkit-user-select: none;
 }
-output {
+.selectable {
     user-select: text;
     -webkit-user-select: text;
 }
