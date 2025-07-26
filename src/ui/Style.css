@@ -299,6 +299,10 @@ thead th {
 tbody th {
     left: 0;
 }
+thead th input,
+thead th label {
+    vertical-align: middle;
+}
 tbody tr:nth-child(4n+2),
 tbody tr:nth-child(4n+2) th {
     background: var(--color-bg-btn);
