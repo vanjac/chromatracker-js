@@ -96,7 +96,17 @@ export class FileMenu {
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
-                let module = Object.freeze($mod.read(reader.result))
+                let module
+                try {
+                    module = Object.freeze($mod.read(reader.result))
+                } catch (error) {
+                    if (error instanceof Error) {
+                        AlertDialog.open(error.message)
+                    } else {
+                        AlertDialog.open('Unknown error while reading module file.')
+                    }
+                    return
+                }
                 this.openEditor(module)
             }
         }
