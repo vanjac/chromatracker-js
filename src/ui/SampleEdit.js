@@ -21,7 +21,6 @@ import global from './GlobalState.js'
 
 const template = $dom.html`
 <div class="vflex flex-grow">
-    <hr>
     <div class="properties-grid">
         <label for="name">Name:</label>
         <div class="hflex">
