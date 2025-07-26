@@ -510,7 +510,8 @@ export class SampleEdit {
 
     /** @private */
     openAudioFile() {
-        $ext.pickFiles('audio/*').then(files => {
+        // Safari requires individual audio types
+        $ext.pickFiles('audio/*,audio/wav,audio/mpeg,audio/flac').then(files => {
             if (files.length == 1) {
                 this.readAudioFile(files[0])
             }
