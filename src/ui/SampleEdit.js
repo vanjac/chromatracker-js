@@ -421,8 +421,8 @@ export class SampleEdit {
      * @param {number} pos
      */
     setMarkPos(mark, sample, pos) {
-        let waveRect = this.wavePreview.getBoundingClientRect()
-        mark.style.transform = `translate(${pos * waveRect.width / sample.wave.length}px, 0)`
+        // TODO: animating absolute position has bad performance
+        mark.style.left = (100 * pos / sample.wave.length) + '%'
     }
 
     /**
