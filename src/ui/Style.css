@@ -293,6 +293,9 @@ th {
     background-color: var(--color-bg);
     z-index: 1;
 }
+thead {
+    contain: paint style; /* Fix borders disappearing in Safari */
+}
 thead th {
     top: 0;
 }
