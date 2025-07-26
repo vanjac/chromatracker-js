@@ -127,10 +127,12 @@ export class SequenceEdit {
         this.viewNumPatterns = patterns.length
 
         this.select.textContent = ''
-        // last option = create pattern
-        let numListedPatterns = Math.min(patterns.length + 1, mod.maxPatterns)
-        for (let i = 0; i < numListedPatterns; i++) {
+        for (let i = 0; i < patterns.length; i++) {
             this.select.appendChild($dom.createElem('option', {textContent: i.toString()}))
+        }
+        if (patterns.length < mod.maxPatterns) {
+            let textContent = `${patterns.length} (new)`
+            this.select.appendChild($dom.createElem('option', {textContent}))
         }
         this.select.selectedIndex = this.viewSequence[this.selPos]
 
