@@ -1,3 +1,5 @@
+'use strict'
+
 if (
     !('noModule' in HTMLScriptElement.prototype) || // Chrome 61
     !window.customElements || // Firefox 63
