@@ -32,6 +32,9 @@ export function read(buf) {
     } catch (error) {
         if (error instanceof TypeError) {throw Error(genericError)}
     }
+    if (name.startsWith('Extended Module: ')) {
+        throw Error('XM format is not supported.')
+    }
 
     let songLen = view.getUint8(950)
     if (songLen < 1 || songLen > mod.numSongPositions) {throw Error(genericError)}
