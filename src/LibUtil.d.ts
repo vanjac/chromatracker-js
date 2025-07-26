@@ -26,3 +26,34 @@ interface DocumentFragment {
     // Overrides Node.cloneNode()
     cloneNode(deep?: boolean): DocumentFragment
 }
+
+// https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
+// This is incomplete
+type Serializable =
+	| null
+	| undefined
+	| boolean
+	| number
+	| bigint
+	| string
+	| ArrayBuffer
+	| DataView
+	| Date
+	| Error
+	| RegExp
+	| Blob
+	| DOMMatrixReadOnly
+	| DOMPointReadOnly
+	| DOMQuad
+	| DOMRectReadOnly
+	| FileList
+	| ImageBitmap
+	| ImageData
+	| SerializableObject
+	| SerializableArray
+	| SerializableMap
+	| SerializableSet
+type SerializableObject = { [key: string]: Serializable }
+type SerializableArray = Serializable[] | readonly Serializable[]
+type SerializableMap = Map<Serializable, Serializable>
+type SerializableSet = Set<Serializable>

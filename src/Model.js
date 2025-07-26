@@ -170,3 +170,7 @@ export const Pattern = Object.freeze({})
  */
 
 export const Module = Object.freeze({})
+
+if (import.meta.main) {
+    ;/** @satisfies {Serializable} */(/** @type {Module} */(null))
+}
