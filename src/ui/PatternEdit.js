@@ -227,10 +227,12 @@ export class PatternEdit {
         return this.sequenceEdit.controller.selPos
     }
 
+    /** @private */
     selPatternNum() {
         return this.viewSequence[this.selPos()]
     }
 
+    /** @private */
     selPattern() {
         return this.viewPatterns[this.selPatternNum()]
     }
@@ -265,6 +267,7 @@ export class PatternEdit {
         }
     }
 
+    /** @private */
     selCell() {
         return this.patternTable.controller.selCell()
     }
@@ -279,6 +282,7 @@ export class PatternEdit {
     }
 
     /**
+     * @private
      * @param {Readonly<Cell>} cell
      * @param {CellPart} parts
      */
@@ -339,6 +343,7 @@ export class PatternEdit {
         $cell.setContents(this.entryCell, this.callbacks.getEntryCell())
     }
 
+    /** @private */
     getCellParts() {
         /** @type {CellPart} */
         let parts = CellPart.none
@@ -354,6 +359,7 @@ export class PatternEdit {
         return parts
     }
 
+    /** @private */
     updateEntryParts() {
         let parts = this.getCellParts()
         $cell.toggleParts(this.entryCell, parts)

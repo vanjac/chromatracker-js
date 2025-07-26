@@ -370,6 +370,7 @@ export class CellEntry {
         this.resetEffectButton.disabled = this.effect == 0 && this.param0 == 0 && this.param1 == 0
     }
 
+    /** @private */
     getEffectTitle() {
         if (this.effect == Effect.Extended && extEffectNames[this.param0]) {
             return (this.effect.toString(16) + this.param0.toString(16)).toUpperCase()

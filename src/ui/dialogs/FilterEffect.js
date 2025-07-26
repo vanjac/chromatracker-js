@@ -180,6 +180,7 @@ export class FilterEffect {
         ctx.stroke()
     }
 
+    /** @private */
     submit() {
         this.onComplete({
             type: /** @type {BiquadFilterType} */(this.typeInput.value),

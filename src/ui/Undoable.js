@@ -7,11 +7,13 @@ export class Undoable {
      */
     constructor(value) {
         this.value = value
-        /** @type {T[]} */
+        /** @private @type {T[]} */
         this.undoStack = []
-        /** @type {T[]} */
+        /** @private @type {T[]} */
         this.redoStack = []
+        /** @private */
         this.isCommitted = true
+        /** @private */
         this.unsavedCount = 0
     }
 

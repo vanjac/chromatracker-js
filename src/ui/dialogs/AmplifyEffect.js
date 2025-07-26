@@ -44,6 +44,7 @@ export class AmplifyEffect {
         this.view.appendChild(fragment)
     }
 
+    /** @private */
     submit() {
         this.onComplete({
             amount: this.amountInput.valueAsNumber,

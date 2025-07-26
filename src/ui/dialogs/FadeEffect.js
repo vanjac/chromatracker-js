@@ -68,6 +68,7 @@ export class FadeEffect {
         this.view.appendChild(fragment)
     }
 
+    /** @private */
     submit() {
         this.onComplete({
             startAmp: this.startAmpInput.valueAsNumber,

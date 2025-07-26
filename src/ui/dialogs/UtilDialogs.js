@@ -35,6 +35,7 @@ export class AlertDialog {
         this.view.appendChild(fragment)
     }
 
+    /** @private */
     submit() {
         this.onDismiss()
     }
@@ -96,6 +97,7 @@ export class ConfirmDialog {
         this.view.appendChild(fragment)
     }
 
+    /** @private */
     submit() {
         this.onConfirm()
     }
@@ -171,6 +173,7 @@ export class InputDialog {
         this.view.appendChild(fragment)
     }
 
+    /** @private */
     submit() {
         if (Number.isNaN(this.input.valueAsNumber)) {
             this.onDismiss()

@@ -64,6 +64,7 @@ export class AudioImport {
         this.view.appendChild(fragment)
     }
 
+    /** @private */
     submit() {
         this.onComplete({
             sampleRate: this.sampleRateInput.valueAsNumber,
