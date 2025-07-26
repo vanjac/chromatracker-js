@@ -2,7 +2,6 @@ import * as $wave from '../edit/Wave.js'
 import {mod, Sample} from '../Model.js'
 
 /**
- * Sample rate must be between 44100 and 96000 Hz.
  * @param {ArrayBuffer} buf
  * @param {{sampleRate: number, channel: number, dithering: boolean, normalize: boolean}} params
  * @returns {Promise<Readonly<Sample>>}
