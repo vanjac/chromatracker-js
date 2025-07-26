@@ -51,7 +51,6 @@ const template = $dom.html`
         </div>
     </div>
 
-    <hr>
     <div id="waveEdit" class="vflex wave-edit">
         <div id="waveContainer" class="hflex wave-container">
             <canvas id="wavePreview" class="flex-grow width0" width="1024" height="256"></canvas>
@@ -62,7 +61,6 @@ const template = $dom.html`
             <div id="loopEndMark" class="wave-mark wave-loop hide"></div>
         </div>
     </div>
-    <hr>
 
     <div class="hflex">
         <button id="selectAll">
@@ -83,7 +81,20 @@ const template = $dom.html`
         <button id="paste">
             ${$icons.content_paste}
         </button>
+        <select id="effectMenu" class="med-menu">
+            <option selected="" disabled="" hidden="">Effect</option>
+            <option value="amplify">Amplify</option>
+            <option value="fade">Fade</option>
+            <option value="reverse">Reverse</option>
+            <option value="resample">Resample</option>
+            <option value="filter">Filter / EQ</option>
+            <optgroup label="Loop">
+                <option id="loopRepeat" value="repeat">Repeat</option>
+                <option id="loopPingPong" value="pingpong">Ping-Pong</option>
+            </optgroup>
+        </select>
     </div>
+    <hr>
     <div class="hflex">
         <label class="label-button">
             <input id="loopToggle" type="checkbox">
@@ -97,23 +108,10 @@ const template = $dom.html`
         <span>&nbsp;to&nbsp;</span>
         <input id="loopEnd" type="number" class="med-input" min="0" step="2" autocomplete="off">
     </div>
+    <div class="flex-grow"></div>
     <div class="hflex">
-        <select id="effectMenu" class="med-menu">
-            <option selected="" disabled="" hidden="">Effect</option>
-            <option value="amplify">Amplify</option>
-            <option value="fade">Fade</option>
-            <option value="reverse">Reverse</option>
-            <option value="resample">Resample</option>
-            <option value="filter">Filter / EQ</option>
-            <optgroup label="Loop">
-                <option id="loopRepeat" value="repeat">Repeat</option>
-                <option id="loopPingPong" value="pingpong">Ping-Pong</option>
-            </optgroup>
-        </select>
-        <div class="flex-grow"></div>
         <button id="useOffset">9xx Offset</button>
     </div>
-    <div class="flex-grow"></div>
 </div>
 `
 
