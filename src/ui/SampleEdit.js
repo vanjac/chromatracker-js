@@ -104,9 +104,9 @@ const template = $dom.html`
             ${$icons.select}
         </button>
         <span>&nbsp;</span>
-        <input id="loopStart" type="number" class="med-input" min="0" step="2" autocomplete="off">
+        <input id="loopStart" type="number" required="" class="med-input" min="0" step="2" autocomplete="off">
         <span>&nbsp;to&nbsp;</span>
-        <input id="loopEnd" type="number" class="med-input" min="0" step="2" autocomplete="off">
+        <input id="loopEnd" type="number" required="" class="med-input" min="0" step="2" autocomplete="off">
     </div>
     <div class="flex-grow"></div>
     <div class="hflex">

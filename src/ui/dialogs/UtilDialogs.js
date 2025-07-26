@@ -123,7 +123,7 @@ const inputDialogTemplate = $dom.html`
     <h3 id="title"></h3>
     <div class="hflex">
         <label id="prompt" for="value"></label>
-        <input id="value" type="number" class="med-input">
+        <input id="value" type="number" required="" class="med-input">
     </div>
     <div class="hflex">
         <div class="flex-grow"></div>

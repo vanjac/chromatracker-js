@@ -18,9 +18,9 @@ const template = $dom.html`
     <div class="hflex">
         <div id="playbackStatus" class="hflex">
             <label for="tempo">BPM</label>
-            <input id="tempo" type="number" value="125" min="32" max="255" autocomplete="off">
+            <input id="tempo" type="number" required="" value="125" min="32" max="255" autocomplete="off">
             <label for="speed">Spd</label>
-            <input id="speed" type="number" value="6" min="1" max="31" autocomplete="off">
+            <input id="speed" type="number" required="" value="6" min="1" max="31" autocomplete="off">
         </div>
         <div class="flex-grow"></div>
         <div id="selectTools" class="hide hflex">

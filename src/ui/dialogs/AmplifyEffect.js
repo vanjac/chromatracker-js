@@ -8,7 +8,7 @@ const template = $dom.html`
     <h3>Amplify</h3>
     <div class="properties-grid">
         <label for="amp">Amount:</label>
-        <input id="amp" name="amp" type="number" step="any" value="1">
+        <input id="amp" name="amp" type="number" required="" step="any" value="1">
 
         <label for="dither">Dither:</label>
         <div class="hflex">

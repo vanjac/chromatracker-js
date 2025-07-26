@@ -19,10 +19,10 @@ const template = $dom.html`
     </div>
     <div class="properties-grid">
         <label for="startAmp">Start:</label>
-        <input id="startAmp" name="startAmp" type="number" step="any" value="1">
+        <input id="startAmp" name="startAmp" type="number" required="" step="any" value="1">
 
         <label for="endAmp">End:</label>
-        <input id="endAmp" name="endAmp" type="number" step="any" value="0">
+        <input id="endAmp" name="endAmp" type="number" required="" step="any" value="0">
 
         <label for="dither">Dither:</label>
         <div class="hflex">
