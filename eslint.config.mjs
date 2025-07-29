@@ -13,7 +13,10 @@ export default defineConfig([
             "strict": ["error", "global"],
             "no-var": "error",
             "curly": "error",
-            "object-shorthand": "warn",
+            "no-undefined": "error",
+            "object-shorthand": ["warn", "always", {"avoidExplicitReturnArrows": true}],
+            "prefer-destructuring": ["warn", {"object": true}],
+            "prefer-arrow-callback": "warn",
             "class-methods-use-this": "warn",
             "no-restricted-globals": ["error", "length"],
             "no-restricted-properties": ["error", {

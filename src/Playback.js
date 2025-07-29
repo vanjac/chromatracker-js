@@ -272,12 +272,12 @@ export function processTick(playback) {
     if (playback.pos >= playback.mod.sequence.length) {
         playback.pos = playback.mod.sequence.length - 1
     }
-    const pos = playback.pos
+    const {pos} = playback
     let pattern = playback.mod.patterns[playback.mod.sequence[pos]]
     if (playback.row >= pattern[0].length) {
         playback.row = pattern[0].length - 1
     }
-    const row = playback.row
+    const {row} = playback
 
     for (let c = 0; c < playback.mod.numChannels; c++) {
         let cell = pattern[c][row]
@@ -537,7 +537,7 @@ function processCellRest(playback, channel, cell) {
  * @param {Readonly<Cell>} cell
  */
 function processCellAll(playback, channel, cell) {
-    let volume = channel.volume
+    let {volume} = channel
     if (cell.effect == Effect.Tremolo) {
         volume += calcOscillator(channel.tremolo, -1) * 4
         volume = clamp(volume, 0, mod.maxVolume)
@@ -554,7 +554,7 @@ function processCellAll(playback, channel, cell) {
     channel.scheduledPanning = channel.panning
 
     if (channel.source) {
-        let period = channel.period
+        let {period} = channel
         let detune = 0
         if (cell.effect == Effect.Arpeggio && Cell.paramByte(cell)) {
             detune = (playback.tick % 3 == 1) ? cell.param0 :

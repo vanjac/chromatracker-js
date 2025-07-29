@@ -3,7 +3,7 @@ const state = {
     sel: null,
     /** @type {any} */
     selProxy: null,
-    onSelEnd: () => {},
+    onSelEnd() {},
 }
 
 export function resetSel() {
@@ -22,7 +22,7 @@ Object.defineProperty(window, 'sel', {
     configurable: false,
     enumerable: true,
     get: () => state.selProxy,
-    set: _ => {console.error('Not allowed')}
+    set() {console.error('Not allowed')}
 })
 
 /**
@@ -37,7 +37,7 @@ export function addSelProp(name, type, value, setter) {
         configurable: true,
         enumerable: true,
         get: () => value,
-        set: value => {
+        set(value) {
             if (!Object.isSealed(state.sel)) {
                 console.error('Modification is not enabled')
             } else if (typeof type == 'function' && !(value instanceof type)) {
