@@ -20,6 +20,7 @@ export default defineConfig([
             "no-lonely-if": "warn",
             "require-await": "warn",
             "prefer-arrow-callback": ["warn", {"allowUnboundThis": false}],
+            "func-style": ["warn", "declaration", {"allowArrowFunctions": true}],
             "class-methods-use-this": "warn",
             "no-restricted-globals": ["error", "length"],
             "no-restricted-properties": ["error", {
