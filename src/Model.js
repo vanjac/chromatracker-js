@@ -55,7 +55,7 @@ export const Sample = Object.freeze({
      */
     roundDown(pos) {
         return pos & ~1
-    }
+    },
 })
 
 /**

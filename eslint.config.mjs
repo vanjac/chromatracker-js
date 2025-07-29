@@ -14,7 +14,6 @@ export default defineConfig([
             "no-var": "error",
             "curly": "error",
             "no-undefined": "error",
-            "no-invalid-this": ["error", {"capIsConstructor": false}],
             "object-shorthand": ["warn", "always", {"avoidExplicitReturnArrows": true}],
             "prefer-destructuring": ["warn", {"object": true}],
             "no-lonely-if": "warn",
@@ -28,6 +27,9 @@ export default defineConfig([
                 "error",
                 // no function expressions
                 ":not(Property):not(MethodDefinition) > FunctionExpression[generator=false]",
+                // no 'this' outside clsss methods
+                "FunctionDeclaration ThisExpression",
+                "Property FunctionExpression ThisExpression",
                 // no 'extends'
                 "ClassDeclaration[superClass]",
                 "ClassExpression[superClass]",
