@@ -39,23 +39,23 @@ export class AlertDialog {
     submit() {
         this.onDismiss()
     }
+
+    /**
+     * @param {string} message
+     * @param {string} title
+     * @returns {Promise<void>}
+     */
+    static open(message, title = 'Error') {
+        return new Promise((resolve) => {
+            let dialog = new AlertDialogElement()
+            dialog.controller.message = message
+            dialog.controller.title = title
+            dialog.controller.onDismiss = resolve
+            $dialog.open(dialog)
+        })
+    }
 }
 export const AlertDialogElement = $dom.defineView('alert-dialog', AlertDialog)
-
-/**
- * @param {string} message
- * @param {string} title
- * @returns {Promise<void>}
- */
-AlertDialog.open = function(message, title = 'Error') {
-    return new Promise((resolve) => {
-        let dialog = new AlertDialogElement()
-        dialog.controller.message = message
-        dialog.controller.title = title
-        dialog.controller.onDismiss = resolve
-        $dialog.open(dialog)
-    })
-}
 
 const confirmDialogTemplate = $dom.html`
 <form class="vflex dialog message-dialog">
@@ -101,24 +101,24 @@ export class ConfirmDialog {
     submit() {
         this.onConfirm()
     }
+
+    /**
+     * @param {string} message
+     * @param {string} title
+     * @returns {Promise<void>}
+     */
+    static open(message, title = '') {
+        return new Promise((resolve, reject) => {
+            let dialog = new ConfirmDialogElement()
+            dialog.controller.message = message
+            dialog.controller.title = title
+            dialog.controller.onConfirm = resolve
+            dialog.controller.onDismiss = reject
+            $dialog.open(dialog)
+        })
+    }
 }
 export const ConfirmDialogElement = $dom.defineView('confirm-dialog', ConfirmDialog)
-
-/**
- * @param {string} message
- * @param {string} title
- * @returns {Promise<void>}
- */
-ConfirmDialog.open = function(message, title = '') {
-    return new Promise((resolve, reject) => {
-        let dialog = new ConfirmDialogElement()
-        dialog.controller.message = message
-        dialog.controller.title = title
-        dialog.controller.onConfirm = resolve
-        dialog.controller.onDismiss = reject
-        $dialog.open(dialog)
-    })
-}
 
 const inputDialogTemplate = $dom.html`
 <form class="vflex dialog">
@@ -181,30 +181,30 @@ export class InputDialog {
             this.onConfirm(this.input.valueAsNumber)
         }
     }
+
+    /**
+     * @param {string} prompt
+     * @param {string} title
+     * @param {number} defaultValue
+     * @returns {Promise<number>}
+     */
+    static open(
+        prompt, title = '', defaultValue = 0, {integerOnly = false, positiveOnly = false} = {}
+    ) {
+        return new Promise((resolve, reject) => {
+            let dialog = new InputDialogElement()
+            dialog.controller.prompt = prompt
+            dialog.controller.title = title
+            dialog.controller.defaultValue = defaultValue
+            dialog.controller.integerOnly = integerOnly
+            dialog.controller.positiveOnly = positiveOnly
+            dialog.controller.onConfirm = resolve
+            dialog.controller.onDismiss = reject
+            $dialog.open(dialog, {dismissable: true})
+        })
+    }
 }
 export const InputDialogElement = $dom.defineView('input-dialog', InputDialog)
-
-/**
- * @param {string} prompt
- * @param {string} title
- * @param {number} defaultValue
- * @returns {Promise<number>}
- */
-InputDialog.open = function(
-    prompt, title = '', defaultValue = 0, {integerOnly = false, positiveOnly = false} = {}
-) {
-    return new Promise((resolve, reject) => {
-        let dialog = new InputDialogElement()
-        dialog.controller.prompt = prompt
-        dialog.controller.title = title
-        dialog.controller.defaultValue = defaultValue
-        dialog.controller.integerOnly = integerOnly
-        dialog.controller.positiveOnly = positiveOnly
-        dialog.controller.onConfirm = resolve
-        dialog.controller.onDismiss = reject
-        $dialog.open(dialog, {dismissable: true})
-    })
-}
 
 const waitDialogTemplate = $dom.html`
 <div class="vflex dialog">
