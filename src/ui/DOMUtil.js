@@ -34,7 +34,7 @@ export class ViewElement extends HTMLElement { // eslint-disable-line no-restric
 /**
  * @type {{ new (view: HTMLElement): ControllerType }}
  */
-ViewElement.prototype._controllerClass = null
+ViewElement.prototype._controllerClass = null // eslint-disable-line no-restricted-properties
 
 /**
  * @template {Controller} ControllerType
@@ -50,6 +50,7 @@ export function defineView(tag, controllerClass) {
         viewClass = class extends ViewElement {} // eslint-disable-line no-restricted-syntax
         customElements.define(tag, viewClass)
     }
+    // eslint-disable-next-line no-restricted-properties
     viewClass.prototype._controllerClass = controllerClass
     return viewClass
 }

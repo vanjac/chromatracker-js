@@ -16,6 +16,9 @@ export default defineConfig([
             "object-shorthand": "warn",
             "class-methods-use-this": "warn",
             "no-restricted-globals": ["error", "length"],
+            "no-restricted-properties": ["error", {
+                "property": "prototype",
+            }],
             "no-restricted-syntax": [
                 "error",
                 // no 'extends'

@@ -1,6 +1,7 @@
 'use strict'
 
 if (
+    // eslint-disable-next-line no-restricted-properties
     !('noModule' in HTMLScriptElement.prototype) || // Chrome 61
     !window.customElements || // Firefox 63
     !window.AudioContext // iOS 14.5
