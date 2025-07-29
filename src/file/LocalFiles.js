@@ -8,6 +8,32 @@ const dbVersion = 1
  * }} Metadata
  */
 
+export async function requestPersistentStorage() {
+    if (!window.isSecureContext) {
+        throw Error('Not a secure context (requires HTTPS).')
+    }
+    if (!navigator.storage) {
+        throw Error('Storage API not supported.')
+    }
+    let persisted = await navigator.storage.persist()
+    if (!persisted) {
+        throw Error('Storage permission has not been granted.')
+    }
+    if (navigator.permissions) {
+        let status
+        try {
+            status = await navigator.permissions.query({name: 'persistent-storage'})
+        } catch (e) {
+            // permission may not be supported by this browser; not an error
+            console.warn(e)
+            return
+        }
+        if (status.state != 'granted') {
+            throw Error('Storage permission has not been granted.')
+        }
+    }
+}
+
 /**
  * @template T
  * @param {IDBRequest<T>} request
