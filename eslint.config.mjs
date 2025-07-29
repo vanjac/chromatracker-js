@@ -16,6 +16,8 @@ export default defineConfig([
             "no-undefined": "error",
             "object-shorthand": ["warn", "always", {"avoidExplicitReturnArrows": true}],
             "prefer-destructuring": ["warn", {"object": true}],
+            "no-lonely-if": "warn",
+            "require-await": "warn",
             "prefer-arrow-callback": "warn",
             "class-methods-use-this": "warn",
             "no-restricted-globals": ["error", "length"],
