@@ -14,11 +14,12 @@ export default defineConfig([
             "no-var": "error",
             "curly": "error",
             "no-undefined": "error",
+            "no-invalid-this": ["error", {"capIsConstructor": false}],
             "object-shorthand": ["warn", "always", {"avoidExplicitReturnArrows": true}],
             "prefer-destructuring": ["warn", {"object": true}],
             "no-lonely-if": "warn",
             "require-await": "warn",
-            "prefer-arrow-callback": "warn",
+            "prefer-arrow-callback": ["warn", {"allowUnboundThis": false}],
             "class-methods-use-this": "warn",
             "no-restricted-globals": ["error", "length"],
             "no-restricted-properties": ["error", {
