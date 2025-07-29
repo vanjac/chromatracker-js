@@ -10,7 +10,7 @@ import * as $id from '../ID.js'
 /**
  * @template {Controller} ControllerType
  */
-export class ViewElement extends HTMLElement {
+export class ViewElement extends HTMLElement { // eslint-disable-line no-restricted-syntax
     constructor() {
         super()
         this.controller = new this._controllerClass(this)
@@ -47,7 +47,7 @@ export function defineView(tag, controllerClass) {
     )
     if (!viewClass) {
         /** @extends {ViewElement<ControllerType>} */
-        viewClass = class extends ViewElement {}
+        viewClass = class extends ViewElement {} // eslint-disable-line no-restricted-syntax
         customElements.define(tag, viewClass)
     }
     viewClass.prototype._controllerClass = controllerClass

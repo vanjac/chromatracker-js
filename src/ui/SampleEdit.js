@@ -114,6 +114,16 @@ const template = $dom.html`
 </div>
 `
 
+/**
+ * @param {HTMLElement} mark
+ * @param {Readonly<Sample>} sample
+ * @param {number} pos
+ */
+function setMarkPos(mark, sample, pos) {
+    // TODO: animating absolute position has bad performance
+    mark.style.left = (100 * pos / sample.wave.length) + '%'
+}
+
 export class SampleEdit {
     /**
      * @param {HTMLElement} view
@@ -292,8 +302,8 @@ export class SampleEdit {
         this.loopStartMark.classList.toggle('hide', !showLoop)
         this.loopEndMark.classList.toggle('hide', !showLoop)
         if (showLoop) {
-            this.setMarkPos(this.loopStartMark, sample, sample.loopStart)
-            this.setMarkPos(this.loopEndMark, sample, sample.loopEnd)
+            setMarkPos(this.loopStartMark, sample, sample.loopStart)
+            setMarkPos(this.loopEndMark, sample, sample.loopEnd)
         }
 
         this.volumeInput.valueAsNumber = sample.volume
@@ -328,7 +338,7 @@ export class SampleEdit {
             let visible = positions[i] <= this.viewSample.wave.length
             this.playMarks[i].classList.toggle('hide', !visible)
             if (visible) {
-                this.setMarkPos(this.playMarks[i], this.viewSample, positions[i])
+                setMarkPos(this.playMarks[i], this.viewSample, positions[i])
             }
         }
     }
@@ -391,17 +401,17 @@ export class SampleEdit {
     updateSelection() {
         this.selectMarkA.classList.toggle('hide', this.selectA < 0)
         if (this.selectA >= 0) {
-            this.setMarkPos(this.selectMarkA, this.viewSample, this.selectA)
+            setMarkPos(this.selectMarkA, this.viewSample, this.selectA)
         }
         this.selectMarkB.classList.toggle('hide', this.selectB < 0)
         if (this.selectB >= 0) {
-            this.setMarkPos(this.selectMarkB, this.viewSample, this.selectB)
+            setMarkPos(this.selectMarkB, this.viewSample, this.selectB)
         }
 
         let rangeSelected = this.rangeSelected()
         this.selectRange.classList.toggle('hide', !rangeSelected)
         if (rangeSelected) {
-            this.setMarkPos(this.selectRange, this.viewSample, this.selMin())
+            setMarkPos(this.selectRange, this.viewSample, this.selMin())
             let waveLen = this.viewSample.wave.length
             this.selectRange.style.width = (100 * this.selLen() / waveLen) + '%'
         }
@@ -414,17 +424,6 @@ export class SampleEdit {
         let {effect, param0, param1} = this.getOffsetEffect()
         this.offsetEffectSpan.textContent =
             (effect.toString(16) + param0.toString(16) + param1.toString(16)).toUpperCase()
-    }
-
-    /**
-     * @private
-     * @param {HTMLElement} mark
-     * @param {Readonly<Sample>} sample
-     * @param {number} pos
-     */
-    setMarkPos(mark, sample, pos) {
-        // TODO: animating absolute position has bad performance
-        mark.style.left = (100 * pos / sample.wave.length) + '%'
     }
 
     /**

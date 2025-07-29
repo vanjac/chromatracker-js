@@ -204,6 +204,7 @@ export class ModuleEdit {
         window.onbeforeunload = () => (this.module.isUnsaved() ? 'You have unsaved changes' : null)
     }
 
+    // eslint-disable-next-line class-methods-use-this
     disconnectedCallback() {
         window.onbeforeunload = null
     }

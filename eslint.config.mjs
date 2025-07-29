@@ -10,11 +10,24 @@ export default defineConfig([
             sourceType: "module",
         },
         rules: {
+            "strict": ["error", "global"],
             "no-var": "error",
             "curly": "error",
-            "strict": ["error", "global"],
+            "object-shorthand": "warn",
+            "class-methods-use-this": "warn",
             "no-restricted-globals": ["error", "length"],
-            // Deprecated stylistic rules (TODO)
+            "no-restricted-syntax": [
+                "error",
+                // no 'extends'
+                "ClassDeclaration[superClass]",
+                "ClassExpression[superClass]",
+                // no getters/setters
+                "Property[kind='get']",
+                "Property[kind='set']",
+                "MethodDefinition[kind='get']",
+                "MethodDefinition[kind='set']",
+            ],
+            // Deprecated rules (TODO)
             "semi": ["error", "never", {"beforeStatementContinuationChars": "always"}],
             // TypeScript handles these:
             "no-undef": "off",

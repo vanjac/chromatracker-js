@@ -31,6 +31,7 @@ export class CLIDialog {
         this.view.appendChild(fragment)
     }
 
+    // eslint-disable-next-line class-methods-use-this
     onDismiss() {
         $cli.cancelSel()
     }
