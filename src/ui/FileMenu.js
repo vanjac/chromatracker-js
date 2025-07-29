@@ -3,6 +3,7 @@ import * as $dom from './DOMUtil.js'
 import * as $module from '../edit/Module.js'
 import * as $icons from '../gen/Icons.js'
 import * as $ext from '../file/External.js'
+import * as $local from '../file/LocalFiles.js'
 import * as $mod from '../file/Mod.js'
 import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
@@ -32,6 +33,7 @@ const template = $dom.html`
                 <option value="https://chroma.zone/share/pixipack1.mod">pixipack 1</option>
             </select>
         </div>
+        <strong id="storageWarning" class="message-out"></strong>
         <div class="flex-grow"></div>
         <em>Version:&nbsp;<code id="version"></code></em>
     </div>
@@ -61,6 +63,12 @@ export class FileMenu {
         fragment.querySelector('#version').textContent = appVersion
 
         this.view.appendChild(fragment)
+
+        $local.requestPersistentStorage().catch(/** @param {Error} e */e => {
+            let message = 'Warning: Persistent storage is not available in this browser!'
+                + '\nReason: ' + e.message
+            this.view.querySelector('#storageWarning').textContent = message
+        })
     }
 
     /** @private */
