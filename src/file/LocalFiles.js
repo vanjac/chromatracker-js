@@ -94,29 +94,6 @@ export function listFiles(db) {
 
 /**
  * @param {IDBDatabase} db
- * @param {string} name
- * @param {ArrayBuffer} data
- * @returns {Promise<number>} ID
- */
-export async function createFile(db, name, data) {
-    let date = new Date()
-    /** @type {Metadata} */
-    let metadata = {
-        name,
-        created: date,
-        modified: date,
-    }
-
-    let transaction = db.transaction(['entries', 'data'], 'readwrite')
-    let entriesStore = transaction.objectStore('entries')
-    let dataStore = transaction.objectStore('data')
-    let id = await requestPromise(entriesStore.add(metadata))
-    await requestPromise(dataStore.add(data, id))
-    return /** @type {number} */(id)
-}
-
-/**
- * @param {IDBDatabase} db
  * @param {number} id
  * @returns {Promise<ArrayBuffer>}
  */
@@ -128,21 +105,29 @@ export async function readFile(db, id) {
 
 /**
  * @param {IDBDatabase} db
- * @param {number} id
+ * @param {number} id Use null to create a new file
  * @param {string} name
  * @param {ArrayBuffer} data
+ * @returns {Promise<number>} File ID
  */
 export async function updateFile(db, id, name, data) {
     let transaction = db.transaction(['entries', 'data'], 'readwrite')
     let entriesStore = transaction.objectStore('entries')
     let dataStore = transaction.objectStore('data')
 
-    let putDataPromise = requestPromise(dataStore.put(data, id))
+    let date = new Date()
     /** @type {Metadata} */
-    let metadata = await requestPromise(entriesStore.get(id))
-    metadata = {...metadata, name, modified: new Date()}
-    await requestPromise(entriesStore.put(metadata, id))
-    await putDataPromise
+    let metadata
+    if (id != null) {
+        metadata = await requestPromise(entriesStore.get(id))
+        metadata = {...metadata, name, modified: new Date()}
+    } else {
+        metadata = {name, created: date, modified: date}
+    }
+
+    id = /** @type {number} */(await requestPromise(entriesStore.put(metadata, id)))
+    await requestPromise(dataStore.put(data, id))
+    return id
 }
 
 /**
