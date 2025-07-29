@@ -19,8 +19,6 @@ export default defineConfig([
             "prefer-destructuring": ["warn", {"object": true}],
             "no-lonely-if": "warn",
             "require-await": "warn",
-            "prefer-arrow-callback": ["warn", {"allowUnboundThis": false}],
-            "func-style": ["warn", "declaration", {"allowArrowFunctions": true}],
             "class-methods-use-this": "warn",
             "no-restricted-globals": ["error", "length"],
             "no-restricted-properties": ["error", {
@@ -28,6 +26,8 @@ export default defineConfig([
             }],
             "no-restricted-syntax": [
                 "error",
+                // no function expressions
+                ":not(Property):not(MethodDefinition) > FunctionExpression[generator=false]",
                 // no 'extends'
                 "ClassDeclaration[superClass]",
                 "ClassExpression[superClass]",
