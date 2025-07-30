@@ -177,28 +177,27 @@ export class ModuleEdit {
             jamPlay: this.jamPlay.bind(this),
             jamRelease: this.jamRelease.bind(this),
             setMute: this.setMute.bind(this),
-            getEntryCell: this.getEntryCell.bind(this),
             setEntryCell: this.setEntryCell.bind(this),
         }
         this.samplesList.controller.callbacks = {
             jamPlay: this.jamPlay.bind(this),
             jamRelease: this.jamRelease.bind(this),
             changeModule: this.changeModule.bind(this),
-            getEntryCell: this.getEntryCell.bind(this),
             setEntryCell: this.setEntryCell.bind(this),
         }
         this.cellEntry.controller.callbacks = {
             jamPlay: this.jamPlay.bind(this),
             jamRelease: this.jamRelease.bind(this),
             updateCell: () => {
-                this.patternEdit.controller.updateCell()
-                this.samplesList.controller.setSelSample(this.getEntryCell().inst)
+                let cell = this.getEntryCell()
+                this.patternEdit.controller.setEntryCell(cell)
+                this.samplesList.controller.setSelSample(cell.inst)
             },
             setPartTogglesVisible: visible => {
                 this.patternEdit.controller.setPartTogglesVisible(visible)
             },
         }
-        this.patternEdit.controller.updateCell()
+        this.patternEdit.controller.setEntryCell(this.getEntryCell())
 
         window.onbeforeunload = () => (this.module.isUnsaved() ? 'You have unsaved changes' : null)
     }
@@ -372,11 +371,14 @@ export class ModuleEdit {
      * @param {number} id
      * @param {Readonly<Cell>} cell
      */
-    jamPlay(id, cell) {
+    jamPlay(id, cell = null) {
         this.enablePlayback()
         this.enableAnimation()
         let useChannel = this.patternEdit.parentElement.offsetParent != null // Sequence tab visible
         let channel = useChannel ? this.patternEdit.controller.selChannel() : -1
+        if (!cell) {
+            cell = this.getEntryCell()
+        }
         $play.jamPlay(this.playback, id, channel, cell)
     }
 

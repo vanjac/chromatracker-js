@@ -94,7 +94,6 @@ export class PatternEdit {
         /**
          * @type {ModuleEditCallbacks & JamCallbacks & {
          *      setMute?: (c: number, mute: boolean) => void
-                getEntryCell?: () => Readonly<Cell>
                 setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
          * }}
          */
@@ -103,6 +102,7 @@ export class PatternEdit {
         this.viewSequence = null
         /** @type {readonly Readonly<Pattern>[]} */
         this.viewPatterns = null
+        this.entryCell = Cell.empty
     }
 
     connectedCallback() {
@@ -117,7 +117,7 @@ export class PatternEdit {
         this.playbackStatus = fragment.querySelector('#playbackStatus')
         this.selectTools = fragment.querySelector('#selectTools')
         let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
-        this.entryCell = type(HTMLElement, fragment.querySelector('#entryCell'))
+        this.entryCellElem = type(HTMLElement, fragment.querySelector('#entryCell'))
 
         this.partToggles = type(HTMLElement, fragment.querySelector('#partToggles'))
         this.pitchEnable = type(HTMLInputElement, fragment.querySelector('#pitchEnable'))
@@ -138,13 +138,13 @@ export class PatternEdit {
             this.patternTable.controller.setScrollLock(scrollLockCheck.checked)
         })
 
-        makeKeyButton(this.entryCell,
-            id => this.callbacks.jamPlay(id, this.callbacks.getEntryCell()),
+        makeKeyButton(this.entryCellElem,
+            id => this.callbacks.jamPlay(id),
             id => this.callbacks.jamRelease(id))
 
         makeKeyButton(fragment.querySelector('#write'), id => {
             this.putCell(
-                this.callbacks.getEntryCell(),
+                this.entryCell,
                 this.getCellParts()
             )
             this.callbacks.jamPlay(id, this.selCell())
@@ -163,7 +163,7 @@ export class PatternEdit {
             if (cell.pitch < 0) { parts &= ~CellPart.pitch }
             if (!cell.inst) { parts &= ~CellPart.inst }
             this.callbacks.setEntryCell(cell, parts)
-            this.callbacks.jamPlay(id, this.callbacks.getEntryCell())
+            this.callbacks.jamPlay(id)
         }, id => this.callbacks.jamRelease(id))
 
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
@@ -339,8 +339,12 @@ export class PatternEdit {
         ))
     }
 
-    updateCell() {
-        $cell.setContents(this.entryCell, this.callbacks.getEntryCell())
+    /**
+     * @param {Readonly<Cell>} cell
+     */
+    setEntryCell(cell) {
+        this.entryCell = cell
+        $cell.setContents(this.entryCellElem, cell)
     }
 
     /** @private */
@@ -362,7 +366,7 @@ export class PatternEdit {
     /** @private */
     updateEntryParts() {
         let parts = this.getCellParts()
-        $cell.toggleParts(this.entryCell, parts)
+        $cell.toggleParts(this.entryCellElem, parts)
         this.patternTable.controller.setEntryParts(parts)
     }
 
@@ -444,15 +448,6 @@ if (import.meta.main) {
         },
         setMute(c, mute) {
             console.log('Set mute', c, mute)
-        },
-        getEntryCell() {
-            return {
-                pitch: 48,
-                inst: 1,
-                effect: Effect.Volume,
-                param0: 0x4,
-                param1: 0x0,
-            }
         },
         setEntryCell(cell, parts) {
             console.log('Set cell', parts, cell)

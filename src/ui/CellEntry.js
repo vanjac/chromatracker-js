@@ -248,7 +248,7 @@ export class CellEntry {
             let input = elem.querySelector('input')
             if (input) {
                 this.setSelSample(Number(input.value))
-                this.callbacks.jamPlay(id, this.getCell())
+                this.callbacks.jamPlay(id)
             }
         }, id => this.callbacks.jamRelease(id))
 
@@ -259,7 +259,7 @@ export class CellEntry {
 
         makeKeyButton(this.resetEffectButton, id => {
             this.setCell(Cell.empty, CellPart.effect | CellPart.param)
-            this.callbacks.jamPlay(id, this.getCell())
+            this.callbacks.jamPlay(id)
         }, id => this.callbacks.jamRelease(id))
 
         fragment.querySelector('#closeEffectKeyboard').addEventListener('click',
@@ -275,7 +275,6 @@ export class CellEntry {
             jamPlay: (...args) => this.callbacks.jamPlay(...args),
             jamRelease: (...args) => this.callbacks.jamRelease(...args),
             pitchChanged: () => this.callbacks.updateCell(),
-            getJamCell: this.getCell.bind(this),
         }
 
         this.firstVisible = false

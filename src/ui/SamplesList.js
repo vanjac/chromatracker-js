@@ -37,7 +37,6 @@ export class SamplesList {
         this.view = view
         /**
          * @type {ModuleEditCallbacks & JamCallbacks & {
-                getEntryCell?: () => Readonly<Cell>
          *      setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
          * }}
          */
@@ -89,7 +88,6 @@ export class SamplesList {
                 this.callbacks.changeModule(
                     module => $sample.update(module, idx, sample), commit)
             },
-            getEntryCell: () => this.callbacks.getEntryCell(),
             setEntryCell: (...args) => this.callbacks.setEntryCell(...args),
         }
         this.sampleEditContainer.appendChild(this.sampleEdit)
@@ -221,9 +219,6 @@ if (import.meta.main) {
             console.log('Change module', commit)
             module = callback(module)
             testElem.controller.setSamples(module.samples)
-        },
-        getEntryCell() {
-            return Cell.empty
         },
         setEntryCell(cell, parts) {
             console.log('Set cell', parts, cell)

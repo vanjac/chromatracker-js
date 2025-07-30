@@ -34,7 +34,6 @@ export class PianoKeyboard {
         /**
          * @type {JamCallbacks & {
          *      pitchChanged?: () => void
-         *      getJamCell?: () => Cell
          * }}
          */
         this.callbacks = {}
@@ -57,7 +56,7 @@ export class PianoKeyboard {
             if (input) {
                 $dom.selectRadioButton(this.pitchInput, input.value)
                 this.callbacks.pitchChanged()
-                this.callbacks.jamPlay(id, this.callbacks.getJamCell())
+                this.callbacks.jamPlay(id)
             }
         }, id => this.callbacks.jamRelease(id))
 
@@ -120,9 +119,6 @@ if (import.meta.main) {
     testElem.controller.callbacks = {
         pitchChanged() {
             console.log("Pitch changed")
-        },
-        getJamCell() {
-            return Cell.empty
         },
         jamPlay(id, cell) {
             console.log('Jam play', id, cell)

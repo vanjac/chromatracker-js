@@ -133,7 +133,6 @@ export class SampleEdit {
         /**
          * @type {JamCallbacks & {
          *      onChange?: (sample: Readonly<Sample>, commit: boolean) => void
-                getEntryCell?: () => Readonly<Cell>
                 setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
          * }}
          */
@@ -252,7 +251,7 @@ export class SampleEdit {
                 commit)
             this.finetuneOutput.value = this.finetuneInput.value
             if (!commit) {
-                this.callbacks.jamPlay(-1, this.callbacks.getEntryCell())
+                this.callbacks.jamPlay(-1)
             } else {
                 this.callbacks.jamRelease(-1)
             }
@@ -265,7 +264,7 @@ export class SampleEdit {
 
         makeKeyButton(fragment.querySelector('#useOffset'), id => {
             this.useSampleOffset()
-            this.callbacks.jamPlay(id, this.callbacks.getEntryCell())
+            this.callbacks.jamPlay(id)
         }, id => this.callbacks.jamRelease(id))
         this.offsetEffectSpan = fragment.querySelector('#offsetEffect')
 
@@ -797,9 +796,6 @@ if (import.meta.main) {
         onChange(sample, commit) {
             console.log('Change', commit)
             testElem.controller.setSample(sample)
-        },
-        getEntryCell() {
-            return Cell.empty
         },
         setEntryCell(cell, parts) {
             console.log('Set cell', parts, cell)
