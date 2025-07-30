@@ -10,6 +10,19 @@ export function type(constructor, value) {
 }
 
 /**
+ * @template {any[]} A
+ * @param {((...args: A) => void) | null} fn,
+ * @param {A} args
+ */
+export function invoke(fn, ...args) {
+    if (fn) {
+        fn.apply(null, args)
+    } else {
+        console.trace('Invoke null function')
+    }
+}
+
+/**
  * @param {number} value
  * @param {number} min
  * @param {number} max

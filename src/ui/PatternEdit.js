@@ -5,7 +5,7 @@ import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
 import {makeKeyButton} from './KeyPad.js'
-import {type} from '../Util.js'
+import {type, invoke} from '../Util.js'
 import {Cell, CellPart, mod, Module, Pattern, Sample, Effect} from '../Model.js'
 import global from './GlobalState.js'
 import './PatternTable.js'
@@ -139,32 +139,32 @@ export class PatternEdit {
         })
 
         makeKeyButton(this.entryCellElem,
-            id => this.callbacks.jamPlay(id),
-            id => this.callbacks.jamRelease(id))
+            id => invoke(this.callbacks.jamPlay, id),
+            id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#write'), id => {
             this.putCell(
                 this.entryCell,
                 this.getCellParts()
             )
-            this.callbacks.jamPlay(id, this.selCell())
+            invoke(this.callbacks.jamPlay, id, this.selCell())
             this.advance()
-        }, id => this.callbacks.jamRelease(id))
+        }, id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#clear'), id => {
             this.putCell(Cell.empty, this.getCellParts())
-            this.callbacks.jamPlay(id, this.selCell())
+            invoke(this.callbacks.jamPlay, id, this.selCell())
             this.advance()
-        }, id => this.callbacks.jamRelease(id))
+        }, id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#lift'), id => {
             let cell = this.selCell()
             let parts = this.getCellParts()
             if (cell.pitch < 0) { parts &= ~CellPart.pitch }
             if (!cell.inst) { parts &= ~CellPart.inst }
-            this.callbacks.setEntryCell(cell, parts)
-            this.callbacks.jamPlay(id)
-        }, id => this.callbacks.jamRelease(id))
+            invoke(this.callbacks.setEntryCell, cell, parts)
+            invoke(this.callbacks.jamPlay, id)
+        }, id => invoke(this.callbacks.jamRelease, id))
 
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
@@ -183,14 +183,14 @@ export class PatternEdit {
         this.view.appendChild(fragment)
 
         this.sequenceEdit.controller.callbacks = {
-            changeModule: (...args) => this.callbacks.changeModule(...args),
+            changeModule: (...args) => invoke(this.callbacks.changeModule, ...args),
             onSelect: this.refreshPattern.bind(this)
         }
         this.patternTable.controller.callbacks = {
-            jamPlay: (...args) => this.callbacks.jamPlay(...args),
-            jamRelease: (...args) => this.callbacks.jamRelease(...args),
+            jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
+            jamRelease: (...args) => invoke(this.callbacks.jamRelease, ...args),
             onChange: (pattern) => this.changePattern(_ => pattern),
-            setMute: (...args) => this.callbacks.setMute(...args),
+            setMute: (...args) => invoke(this.callbacks.setMute, ...args),
         }
         this.updateEntryParts()
     }
@@ -277,7 +277,7 @@ export class PatternEdit {
      * @param {(pattern: Readonly<Pattern>) => Readonly<Pattern>} callback
      */
     changePattern(callback) {
-        this.callbacks.changeModule(
+        invoke(this.callbacks.changeModule,
             module => $pattern.change(module, module.sequence[this.selPos()], callback))
     }
 

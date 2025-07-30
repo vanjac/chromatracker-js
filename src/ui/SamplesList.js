@@ -3,7 +3,7 @@ import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import * as $sample from '../edit/Sample.js'
 import * as $icons from '../gen/Icons.js'
-import {type} from '../Util.js'
+import {type, invoke} from '../Util.js'
 import {SampleEditElement} from './SampleEdit.js'
 import {mod, Cell, Sample, CellPart} from '../Model.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
@@ -82,17 +82,17 @@ export class SamplesList {
 
         this.sampleEdit = new SampleEditElement()
         this.sampleEdit.controller.callbacks = {
-            jamPlay: (...args) => this.callbacks.jamPlay(...args),
-            jamRelease: (...args) => this.callbacks.jamRelease(...args),
+            jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
+            jamRelease: (...args) => invoke(this.callbacks.jamRelease, ...args),
             onChange: (sample, commit) => {
-                this.callbacks.changeModule(
+                invoke(this.callbacks.changeModule,
                     module => $sample.update(module, idx, sample), commit)
             },
-            setEntryCell: (...args) => this.callbacks.setEntryCell(...args),
+            setEntryCell: (...args) => invoke(this.callbacks.setEntryCell, ...args),
         }
         this.sampleEditContainer.appendChild(this.sampleEdit)
         this.sampleEdit.controller.setSample(this.viewSamples[idx])
-        this.callbacks.setEntryCell({...Cell.empty, inst: idx}, CellPart.inst)
+        invoke(this.callbacks.setEntryCell, {...Cell.empty, inst: idx}, CellPart.inst)
 
         this.updateTitle()
     }
@@ -184,7 +184,7 @@ export class SamplesList {
     /** @private */
     addSample() {
         let selSample = -1
-        this.callbacks.changeModule(module => {
+        invoke(this.callbacks.changeModule, module => {
             let [newMod, idx] = $sample.create(module)
             selSample = idx
             return newMod
@@ -198,7 +198,7 @@ export class SamplesList {
     deleteSample() {
         let idx = this.viewIndex
         this.closeSampleEdit()
-        this.callbacks.changeModule(module => $sample.update(module, idx, null))
+        invoke(this.callbacks.changeModule, module => $sample.update(module, idx, null))
     }
 }
 export const SamplesListElement = $dom.defineView('samples-list', SamplesList)

@@ -5,7 +5,7 @@ import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $icons from '../gen/Icons.js'
-import {type} from '../Util.js'
+import {type, invoke} from '../Util.js'
 import {mod, Pattern} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
@@ -65,7 +65,7 @@ export class SequenceEdit {
         this.select.addEventListener('input', () => this.seqSet(this.select.selectedIndex))
         this.select.addEventListener('contextmenu', () => {
             $cli.addSelProp('patnum', 'number', this.viewSequence[this.selPos],
-                num => this.callbacks.changeModule(
+                num => invoke(this.callbacks.changeModule,
                     module => $sequence.set(module, this.selPos, num)))
         })
 
@@ -97,14 +97,15 @@ export class SequenceEdit {
             this.sequenceList.appendChild(label)
             label.addEventListener('change', () => {
                 this.selPos = i
-                this.callbacks.onSelect()
+                invoke(this.callbacks.onSelect)
                 this.updateSel()
             })
             label.addEventListener('contextmenu', () => {
                 this.setSelPos(i)
-                this.callbacks.onSelect()
+                invoke(this.callbacks.onSelect)
                 $cli.addSelProp('patnum', 'number', this.viewSequence[i],
-                    num => this.callbacks.changeModule(module => $sequence.set(module, i, num)))
+                    num => invoke(this.callbacks.changeModule,
+                        module => $sequence.set(module, i, num)))
             })
             this.sequenceButtons.push(label)
         }
@@ -169,7 +170,7 @@ export class SequenceEdit {
      * @param {number} p
      */
     seqSet(p) {
-        this.callbacks.changeModule(module => $sequence.set(module, this.selPos, p))
+        invoke(this.callbacks.changeModule, module => $sequence.set(module, this.selPos, p))
     }
 
     /** @private */
@@ -178,7 +179,7 @@ export class SequenceEdit {
             return
         }
         this.selPos++
-        this.callbacks.changeModule(module =>
+        invoke(this.callbacks.changeModule, module =>
             $sequence.insert(module, this.selPos, module.sequence[this.selPos - 1]))
         this.scrollToSelPos()
     }
@@ -195,7 +196,7 @@ export class SequenceEdit {
             return
         }
         this.selPos++
-        this.callbacks.changeModule(module => {
+        invoke(this.callbacks.changeModule, module => {
             module = $pattern.clone(module, module.sequence[this.selPos - 1])
             return $sequence.insert(module, this.selPos, module.patterns.length - 1)
         })
@@ -211,7 +212,7 @@ export class SequenceEdit {
         if (this.selPos >= this.viewSequence.length - 1) {
             this.selPos--
         }
-        this.callbacks.changeModule(module => $sequence.del(module, pos))
+        invoke(this.callbacks.changeModule, module => $sequence.del(module, pos))
     }
 }
 export const SequenceEditElement = $dom.defineView('sequence-edit', SequenceEdit)

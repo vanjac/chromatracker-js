@@ -14,7 +14,7 @@ import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
-import {type, clamp, minMax} from '../Util.js'
+import {type, invoke, clamp, minMax} from '../Util.js'
 import {Cell, Effect, mod, Sample, CellPart} from '../Model.js'
 import global from './GlobalState.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
@@ -251,26 +251,28 @@ export class SampleEdit {
                 commit)
             this.finetuneOutput.value = this.finetuneInput.value
             if (!commit) {
-                this.callbacks.jamPlay(-1)
+                invoke(this.callbacks.jamPlay, -1)
             } else {
-                this.callbacks.jamRelease(-1)
+                invoke(this.callbacks.jamRelease, -1)
             }
         })
-        this.finetuneInput.addEventListener('pointerup', () => this.callbacks.jamRelease(-1))
-        this.finetuneInput.addEventListener('pointerleave', () => this.callbacks.jamRelease(-1))
+        this.finetuneInput.addEventListener('pointerup',
+            () => invoke(this.callbacks.jamRelease, -1))
+        this.finetuneInput.addEventListener('pointerleave',
+            () => invoke(this.callbacks.jamRelease, -1))
 
         fragment.querySelector('#open').addEventListener('click', () => this.openAudioFile())
         fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
 
         makeKeyButton(fragment.querySelector('#useOffset'), id => {
             this.useSampleOffset()
-            this.callbacks.jamPlay(id)
-        }, id => this.callbacks.jamRelease(id))
+            invoke(this.callbacks.jamPlay, id)
+        }, id => invoke(this.callbacks.jamRelease, id))
         this.offsetEffectSpan = fragment.querySelector('#offsetEffect')
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('sample', 'object', this.viewSample,
-                sample => this.callbacks.onChange(Object.freeze(sample), true))
+                sample => invoke(this.callbacks.onChange, Object.freeze(sample), true))
         })
 
         this.view.appendChild(fragment)
@@ -437,7 +439,7 @@ export class SampleEdit {
         if (!dirty) {
             this.viewSample = immSample // avoid unnecessary refresh
         }
-        this.callbacks.onChange(immSample, commit)
+        invoke(this.callbacks.onChange, immSample, commit)
     }
 
     /**
@@ -470,7 +472,7 @@ export class SampleEdit {
         try {
             let newSample = $wav.read(buffer)
             newSample.name = name
-            this.callbacks.onChange(newSample, true)
+            invoke(this.callbacks.onChange, newSample, true)
         } catch (error) {
             if (error instanceof Error) { AlertDialog.open(error.message) }
         }
@@ -537,7 +539,7 @@ export class SampleEdit {
     /** @private */
     useSampleOffset() {
         let {effect, param0, param1} = this.getOffsetEffect()
-        this.callbacks.setEntryCell({...Cell.empty, effect, param0, param1},
+        invoke(this.callbacks.setEntryCell, {...Cell.empty, effect, param0, param1},
             CellPart.effect | CellPart.param)
     }
 
@@ -645,7 +647,7 @@ export class SampleEdit {
     /** @private */
     trim() {
         if (this.rangeSelected()) {
-            this.callbacks.onChange(
+            invoke(this.callbacks.onChange,
                 $sample.trim(this.viewSample, this.selMin(), this.selMax()), true)
             this.selectNone()
         }
@@ -661,7 +663,7 @@ export class SampleEdit {
     cut() {
         this.copy()
         let [start, end] = this.selRangeOrAll()
-        this.callbacks.onChange($sample.del(this.viewSample, start, end), true)
+        invoke(this.callbacks.onChange, $sample.del(this.viewSample, start, end), true)
         this.setSel(start, start)
     }
 
@@ -672,7 +674,7 @@ export class SampleEdit {
      * @param {Readonly<Int8Array>} wave
      */
     replace(start, end, wave) {
-        this.callbacks.onChange($sample.splice(this.viewSample, start, end, wave), true)
+        invoke(this.callbacks.onChange, $sample.splice(this.viewSample, start, end, wave), true)
         let newEnd = start + wave.length
         this.setSel(newEnd, newEnd)
     }
@@ -699,7 +701,7 @@ export class SampleEdit {
                 newSample = $sample.splice(newSample, loopStart, loopStart, loopWave)
             }
             newSample = Object.freeze({...newSample, loopStart})
-            this.callbacks.onChange(newSample, true)
+            invoke(this.callbacks.onChange, newSample, true)
             global.lastLoopRepeat = count
         }).catch(console.warn)
     }
@@ -712,7 +714,8 @@ export class SampleEdit {
         let {loopStart, loopEnd} = this.viewSample
         let loopWave = new Int8Array(loopEnd - loopStart)
         $wave.reverse(this.viewSample.wave.subarray(loopStart, loopEnd), loopWave)
-        this.callbacks.onChange($sample.splice(this.viewSample, loopEnd, loopEnd, loopWave), true)
+        invoke(this.callbacks.onChange,
+            $sample.splice(this.viewSample, loopEnd, loopEnd, loopWave), true)
     }
 
     /**
@@ -721,7 +724,8 @@ export class SampleEdit {
      */
     applyEffect(effect) {
         let [start, end] = this.selRangeOrAll()
-        this.callbacks.onChange($sample.applyEffect(this.viewSample, start, end, effect), true)
+        invoke(this.callbacks.onChange,
+            $sample.applyEffect(this.viewSample, start, end, effect), true)
     }
 
     /** @private */
@@ -747,7 +751,7 @@ export class SampleEdit {
             let [start, end] = this.selRangeOrAll()
             let length = Sample.roundToNearest((end - start) * (2 ** (-semitones / 12)))
             let newWave = $sample.spliceEffect(this.viewSample, start, end, length, $wave.resample)
-            this.callbacks.onChange(newWave, true)
+            invoke(this.callbacks.onChange, newWave, true)
             if (this.rangeSelected()) {
                 this.setSel(start, start + length)
             }
@@ -775,7 +779,7 @@ export class SampleEdit {
                     node.type = params.type
                     return node
                 })
-                .then(s => this.callbacks.onChange(s, true))
+                .then(s => invoke(this.callbacks.onChange, s, true))
                 .finally(() => $dialog.close(waitDialog))
         }
     }

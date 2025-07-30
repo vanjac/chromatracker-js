@@ -1,6 +1,6 @@
 import * as $dom from './DOMUtil.js'
 import * as $icons from '../gen/Icons.js'
-import {type} from '../Util.js'
+import {type, invoke} from '../Util.js'
 
 const template = $dom.html`
 <div class="hflex">
@@ -67,27 +67,32 @@ export class PlaybackControls {
         this.followInput = type(HTMLInputElement, fragment.querySelector('#follow'))
         this.undoButton = type(HTMLButtonElement, fragment.querySelector('#undo'))
 
-        fragment.querySelector('#close').addEventListener('click', () => this.callbacks.close())
+        fragment.querySelector('#close').addEventListener('click',
+            () => invoke(this.callbacks.close))
 
         fragment.querySelector('#playStart').addEventListener('click', () => {
             this.patternLoopInput.checked = false
-            this.callbacks.resetPlayback()
-            this.callbacks.play()
+            invoke(this.callbacks.resetPlayback)
+            invoke(this.callbacks.play)
         })
         this.playPatternButton.addEventListener('click', () => {
             this.patternLoopInput.checked = true
-            this.callbacks.resetPlayback({restoreSpeed: true, restorePos: true})
-            this.callbacks.play()
+            invoke(this.callbacks.resetPlayback, {restoreSpeed: true, restorePos: true})
+            invoke(this.callbacks.play)
         })
         this.playRowButton.addEventListener('click', () => {
-            this.callbacks.resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})
-            this.callbacks.play()
+            invoke(this.callbacks.resetPlayback,
+                {restoreSpeed: true, restorePos: true, restoreRow: true})
+            invoke(this.callbacks.play)
         })
-        this.pauseButton.addEventListener('click', () => this.callbacks.pause())
-        this.playRowButton.addEventListener('contextmenu', () => this.callbacks.destroyPlayback())
-        this.pauseButton.addEventListener('contextmenu', () => this.callbacks.destroyPlayback())
-        this.patternLoopInput.addEventListener('change', () => this.callbacks.updatePlaySettings())
-        this.undoButton.addEventListener('click', () => this.callbacks.undo())
+        this.pauseButton.addEventListener('click', () => invoke(this.callbacks.pause))
+        this.playRowButton.addEventListener('contextmenu',
+            () => invoke(this.callbacks.destroyPlayback))
+        this.pauseButton.addEventListener('contextmenu',
+            () => invoke(this.callbacks.destroyPlayback))
+        this.patternLoopInput.addEventListener('change',
+            () => invoke(this.callbacks.updatePlaySettings))
+        this.undoButton.addEventListener('click', () => invoke(this.callbacks.undo))
 
         this.view.appendChild(fragment)
     }

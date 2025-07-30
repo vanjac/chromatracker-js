@@ -3,7 +3,7 @@ import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
-import {type} from '../Util.js'
+import {type, invoke} from '../Util.js'
 import {mod, Module} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
@@ -73,7 +73,7 @@ export class ModuleProperties {
 
         this.titleInput = type(HTMLInputElement, fragment.querySelector('#title'))
         $dom.addInputListeners(this.titleInput, commit => {
-            this.callbacks.changeModule(
+            invoke(this.callbacks.changeModule,
                 module => $module.setName(module, this.titleInput.value), commit)
         })
 
@@ -86,13 +86,13 @@ export class ModuleProperties {
         this.delChannelsButton = type(HTMLButtonElement, fragment.querySelector('#delChannels'))
 
         this.addChannelsButton.addEventListener('click',
-            () => this.callbacks.changeModule(module => $module.addChannels(module, 2)))
+            () => invoke(this.callbacks.changeModule, module => $module.addChannels(module, 2)))
         this.delChannelsButton.addEventListener('click',
-            () => this.callbacks.changeModule(
+            () => invoke(this.callbacks.changeModule,
                 module => $module.delChannels(module, module.numChannels - 2, 2)))
 
         fragment.querySelector('#patternZap').addEventListener('click',
-            () => this.callbacks.changeModule(module => $sequence.zap(module)))
+            () => invoke(this.callbacks.changeModule, module => $sequence.zap(module)))
 
         this.view.appendChild(fragment)
     }

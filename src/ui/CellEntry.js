@@ -2,7 +2,7 @@ import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
-import {type} from '../Util.js'
+import {type, invoke} from '../Util.js'
 import {Cell, CellPart, Sample, Effect, ExtEffect} from '../Model.js'
 import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
@@ -248,9 +248,9 @@ export class CellEntry {
             let input = elem.querySelector('input')
             if (input) {
                 this.setSelSample(Number(input.value))
-                this.callbacks.jamPlay(id)
+                invoke(this.callbacks.jamPlay, id)
             }
-        }, id => this.callbacks.jamRelease(id))
+        }, id => invoke(this.callbacks.jamRelease, id))
 
         let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#sampleScrollLock'))
         scrollLockCheck.addEventListener('change', () => {
@@ -259,8 +259,8 @@ export class CellEntry {
 
         makeKeyButton(this.resetEffectButton, id => {
             this.setCell(Cell.empty, CellPart.effect | CellPart.param)
-            this.callbacks.jamPlay(id)
-        }, id => this.callbacks.jamRelease(id))
+            invoke(this.callbacks.jamPlay, id)
+        }, id => invoke(this.callbacks.jamRelease, id))
 
         fragment.querySelector('#closeEffectKeyboard').addEventListener('click',
             () => this.closeEffectKeyboard())
@@ -272,9 +272,9 @@ export class CellEntry {
         this.view.appendChild(fragment)
 
         this.piano.controller.callbacks = {
-            jamPlay: (...args) => this.callbacks.jamPlay(...args),
-            jamRelease: (...args) => this.callbacks.jamRelease(...args),
-            pitchChanged: () => this.callbacks.updateCell(),
+            jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
+            jamRelease: (...args) => invoke(this.callbacks.jamRelease, ...args),
+            pitchChanged: () => invoke(this.callbacks.updateCell),
         }
 
         this.firstVisible = false
@@ -336,7 +336,7 @@ export class CellEntry {
         if (this.viewSamples[s]) {
             $dom.selectRadioButton(this.sampleInput, s.toString())
         }
-        this.callbacks.updateCell()
+        invoke(this.callbacks.updateCell)
     }
 
     /**
@@ -358,7 +358,7 @@ export class CellEntry {
             this.param1 = cell.param1
         }
         this.updateEffect()
-        this.callbacks.updateCell()
+        invoke(this.callbacks.updateCell)
     }
 
     /** @private */
@@ -416,7 +416,7 @@ export class CellEntry {
             button.classList.toggle('show-checked', i == value)
             button.querySelector('#desc').textContent = desc[i]
         }
-        this.callbacks.setPartTogglesVisible(false)
+        invoke(this.callbacks.setPartTogglesVisible, false)
     }
 
     /** @private */
@@ -425,7 +425,7 @@ export class CellEntry {
         this.sampleSection.classList.remove('hide')
         this.effectSection.classList.remove('hide')
         this.effectKeyboard.classList.add('hide')
-        this.callbacks.setPartTogglesVisible(true)
+        invoke(this.callbacks.setPartTogglesVisible, true)
     }
 
     /**
@@ -439,7 +439,7 @@ export class CellEntry {
         case 2: this.param1 = num; break
         }
         this.updateEffect()
-        this.callbacks.updateCell()
+        invoke(this.callbacks.updateCell)
         if (this.editDigit < 2) {
             this.openEffectKeyboard(this.editDigit + 1)
         } else {

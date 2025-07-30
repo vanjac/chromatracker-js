@@ -3,8 +3,7 @@ import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad} from './KeyPad.js'
-import {type} from '../Util.js'
-import {Cell} from '../Model.js'
+import {type, invoke} from '../Util.js'
 import periodTable from '../PeriodTable.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
@@ -55,10 +54,10 @@ export class PianoKeyboard {
             let input = elem.querySelector('input')
             if (input) {
                 $dom.selectRadioButton(this.pitchInput, input.value)
-                this.callbacks.pitchChanged()
-                this.callbacks.jamPlay(id)
+                invoke(this.callbacks.pitchChanged)
+                invoke(this.callbacks.jamPlay, id)
             }
-        }, id => this.callbacks.jamRelease(id))
+        }, id => invoke(this.callbacks.jamRelease, id))
 
         let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
         scrollLockCheck.addEventListener('change', () => {

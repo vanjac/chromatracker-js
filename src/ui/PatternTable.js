@@ -4,7 +4,7 @@ import * as $dom from './DOMUtil.js'
 import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
-import {type, minMax} from '../Util.js'
+import {type, invoke, minMax} from '../Util.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -68,9 +68,9 @@ export class PatternTable {
                 let c = Number(elem.dataset.c)
                 let row = Number(elem.dataset.row)
                 this.setSelCell(c, row)
-                this.callbacks.jamPlay(id, this.viewPattern[c][row])
+                invoke(this.callbacks.jamPlay, id, this.viewPattern[c][row])
             }
-        }, id => this.callbacks.jamRelease(id))
+        }, id => invoke(this.callbacks.jamRelease, id))
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('row', 'number', this.selRow,
@@ -78,7 +78,7 @@ export class PatternTable {
             $cli.addSelProp('channel', 'number', this.selChannel,
                 channel => this.setSelCell(this.selChannel, channel))
             $cli.addSelProp('pattern', Array, this.viewPattern,
-                pattern => this.callbacks.onChange(Object.freeze(pattern)))
+                pattern => invoke(this.callbacks.onChange, Object.freeze(pattern)))
         })
 
         this.resizeListener = () => this.updateSize()
@@ -117,7 +117,7 @@ export class PatternTable {
                 input.checked = true
             }
             input.addEventListener('change',
-                () => this.callbacks.setMute(c, !input.checked))
+                () => invoke(this.callbacks.setMute, c, !input.checked))
                 newMuteInputs.push(input)
             let label = th.appendChild($dom.createElem('label', {htmlFor: input.id}))
             label.textContent = 'Ch ' + (c + 1).toString()
@@ -174,7 +174,7 @@ export class PatternTable {
                     td.dataset.row = row.toString()
                     td.addEventListener('contextmenu', () => {
                         $cli.addSelProp('cell', 'object', this.viewPattern[c][row], cell => {
-                            this.callbacks.onChange($pattern.putCell(
+                            invoke(this.callbacks.onChange, $pattern.putCell(
                                 this.viewPattern, c, row, cell, CellPart.all))
                         })
                     })
