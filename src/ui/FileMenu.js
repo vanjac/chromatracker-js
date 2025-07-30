@@ -8,6 +8,7 @@ import * as $mod from '../file/Mod.js'
 import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
 import {AlertDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
+import {type} from '../Util.js'
 import appVersion from '../gen/Version.js'
 
 const template = $dom.html`
@@ -47,15 +48,19 @@ export class FileMenu {
      */
     constructor(view) {
         this.view = view
+        this.db = type(IDBDatabase, null)
+        /** @type {number} */
+        this.fileID = null
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
         fragment.querySelector('#newModule').addEventListener('click',
-            () => this.openEditor($module.createNew()))
-        fragment.querySelector('#fileOpen').addEventListener('click', () => this.openFile())
-        $dom.addMenuListener(fragment.querySelector('#demoMenu'), value => this.loadFromUrl(value))
+            () => this.openEditor(null, $module.createNew()))
+        fragment.querySelector('#fileOpen').addEventListener('click', () => this.importFile())
+        $dom.addMenuListener(fragment.querySelector('#demoMenu'),
+            value => this.importFromUrl(value))
 
         this.menu = fragment.querySelector('#menu')
         this.editorContainer = fragment.querySelector('#editorContainer')
@@ -69,13 +74,25 @@ export class FileMenu {
                 + '\nReason: ' + e.message
             this.view.querySelector('#storageWarning').textContent = message
         })
+        $local.openDB().then(db => {
+            if (this.view.isConnected) {
+                this.db = db
+            }
+        })
+    }
+
+    disconnectedCallback() {
+        if (this.db) {
+            this.db.close()
+            this.db = null
+        }
     }
 
     /** @private */
-    openFile() {
+    importFile() {
         $ext.pickFiles().then(files => {
             if (files.length == 1) {
-                this.readModuleBlob(files[0])
+                this.readNewModuleBlob(files[0])
             }
         }).catch(console.warn)
     }
@@ -84,11 +101,11 @@ export class FileMenu {
      * @private
      * @param {string} url
      */
-    loadFromUrl(url) {
+    importFromUrl(url) {
         let dialog = $dialog.open(new WaitDialogElement())
         window.fetch(url)
             .then(r => r.blob())
-            .then(b => this.readModuleBlob(b))
+            .then(b => this.readNewModuleBlob(b))
             .then(() => $dialog.close(dialog))
             .catch(/** @param {Error} error */ error => {
                 $dialog.close(dialog)
@@ -100,7 +117,7 @@ export class FileMenu {
      * @private
      * @param {Blob} blob
      */
-    readModuleBlob(blob) {
+    readNewModuleBlob(blob) {
         let reader = new FileReader()
         reader.onload = () => {
             if (reader.result instanceof ArrayBuffer) {
@@ -115,7 +132,7 @@ export class FileMenu {
                     }
                     return
                 }
-                this.openEditor(module)
+                this.openEditor(null, module)
             }
         }
         reader.readAsArrayBuffer(blob)
@@ -123,13 +140,16 @@ export class FileMenu {
 
     /**
      * @private
+     * @param {number | null} id
      * @param {Readonly<Module>} module
      */
-    openEditor(module) {
+    openEditor(id, module) {
         this.menu.classList.add('hide')
         this.editorContainer.classList.remove('hide')
 
+        this.fileID = id
         let editor = new ModuleEditElement()
+        editor.controller.callbacks = {onSave: this.saveModule.bind(this)}
         this.editorContainer.textContent = ''
         this.editorContainer.appendChild(editor)
         editor.controller.setModule(module)
@@ -137,6 +157,21 @@ export class FileMenu {
         editor.addEventListener('disconnected', () => {
             this.menu.classList.remove('hide')
             this.editorContainer.classList.add('hide')
+            this.fileID = null
+        })
+    }
+
+    /**
+     * @private
+     * @param {Readonly<Module>} module
+     */
+    saveModule(module) {
+        let buf = $mod.write(module)
+        $local.updateFile(this.db, this.fileID, module.name, buf).then(id => {
+            this.fileID = id
+            console.log('Saved file', id)
+        }).catch(/** @param {Error} e */e => {
+            AlertDialog.open(e.message, 'Error saving file!')
         })
     }
 }

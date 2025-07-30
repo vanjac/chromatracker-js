@@ -8,8 +8,7 @@ import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
 import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
-import {ConfirmDialog} from './dialogs/UtilDialogs.js'
-import {type} from '../Util.js'
+import {type, invoke} from '../Util.js'
 import {Cell, Module, CellPart} from '../Model.js'
 import './CellEntry.js'
 import './ModuleProperties.js'
@@ -68,7 +67,7 @@ const template = $dom.html`
         <hr>
         <div class="hflex">
             <button id="saveModule">
-                ${$icons.content_save_outline}
+                ${$icons.download}
             </button>
         </div>
         <hr>
@@ -92,6 +91,13 @@ export class ModuleEdit {
      */
     constructor(view) {
         this.view = view
+
+        /**
+         * @type {{
+         *      onSave?: (module: Readonly<Module>) => void
+         * }}
+         */
+        this.callbacks = {}
 
         this.module = new Undoable($module.defaultNew)
 
@@ -199,12 +205,17 @@ export class ModuleEdit {
         }
         this.patternEdit.controller.setEntryCell(this.getEntryCell())
 
+        // TODO: remove
         window.onbeforeunload = () => (this.module.isUnsaved() ? 'You have unsaved changes' : null)
     }
 
     // eslint-disable-next-line class-methods-use-this
     disconnectedCallback() {
         window.onbeforeunload = null
+    }
+
+    getModule() {
+        return this.module.value
     }
 
     /**
@@ -218,20 +229,10 @@ export class ModuleEdit {
 
     /** @private */
     close() {
-        this.askUnsavedChanges().then(() => {
-            this.destroyPlayback()
-            this.view.remove()
-        }).catch(console.warn)
-    }
-
-    /** @private */
-    askUnsavedChanges() {
-        if (this.module.isUnsaved()) {
-            let message = 'You will lose your unsaved changes. Continue?'
-            return ConfirmDialog.open(message, 'Unsaved Changes')
-        } else {
-            return Promise.resolve()
-        }
+        invoke(this.callbacks.onSave, this.module.value)
+        this.module.saved()
+        this.destroyPlayback()
+        this.view.remove()
     }
 
     /** @private */
