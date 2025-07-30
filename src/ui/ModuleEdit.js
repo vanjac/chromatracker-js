@@ -23,16 +23,15 @@ const processInterval = 200
 
 /**
  * @typedef {{
- *      changeModule(
- *          callback: (module: Readonly<Module>) => Readonly<Module>, commit?: boolean
- *      ): void
+ *      changeModule?:
+ *          (callback: (module: Readonly<Module>) => Readonly<Module>, commit?: boolean) => void
  * }} ModuleEditCallbacks
  */
 
 /**
  * @typedef {{
- *      jamPlay(id: number, cell: Readonly<Cell>): void
-        jamRelease(id: number): void
+ *      jamPlay?: (id: number, cell?: Readonly<Cell>) => void
+        jamRelease?: (id: number) => void
  * }} JamCallbacks
  */
 

@@ -37,11 +37,11 @@ export class SamplesList {
         this.view = view
         /**
          * @type {ModuleEditCallbacks & JamCallbacks & {
-                getEntryCell(): Readonly<Cell>
-         *      setEntryCell(cell: Readonly<Cell>, parts: CellPart): void
+                getEntryCell?: () => Readonly<Cell>
+         *      setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
          * }}
          */
-        this.callbacks = null
+        this.callbacks = {}
         /** @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
         this.viewSampleCount = 0

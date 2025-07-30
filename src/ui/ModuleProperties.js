@@ -61,7 +61,7 @@ export class ModuleProperties {
     constructor(view) {
         this.view = view
         /** @type {ModuleEditCallbacks} */
-        this.callbacks = null
+        this.callbacks = {}
         /** @type {Module} */
         this.viewModule = null
         this.viewPatternsSize = 0

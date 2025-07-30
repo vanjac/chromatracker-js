@@ -93,12 +93,12 @@ export class PatternEdit {
         this.view = view
         /**
          * @type {ModuleEditCallbacks & JamCallbacks & {
-         *      setMute(c: number, mute: boolean): void
-                getEntryCell(): Readonly<Cell>
-                setEntryCell(cell: Readonly<Cell>, parts: CellPart): void
+         *      setMute?: (c: number, mute: boolean) => void
+                getEntryCell?: () => Readonly<Cell>
+                setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
          * }}
          */
-        this.callbacks = null
+        this.callbacks = {}
         /** @type {readonly number[]} */
         this.viewSequence = null
         /** @type {readonly Readonly<Pattern>[]} */

@@ -33,11 +33,11 @@ export class PianoKeyboard {
         this.view = view
         /**
          * @type {JamCallbacks & {
-         *      pitchChanged(): void
-         *      getJamCell(): Cell
+         *      pitchChanged?: () => void
+         *      getJamCell?: () => Cell
          * }}
          */
-        this.callbacks = null
+        this.callbacks = {}
     }
 
     connectedCallback() {

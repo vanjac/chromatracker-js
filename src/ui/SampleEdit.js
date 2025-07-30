@@ -132,12 +132,12 @@ export class SampleEdit {
         this.view = view
         /**
          * @type {JamCallbacks & {
-         *      onChange(sample: Readonly<Sample>, commit: boolean): void
-                getEntryCell(): Readonly<Cell>
-                setEntryCell(cell: Readonly<Cell>, parts: CellPart): void
+         *      onChange?: (sample: Readonly<Sample>, commit: boolean) => void
+                getEntryCell?: () => Readonly<Cell>
+                setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
          * }}
          */
-        this.callbacks = null
+        this.callbacks = {}
 
         this.selectA = -1
         this.selectB = -1

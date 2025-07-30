@@ -34,10 +34,10 @@ export class SequenceEdit {
         this.view = view
         /**
          * @type {ModuleEditCallbacks & {
-         *      onSelect(): void
+         *      onSelect?: () => void
          * }}
          */
-        this.callbacks = null
+        this.callbacks = {}
         this.selPos = 0
         /** @type {readonly number[]} */
         this.viewSequence = null

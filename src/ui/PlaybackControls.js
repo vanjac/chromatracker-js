@@ -43,18 +43,18 @@ export class PlaybackControls {
         this.view = view
         /**
          * @type {{
-         *      close(): void
-         *      resetPlayback(
+         *      close?: () => void
+         *      resetPlayback?: (
          *          options?: {restoreSpeed?: boolean, restorePos?: boolean, restoreRow?: boolean}
-         *      ): void
-         *      play(): void
-         *      pause(): void
-         *      destroyPlayback(): void
-         *      updatePlaySettings(): void
-         *      undo(): void
+         *      ) => void
+         *      play?: () => void
+         *      pause?: () => void
+         *      destroyPlayback?: () => void
+         *      updatePlaySettings?: () => void
+         *      undo?: () => void
          * }}
          */
-        this.callbacks = null
+        this.callbacks = {}
     }
 
     connectedCallback() {

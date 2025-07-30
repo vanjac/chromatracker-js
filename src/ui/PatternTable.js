@@ -35,11 +35,11 @@ export class PatternTable {
         this.view = view
         /**
          * @type {JamCallbacks & {
-         *      setMute(c: number, mute: boolean): void
-                onChange(pattern: Readonly<Pattern>): void
+         *      setMute?: (c: number, mute: boolean) => void
+                onChange?: (pattern: Readonly<Pattern>) => void
          * }}
          */
-        this.callbacks = null
+        this.callbacks = {}
         this.selChannel = 0
         this.selRow = 0
         this.markChannel = -1

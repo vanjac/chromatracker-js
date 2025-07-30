@@ -206,11 +206,11 @@ export class CellEntry {
         this.view = view
         /**
          * @type {JamCallbacks & {
-         *      updateCell(): void
-         *      setPartTogglesVisible(visible: boolean): void
+         *      updateCell?: () => void
+         *      setPartTogglesVisible?: (visible: boolean) => void
          * }}
          */
-        this.callbacks
+        this.callbacks = {}
         /** @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
 
