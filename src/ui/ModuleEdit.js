@@ -66,7 +66,7 @@ const template = $dom.html`
     <div id="arrange" class="vflex flex-grow">
         <hr>
         <div class="hflex">
-            <button id="saveModule">
+            <button id="downloadModule">
                 ${$icons.download}
             </button>
         </div>
@@ -124,7 +124,8 @@ export class ModuleEdit {
         this.samplesList = fragment.querySelector('samples-list')
         this.cellEntry = fragment.querySelector('cell-entry')
 
-        fragment.querySelector('#saveModule').addEventListener('click', () => this.saveFile())
+        fragment.querySelector('#downloadModule').addEventListener('click',
+            () => this.downloadFile())
 
         let tabForm = type(HTMLFormElement, fragment.querySelector('#appTabs'))
         $dom.disableFormSubmit(tabForm)
@@ -229,18 +230,19 @@ export class ModuleEdit {
 
     /** @private */
     close() {
-        invoke(this.callbacks.onSave, this.module.value)
-        this.module.saved()
+        if (this.module.isUnsaved()) {
+            invoke(this.callbacks.onSave, this.module.value)
+            this.module.saved()
+        }
         this.destroyPlayback()
         this.view.remove()
     }
 
     /** @private */
-    saveFile() {
+    downloadFile() {
         let module = this.module.value
         let blob = new Blob([$mod.write(module)], {type: 'application/octet-stream'})
         $ext.download(blob, (module.name || 'Untitled') + '.mod')
-        this.module.saved()
     }
 
     /**
