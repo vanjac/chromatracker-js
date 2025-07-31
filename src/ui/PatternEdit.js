@@ -176,6 +176,13 @@ export class PatternEdit {
         this.sampleEnable.addEventListener('change', this.updateEntryParts.bind(this))
         this.effectEnable.addEventListener('change', this.updateEntryParts.bind(this))
 
+        this.pitchEnable.parentElement.addEventListener('contextmenu',
+            () => this.putCell(this.entryCell, CellPart.pitch))
+        this.sampleEnable.parentElement.addEventListener('contextmenu',
+            () => this.putCell(this.entryCell, CellPart.inst))
+        this.effectEnable.parentElement.addEventListener('contextmenu',
+            () => this.putCell(this.entryCell, CellPart.effect | CellPart.param))
+
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('seqpos', 'number', this.selPos(), pos => this.setSelPos(pos))
         })
