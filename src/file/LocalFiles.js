@@ -69,23 +69,23 @@ export async function openDB() {
 /**
  * Sorted by recently modified.
  * @param {IDBDatabase} db
- * @returns {Promise<Metadata[]>}
+ * @returns {Promise<[number, Metadata][]>}
  */
 export function listFiles(db) {
     let transaction = db.transaction('entries', 'readonly')
     let entriesStore = transaction.objectStore('entries')
     let modifiedIndex = entriesStore.index('modified')
-    let request = modifiedIndex.openCursor()
-    /** @type {Metadata[]} */
-    let metadata = []
+    let request = modifiedIndex.openCursor(null, 'prev')
+    /** @type {[number, Metadata][]} */
+    let files = []
     return new Promise((resolve, reject) => {
         request.onsuccess = () => {
             let cursor = request.result
             if (cursor) {
-                metadata.push(cursor.value)
+                files.push([/** @type {number} */(cursor.primaryKey), cursor.value])
                 cursor.continue()
             } else {
-                resolve(metadata)
+                resolve(files)
             }
         }
         request.onerror = () => reject(request.error)

@@ -13,7 +13,7 @@ import appVersion from '../gen/Version.js'
 
 const template = $dom.html`
 <div class="vflex flex-grow">
-    <div id="menu" class="vflex flex-grow">
+    <div id="menu" class="vflex flex-grow hide">
         <div class="hflex">
             <div class="flex-grow"></div>
             <h2>ChromaTracker</h2>
@@ -35,12 +35,31 @@ const template = $dom.html`
             </select>
         </div>
         <strong id="storageWarning" class="message-out"></strong>
-        <div class="flex-grow"></div>
+        <div id="fileList" class="flex-grow vflex vscrollable"></div>
         <em>Version:&nbsp;<code id="version"></code></em>
     </div>
     <div id="editorContainer" class="vflex flex-grow hide"></div>
 </div>
 `
+
+/**
+ * @param {Blob} blob
+ * @returns {Promise<ArrayBuffer>}
+ */
+function readArrayBuffer(blob) {
+    return new Promise((resolve, reject) => {
+        let reader = new FileReader()
+        reader.onload = () => {
+            if (reader.result instanceof ArrayBuffer) {
+                resolve(reader.result)
+            } else {
+                reject()
+            }
+        }
+        reader.onerror = () => reject()
+        reader.readAsArrayBuffer(blob)
+    })
+}
 
 export class FileMenu {
     /**
@@ -63,6 +82,7 @@ export class FileMenu {
             value => this.importFromUrl(value))
 
         this.menu = fragment.querySelector('#menu')
+        this.fileList = fragment.querySelector('#fileList')
         this.editorContainer = fragment.querySelector('#editorContainer')
 
         fragment.querySelector('#version').textContent = appVersion
@@ -74,9 +94,14 @@ export class FileMenu {
                 + '\nReason: ' + e.message
             this.view.querySelector('#storageWarning').textContent = message
         })
+        let waitDialog = $dialog.open(new WaitDialogElement())
         $local.openDB().then(db => {
             if (this.view.isConnected) {
                 this.db = db
+                this.listLocalFiles().then(() => {
+                    this.menu.classList.remove('hide')
+                    $dialog.close(waitDialog)
+                })
             }
         })
     }
@@ -89,10 +114,30 @@ export class FileMenu {
     }
 
     /** @private */
+    async listLocalFiles() {
+        let files = await $local.listFiles(this.db)
+        this.fileList.textContent = ''
+        for (let [id, metadata] of files) {
+            let textContent = metadata.name || '(untitled)'
+            let button = this.fileList.appendChild($dom.createElem('button', {textContent}))
+            button.classList.add('justify-start')
+            button.addEventListener('click', () => this.readLocalFile(id))
+        }
+    }
+
+    /**
+     * @param {number} id
+     */
+    async readLocalFile(id) {
+        let data = await $local.readFile(this.db, id)
+        this.openModuleFile(id, data)
+    }
+
+    /** @private */
     importFile() {
         $ext.pickFiles().then(files => {
             if (files.length == 1) {
-                this.readNewModuleBlob(files[0])
+                readArrayBuffer(files[0]).then(buf => this.openModuleFile(null, buf))
             }
         }).catch(console.warn)
     }
@@ -105,7 +150,8 @@ export class FileMenu {
         let dialog = $dialog.open(new WaitDialogElement())
         window.fetch(url)
             .then(r => r.blob())
-            .then(b => this.readNewModuleBlob(b))
+            .then(b => readArrayBuffer(b))
+            .then(buf => this.openModuleFile(null, buf))
             .then(() => $dialog.close(dialog))
             .catch(/** @param {Error} error */ error => {
                 $dialog.close(dialog)
@@ -115,27 +161,22 @@ export class FileMenu {
 
     /**
      * @private
-     * @param {Blob} blob
+     * @param {number} id
+     * @param {ArrayBuffer} buf
      */
-    readNewModuleBlob(blob) {
-        let reader = new FileReader()
-        reader.onload = () => {
-            if (reader.result instanceof ArrayBuffer) {
-                let module
-                try {
-                    module = Object.freeze($mod.read(reader.result))
-                } catch (error) {
-                    if (error instanceof Error) {
-                        AlertDialog.open(error.message)
-                    } else {
-                        AlertDialog.open('Unknown error while reading module file.')
-                    }
-                    return
-                }
-                this.openEditor(null, module)
+    openModuleFile(id, buf) {
+        let module
+        try {
+            module = Object.freeze($mod.read(buf))
+        } catch (error) {
+            if (error instanceof Error) {
+                AlertDialog.open(error.message)
+            } else {
+                AlertDialog.open('Unknown error while reading module file.')
             }
+            return
         }
-        reader.readAsArrayBuffer(blob)
+        this.openEditor(id, module)
     }
 
     /**
@@ -158,6 +199,7 @@ export class FileMenu {
             this.menu.classList.remove('hide')
             this.editorContainer.classList.add('hide')
             this.fileID = null
+            this.listLocalFiles()
         })
     }
 
