@@ -1,6 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {type, invoke} from '../../Util.js'
+import {type} from '../../Util.js'
 
 const alertDialogTemplate = $dom.html`
 <form class="vflex dialog message-dialog">
@@ -21,8 +21,7 @@ export class AlertDialog {
         this.view = view
         this.title = ''
         this.message = ''
-        /** @type {{ onDismiss?: () => void }} */
-        this.callbacks = {}
+        this.onDismiss = () => {}
     }
 
     connectedCallback() {
@@ -38,7 +37,7 @@ export class AlertDialog {
 
     /** @private */
     submit() {
-        invoke(this.callbacks.onDismiss)
+        this.onDismiss()
     }
 
     /**
@@ -51,7 +50,7 @@ export class AlertDialog {
             let dialog = new AlertDialogElement()
             dialog.controller.message = message
             dialog.controller.title = title
-            dialog.controller.callbacks = {onDismiss: resolve}
+            dialog.controller.onDismiss = resolve
             $dialog.open(dialog)
         })
     }
@@ -78,13 +77,8 @@ export class ConfirmDialog {
         this.view = view
         this.title = ''
         this.message = ''
-        /**
-         * @type {{
-         *      onConfirm?: () => void
-         *      onDismiss?: () => void
-         * }}
-         */
-        this.callbacks = {}
+        this.onConfirm = () => {}
+        this.onDismiss = () => {}
     }
 
     connectedCallback() {
@@ -96,7 +90,7 @@ export class ConfirmDialog {
         messageOut.value = this.message
 
         fragment.querySelector('#cancel').addEventListener('click', () => {
-            invoke(this.callbacks.onDismiss)
+            this.onDismiss()
             $dialog.close(this.view)
         })
 
@@ -105,7 +99,7 @@ export class ConfirmDialog {
 
     /** @private */
     submit() {
-        invoke(this.callbacks.onConfirm)
+        this.onConfirm()
     }
 
     /**
@@ -118,10 +112,8 @@ export class ConfirmDialog {
             let dialog = new ConfirmDialogElement()
             dialog.controller.message = message
             dialog.controller.title = title
-            dialog.controller.callbacks = {
-                onConfirm: resolve,
-                onDismiss: reject,
-            }
+            dialog.controller.onConfirm = resolve
+            dialog.controller.onDismiss = reject
             $dialog.open(dialog)
         })
     }
@@ -154,13 +146,9 @@ export class InputDialog {
         this.defaultValue = 0
         this.integerOnly = false
         this.positiveOnly = false
-        /**
-         * @type {{
-         *      onConfirm?: (value: number) => void
-         *      onDismiss?: () => void
-         * }}
-         */
-        this.callbacks = {}
+        /** @param {number} value */
+        this.onConfirm = value => {}
+        this.onDismiss = () => {}
     }
 
     connectedCallback() {
@@ -178,7 +166,7 @@ export class InputDialog {
         }
 
         fragment.querySelector('#cancel').addEventListener('click', () => {
-            invoke(this.callbacks.onDismiss)
+            this.onDismiss()
             $dialog.close(this.view)
         })
 
@@ -188,9 +176,9 @@ export class InputDialog {
     /** @private */
     submit() {
         if (Number.isNaN(this.input.valueAsNumber)) {
-            invoke(this.callbacks.onDismiss)
+            this.onDismiss()
         } else {
-            invoke(this.callbacks.onConfirm, this.input.valueAsNumber)
+            this.onConfirm(this.input.valueAsNumber)
         }
     }
 
@@ -210,10 +198,8 @@ export class InputDialog {
             dialog.controller.defaultValue = defaultValue
             dialog.controller.integerOnly = integerOnly
             dialog.controller.positiveOnly = positiveOnly
-            dialog.controller.callbacks = {
-                onConfirm: resolve,
-                onDismiss: reject,
-            }
+            dialog.controller.onConfirm = resolve
+            dialog.controller.onDismiss = reject
             $dialog.open(dialog, {dismissable: true})
         })
     }
