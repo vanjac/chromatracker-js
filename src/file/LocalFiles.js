@@ -111,6 +111,9 @@ export async function readFile(db, id) {
  * @returns {Promise<number>} File ID
  */
 export async function updateFile(db, id, name, data) {
+    if (id == null) {
+        id = void{} // Chrome allows undefined but not null!
+    }
     let transaction = db.transaction(['entries', 'data'], 'readwrite')
     let entriesStore = transaction.objectStore('entries')
     let dataStore = transaction.objectStore('data')
