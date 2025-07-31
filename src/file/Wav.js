@@ -134,7 +134,7 @@ export function read(buf) {
         if (numLoops >= 1 && smplChunk.size >= smplChunkBaseSize + smplChunkLoopSize) {
             let loopPos = smplChunk.pos + smplChunkBaseSize
             loopStart = Sample.roundDown(view.getUint32(loopPos + 8, true))
-            loopEnd = Sample.roundDown(view.getUint32(loopPos + 12, true))
+            loopEnd = Sample.roundDown(view.getUint32(loopPos + 12, true) + 1)
         }
     } else {
         // TODO: calculate finetune from sample rate
@@ -249,7 +249,7 @@ function writeSmplChunk(view, sample) {
     if (Sample.hasLoop(sample)) {
         view.setUint32(28, 1, true) // num loops
         view.setUint32(smplChunkBaseSize + 8, sample.loopStart, true)
-        view.setUint32(smplChunkBaseSize + 12, sample.loopEnd, true)
+        view.setUint32(smplChunkBaseSize + 12, sample.loopEnd - 1, true)
     }
 }
 
