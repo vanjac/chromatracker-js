@@ -163,7 +163,8 @@ export function write(module) {
         }
         let sample = module.samples[s]
         $file.writeU8Array(buf, offset, mod.maxSampleNameLength, textEncode.encode(sample.name))
-        view.setUint16(offset + 22, (sample.wave.length / 2) | 0)
+        let sampleLength = Math.min(sample.wave.length, mod.maxSampleLength)
+        view.setUint16(offset + 22, (sampleLength / 2) | 0)
         view.setUint8(offset + 24, sample.finetune & 0xf)
         view.setUint8(offset + 25, sample.volume)
         if (!Sample.hasLoop(sample)) {
@@ -221,9 +222,10 @@ export function write(module) {
     let wavePos = headerSize + patternSize * numPatterns
     for (let sample of module.samples) {
         if (sample) {
-            let waveArr = new Int8Array(buf, wavePos, sample.wave.length & ~1)
-            waveArr.set(sample.wave)
-            wavePos += sample.wave.length & ~1
+            let sampleLength = Math.min(sample.wave.length, mod.maxSampleLength)
+            let waveArr = new Int8Array(buf, wavePos, sampleLength & ~1)
+            waveArr.set(sample.wave.subarray(0, sampleLength))
+            wavePos += sampleLength & ~1
         }
     }
 

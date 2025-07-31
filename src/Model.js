@@ -6,7 +6,7 @@ export const mod = Object.freeze({
     numRows: 64,
     maxVolume: 64,
     maxSampleNameLength: 22,
-    maxSampleLength: 2 ** 17,
+    maxSampleLength: 2 ** 17 - 2,
     defaultTempo: 125,
     defaultSpeed: 6,
     defaultChannels: 4,
