@@ -107,14 +107,14 @@ export class ConfirmDialog {
      * @param {string} title
      * @returns {Promise<void>}
      */
-    static open(message, title = '') {
+    static open(message, title = '', {dismissable = false} = {}) {
         return new Promise((resolve, reject) => {
             let dialog = new ConfirmDialogElement()
             dialog.controller.message = message
             dialog.controller.title = title
             dialog.controller.onConfirm = resolve
             dialog.controller.onDismiss = reject
-            $dialog.open(dialog)
+            $dialog.open(dialog, {dismissable})
         })
     }
 }

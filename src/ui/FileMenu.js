@@ -7,7 +7,7 @@ import * as $local from '../file/LocalFiles.js'
 import * as $mod from '../file/Mod.js'
 import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
-import {AlertDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
+import {AlertDialog, ConfirmDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
 import {type} from '../Util.js'
 import appVersion from '../gen/Version.js'
 
@@ -39,6 +39,17 @@ const template = $dom.html`
         <em>Version:&nbsp;<code id="version"></code></em>
     </div>
     <div id="editorContainer" class="vflex flex-grow hide"></div>
+</div>
+`
+
+const itemTemplate = $dom.html`
+<div class="hflex">
+    <button id="open" class="flex-grow justify-start min-width-0">
+        <span id="name" class="overflow-content"></span>
+    </button>
+    <button id="delete">
+        ${$icons.delete_outline}
+    </button>
 </div>
 `
 
@@ -118,19 +129,41 @@ export class FileMenu {
         let files = await $local.listFiles(this.db)
         this.fileList.textContent = ''
         for (let [id, metadata] of files) {
-            let textContent = metadata.name || '(untitled)'
-            let button = this.fileList.appendChild($dom.createElem('button', {textContent}))
-            button.classList.add('justify-start')
-            button.addEventListener('click', () => this.readLocalFile(id))
+            let itemFrag = itemTemplate.cloneNode(true)
+            let openButton = type(HTMLButtonElement, itemFrag.querySelector('#open'))
+            let nameSpan = itemFrag.querySelector('#name')
+            let deleteButton = type(HTMLButtonElement, itemFrag.querySelector('#delete'))
+            let name = metadata.name || '(untitled)'
+            nameSpan.textContent = name
+            openButton.addEventListener('click', () => this.readLocalFile(id))
+            deleteButton.addEventListener('click', () => this.requestDeleteLocalFile(id, name))
+            this.fileList.appendChild(itemFrag)
         }
     }
 
     /**
+     * @private
      * @param {number} id
      */
     async readLocalFile(id) {
         let data = await $local.readFile(this.db, id)
         this.openModuleFile(id, data)
+    }
+
+    /**
+     * @private
+     * @param {number} id
+     * @param {string} name
+     */
+    async requestDeleteLocalFile(id, name) {
+        try {
+            await ConfirmDialog.open(`Delete ${name}?`, 'Are you sure?', {dismissable: true})
+        } catch (e) {
+            console.warn(e)
+            return
+        }
+        await $local.deleteFile(this.db, id)
+        await this.listLocalFiles()
     }
 
     /** @private */

@@ -15,6 +15,9 @@
 .width0 {
     width: 0
 }
+.min-width-0 {
+    min-width: 0;
+}
 .flex-grow {
     flex: 1 0 0;
 }
@@ -143,6 +146,7 @@ select,
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    white-space: nowrap;
     padding: 5pt 7pt;
     background: var(--color-bg-btn);
     border: 1px solid var(--color-fg);
@@ -155,6 +159,11 @@ select,
 .label-button,
 .tab-group {
     margin: 1.5pt;
+}
+
+.overflow-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .tab-group label {
