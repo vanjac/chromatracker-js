@@ -232,7 +232,9 @@ export class FileMenu {
             this.menu.classList.remove('hide')
             this.editorContainer.classList.add('hide')
             this.fileID = null
-            this.listLocalFiles()
+            if (this.view.isConnected) {
+                this.listLocalFiles()
+            }
         })
     }
 
