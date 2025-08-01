@@ -18,6 +18,7 @@ export default defineConfig([
             "prefer-rest-params": "error",
             "object-shorthand": ["warn", "always", {"avoidExplicitReturnArrows": true}],
             "prefer-destructuring": ["warn", {"object": true}],
+            "prefer-object-spread": "warn",
             "no-lonely-if": "warn",
             "require-await": "warn",
             "class-methods-use-this": "warn",
