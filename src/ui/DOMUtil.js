@@ -17,7 +17,7 @@ export class ViewElement extends HTMLElement { // eslint-disable-line no-restric
     }
 
     connectedCallback() {
-		this.classList.add('custom-element')
+        this.classList.add('custom-element')
         if (this.controller.connectedCallback) {
             this.controller.connectedCallback(this)
         }

@@ -17,7 +17,7 @@ export const emptyArray = Object.freeze([])
 /**
  * @typedef {{
  *      name: string
- *      wave: Readonly<Int8Array> // MOD format requires length to be even
+ *      wave: Readonly<Int8Array<ArrayBuffer>> // MOD format requires length to be even
  *      loopStart: number // MOD format requires loop points to be even
  *      loopEnd: number
  *      finetune: number // -8 to 7
