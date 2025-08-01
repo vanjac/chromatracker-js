@@ -205,14 +205,6 @@ export class ModuleEdit {
             },
         }
         this.patternEdit.controller.setEntryCell(this.getEntryCell())
-
-        // TODO: remove
-        window.onbeforeunload = () => (this.module.isUnsaved() ? 'You have unsaved changes' : null)
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    disconnectedCallback() {
-        window.onbeforeunload = null
     }
 
     getModule() {
@@ -228,12 +220,16 @@ export class ModuleEdit {
         this.refreshModule()
     }
 
-    /** @private */
-    close() {
+    saveIfNeeded() {
         if (this.module.isUnsaved()) {
             invoke(this.callbacks.onSave, this.module.value)
             this.module.saved()
         }
+    }
+
+    /** @private */
+    close() {
+        this.saveIfNeeded()
         this.destroyPlayback()
         this.view.remove()
     }

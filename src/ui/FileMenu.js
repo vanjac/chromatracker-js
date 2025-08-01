@@ -81,6 +81,8 @@ export class FileMenu {
         this.db = type(IDBDatabase, null)
         /** @type {number} */
         this.fileID = null
+        /** @type {InstanceType<typeof ModuleEditElement>} */
+        this.editor = null
     }
 
     connectedCallback() {
@@ -115,9 +117,14 @@ export class FileMenu {
                 })
             }
         })
+
+        this.visibilityChangeListener = this.onVisibilityChange.bind(this)
+        document.addEventListener('visibilitychange', this.visibilityChangeListener)
     }
 
     disconnectedCallback() {
+        document.removeEventListener('visibilitychange', this.visibilityChangeListener)
+        this.autosave()
         if (this.db) {
             this.db.close()
             this.db = null
@@ -222,15 +229,16 @@ export class FileMenu {
         this.editorContainer.classList.remove('hide')
 
         this.fileID = id
-        let editor = new ModuleEditElement()
-        editor.controller.callbacks = {onSave: this.saveModule.bind(this)}
+        this.editor = new ModuleEditElement()
+        this.editor.controller.callbacks = {onSave: this.saveModule.bind(this)}
         this.editorContainer.textContent = ''
-        this.editorContainer.appendChild(editor)
-        editor.controller.setModule(module)
+        this.editorContainer.appendChild(this.editor)
+        this.editor.controller.setModule(module)
 
-        editor.addEventListener('disconnected', () => {
+        this.editor.addEventListener('disconnected', () => {
             this.menu.classList.remove('hide')
             this.editorContainer.classList.add('hide')
+            this.editor = null
             this.fileID = null
             if (this.view.isConnected) {
                 this.listLocalFiles()
@@ -250,6 +258,20 @@ export class FileMenu {
         }).catch(/** @param {Error} e */e => {
             AlertDialog.open(e.message, 'Error saving file!')
         })
+    }
+
+    /** @private */
+    onVisibilityChange() {
+        if (document.visibilityState == 'hidden') {
+            this.autosave()
+        }
+    }
+
+    /** @private */
+    autosave() {
+        if (this.editor) {
+            this.editor.controller.saveIfNeeded()
+        }
     }
 }
 export const FileMenuElement = $dom.defineView('file-menu', FileMenu)
