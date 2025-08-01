@@ -43,6 +43,7 @@ type Serializable =
     | bigint
     | string
     | ArrayBuffer
+    | TypedArray
     | DataView
     | Date
     | Error
@@ -55,7 +56,6 @@ type Serializable =
     | FileList
     | ImageBitmap
     | ImageData
-    | TypedArray
     | SerializableObject
     | SerializableArray
     | SerializableMap
