@@ -14,6 +14,8 @@ export default defineConfig([
             "no-var": "error",
             "curly": "error",
             "no-undefined": "error",
+            "no-sequences": "error",
+            "prefer-rest-params": "error",
             "object-shorthand": ["warn", "always", {"avoidExplicitReturnArrows": true}],
             "prefer-destructuring": ["warn", {"object": true}],
             "no-lonely-if": "warn",
@@ -25,7 +27,10 @@ export default defineConfig([
             }],
             "no-restricted-syntax": [
                 "error",
-                // no function expressions
+                // no strict equality
+                "BinaryExpression[operator='===']",
+                "BinaryExpression[operator='!==']",
+                // no (non-arrow) function expressions
                 ":not(Property):not(MethodDefinition) > FunctionExpression[generator=false]",
                 // no 'this' outside clsss methods
                 "FunctionDeclaration ThisExpression",
@@ -38,6 +43,8 @@ export default defineConfig([
                 "Property[kind='set']",
                 "MethodDefinition[kind='get']",
                 "MethodDefinition[kind='set']",
+                // no 'new.target'
+                "MetaProperty Identifier[name='new']",
             ],
             // Deprecated rules (TODO)
             "semi": ["error", "never", {"beforeStatementContinuationChars": "always"}],
