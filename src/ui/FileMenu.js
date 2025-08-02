@@ -120,10 +120,13 @@ export class FileMenu {
 
         this.visibilityChangeListener = this.onVisibilityChange.bind(this)
         document.addEventListener('visibilitychange', this.visibilityChangeListener)
+        this.beforeUnloadListener = this.autosave.bind(this)
+        window.addEventListener('beforeunload', this.beforeUnloadListener)
     }
 
     disconnectedCallback() {
         document.removeEventListener('visibilitychange', this.visibilityChangeListener)
+        window.removeEventListener('beforeunload', this.beforeUnloadListener)
         this.autosave()
         if (this.db) {
             this.db.close()
