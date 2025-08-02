@@ -53,25 +53,6 @@ const itemTemplate = $dom.html`
 </div>
 `
 
-/**
- * @param {Blob} blob
- * @returns {Promise<ArrayBuffer>}
- */
-function readArrayBuffer(blob) {
-    return new Promise((resolve, reject) => {
-        let reader = new FileReader()
-        reader.onload = () => {
-            if (reader.result instanceof ArrayBuffer) {
-                resolve(reader.result)
-            } else {
-                reject()
-            }
-        }
-        reader.onerror = () => reject()
-        reader.readAsArrayBuffer(blob)
-    })
-}
-
 export class FileMenu {
     /**
      * @param {HTMLElement} view
@@ -180,7 +161,7 @@ export class FileMenu {
     importFile() {
         $ext.pickFiles().then(files => {
             if (files.length == 1) {
-                readArrayBuffer(files[0]).then(buf => this.openModuleFile(null, buf))
+                files[0].arrayBuffer().then(buf => this.openModuleFile(null, buf))
             }
         }).catch(console.warn)
     }
@@ -193,7 +174,7 @@ export class FileMenu {
         let dialog = $dialog.open(new WaitDialogElement())
         window.fetch(url)
             .then(r => r.blob())
-            .then(b => readArrayBuffer(b))
+            .then(b => b.arrayBuffer())
             .then(buf => this.openModuleFile(null, buf))
             .then(() => $dialog.close(dialog))
             .catch(/** @param {Error} error */ error => {

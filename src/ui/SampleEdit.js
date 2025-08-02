@@ -449,18 +449,13 @@ export class SampleEdit {
     readAudioFile(file) {
         let name = file.name.replace(/\.[^/.]+$/, '') // remove extension
         name = name.slice(0, mod.maxSampleNameLength)
-
-        let reader = new FileReader()
-        reader.onload = () => {
-            if (reader.result instanceof ArrayBuffer) {
-                if ($wav.identify(reader.result)) {
-                    this.importWav(reader.result, name)
-                } else {
-                    this.importAudio(reader.result, name)
-                }
+        file.arrayBuffer().then(buf => {
+            if ($wav.identify(buf)) {
+                this.importWav(buf, name)
+            } else {
+                this.importAudio(buf, name)
             }
-        }
-        reader.readAsArrayBuffer(file)
+        })
     }
 
     /**
