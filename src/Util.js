@@ -1,3 +1,5 @@
+export const {freeze} = Object
+
 /**
  * @template T
  * @param {{ new(...args: any): T }} constructor

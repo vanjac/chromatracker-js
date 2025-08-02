@@ -4,7 +4,7 @@ import * as $dom from './DOMUtil.js'
 import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
-import {type, invoke, minMax, callbackDebugObject} from '../Util.js'
+import {type, invoke, minMax, callbackDebugObject, freeze} from '../Util.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -78,7 +78,7 @@ export class PatternTable {
             $cli.addSelProp('channel', 'number', this.selChannel,
                 channel => this.setSelCell(this.selChannel, channel))
             $cli.addSelProp('pattern', Array, this.viewPattern,
-                pattern => invoke(this.callbacks.onChange, Object.freeze(pattern)))
+                pattern => invoke(this.callbacks.onChange, freeze(pattern)))
         })
 
         let resizeObserver = new ResizeObserver(() => this.updateSpaceSize())

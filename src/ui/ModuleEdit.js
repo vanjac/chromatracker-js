@@ -8,7 +8,7 @@ import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
 import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
-import {type, invoke, callbackDebugObject} from '../Util.js'
+import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, Module, CellPart} from '../Model.js'
 import './CellEntry.js'
 import './ModuleProperties.js'
@@ -154,7 +154,7 @@ export class ModuleEdit {
         }, {capture: true})
         this.view.addEventListener('contextmenu', e => {
             $cli.addSelProp('module', 'object', this.module.value,
-                module => this.changeModule(_ => Object.freeze(module)))
+                module => this.changeModule(_ => freeze(module)))
             if (!(e.target instanceof HTMLInputElement || e.target instanceof HTMLOutputElement)) {
                 e.preventDefault()
                 if (e.altKey) {
@@ -339,9 +339,9 @@ export class ModuleEdit {
             // TODO: pitch slides will be inaccurate
             if (tick == 0) {
                 let {tempo, speed} = this.playback
-                let channels = Object.freeze(this.playback.channels.map(
-                    channel => Object.freeze($play.channelState(channel))))
-                this.queuedStates.push(Object.freeze({time, pos, row, tempo, speed, channels}))
+                let channels = freeze(this.playback.channels.map(
+                    channel => freeze($play.channelState(channel))))
+                this.queuedStates.push(freeze({time, pos, row, tempo, speed, channels}))
             }
             this.queuedTime = time
         }

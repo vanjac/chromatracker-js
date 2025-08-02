@@ -1,7 +1,7 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import * as $icons from '../../gen/Icons.js'
-import {type} from '../../Util.js'
+import {freeze, type} from '../../Util.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -35,7 +35,7 @@ const template = $dom.html`
 </dialog>
 `
 
-const inputNames = Object.freeze(['startAmp', 'endAmp', 'dither'])
+const inputNames = freeze(['startAmp', 'endAmp', 'dither'])
 
 export class FadeEffect {
     /**

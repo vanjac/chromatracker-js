@@ -1,6 +1,8 @@
+import {freeze} from './Util.js'
+
 export const defaultSampleRate = 44100
 
-export const mod = Object.freeze({
+export const mod = freeze({
     numSamples: 32, // 0th sample is empty!
     numSongPositions: 128,
     maxPatterns: 128,
@@ -14,7 +16,7 @@ export const mod = Object.freeze({
     defaultChannels: 4,
 })
 
-export const emptyArray = Object.freeze([])
+export const emptyArray = freeze([])
 
 /**
  * @typedef {{
@@ -27,9 +29,9 @@ export const emptyArray = Object.freeze([])
  * }} Sample
  */
 
-export const Sample = Object.freeze({
+export const Sample = freeze({
     /** @type {Readonly<Sample>} */
-    empty: Object.freeze({
+    empty: freeze({
         name: '',
         wave: new Int8Array(),
         loopStart: 0,
@@ -70,9 +72,9 @@ export const Sample = Object.freeze({
  * }} Cell
  */
 
-export const Cell = Object.freeze({
+export const Cell = freeze({
     /** @type {Readonly<Cell>} */
-    empty: Object.freeze({
+    empty: freeze({
         pitch: -1,
         inst: 0,
         effect: 0,
@@ -98,7 +100,7 @@ export const Cell = Object.freeze({
 })
 
 /** @enum {number} */
-export const CellPart = Object.freeze({
+export const CellPart = freeze({
     pitch: 0x1,
     inst: 0x2,
     effect: 0x4,
@@ -109,7 +111,7 @@ export const CellPart = Object.freeze({
 })
 
 /** @enum {number} */
-export const Effect = Object.freeze({
+export const Effect = freeze({
     Arpeggio:       0x0,
     SlideUp:        0x1,
     SlideDown:      0x2,
@@ -129,7 +131,7 @@ export const Effect = Object.freeze({
 })
 
 /** @enum {number} */
-export const ExtEffect = Object.freeze({
+export const ExtEffect = freeze({
     // Filter:      0x0, (not supported in XM)
     FineSlideUp:    0x1,
     FineSlideDown:  0x2,
@@ -152,13 +154,13 @@ export const ExtEffect = Object.freeze({
  * @typedef {Readonly<Cell>[]} PatternChannel
  */
 
-export const PatternChannel = Object.freeze({})
+export const PatternChannel = freeze({})
 
 /**
  * @typedef {Readonly<PatternChannel>[]} Pattern
  */
 
-export const Pattern = Object.freeze({})
+export const Pattern = freeze({})
 
 /**
  * @typedef {{
@@ -171,7 +173,7 @@ export const Pattern = Object.freeze({})
  * }} Module
  */
 
-export const Module = Object.freeze({})
+export const Module = freeze({})
 
 if (import.meta.main) {
     ;/** @satisfies {Serializable} */(/** @type {Module} */(null))

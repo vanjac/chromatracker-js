@@ -1,14 +1,15 @@
 import * as $pattern from './Pattern.js'
 import {immSplice} from './EditUtil.js'
 import {Cell, mod, Module} from '../Model.js'
+import {freeze} from '../Util.js'
 
 /** @type {Readonly<Module>} */
-export const defaultNew = Object.freeze({
+export const defaultNew = freeze({
     name: '',
     numChannels: mod.defaultChannels,
-    patterns: Object.freeze([$pattern.create(mod.defaultChannels)]),
-    sequence: Object.freeze([0]),
-    samples: Object.freeze([null]),
+    patterns: freeze([$pattern.create(mod.defaultChannels)]),
+    sequence: freeze([0]),
+    samples: freeze([null]),
     restartPos: 0,
 })
 
@@ -21,7 +22,7 @@ export function createNew() {
     let month = (date.getMonth() + 1).toString().padStart(2, '0')
     let day = date.getDate().toString().padStart(2, '0')
     let name = `untitled ${year}-${month}-${day}`
-    return Object.freeze({...defaultNew, name})
+    return freeze({...defaultNew, name})
 }
 
 /**
@@ -30,7 +31,7 @@ export function createNew() {
  * @returns {Readonly<Module>}
  */
 export function setName(module, name) {
-    return Object.freeze({...module, name})
+    return freeze({...module, name})
 }
 
 /**
@@ -43,10 +44,10 @@ export function addChannels(module, count) {
     if (numChannels > mod.maxChannels) { return module }
     let patterns = module.patterns.map(pattern => {
         let numRows = pattern[0].length
-        let newChannels = Array(count).fill(Object.freeze(Array(numRows).fill(Cell.empty)))
-        return Object.freeze(pattern.concat(newChannels))
+        let newChannels = Array(count).fill(freeze(Array(numRows).fill(Cell.empty)))
+        return freeze(pattern.concat(newChannels))
     })
-    return Object.freeze({...module, numChannels, patterns})
+    return freeze({...module, numChannels, patterns})
 }
 
 /**
@@ -59,5 +60,5 @@ export function delChannels(module, index, count) {
     let numChannels = module.numChannels - count
     if (numChannels <= 0) { return module }
     let patterns = module.patterns.map(pattern => immSplice(pattern, index, count))
-    return Object.freeze({...module, numChannels, patterns})
+    return freeze({...module, numChannels, patterns})
 }

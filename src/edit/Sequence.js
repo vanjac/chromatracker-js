@@ -1,15 +1,16 @@
 import * as $pattern from './Pattern.js'
 import {immSplice} from './EditUtil.js'
 import {Module} from '../Model.js'
+import {freeze} from '../Util.js'
 
 /**
  * @param {Readonly<Module>} module
  * @returns {Readonly<Module>}
  */
 export function zap(module) {
-    let sequence = Object.freeze([0])
-    let patterns = Object.freeze([$pattern.create(module.numChannels)])
-    return Object.freeze({...module, sequence, patterns})
+    let sequence = freeze([0])
+    let patterns = freeze([$pattern.create(module.numChannels)])
+    return freeze({...module, sequence, patterns})
 }
 
 /**
@@ -24,7 +25,7 @@ export function set(module, pos, pat) {
     }
     let sequence = immSplice(module.sequence, pos, 1, pat)
     let patterns = $pattern.createMissing(module, pat)
-    return Object.freeze({...module, sequence, patterns})
+    return freeze({...module, sequence, patterns})
 }
 
 /**
@@ -39,7 +40,7 @@ export function insert(module, pos, pat) {
     }
     let sequence = immSplice(module.sequence, pos, 0, pat)
     let patterns = $pattern.createMissing(module, pat)
-    return Object.freeze({...module, sequence, patterns})
+    return freeze({...module, sequence, patterns})
 }
 
 /**
@@ -48,5 +49,5 @@ export function insert(module, pos, pat) {
  * @returns {Readonly<Module>}
  */
 export function del(module, pos) {
-    return Object.freeze({...module, sequence: immSplice(module.sequence, pos, 1)})
+    return freeze({...module, sequence: immSplice(module.sequence, pos, 1)})
 }

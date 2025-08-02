@@ -2,7 +2,7 @@ import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
-import {type, invoke, callbackDebugObject} from '../Util.js'
+import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, CellPart, Sample, Effect, ExtEffect} from '../Model.js'
 import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
@@ -59,28 +59,28 @@ const template = $dom.html`
 </div>
 `
 
-const effectNames = Object.freeze([
+const effectNames = freeze([
     'Arpeggio', 'Slide Up', 'Slide Down', 'Portamento',
     'Vibrato', 'Portamento + Vol Slide', 'Vibrato + Vol Slide', 'Tremolo',
     'Set Panning', 'Sample Offset', 'Volume Slide', 'Position Jump',
     'Set Volume', 'Pattern Break', 'Extended...', 'Speed / Tempo',
 ])
 
-const effectShortNames = Object.freeze([
+const effectShortNames = freeze([
     'Arpeggio', 'Slide Up', 'Slide Down', 'Portamento',
     'Vibrato', 'Port + Vol', 'Vibrato + Vol', 'Tremolo',
     'Set Panning', 'Offset', 'Volume Slide', 'Pos. Jump',
     'Set Volume', 'Pat. Break', 'Extended...', 'Tempo',
 ])
 
-const extEffectNames = Object.freeze([
+const extEffectNames = freeze([
     '', 'Fine Slide Up', 'Fine Slide Down', '',
     'Vibrato Waveform', 'Set Finetune', 'Pattern Loop', 'Tremolo Waveform',
     '', 'Retrigger', 'Fine Volume Up', 'Fine Volume Down',
     'Note Cut', 'Note Delay', 'Pattern Delay', '',
 ])
 
-const extEffectShortNames = Object.freeze([
+const extEffectShortNames = freeze([
     '', 'Slide Up', 'Slide Down', '',
     'Vib. Wave', 'Set Finetune', 'Pat. Loop', 'Trem. Wave',
     '', 'Retrigger', 'Volume Up', 'Volume Down',
@@ -392,7 +392,7 @@ export class CellEntry {
 
         let title = ''
         let value = 0
-        let desc = Object.freeze(Array(16).fill(''))
+        let desc = freeze(Array(16).fill(''))
         switch (this.editDigit) {
         case 0:
             title = 'Effect'
@@ -459,6 +459,6 @@ if (import.meta.main) {
         },
     })
     $dom.displayMain(testElem)
-    testElem.controller.setSamples(Object.freeze([null, ...Array(30).fill(Sample.empty)]))
+    testElem.controller.setSamples(freeze([null, ...Array(30).fill(Sample.empty)]))
     testElem.controller.onVisible()
 }

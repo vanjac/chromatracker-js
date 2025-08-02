@@ -1,15 +1,16 @@
 import {changeItem} from './EditUtil.js'
 import {Cell, CellPart, mod, Module, Pattern, PatternChannel} from '../Model.js'
+import {freeze} from '../Util.js'
 
 /** @type {Readonly<PatternChannel>} */
-const defaultNewChannel = Object.freeze(Array(mod.numRows).fill(Cell.empty))
+const defaultNewChannel = freeze(Array(mod.numRows).fill(Cell.empty))
 
 /**
  * @param {number} numChannels
  * @returns {Readonly<Pattern>}
  */
 export function create(numChannels) {
-    return Object.freeze(Array(numChannels).fill(defaultNewChannel))
+    return freeze(Array(numChannels).fill(defaultNewChannel))
 }
 
 /**
@@ -26,7 +27,7 @@ export function createMissing(module, idx) {
         console.debug('Make new pattern')
         newPatterns.push(create(module.numChannels))
     }
-    return Object.freeze(newPatterns)
+    return freeze(newPatterns)
 }
 
 /**
@@ -37,7 +38,7 @@ export function createMissing(module, idx) {
  */
 export function change(module, p, callback) {
     let patterns = changeItem(module.patterns, p, callback)
-    return Object.freeze({...module, patterns})
+    return freeze({...module, patterns})
 }
 
 /**
@@ -46,8 +47,8 @@ export function change(module, p, callback) {
  * @returns {Readonly<Module>}
  */
 export function clone(module, pat) {
-    let patterns = Object.freeze([...module.patterns, module.patterns[pat]])
-    return Object.freeze({...module, patterns})
+    let patterns = freeze([...module.patterns, module.patterns[pat]])
+    return freeze({...module, patterns})
 }
 
 /**
@@ -73,8 +74,8 @@ function cellApply(dest, src, parts) {
  * @param {number} rEnd
  */
 export function slice(pattern, cStart, cEnd, rStart, rEnd) {
-    return Object.freeze(pattern.slice(cStart, cEnd).map(
-        channel => Object.freeze(channel.slice(rStart, rEnd))))
+    return freeze(pattern.slice(cStart, cEnd).map(
+        channel => freeze(channel.slice(rStart, rEnd))))
 }
 
 /**
@@ -87,7 +88,7 @@ export function slice(pattern, cStart, cEnd, rStart, rEnd) {
 export function putCell(pattern, c, r, cell, parts) {
     return changeItem(pattern, c, channel =>
         changeItem(channel, r, dest =>
-            Object.freeze(cellApply(dest, cell, parts))))
+            freeze(cellApply(dest, cell, parts))))
 }
 
 /**
@@ -105,11 +106,11 @@ export function write(dest, cStart, rStart, src, parts) {
         let mutChan = [...mutPat[c + cStart]]
         let rSize = Math.min(srcChan.length, mutChan.length - rStart)
         for (let r = 0; r < rSize; r++) {
-            mutChan[r + rStart] = Object.freeze(cellApply(mutChan[r + rStart], srcChan[r], parts))
+            mutChan[r + rStart] = freeze(cellApply(mutChan[r + rStart], srcChan[r], parts))
         }
-        mutPat[c + cStart] = Object.freeze(mutChan)
+        mutPat[c + cStart] = freeze(mutChan)
     }
-    return Object.freeze(mutPat)
+    return freeze(mutPat)
 }
 
 /**
@@ -126,11 +127,11 @@ export function fill(pattern, cStart, cEnd, rStart, rEnd, cell, parts) {
     for (let c = cStart; c < cEnd; c++) {
         let mutChan = [...mutPat[c]]
         for (let r = rStart; r < rEnd; r++) {
-            mutChan[r] = Object.freeze(cellApply(mutChan[r], cell, parts))
+            mutChan[r] = freeze(cellApply(mutChan[r], cell, parts))
         }
-        mutPat[c] = Object.freeze(mutChan)
+        mutPat[c] = freeze(mutChan)
     }
-    return Object.freeze(mutPat)
+    return freeze(mutPat)
 }
 
 /**
@@ -144,7 +145,7 @@ export function channelInsert(pattern, c, r, count) {
         let newChannel = [...channel]
         newChannel.copyWithin(r + count, r, channel.length - count + 1)
         newChannel.fill(Cell.empty, r, r + count)
-        return Object.freeze(newChannel)
+        return freeze(newChannel)
     })
 }
 
@@ -159,6 +160,6 @@ export function channelDelete(pattern, c, r, count) {
         let newChannel = [...channel]
         newChannel.copyWithin(r, r + count, channel.length)
         newChannel.fill(Cell.empty, channel.length - count, channel.length)
-        return Object.freeze(newChannel)
+        return freeze(newChannel)
     })
 }

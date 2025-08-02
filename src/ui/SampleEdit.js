@@ -14,7 +14,7 @@ import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
-import {type, invoke, clamp, minMax, callbackDebugObject} from '../Util.js'
+import {type, invoke, clamp, minMax, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, Effect, mod, Sample, CellPart} from '../Model.js'
 import global from './GlobalState.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
@@ -272,7 +272,7 @@ export class SampleEdit {
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('sample', 'object', this.viewSample,
-                sample => invoke(this.callbacks.onChange, Object.freeze(sample), true))
+                sample => invoke(this.callbacks.onChange, freeze(sample), true))
         })
 
         this.view.appendChild(fragment)
@@ -435,7 +435,7 @@ export class SampleEdit {
     changeSample(mutator, commit, dirty = false) {
         let newSample = {...this.viewSample}
         mutator(newSample)
-        let immSample = Object.freeze(newSample)
+        let immSample = freeze(newSample)
         if (!dirty) {
             this.viewSample = immSample // avoid unnecessary refresh
         }
@@ -700,7 +700,7 @@ export class SampleEdit {
             for (let i = 1; i < count; i++) {
                 newSample = $sample.splice(newSample, loopStart, loopStart, loopWave)
             }
-            newSample = Object.freeze({...newSample, loopStart})
+            newSample = freeze({...newSample, loopStart})
             invoke(this.callbacks.onChange, newSample, true)
             global.lastLoopRepeat = count
         }).catch(console.warn)

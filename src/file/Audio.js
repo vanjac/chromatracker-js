@@ -1,5 +1,6 @@
 import * as $wave from '../edit/Wave.js'
 import {mod, Sample} from '../Model.js'
+import {freeze} from '../Util.js'
 
 /**
  * @param {ArrayBuffer} buf
@@ -32,8 +33,7 @@ export function read(buf, {sampleRate, channel, dithering, normalize}) {
                 // add extra sample to make length even
                 wave[wave.length - 1] = wave[wave.length - 2]
             }
-            resolve(Object.freeze(
-                {...Sample.empty, wave, volume: Math.round(mod.maxVolume * maxAmp)}))
+            resolve(freeze({...Sample.empty, wave, volume: Math.round(mod.maxVolume * maxAmp)}))
         }, reject)
     })
 }

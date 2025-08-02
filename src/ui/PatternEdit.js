@@ -5,7 +5,7 @@ import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
 import {makeKeyButton} from './KeyPad.js'
-import {type, invoke, callbackDebugObject} from '../Util.js'
+import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, CellPart, mod, Module, Pattern, Sample, Effect} from '../Model.js'
 import global from './GlobalState.js'
 import './PatternTable.js'
@@ -438,8 +438,8 @@ export const PatternEditElement = $dom.defineView('pattern-edit', PatternEdit)
 /** @type {InstanceType<typeof PatternEditElement>} */
 let testElem
 if (import.meta.main) {
-    let samples = Object.freeze([null, ...Array(30).fill(Sample.empty)])
-    let module = Object.freeze({...$module.defaultNew, samples})
+    let samples = freeze([null, ...Array(30).fill(Sample.empty)])
+    let module = freeze({...$module.defaultNew, samples})
     testElem = new PatternEditElement()
     testElem.controller.callbacks = callbackDebugObject({
         changeModule(callback, commit) {

@@ -1,6 +1,6 @@
 import * as $wave from '../edit/Wave.js'
 import {immSplice} from './EditUtil.js'
-import {clamp} from '../Util.js'
+import {clamp, freeze} from '../Util.js'
 import {defaultSampleRate, mod, Module, Sample} from '../Model.js'
 
 /**
@@ -13,9 +13,9 @@ export function create(module) {
     if (emptyIndex >= mod.numSamples) {
         return [module, -1]
     }
-    let sample = Object.freeze({...Sample.empty, name: 'untitled'})
+    let sample = freeze({...Sample.empty, name: 'untitled'})
     let samples = immSplice(module.samples, emptyIndex, 1, sample)
-    return [Object.freeze({...module, samples}), emptyIndex]
+    return [freeze({...module, samples}), emptyIndex]
 }
 
 /**
@@ -25,7 +25,7 @@ export function create(module) {
  * @returns {Readonly<Module>}
  */
 export function update(module, idx, sample) {
-    return Object.freeze({...module, samples: immSplice(module.samples, idx, 1, sample)})
+    return freeze({...module, samples: immSplice(module.samples, idx, 1, sample)})
 }
 
 /**
@@ -40,7 +40,7 @@ export function trim(sample, start, end) {
     let transform = pos => clamp(pos - start, 0, wave.length)
     let loopStart = transform(sample.loopStart)
     let loopEnd = transform(sample.loopEnd)
-    return Object.freeze({...sample, wave, loopStart, loopEnd})
+    return freeze({...sample, wave, loopStart, loopEnd})
 }
 
 /**
@@ -61,7 +61,7 @@ export function del(sample, start, end) {
     }
     let loopStart = transform(sample.loopStart)
     let loopEnd = transform(sample.loopEnd)
-    return Object.freeze({...sample, wave, loopStart, loopEnd})
+    return freeze({...sample, wave, loopStart, loopEnd})
 }
 
 /**
@@ -84,7 +84,7 @@ export function splice(sample, start, end, insert) {
 export function applyEffect(sample, start, end, effect) {
     let wave = sample.wave.slice()
     effect(sample.wave.subarray(start, end), wave.subarray(start, end))
-    return Object.freeze({...sample, wave})
+    return freeze({...sample, wave})
 }
 
 /**
@@ -110,7 +110,7 @@ export function spliceEffect(sample, start, end, length, effect) {
     }
     let loopStart = transform(sample.loopStart)
     let loopEnd = transform(sample.loopEnd)
-    return Object.freeze({...sample, wave, loopStart, loopEnd})
+    return freeze({...sample, wave, loopStart, loopEnd})
 }
 
 /**
@@ -148,7 +148,7 @@ export function applyNode(sample, start, end, dithering, createNode) {
             for (let i = 0; i < renderData.length; i++) {
                 ;[wave[start + i], error] = ditherFn(renderData[i] * 128.0, error)
             }
-            resolve(Object.freeze({...sample, wave}))
+            resolve(freeze({...sample, wave}))
         }
         context.startRendering()
     })

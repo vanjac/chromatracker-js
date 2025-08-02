@@ -1,6 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {type} from '../../Util.js'
+import {freeze, type} from '../../Util.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -21,7 +21,7 @@ const template = $dom.html`
 </dialog>
 `
 
-const inputNames = Object.freeze(['amp', 'dither'])
+const inputNames = freeze(['amp', 'dither'])
 
 export class AmplifyEffect {
     /**

@@ -8,7 +8,7 @@ import * as $mod from '../file/Mod.js'
 import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
 import {AlertDialog, ConfirmDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
-import {type} from '../Util.js'
+import {freeze, type} from '../Util.js'
 import appVersion from '../gen/Version.js'
 
 const template = $dom.html`
@@ -210,7 +210,7 @@ export class FileMenu {
     openModuleFile(id, buf) {
         let module
         try {
-            module = Object.freeze($mod.read(buf))
+            module = freeze($mod.read(buf))
         } catch (error) {
             if (error instanceof Error) {
                 AlertDialog.open(error.message)

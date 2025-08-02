@@ -1,3 +1,5 @@
+import {freeze} from '../Util.js'
+
 /**
  * @template T
  * @param {readonly T[]} array
@@ -8,7 +10,7 @@
 export function immSplice(array, start, deleteCount, ...items) {
     let mutArr = [...array]
     mutArr.splice(start, deleteCount, ...items)
-    return Object.freeze(mutArr)
+    return freeze(mutArr)
 }
 
 /**

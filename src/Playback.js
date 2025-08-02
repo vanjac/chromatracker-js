@@ -4,7 +4,7 @@
 // https://github.com/libxmp/libxmp/blob/master/docs/tracker_notes.txt
 // https://padenot.github.io/web-audio-perf/
 
-import {type, clamp} from './Util.js'
+import {type, clamp, freeze} from './Util.js'
 import {Cell, Effect, emptyArray, ExtEffect, mod, Module, Sample} from './Model.js'
 import periodTable from './PeriodTable.js'
 
@@ -52,7 +52,7 @@ function playback() {
 
 function samplePlayback() {
     return {
-        wave: Object.freeze(new Int8Array()),
+        wave: freeze(new Int8Array()),
         buffer: type(AudioBuffer, null), // null = empty wave
     }
 }

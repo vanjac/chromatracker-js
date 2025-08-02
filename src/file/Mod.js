@@ -4,6 +4,7 @@
 import * as $file from './FileUtil.js'
 import periodTable from '../PeriodTable.js'
 import {Cell, mod, Module, Pattern, PatternChannel, Sample} from '../Model.js'
+import {freeze} from '../Util.js'
 
 export const headerSize = 1084
 const trackerInfoSize = 32 // nonstandard!
@@ -45,7 +46,7 @@ export function read(buf) {
     let seq = Array.from(new Uint8Array(buf, 952, mod.numSongPositions))
     let numPatterns = Math.max(...seq) + 1
     if (numPatterns > mod.maxPatterns) {throw Error(genericError)}
-    let sequence = Object.freeze(seq.slice(0, songLen))
+    let sequence = freeze(seq.slice(0, songLen))
 
     /** @type {number} */
     let numChannels = mod.defaultChannels
@@ -87,11 +88,11 @@ export function read(buf) {
                 let param0 = param >> 4
                 let param1 = param & 0xf
 
-                chan.push(Object.freeze({pitch, inst, effect, param0, param1}))
+                chan.push(freeze({pitch, inst, effect, param0, param1}))
             }
-            pat.push(Object.freeze(chan))
+            pat.push(freeze(chan))
         }
-        patterns.push(Object.freeze(pat))
+        patterns.push(freeze(pat))
     }
 
     /** @type {Readonly<Sample>[]} */
@@ -130,7 +131,7 @@ export function read(buf) {
         let wave = new Int8Array(buf, wavePos, sampleLength).slice()
         wavePos += sampleLength
 
-        samples.push(Object.freeze({name, wave, loopStart, loopEnd, finetune, volume}))
+        samples.push(freeze({name, wave, loopStart, loopEnd, finetune, volume}))
     }
 
     return {
@@ -138,8 +139,8 @@ export function read(buf) {
         numChannels,
         sequence,
         restartPos,
-        patterns: Object.freeze(patterns),
-        samples: Object.freeze(samples),
+        patterns: freeze(patterns),
+        samples: freeze(samples),
     }
 }
 
