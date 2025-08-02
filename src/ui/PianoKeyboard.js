@@ -3,7 +3,7 @@ import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad} from './KeyPad.js'
-import {type, invoke} from '../Util.js'
+import {type, invoke, callbackDebugObject} from '../Util.js'
 import periodTable from '../PeriodTable.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
@@ -115,17 +115,7 @@ export const PianoKeyboardElement = $dom.defineView('piano-keyboard', PianoKeybo
 let testElem
 if (import.meta.main) {
     testElem = new PianoKeyboardElement()
-    testElem.controller.callbacks = {
-        pitchChanged() {
-            console.log("Pitch changed")
-        },
-        jamPlay(id, cell) {
-            console.log('Jam play', id, cell)
-        },
-        jamRelease(id) {
-            console.log('Jam release', id)
-        },
-    }
+    testElem.controller.callbacks = callbackDebugObject()
     $dom.displayMain(testElem)
     testElem.controller.scrollToSelPitch()
 }

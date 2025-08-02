@@ -1,6 +1,6 @@
 import * as $dom from './DOMUtil.js'
 import * as $icons from '../gen/Icons.js'
-import {type, invoke} from '../Util.js'
+import {type, invoke, callbackDebugObject} from '../Util.js'
 
 const template = $dom.html`
 <div class="hflex">
@@ -128,13 +128,7 @@ export const PlaybackControlsElement = $dom.defineView('playback-controls', Play
 let testElem
 if (import.meta.main) {
     testElem = new PlaybackControlsElement()
-    testElem.controller.callbacks = {
-        close() {
-            console.log('Close')
-        },
-        resetPlayback(options) {
-            console.log('Reset playback', options)
-        },
+    testElem.controller.callbacks = callbackDebugObject({
         play() {
             console.log('Play')
             testElem.controller.setPlayState(true)
@@ -147,12 +141,6 @@ if (import.meta.main) {
             console.log('Destroy playback')
             testElem.controller.setPlayState(false)
         },
-        updatePlaySettings() {
-            console.log('Update play settings')
-        },
-        undo() {
-            console.log('Undo')
-        },
-    }
+    })
     $dom.displayMain(testElem)
 }

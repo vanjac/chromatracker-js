@@ -1,6 +1,7 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {type, defaultSampleRate} from '../../Util.js'
+import {type} from '../../Util.js'
+import {defaultSampleRate} from '../../Model.js'
 import global from '../GlobalState.js'
 
 const minGraphFreq = 20

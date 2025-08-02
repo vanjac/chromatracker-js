@@ -2,7 +2,7 @@ import * as $dom from './DOMUtil.js'
 import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
-import {type, invoke} from '../Util.js'
+import {type, invoke, callbackDebugObject} from '../Util.js'
 import {Cell, CellPart, Sample, Effect, ExtEffect} from '../Model.js'
 import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
@@ -453,20 +453,11 @@ export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)
 let testElem
 if (import.meta.main) {
     testElem = new CellEntryElement()
-    testElem.controller.callbacks = {
+    testElem.controller.callbacks = callbackDebugObject({
         updateCell() {
             console.log('Update cell', testElem.controller.getCell())
         },
-        setPartTogglesVisible(visible) {
-            console.log('Part toggles visible', visible)
-        },
-        jamPlay(id, cell) {
-            console.log('Jam play', id, cell)
-        },
-        jamRelease(id) {
-            console.log('Jam release', id)
-        },
-    }
+    })
     $dom.displayMain(testElem)
     testElem.controller.setSamples(Object.freeze([null, ...Array(30).fill(Sample.empty)]))
     testElem.controller.onVisible()

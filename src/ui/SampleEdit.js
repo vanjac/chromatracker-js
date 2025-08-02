@@ -14,7 +14,7 @@ import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
-import {type, invoke, clamp, minMax} from '../Util.js'
+import {type, invoke, clamp, minMax, callbackDebugObject} from '../Util.js'
 import {Cell, Effect, mod, Sample, CellPart} from '../Model.js'
 import global from './GlobalState.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
@@ -790,21 +790,12 @@ export const SampleEditElement = $dom.defineView('sample-edit', SampleEdit)
 let testElem
 if (import.meta.main) {
     testElem = new SampleEditElement()
-    testElem.controller.callbacks = {
-        jamPlay(id, cell) {
-            console.log('Jam play', id, cell)
-        },
-        jamRelease(id) {
-            console.log('Jam release', id)
-        },
+    testElem.controller.callbacks = callbackDebugObject({
         onChange(sample, commit) {
             console.log('Change', commit)
             testElem.controller.setSample(sample)
         },
-        setEntryCell(cell, parts) {
-            console.log('Set cell', parts, cell)
-        },
-    }
+    })
     $dom.displayMain(testElem)
     testElem.controller.setSample(Sample.empty)
 }

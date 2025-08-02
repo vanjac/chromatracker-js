@@ -1,5 +1,3 @@
-export const defaultSampleRate = 44100
-
 /**
  * @template T
  * @param {{ new(...args: any): T }} constructor
@@ -7,6 +5,18 @@ export const defaultSampleRate = 44100
  */
 export function type(constructor, value) {
     return value
+}
+
+/**
+ * @param {Record<string | symbol, (...args: any[]) => void>} callbacks
+ */
+export function callbackDebugObject(callbacks = {}) {
+    return new Proxy(callbacks, {
+        get(target, prop) {
+            return prop in callbacks ? callbacks[prop]
+                : console.log.bind(console, String(prop) + ':')
+        }
+    })
 }
 
 /**

@@ -3,7 +3,7 @@ import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
-import {type, invoke} from '../Util.js'
+import {type, invoke, callbackDebugObject} from '../Util.js'
 import {mod, Module} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
@@ -147,13 +147,13 @@ let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new ModulePropertiesElement()
-    testElem.controller.callbacks = {
+    testElem.controller.callbacks = callbackDebugObject({
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
             testElem.controller.setModule(module)
         },
-    }
+    })
     $dom.displayMain(testElem)
     testElem.controller.setModule(module)
 }

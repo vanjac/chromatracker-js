@@ -5,7 +5,7 @@ import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $icons from '../gen/Icons.js'
-import {type, invoke} from '../Util.js'
+import {type, invoke, callbackDebugObject} from '../Util.js'
 import {mod, Pattern} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
@@ -222,17 +222,14 @@ let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new SequenceEditElement()
-    testElem.controller.callbacks = {
+    testElem.controller.callbacks = callbackDebugObject({
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
             testElem.controller.setSequence(module.sequence)
             testElem.controller.setPatterns(module.patterns)
         },
-        onSelect() {
-            console.log('Select')
-        }
-    }
+    })
     $dom.displayMain(testElem)
     testElem.controller.setSequence(module.sequence)
     testElem.controller.setPatterns(module.patterns)

@@ -8,7 +8,7 @@ import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
 import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
-import {type, invoke} from '../Util.js'
+import {type, invoke, callbackDebugObject} from '../Util.js'
 import {Cell, Module, CellPart} from '../Model.js'
 import './CellEntry.js'
 import './ModuleProperties.js'
@@ -506,6 +506,7 @@ export const ModuleEditElement = $dom.defineView('module-edit', ModuleEdit)
 let testElem
 if (import.meta.main) {
     testElem = new ModuleEditElement()
+    testElem.controller.callbacks = callbackDebugObject()
     $dom.displayMain(testElem)
     testElem.controller.setModule($module.createNew())
 }

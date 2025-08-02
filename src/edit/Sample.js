@@ -1,7 +1,7 @@
 import * as $wave from '../edit/Wave.js'
 import {immSplice} from './EditUtil.js'
-import {clamp, defaultSampleRate} from '../Util.js'
-import {mod, Module, Sample} from '../Model.js'
+import {clamp} from '../Util.js'
+import {defaultSampleRate, mod, Module, Sample} from '../Model.js'
 
 /**
  * @param {Readonly<Module>} module

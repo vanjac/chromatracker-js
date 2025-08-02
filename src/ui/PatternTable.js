@@ -4,7 +4,7 @@ import * as $dom from './DOMUtil.js'
 import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
-import {type, invoke, minMax} from '../Util.js'
+import {type, invoke, minMax, callbackDebugObject} from '../Util.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -326,20 +326,7 @@ export const PatternTableElement = $dom.defineView('pattern-table', PatternTable
 let testElem
 if (import.meta.main) {
     testElem = new PatternTableElement()
-    testElem.controller.callbacks = {
-        setMute(c, mute) {
-            console.log('Set mute', c, mute)
-        },
-        onChange(_pattern) {
-            console.log('Change pattern')
-        },
-        jamPlay(id, cell) {
-            console.log('Jam play', id, cell)
-        },
-        jamRelease(id) {
-            console.log('Jam release', id)
-        },
-    }
+    testElem.controller.callbacks = callbackDebugObject()
     $dom.displayMain(testElem)
     testElem.controller.setNumChannels(4)
     testElem.controller.setPattern($pattern.create(4))

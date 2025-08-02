@@ -1,3 +1,5 @@
+export const defaultSampleRate = 44100
+
 export const mod = Object.freeze({
     numSamples: 32, // 0th sample is empty!
     numSongPositions: 128,

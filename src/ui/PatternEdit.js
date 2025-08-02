@@ -5,7 +5,7 @@ import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
 import {makeKeyButton} from './KeyPad.js'
-import {type, invoke} from '../Util.js'
+import {type, invoke, callbackDebugObject} from '../Util.js'
 import {Cell, CellPart, mod, Module, Pattern, Sample, Effect} from '../Model.js'
 import global from './GlobalState.js'
 import './PatternTable.js'
@@ -441,25 +441,13 @@ if (import.meta.main) {
     let samples = Object.freeze([null, ...Array(30).fill(Sample.empty)])
     let module = Object.freeze({...$module.defaultNew, samples})
     testElem = new PatternEditElement()
-    testElem.controller.callbacks = {
+    testElem.controller.callbacks = callbackDebugObject({
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
             testElem.controller.setModule(module)
         },
-        jamPlay(id, cell) {
-            console.log('Jam play', id, cell)
-        },
-        jamRelease(id) {
-            console.log('Jam release', id)
-        },
-        setMute(c, mute) {
-            console.log('Set mute', c, mute)
-        },
-        setEntryCell(cell, parts) {
-            console.log('Set cell', parts, cell)
-        },
-    }
+    })
     $dom.displayMain(testElem)
     testElem.controller.setModule(module)
 }
