@@ -130,9 +130,8 @@ export function createElem(tagName, properties = {}) {
  * @param {Element} elem
  */
 export function displayMain(elem) {
-    let base = document.querySelector('.base')
-    base.textContent = ''
-    base.append(elem)
+    document.body.textContent = ''
+    document.body.append(elem)
 }
 
 /**

@@ -3,14 +3,16 @@ import * as $dom from '../DOMUtil.js'
 import {type} from '../../Util.js'
 
 const alertDialogTemplate = $dom.html`
-<form class="vflex dialog message-dialog">
-    <h3 id="title"></h3>
-    <output id="message" class="message-out selectable"></output>
-    <div class="hflex">
-        <div class="flex-grow"></div>
-        <button class="show-checked">OK</button>
-    </div>
-</form>
+<dialog class="message-dialog">
+    <form class="vflex">
+        <h3 id="title"></h3>
+        <output id="message" class="message-out selectable"></output>
+        <div class="hflex">
+            <div class="flex-grow"></div>
+            <button formmethod="dialog" class="show-checked">OK</button>
+        </div>
+    </form>
+</dialog>
 `
 
 export class AlertDialog {
@@ -27,17 +29,13 @@ export class AlertDialog {
     connectedCallback() {
         let fragment = alertDialogTemplate.cloneNode(true)
 
-        $dialog.addFormListener(this.view, fragment.querySelector('form'), this.submit.bind(this))
+        fragment.querySelector('form').addEventListener('submit', () => this.onDismiss())
+        fragment.querySelector('dialog').addEventListener('cancel', () => this.onDismiss())
         fragment.querySelector('#title').textContent = this.title
         let messageOut = type(HTMLOutputElement, fragment.querySelector('#message'))
         messageOut.value = this.message
 
         this.view.appendChild(fragment)
-    }
-
-    /** @private */
-    submit() {
-        this.onDismiss()
     }
 
     /**
@@ -58,15 +56,17 @@ export class AlertDialog {
 export const AlertDialogElement = $dom.defineView('alert-dialog', AlertDialog)
 
 const confirmDialogTemplate = $dom.html`
-<form class="vflex dialog message-dialog">
-    <h3 id="title"></h3>
-    <output id="message" class="message-out selectable"></output>
-    <div class="hflex">
-        <div class="flex-grow"></div>
-        <button class="show-checked">OK</button>
-        <button id="cancel" type="button">Cancel</button>
-    </div>
-</form>
+<dialog class="message-dialog">
+    <form class="vflex">
+        <h3 id="title"></h3>
+        <output id="message" class="message-out selectable"></output>
+        <div class="hflex">
+            <div class="flex-grow"></div>
+            <button formmethod="dialog" class="show-checked">OK</button>
+            <button id="cancel" type="button">Cancel</button>
+        </div>
+    </form>
+</dialog>
 `
 
 export class ConfirmDialog {
@@ -84,22 +84,16 @@ export class ConfirmDialog {
     connectedCallback() {
         let fragment = confirmDialogTemplate.cloneNode(true)
 
-        $dialog.addFormListener(this.view, fragment.querySelector('form'), this.submit.bind(this))
+        fragment.querySelector('form').addEventListener('submit', () => this.onConfirm())
+        fragment.querySelector('dialog').addEventListener('cancel', () => this.onDismiss())
+
         fragment.querySelector('#title').textContent = this.title
         let messageOut = type(HTMLOutputElement, fragment.querySelector('#message'))
         messageOut.value = this.message
 
-        fragment.querySelector('#cancel').addEventListener('click', () => {
-            this.onDismiss()
-            $dialog.close(this.view)
-        })
+        fragment.querySelector('#cancel').addEventListener('click', () => $dialog.cancel(this.view))
 
         this.view.appendChild(fragment)
-    }
-
-    /** @private */
-    submit() {
-        this.onConfirm()
     }
 
     /**
@@ -121,18 +115,20 @@ export class ConfirmDialog {
 export const ConfirmDialogElement = $dom.defineView('confirm-dialog', ConfirmDialog)
 
 const inputDialogTemplate = $dom.html`
-<form class="vflex dialog">
-    <h3 id="title"></h3>
-    <div class="hflex">
-        <label id="prompt" for="value"></label>
-        <input id="value" type="number" required="" class="med-input">
-    </div>
-    <div class="hflex">
-        <div class="flex-grow"></div>
-        <button class="show-checked">OK</button>
-        <button id="cancel" type="button">Cancel</button>
-    </div>
-</form>
+<dialog>
+    <form class="vflex">
+        <h3 id="title"></h3>
+        <div class="hflex">
+            <label id="prompt" for="value"></label>
+            <input id="value" type="number" required="" class="med-input">
+        </div>
+        <div class="hflex">
+            <div class="flex-grow"></div>
+            <button formmethod="dialog" class="show-checked">OK</button>
+            <button id="cancel" type="button">Cancel</button>
+        </div>
+    </form>
+</dialog>
 `
 
 export class InputDialog {
@@ -154,7 +150,8 @@ export class InputDialog {
     connectedCallback() {
         let fragment = inputDialogTemplate.cloneNode(true)
 
-        $dialog.addFormListener(this.view, fragment.querySelector('form'), this.submit.bind(this))
+        fragment.querySelector('form').addEventListener('submit', () => this.submit())
+        fragment.querySelector('dialog').addEventListener('cancel', () => this.onDismiss())
         fragment.querySelector('#title').textContent = this.title
         fragment.querySelector('#prompt').textContent = this.prompt
 
@@ -165,10 +162,7 @@ export class InputDialog {
             this.input.min = '0'
         }
 
-        fragment.querySelector('#cancel').addEventListener('click', () => {
-            this.onDismiss()
-            $dialog.close(this.view)
-        })
+        fragment.querySelector('#cancel').addEventListener('click', () => $dialog.cancel(this.view))
 
         this.view.appendChild(fragment)
     }
@@ -207,10 +201,10 @@ export class InputDialog {
 export const InputDialogElement = $dom.defineView('input-dialog', InputDialog)
 
 const waitDialogTemplate = $dom.html`
-<div class="vflex dialog">
+<dialog>
     <span>Please wait...</span>
     <progress></progress>
-</div>
+</dialog>
 `
 
 export class WaitDialog {
@@ -224,6 +218,8 @@ export class WaitDialog {
     connectedCallback() {
         let fragment = waitDialogTemplate.cloneNode(true)
 
+        fragment.querySelector('dialog').addEventListener('cancel', e => e.preventDefault())
+
         this.view.appendChild(fragment)
     }
 }
@@ -232,7 +228,7 @@ export const WaitDialogElement = $dom.defineView('wait-dialog', WaitDialog)
 if (import.meta.main) {
     ;(async () => {
         await AlertDialog.open('Message', 'Title')
-        await ConfirmDialog.open('Message', 'Title')
+        await ConfirmDialog.open('Message', 'Title', {dismissable: true})
         console.log(await InputDialog.open('Prompt', 'Title', 123))
         $dialog.open(new WaitDialogElement(), {dismissable: true})
     })()

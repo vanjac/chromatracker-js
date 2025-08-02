@@ -4,19 +4,21 @@ import {type} from '../../Util.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
-<form class="dialog vflex">
-    <h3>Amplify</h3>
-    <div class="properties-grid">
-        <label for="amp">Amount:</label>
-        <input id="amp" name="amp" type="number" required="" step="any" value="1">
+<dialog>
+    <form class="vflex">
+        <h3>Amplify</h3>
+        <div class="properties-grid">
+            <label for="amp">Amount:</label>
+            <input id="amp" name="amp" type="number" required="" step="any" value="1">
 
-        <label for="dither">Dither:</label>
-        <div class="hflex">
-            <input id="dither" name="dither" type="checkbox" checked="">
+            <label for="dither">Dither:</label>
+            <div class="hflex">
+                <input id="dither" name="dither" type="checkbox" checked="">
+            </div>
         </div>
-    </div>
-    <button>Apply</button>
-</form>
+        <button formmethod="dialog">Apply</button>
+    </form>
+</dialog>
 `
 
 const inputNames = Object.freeze(['amp', 'dither'])
@@ -38,7 +40,7 @@ export class AmplifyEffect {
         this.amountInput = type(HTMLInputElement, fragment.querySelector('#amp'))
         this.ditherInput = type(HTMLInputElement, fragment.querySelector('#dither'))
 
-        $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
+        fragment.querySelector('form').addEventListener('submit', () => this.submit())
         $dom.restoreFormData(this.form, inputNames, global.effectFormData)
 
         this.view.appendChild(fragment)
@@ -58,5 +60,6 @@ export const AmplifyEffectElement = $dom.defineView('amplify-effect', AmplifyEff
 let testElem
 if (import.meta.main) {
     testElem = new AmplifyEffectElement()
+    testElem.controller.onComplete = console.log
     $dialog.open(testElem)
 }

@@ -5,32 +5,34 @@ import {type} from '../../Util.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
-<form class="dialog vflex">
-    <h3>Fade</h3>
-    <div class="hflex">
-        <div class="flex-grow"></div>
-        <button id="fadeIn" type="button">
-            ${$icons.arrow_top_right_thin}
-        </button>
-        <button id="fadeOut" type="button">
-            ${$icons.arrow_bottom_right_thin}
-        </button>
-        <div class="flex-grow"></div>
-    </div>
-    <div class="properties-grid">
-        <label for="startAmp">Start:</label>
-        <input id="startAmp" name="startAmp" type="number" required="" step="any" value="1">
-
-        <label for="endAmp">End:</label>
-        <input id="endAmp" name="endAmp" type="number" required="" step="any" value="0">
-
-        <label for="dither">Dither:</label>
+<dialog>
+    <form class="vflex">
+        <h3>Fade</h3>
         <div class="hflex">
-            <input id="dither" name="dither" type="checkbox" checked="">
+            <div class="flex-grow"></div>
+            <button id="fadeIn" type="button">
+                ${$icons.arrow_top_right_thin}
+            </button>
+            <button id="fadeOut" type="button">
+                ${$icons.arrow_bottom_right_thin}
+            </button>
+            <div class="flex-grow"></div>
         </div>
-    </div>
-    <button>Apply</button>
-</form>
+        <div class="properties-grid">
+            <label for="startAmp">Start:</label>
+            <input id="startAmp" name="startAmp" type="number" required="" step="any" value="1">
+
+            <label for="endAmp">End:</label>
+            <input id="endAmp" name="endAmp" type="number" required="" step="any" value="0">
+
+            <label for="dither">Dither:</label>
+            <div class="hflex">
+                <input id="dither" name="dither" type="checkbox" checked="">
+            </div>
+        </div>
+        <button formmethod="dialog">Apply</button>
+    </form>
+</dialog>
 `
 
 const inputNames = Object.freeze(['startAmp', 'endAmp', 'dither'])
@@ -62,7 +64,7 @@ export class FadeEffect {
             this.endAmpInput.valueAsNumber = 0
         })
 
-        $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
+        fragment.querySelector('form').addEventListener('submit', () => this.submit())
         $dom.restoreFormData(this.form, inputNames, global.effectFormData)
 
         this.view.appendChild(fragment)
@@ -83,5 +85,6 @@ export const FadeEffectElement = $dom.defineView('fade-effect', FadeEffect)
 let testElem
 if (import.meta.main) {
     testElem = new FadeEffectElement()
+    testElem.controller.onComplete = console.log
     $dialog.open(testElem)
 }

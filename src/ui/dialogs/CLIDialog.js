@@ -3,14 +3,16 @@ import * as $cli from '../CLI.js'
 import * as $dialog from '../Dialog.js'
 
 const template = $dom.html`
-<form class="vflex dialog">
-    <h3>CLI</h3>
-    <span>Waiting for console input...</span>
-    <div class="hflex">
-        <div class="flex-grow"></div>
-        <button id="cancel" type="button">Cancel</button>
-    </div>
-</form>
+<dialog>
+    <form class="vflex">
+        <h3>CLI</h3>
+        <span>Waiting for console input...</span>
+        <div class="hflex">
+            <div class="flex-grow"></div>
+            <button id="cancel" type="button">Cancel</button>
+        </div>
+    </form>
+</dialog>
 `
 
 export class CLIDialog {
@@ -21,19 +23,10 @@ export class CLIDialog {
         this.view = view
         let fragment = template.cloneNode(true)
 
-        $dialog.addFormListener(this.view, fragment.querySelector('form'))
-
-        fragment.querySelector('#cancel').addEventListener('click', () => {
-            this.onDismiss()
-            $dialog.close(this.view)
-        })
+        fragment.querySelector('dialog').addEventListener('cancel', () => $cli.cancelSel())
+        fragment.querySelector('#cancel').addEventListener('click', () => $dialog.cancel(this.view))
 
         this.view.appendChild(fragment)
-    }
-
-    // eslint-disable-next-line class-methods-use-this
-    onDismiss() {
-        $cli.cancelSel()
     }
 }
 export const CLIDialogElement = $dom.defineView('cli-dialog', CLIDialog)

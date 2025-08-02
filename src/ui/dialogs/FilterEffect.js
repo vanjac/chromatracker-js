@@ -27,59 +27,61 @@ const graphFreq = new Float32Array(numGraphFreq)
  */
 
 const template = $dom.html`
-<form class="dialog vflex">
-    <h3>Filter / EQ</h3>
-    <div class="hflex">
-        <canvas class="flex-grow width0" id="graph" width="512" height="128"></canvas>
-    </div>
-    <div class="properties-grid">
-        <label for="filterType">Type:</label>
-        <select id="filterType" name="filterType">
-            <optgroup label="Filter">
-                <option value="lowpass">Lowpass</option>
-                <option value="highpass">Highpass</option>
-                <option value="bandpass">Bandpass</option>
-                <option value="notch">Notch</option>
-                <option value="allpass">Allpass</option>
-            </optgroup>
-            <optgroup label="EQ">
-                <option value="lowshelf">Lowshelf</option>
-                <option value="highshelf">Highshelf</option>
-                <option value="peaking">Peaking</option>
-            </optgroup>
-        </select>
-
-        <label for="freqEnvelope">Envelope:</label>
+<dialog>
+    <form class="vflex">
+        <h3>Filter / EQ</h3>
         <div class="hflex">
-            <input id="freqEnvelope" name="freqEnvelope" type="checkbox">
+            <canvas class="flex-grow width0" id="graph" width="512" height="128"></canvas>
         </div>
+        <div class="properties-grid">
+            <label for="filterType">Type:</label>
+            <select id="filterType" name="filterType">
+                <optgroup label="Filter">
+                    <option value="lowpass">Lowpass</option>
+                    <option value="highpass">Highpass</option>
+                    <option value="bandpass">Bandpass</option>
+                    <option value="notch">Notch</option>
+                    <option value="allpass">Allpass</option>
+                </optgroup>
+                <optgroup label="EQ">
+                    <option value="lowshelf">Lowshelf</option>
+                    <option value="highshelf">Highshelf</option>
+                    <option value="peaking">Peaking</option>
+                </optgroup>
+            </select>
 
-        <label for="frequency">Frequency:</label>
-        <div class="hflex">
-            <input id="frequency" name="frequency" type="number" required="" class="small-input" min="10" max="22050" step="any" value="350">
-            &nbsp;Hz
-            <div class="flex-grow"></div>
-            <label for="freqEnd">To:</label>
-            <input id="freqEnd" name="freqEnd" type="number" required="" class="small-input" min="10" max="22050" step="any" value="350">
-            &nbsp;Hz
+            <label for="freqEnvelope">Envelope:</label>
+            <div class="hflex">
+                <input id="freqEnvelope" name="freqEnvelope" type="checkbox">
+            </div>
+
+            <label for="frequency">Frequency:</label>
+            <div class="hflex">
+                <input id="frequency" name="frequency" type="number" required="" class="small-input" min="10" max="22050" step="any" value="350">
+                &nbsp;Hz
+                <div class="flex-grow"></div>
+                <label for="freqEnd">To:</label>
+                <input id="freqEnd" name="freqEnd" type="number" required="" class="small-input" min="10" max="22050" step="any" value="350">
+                &nbsp;Hz
+            </div>
+
+            <label for="q">Q:</label>
+            <input id="q" name="q" type="number" required="" step="any" value="1">
+
+            <label for="gain">Gain:</label>
+            <div class="hflex">
+                <input id="gain" name="gain" type="number" required="" min="-40" max="40" step="any" value="2">
+                &nbsp;dB
+            </div>
+
+            <label for="dither">Dither:</label>
+            <div class="hflex">
+                <input id="dither" name="dither" type="checkbox" checked="">
+            </div>
         </div>
-
-        <label for="q">Q:</label>
-        <input id="q" name="q" type="number" required="" step="any" value="1">
-
-        <label for="gain">Gain:</label>
-        <div class="hflex">
-            <input id="gain" name="gain" type="number" required="" min="-40" max="40" step="any" value="2">
-            &nbsp;dB
-        </div>
-
-        <label for="dither">Dither:</label>
-        <div class="hflex">
-            <input id="dither" name="dither" type="checkbox" checked="">
-        </div>
-    </div>
-    <button>Apply</button>
-</form>
+        <button formmethod="dialog">Apply</button>
+    </form>
+</dialog>
 `
 
 const inputNames = Object.freeze([
@@ -109,7 +111,7 @@ export class FilterEffect {
         this.ditherInput = type(HTMLInputElement, fragment.querySelector('#dither'))
         this.graph = type(HTMLCanvasElement, fragment.querySelector('#graph'))
 
-        $dialog.addFormListener(this.view, this.form, this.submit.bind(this))
+        fragment.querySelector('form').addEventListener('submit', () => this.submit())
         $dom.restoreFormData(this.form, inputNames, global.effectFormData)
 
         this.context = new OfflineAudioContext(1, 1, defaultSampleRate)
@@ -198,5 +200,6 @@ export const FilterEffectElement = $dom.defineView('filter-effect', FilterEffect
 let testElem
 if (import.meta.main) {
     testElem = new FilterEffectElement()
+    testElem.controller.onComplete = console.log
     $dialog.open(testElem)
 }
