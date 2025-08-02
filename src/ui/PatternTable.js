@@ -81,14 +81,10 @@ export class PatternTable {
                 pattern => invoke(this.callbacks.onChange, Object.freeze(pattern)))
         })
 
-        this.resizeListener = () => this.updateSize()
-        window.addEventListener('resize', this.resizeListener)
+        let resizeObserver = new ResizeObserver(() => this.updateSpaceSize())
+        resizeObserver.observe(this.tableSpace)
 
         this.view.appendChild(fragment)
-    }
-
-    disconnectedCallback() {
-        window.removeEventListener('resize', this.resizeListener)
     }
 
     /**
@@ -184,13 +180,12 @@ export class PatternTable {
             }
             this.tbody.appendChild(tableFrag)
             this.setSelCell(this.selChannel, this.selRow)
-            this.updateSize()
         }
         this.viewPattern = pattern
     }
 
     /** @private */
-    updateSize() {
+    updateSpaceSize() {
         if (this.spacerRow) {
             this.spacerRow.style.height = this.tableSpace.clientHeight + 'px'
         }
@@ -300,7 +295,7 @@ export class PatternTable {
     }
 
     scrollToSelCell() {
-        this.updateSize()
+        this.updateSpaceSize()
         let tr = this.tbody.children[this.selRow + 1]
         tr.scrollIntoView({block: 'center', behavior: 'instant'})
     }
@@ -348,4 +343,5 @@ if (import.meta.main) {
     $dom.displayMain(testElem)
     testElem.controller.setNumChannels(4)
     testElem.controller.setPattern($pattern.create(4))
+    testElem.controller.onVisible()
 }
