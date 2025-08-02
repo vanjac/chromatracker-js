@@ -4,7 +4,7 @@
 }
 * {
     margin: 0;
-    contain: content; /* for performance only, don't depend on this! */
+    contain: content;
 }
 input, button, textarea, select {
     font: inherit;

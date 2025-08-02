@@ -3,8 +3,7 @@
 if (
     // eslint-disable-next-line no-restricted-properties
     !('noModule' in HTMLScriptElement.prototype) || // Chrome 61
-    !window.customElements || // Firefox 63
-    !window.AudioContext // iOS 14.5
+    !window.HTMLDialogElement // Firefox 98, iOS 15.4
 ) {
     window.alert('Your browser is not supported by ChromaTracker. Please upgrade to a newer browser.')
 }
