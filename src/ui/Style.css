@@ -37,7 +37,7 @@
 
 .shrink-clip-y {
     min-height: 0;
-    overflow-y: clip;
+    overflow-y: hidden;
 }
 
 .top {
