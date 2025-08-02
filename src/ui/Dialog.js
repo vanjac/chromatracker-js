@@ -18,7 +18,7 @@ export function open(dialogParent, {dismissable = false} = {}) {
         dialog.addEventListener('click', e => {
             let rect = dialog.getBoundingClientRect()
             if (
-                e.detail != 0 && dialog.open &&
+                dialog.open && e.detail != 0 &&
                 !(rect.left <= e.clientX && e.clientX <= rect.right
                 && rect.top <= e.clientY && e.clientY <= rect.bottom)
             ) {
