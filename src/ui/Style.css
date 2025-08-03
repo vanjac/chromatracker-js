@@ -298,7 +298,8 @@ th {
     z-index: 1;
 }
 thead {
-    contain: paint style; /* Fix borders disappearing in Safari */
+    /* Fix borders disappearing in Safari, and incorrect Z order in old Chrome */
+    contain: none;
 }
 thead th {
     top: 0;
