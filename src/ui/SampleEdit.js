@@ -9,7 +9,7 @@ import * as $ext from '../file/External.js'
 import * as $wav from '../file/Wav.js'
 import * as $icons from '../gen/Icons.js'
 import {makeKeyButton} from './KeyPad.js'
-import {AlertDialog, InputDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
+import {AlertDialog, InputDialog, WaitDialogElement, MenuDialog} from './dialogs/UtilDialogs.js'
 import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
@@ -80,18 +80,10 @@ const template = $dom.html`
         <button id="paste">
             ${$icons.content_paste}
         </button>
-        <select id="effectMenu" class="med-menu">
-            <option selected="" disabled="" hidden="">Effect</option>
-            <option value="amplify">Amplify</option>
-            <option value="fade">Fade</option>
-            <option value="reverse">Reverse</option>
-            <option value="resample">Resample</option>
-            <option value="filter">Filter / EQ</option>
-            <optgroup label="Loop">
-                <option id="loopRepeat" value="repeat">Repeat</option>
-                <option id="loopPingPong" value="pingpong">Ping-Pong</option>
-            </optgroup>
-        </select>
+        <button id="effect">
+            ${$icons.dots_vertical}
+            <span>Effect</span>
+        </button>
     </div>
     <hr>
     <div class="hflex">
@@ -220,22 +212,7 @@ export class SampleEdit {
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
         fragment.querySelector('#paste').addEventListener('click', () => this.paste())
-
-        this.loopRepeatOption = type(HTMLOptionElement, fragment.querySelector('#loopRepeat'))
-        this.loopPingPongOption = type(HTMLOptionElement, fragment.querySelector('#loopPingPong'))
-
-        $dom.addMenuListener(fragment.querySelector('#effectMenu'), value => {
-            switch (value) {
-                case 'amplify': this.amplify(); break
-                case 'fade': this.fade(); break
-                case 'reverse': this.applyEffect($wave.reverse); break
-                case 'resample': this.resample(); break
-                case 'filter': this.filter(); break
-                // Loop
-                case 'repeat': this.loopRepeat(); break
-                case 'pingpong': this.loopPingPong(); break
-            }
-        })
+        fragment.querySelector('#effect').addEventListener('click', () => this.effectMenu())
 
         this.volumeInput = type(HTMLInputElement, fragment.querySelector('#volume'))
         this.volumeOutput = type(HTMLOutputElement, fragment.querySelector('#volumeOut'))
@@ -298,8 +275,6 @@ export class SampleEdit {
         this.selectLoopButton.disabled = !showLoop
         this.loopStartInput.input.disabled = !showLoop
         this.loopEndInput.input.disabled = !showLoop
-        this.loopRepeatOption.disabled = !showLoop
-        this.loopPingPongOption.disabled = !showLoop
         this.loopStartMark.classList.toggle('hide', !showLoop)
         this.loopEndMark.classList.toggle('hide', !showLoop)
         if (showLoop) {
@@ -678,6 +653,36 @@ export class SampleEdit {
     paste() {
         let [start, end] = this.selOrAll()
         this.replace(start, end, global.audioClipboard)
+    }
+
+    /** @private */
+    async effectMenu() {
+        let option
+        try {
+            let hasLoop = Sample.hasLoop(this.viewSample)
+            option = await MenuDialog.open([
+                { value: 'amplify', title: 'Amplify' },
+                { value: 'fade', title: 'Fade' },
+                { value: 'reverse', title: 'Reverse' },
+                { value: 'resample', title: 'Resample' },
+                { value: 'filter', title: 'Filter / EQ' },
+                { value: 'loopRepeat', title: 'Loop Repeat', disabled: !hasLoop },
+                { value: 'loopPingPong', title: 'Loop Ping-Pong', disabled: !hasLoop },
+            ], 'Apply Effect:')
+        } catch (e) {
+            console.warn(e)
+            return
+        }
+        switch (option) {
+        case 'amplify': this.amplify(); break
+        case 'fade': this.fade(); break
+        case 'reverse': this.applyEffect($wave.reverse); break
+        case 'resample': this.resample(); break
+        case 'filter': this.filter(); break
+                // Loop
+        case 'loopRepeat': this.loopRepeat(); break
+        case 'loopPingPong': this.loopPingPong(); break
+        }
     }
 
     /** @private */

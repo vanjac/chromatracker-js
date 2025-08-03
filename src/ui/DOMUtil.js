@@ -173,17 +173,6 @@ export function addInputListeners(input, listener) {
 }
 
 /**
- * @param {HTMLSelectElement} menu
- * @param {(value: string) => void} listener
- */
-export function addMenuListener(menu, listener) {
-    menu.addEventListener('change', () => {
-        listener(menu.value)
-        menu.selectedIndex = 0 // restore menu title
-    })
-}
-
-/**
  * @param {HTMLFormElement} form
  * @param {readonly string[]} names
  * @param {Record<string, string>} record

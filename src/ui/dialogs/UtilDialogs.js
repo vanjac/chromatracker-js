@@ -225,11 +225,93 @@ export class WaitDialog {
 }
 export const WaitDialogElement = $dom.defineView('wait-dialog', WaitDialog)
 
+const menuDialogTemplate = $dom.html`
+<dialog>
+    <h3 id="title"></h3>
+    <div id="buttonList" class="button-list vscrollable"></div>
+</dialog>
+`
+
+/**
+ * @typedef {{
+ *      value: string
+ *      title: string
+ *      disabled?: boolean
+ * }} MenuOption
+ */
+
+export class MenuDialog {
+    /**
+     * @param {HTMLElement} view
+     */
+    constructor(view) {
+        this.view = view
+        /** @type {MenuOption[]} */
+        this.options = []
+        this.title = ''
+        /** @param {string} value */
+        this.onComplete = (value) => {}
+        this.onDismiss = () => {}
+    }
+
+    connectedCallback() {
+        let fragment = menuDialogTemplate.cloneNode(true)
+
+        fragment.querySelector('dialog').addEventListener('cancel', () => this.onDismiss())
+
+        fragment.querySelector('#title').textContent = this.title
+        let buttonList = fragment.querySelector('#buttonList')
+        for (let option of this.options) {
+            let button = $dom.createElem('button', {textContent: option.title, type: 'button'})
+            button.disabled = option.disabled ?? false
+            if (!option.disabled) {
+                button.addEventListener('click', () => this.select(option.value))
+            }
+            buttonList.appendChild(button)
+        }
+
+        this.view.appendChild(fragment)
+    }
+
+    /**
+     * @private
+     * @param {string} value
+     */
+    select(value) {
+        this.onComplete(value)
+        $dialog.close(this.view)
+    }
+
+    /**
+     * @param {MenuOption[]} options
+     * @param {string} title
+     * @returns {Promise<string>}
+     */
+    static open(options, title = '') {
+        return new Promise((resolve, reject) => {
+            let dialog = new MenuDialogElement()
+            dialog.controller.options = options
+            dialog.controller.title = title
+            dialog.controller.onComplete = resolve
+            dialog.controller.onDismiss = reject
+            $dialog.open(dialog, {dismissable: true})
+        })
+    }
+}
+export const MenuDialogElement = $dom.defineView('menu-dialog', MenuDialog)
+
 if (import.meta.main) {
     ;(async () => {
         await AlertDialog.open('Message', 'Title')
         await ConfirmDialog.open('Message', 'Title', {dismissable: true})
         console.log(await InputDialog.open('Prompt', 'Title', 123))
-        $dialog.open(new WaitDialogElement(), {dismissable: true})
+        console.log(await MenuDialog.open([
+            {value: '1', title: 'Option 1'},
+            {value: '2', title: 'Option 2'},
+            {value: '3', title: 'Option 3', disabled: true},
+        ], 'Title'))
+        let wait = $dialog.open(new WaitDialogElement(), {dismissable: true})
+        await new Promise(resolve => window.setTimeout(resolve, 3000))
+        $dialog.close(wait)
     })()
 }
