@@ -657,17 +657,17 @@ export class SampleEdit {
 
     /** @private */
     async effectMenu() {
+        let hasLoop = Sample.hasLoop(this.viewSample)
         let option
         try {
-            let hasLoop = Sample.hasLoop(this.viewSample)
             option = await MenuDialog.open([
-                { value: 'amplify', title: 'Amplify' },
-                { value: 'fade', title: 'Fade' },
-                { value: 'reverse', title: 'Reverse' },
-                { value: 'resample', title: 'Resample' },
-                { value: 'filter', title: 'Filter / EQ' },
-                { value: 'loopRepeat', title: 'Loop Repeat', disabled: !hasLoop },
-                { value: 'loopPingPong', title: 'Loop Ping-Pong', disabled: !hasLoop },
+                {value: 'amplify', title: 'Amplify'},
+                {value: 'fade', title: 'Fade'},
+                {value: 'reverse', title: 'Reverse'},
+                {value: 'resample', title: 'Resample'},
+                {value: 'filter', title: 'Filter / EQ'},
+                {value: 'loopRepeat', title: 'Loop Repeat', disabled: !hasLoop},
+                {value: 'loopPingPong', title: 'Loop Ping-Pong', disabled: !hasLoop},
             ], 'Apply Effect:')
         } catch (e) {
             console.warn(e)

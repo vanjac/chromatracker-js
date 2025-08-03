@@ -3,9 +3,6 @@ import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
 import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
-import * as $ext from '../file/External.js'
-import * as $mod from '../file/Mod.js'
-import * as $icons from '../gen/Icons.js'
 import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
 import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
@@ -65,12 +62,6 @@ const template = $dom.html`
 <div id="appTabBody" class="flex-grow">
     <div id="arrange" class="flex-grow">
         <hr>
-        <div class="hflex">
-            <button id="downloadModule">
-                ${$icons.download}
-            </button>
-        </div>
-        <hr>
         <module-properties></module-properties>
     </div>
     <div id="sequence" class="flex-grow shrink-clip-y hide">
@@ -123,9 +114,6 @@ export class ModuleEdit {
         this.patternEdit = fragment.querySelector('pattern-edit')
         this.samplesList = fragment.querySelector('samples-list')
         this.cellEntry = fragment.querySelector('cell-entry')
-
-        fragment.querySelector('#downloadModule').addEventListener('click',
-            () => this.downloadFile())
 
         let tabForm = type(HTMLFormElement, fragment.querySelector('#appTabs'))
         $dom.disableFormSubmit(tabForm)
@@ -232,13 +220,6 @@ export class ModuleEdit {
         this.saveIfNeeded()
         this.destroyPlayback()
         this.view.remove()
-    }
-
-    /** @private */
-    downloadFile() {
-        let module = this.module.value
-        let blob = new Blob([$mod.write(module)], {type: 'application/octet-stream'})
-        $ext.download(blob, (module.name || 'Untitled') + '.mod')
     }
 
     /**

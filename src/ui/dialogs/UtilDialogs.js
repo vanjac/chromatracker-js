@@ -236,6 +236,7 @@ const menuDialogTemplate = $dom.html`
  * @typedef {{
  *      value: string
  *      title: string
+ *      icon?: DocumentFragment
  *      disabled?: boolean
  * }} MenuOption
  */
@@ -262,8 +263,13 @@ export class MenuDialog {
         fragment.querySelector('#title').textContent = this.title
         let buttonList = fragment.querySelector('#buttonList')
         for (let option of this.options) {
-            let button = $dom.createElem('button', {textContent: option.title, type: 'button'})
+            let button = $dom.createElem('button', {type: 'button'})
             button.disabled = option.disabled ?? false
+            if (option.icon) {
+                button.appendChild(option.icon.cloneNode(true))
+                button.appendChild($dom.createElem('span', {innerHTML: '&nbsp;'}))
+            }
+            button.append(option.title)
             if (!option.disabled) {
                 button.addEventListener('click', () => this.select(option.value))
             }

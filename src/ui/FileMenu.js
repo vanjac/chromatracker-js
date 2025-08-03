@@ -7,7 +7,7 @@ import * as $local from '../file/LocalFiles.js'
 import * as $mod from '../file/Mod.js'
 import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
-import {AlertDialog, ConfirmDialog, WaitDialogElement} from './dialogs/UtilDialogs.js'
+import {AlertDialog, ConfirmDialog, WaitDialogElement, MenuDialog} from './dialogs/UtilDialogs.js'
 import {freeze, type} from '../Util.js'
 import appVersion from '../gen/Version.js'
 
@@ -50,8 +50,8 @@ const itemTemplate = $dom.html`
     <button id="open" class="flex-grow min-width-0">
         <span id="name" class="overflow-content"></span>
     </button>
-    <button id="delete">
-        ${$icons.delete_outline}
+    <button id="options">
+        ${$icons.dots_vertical}
     </button>
 </div>
 `
@@ -127,12 +127,35 @@ export class FileMenu {
             let itemFrag = itemTemplate.cloneNode(true)
             let openButton = type(HTMLButtonElement, itemFrag.querySelector('#open'))
             let nameSpan = itemFrag.querySelector('#name')
-            let deleteButton = type(HTMLButtonElement, itemFrag.querySelector('#delete'))
+            let optionsButton = type(HTMLButtonElement, itemFrag.querySelector('#options'))
             let name = metadata.name || '(untitled)'
             nameSpan.textContent = name
             openButton.addEventListener('click', () => this.readLocalFile(id))
-            deleteButton.addEventListener('click', () => this.requestDeleteLocalFile(id, name))
+            optionsButton.addEventListener('click', () => this.fileOptions(id, name))
             this.fileList.appendChild(itemFrag)
+        }
+    }
+
+    /**
+     * @param {number} id
+     * @param {string} name
+     */
+    async fileOptions(id, name) {
+        let option
+        try {
+            option = await MenuDialog.open([
+                {value: 'clone', title: 'Duplicate', icon: $icons.content_copy},
+                {value: 'delete', title: 'Delete', icon: $icons.delete_outline},
+                {value: 'download', title: 'Download', icon: $icons.download},
+            ], name)
+        } catch (e) {
+            console.warn(e)
+            return
+        }
+        switch (option) {
+        case 'clone': this.cloneLocalFile(id); break
+        case 'delete': this.requestDeleteLocalFile(id, name); break
+        case 'download': this.downloadLocalFile(id, name); break
         }
     }
 
@@ -143,6 +166,26 @@ export class FileMenu {
     async readLocalFile(id) {
         let data = await $local.readFile(this.db, id)
         this.openModuleFile(id, data)
+    }
+
+    /**
+     * @private
+     * @param {number} id
+     */
+    async cloneLocalFile(id) {
+        let data = await $local.readFile(this.db, id)
+        this.openModuleFile(null, data)
+    }
+
+    /**
+     * @private
+     * @param {number} id
+     * @param {string} name
+     */
+    async downloadLocalFile(id, name) {
+        let data = await $local.readFile(this.db, id)
+        let blob = new Blob([data], {type: 'application/octet-stream'})
+        $ext.download(blob, (name || 'Untitled') + '.mod')
     }
 
     /**
