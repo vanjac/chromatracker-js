@@ -81,7 +81,7 @@ export function read(buf) {
                 let w1 = view.getUint16(cellOff)
                 let b3 = view.getUint8(cellOff + 2)
                 let period = w1 & 0xfff
-                let pitch = periodToPitch.get(period) || -1
+                let pitch = periodToPitch.get(period) ?? -1
                 let inst = (b3 >> 4) | (w1 >> 12 << 4)
                 let effect = b3 & 0xf
                 let param = view.getUint8(cellOff + 3)
@@ -156,7 +156,7 @@ export function write(module) {
 
     for (let s = 1; s < mod.numSamples; s++) {
         let offset = s * 30 - 10
-        if (s >= module.samples.length || !module.samples[s]) {
+        if (!module.samples[s]) {
             // empty sample
             view.setUint8(offset + 25, mod.maxVolume)
             view.setUint16(offset + 28, 1)

@@ -18,16 +18,12 @@ export class ViewElement extends HTMLElement { // eslint-disable-line no-restric
 
     connectedCallback() {
         this.classList.add('custom-element')
-        if (this.controller.connectedCallback) {
-            this.controller.connectedCallback(this)
-        }
+        this.controller.connectedCallback?.(this)
         this.dispatchEvent(new Event('connected'))
     }
 
     disconnectedCallback() {
-        if (this.controller.disconnectedCallback) {
-            this.controller.disconnectedCallback(this)
-        }
+        this.controller.disconnectedCallback?.(this)
         this.dispatchEvent(new Event('disconnected'))
     }
 }

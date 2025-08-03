@@ -170,8 +170,7 @@ export function setModule(playback, module) {
         playback.samples.length = module.samples.length
         for (let i = 0; i < module.samples.length; i++) {
             let sample = module.samples[i]
-            let sp = playback.samples[i]
-            if (sample && (!sp || sp.wave != sample.wave)) {
+            if (sample && playback.samples[i]?.wave != sample.wave) {
                 console.debug('update playback sample')
                 playback.samples[i] = createSamplePlayback(playback.ctx, sample)
             } else if (!sample) {
@@ -199,10 +198,8 @@ function initChannelNodes(playback, channel) {
  * @param {ChannelPlayback} channel
  */
 function disconnectChannel(channel) {
-    if (channel.source) {
-        channel.source.stop()
-        channel.source.disconnect()
-    }
+    channel.source?.stop()
+    channel.source?.disconnect()
     channel.gain.disconnect()
     channel.panner.disconnect()
 }
@@ -693,9 +690,7 @@ function playNote(playback, channel) {
     if (!source) {
         return
     }
-    if (channel.source) {
-        channel.source.stop(playback.time)
-    }
+    channel.source?.stop(playback.time)
 
     channel.source = source
     channel.sourceSample = sourceSample

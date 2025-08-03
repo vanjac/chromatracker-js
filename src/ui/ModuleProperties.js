@@ -109,29 +109,29 @@ export class ModuleProperties {
             console.debug('update title')
             this.titleInput.value = module.name
         }
-        if (!this.viewModule || module.numChannels != this.viewModule.numChannels) {
+        if (module.numChannels != this.viewModule?.numChannels) {
             console.debug('update channel count')
             this.channelCountOutput.value = module.numChannels.toString()
             this.delChannelsButton.disabled = module.numChannels <= 2
             this.addChannelsButton.disabled = module.numChannels >= mod.maxChannels
         }
-        if (!this.viewModule || module.samples != this.viewModule.samples) {
+        if (module.samples != this.viewModule?.samples) {
             console.debug('update sample count')
             let sampleCount = module.samples.reduce(
                 (count, item) => (item ? (count + 1) : count), 0)
             this.sampleCountOutput.value = sampleCount.toString()
             this.viewSamplesSize = $mod.calcSamplesSize(module.samples)
         }
-        if (!this.viewModule || module.patterns != this.viewModule.patterns) {
+        if (module.patterns != this.viewModule?.patterns) {
             console.debug('update pattern count')
             this.patternCountOutput.value = module.patterns.length.toString()
         }
-        if (!this.viewModule || module.sequence != this.viewModule.sequence) {
+        if (module.sequence != this.viewModule?.sequence) {
             console.debug('update sequence count')
             this.sequenceCountOutput.value = module.sequence.length.toString()
         }
-        if (!this.viewModule || module.sequence != this.viewModule.sequence
-                || module.numChannels != this.viewModule.numChannels) {
+        if (module.sequence != this.viewModule?.sequence
+                || module.numChannels != this.viewModule?.numChannels) {
             this.viewPatternsSize = $mod.calcPatternsSize(module)
         }
         let fileSize = $mod.headerSize + this.viewPatternsSize + this.viewSamplesSize

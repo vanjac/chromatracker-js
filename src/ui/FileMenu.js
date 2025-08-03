@@ -109,10 +109,8 @@ export class FileMenu {
         document.removeEventListener('visibilitychange', this.visibilityChangeListener)
         window.removeEventListener('beforeunload', this.beforeUnloadListener)
         this.autosave()
-        if (this.db) {
-            this.db.close()
-            this.db = null
-        }
+        this.db?.close()
+        this.db = null
     }
 
     /** @private */
@@ -253,9 +251,7 @@ export class FileMenu {
 
     /** @private */
     autosave() {
-        if (this.editor) {
-            this.editor.controller.saveIfNeeded()
-        }
+        this.editor?.controller.saveIfNeeded()
     }
 }
 export const FileMenuElement = $dom.defineView('file-menu', FileMenu)

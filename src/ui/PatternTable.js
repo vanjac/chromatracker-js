@@ -246,7 +246,7 @@ export class PatternTable {
         }
         if (this.selRow >= 0 && this.selChannel >= 0) {
             let selTr = this.tbody.children[this.selRow + 1]
-            let selCell = selTr && selTr.children[this.selChannel + 1]
+            let selCell = selTr?.children[this.selChannel + 1]
             if (selCell) { $cell.toggleParts(selCell, this.viewEntryParts) }
 
             if (this.markChannel < 0 || this.markRow < 0) {
@@ -258,8 +258,7 @@ export class PatternTable {
                     let tr = this.tbody.children[row + 1]
                     if (!tr) { continue }
                     for (let channel = minChannel; channel <= maxChannel; channel++) {
-                        let cell = tr.children[channel + 1]
-                        if (cell) { cell.classList.add('sel-cell') }
+                        tr.children[channel + 1]?.classList.add('sel-cell')
                     }
                 }
             }
@@ -285,10 +284,7 @@ export class PatternTable {
      * @param {number} row
      */
     setPlaybackRow(row) {
-        let oldHilite = this.tbody.querySelector('.hilite-row')
-        if (oldHilite) {
-            oldHilite.classList.remove('hilite-row')
-        }
+        this.tbody.querySelector('.hilite-row')?.classList.remove('hilite-row')
         if (row >= 0) {
             this.tbody.children[row + 1].classList.add('hilite-row')
         }

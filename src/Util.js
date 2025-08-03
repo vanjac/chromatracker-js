@@ -15,8 +15,7 @@ export function type(constructor, value) {
 export function callbackDebugObject(callbacks = {}) {
     return new Proxy(callbacks, {
         get(target, prop) {
-            return prop in callbacks ? callbacks[prop]
-                : console.log.bind(console, String(prop) + ':')
+            return callbacks[prop] ?? console.log.bind(console, String(prop) + ':')
         }
     })
 }

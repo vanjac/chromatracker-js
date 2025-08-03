@@ -312,7 +312,7 @@ export class SampleEdit {
         this.finetuneInput.valueAsNumber = sample.finetune
         this.finetuneOutput.value = sample.finetune.toString()
 
-        if (!this.viewSample || sample.wave != this.viewSample.wave) {
+        if (sample.wave != this.viewSample?.wave) {
             // TODO: async and only when visible!
             this.createSamplePreview(sample.wave)
         }

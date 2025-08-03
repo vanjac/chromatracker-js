@@ -282,10 +282,8 @@ export class ModuleEdit {
             this.disableAnimation()
             this.playback = null
         }
-        if (this.context) {
-            this.context.close()
-            this.context = null
-        }
+        this.context?.close()
+        this.context = null
     }
 
     /**
