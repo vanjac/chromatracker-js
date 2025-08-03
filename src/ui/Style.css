@@ -60,7 +60,8 @@
     z-index: -1;
 }
 
-.justify-start {
+.justify-start,
+.button-list button {
     justify-content: start;
 }
 

@@ -24,7 +24,7 @@ const template = $dom.html`
             ${$icons.plus}
         </button>
     </div>
-    <div id="sampleList" class="flex-grow vscrollable"></div>
+    <div id="sampleList" class="flex-grow vscrollable button-list"></div>
     <div id="sampleEditContainer" class="flex-grow hide"></div>
 </div>
 `
@@ -138,7 +138,6 @@ export class SamplesList {
             this.viewSampleCount++
             let textContent = `${i.toString().padStart(2, '0')}: ${sample.name}`
             let button = this.sampleList.appendChild($dom.createElem('button', {textContent}))
-            button.classList.add('justify-start')
             button.addEventListener('click', () => this.openSampleEdit(i))
         }
         this.setSelSample(this.viewIndex)

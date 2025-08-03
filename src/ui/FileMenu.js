@@ -28,14 +28,17 @@ const template = $dom.html`
                 ${$icons.folder_open}
             </button>
             <div class="flex-grow"></div>
-            <select id="demoMenu" class="large-menu">
-                <option selected="" disabled="" hidden="">Demo Files</option>
-                <option value="https://chroma.zone/share/space_debris.mod">space debris</option>
-                <option value="https://chroma.zone/share/pixipack1.mod">pixipack 1</option>
-            </select>
         </div>
         <strong id="storageWarning" class="message-out"></strong>
-        <div id="fileList" class="flex-grow vscrollable"></div>
+        <div class="flex-grow vscrollable button-list">
+            <div id="fileList"></div>
+            <hr>
+            <h3>&nbsp;Demo Files:</h3>
+            <div id="demoList">
+                <button value="https://chroma.zone/share/space_debris.mod">space debris</button>
+                <button value="https://chroma.zone/share/pixipack1.mod">pixipack 1</button>
+            </div>
+        </div>
         <em>Version:&nbsp;<code id="version"></code></em>
     </div>
     <div id="editorContainer" class="flex-grow hide"></div>
@@ -44,7 +47,7 @@ const template = $dom.html`
 
 const itemTemplate = $dom.html`
 <div class="hflex">
-    <button id="open" class="flex-grow justify-start min-width-0">
+    <button id="open" class="flex-grow min-width-0">
         <span id="name" class="overflow-content"></span>
     </button>
     <button id="delete">
@@ -72,8 +75,11 @@ export class FileMenu {
         fragment.querySelector('#newModule').addEventListener('click',
             () => this.openEditor(null, $module.createNew()))
         fragment.querySelector('#fileOpen').addEventListener('click', () => this.importFile())
-        $dom.addMenuListener(fragment.querySelector('#demoMenu'),
-            value => this.importFromUrl(value))
+        /** @type {NodeListOf<HTMLButtonElement>} */
+        let demoButtons = fragment.querySelectorAll('#demoList button')
+        for (let button of demoButtons) {
+            button.addEventListener('click', () => this.importFromUrl(button.value))
+        }
 
         this.menu = fragment.querySelector('#menu')
         this.fileList = fragment.querySelector('#fileList')
