@@ -212,9 +212,6 @@ label {
 .med-menu {
     width: 5em;
 }
-.large-menu {
-    width: 8em;
-}
 
 dialog {
     display: flex;
