@@ -65,7 +65,7 @@
 }
 
 hr {
-    height: 6pt;
+    height: 0.5em;
     border: none;
 }
 
@@ -86,7 +86,7 @@ input {
     background: var(--color-bg);
     border-color: var(--color-fg);
     border: 1px solid var(--color-fg);
-    border-radius: 2pt;
+    border-radius: 3px;
 }
 
 input:disabled {
@@ -114,7 +114,7 @@ table,
 
 label,
 output {
-    padding: 0 4pt;
+    padding: 0 0.33em;
 }
 
 /* Buttons */
@@ -130,14 +130,16 @@ output {
 button,
 select,
 .label-button span {
+    min-width: 2.5em;
+    min-height: 2.5em;
+
     display: inline-flex;
     justify-content: center;
     align-items: center;
     white-space: nowrap;
-    padding: 5pt 7pt;
     background: var(--color-bg-btn);
     border: 1px solid var(--color-fg);
-    border-radius: 4pt;
+    border-radius: 5px;
     touch-action: manipulation;
 }
 
@@ -145,7 +147,7 @@ button,
 select,
 .label-button,
 .tab-group {
-    margin: 1.5pt;
+    margin: 2px;
 }
 
 .overflow-content {
@@ -206,10 +208,10 @@ label {
 }
 
 .med-menu {
-    width: 70pt;
+    width: 5em;
 }
 .large-menu {
-    width: 100pt;
+    width: 8em;
 }
 
 dialog {
@@ -224,10 +226,10 @@ dialog {
 
     background: var(--color-bg);
     color: var(--color-fg);
-    padding: 12pt;
+    padding: 1em;
     border: 1px solid var(--color-fg);
-    border-radius: 8pt;
-    box-shadow: black 0 0 30pt;
+    border-radius: 12px;
+    box-shadow: black 0 0 40px;
 }
 
 ::backdrop {
@@ -235,7 +237,7 @@ dialog {
 }
 
 .message-dialog {
-    max-width: 300pt;
+    max-width: 25em;
 }
 .message-out {
     white-space: pre-wrap;
@@ -253,12 +255,13 @@ dialog {
 
 .seq-button,
 .seq-select {
-    width: 30pt;
+    width: 2.5em;
     margin-left: 0;
     margin-right: 0;
 }
 .seq-button span,
 .seq-select {
+    min-width: 0;
     padding-left: 0;
     padding-right: 0;
 }
@@ -368,15 +371,16 @@ td,
 /* cell entry */
 
 .keypad-key {
-    width: 24pt;
+    width: 2em;
     flex-shrink: 0;
     margin: 0;
 }
 .keypad-half-key {
-    width: 12pt;
+    width: 1em;
     flex-shrink: 0;
 }
 .keypad-key span {
+    min-width: 0;
     padding-left: 0;
     padding-right: 0;
 }
@@ -403,7 +407,7 @@ td,
 /* wave editor */
 
 .wave-edit {
-    padding: 0 8pt;
+    padding: 0 1em;
     touch-action: none;
 }
 
