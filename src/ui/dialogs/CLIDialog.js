@@ -4,7 +4,7 @@ import * as $dialog from '../Dialog.js'
 
 const template = $dom.html`
 <dialog>
-    <form class="vflex">
+    <form>
         <h3>CLI</h3>
         <span>Waiting for console input...</span>
         <div class="hflex">

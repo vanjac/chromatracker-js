@@ -14,7 +14,7 @@ const template = $dom.html`
         <span>${$icons.arrow_horizontal_lock}</span>
     </label>
     <form id="piano" class="hflex flex-grow hscrollable scroll-lock" autocomplete="off">
-        <div class="vflex">
+        <div>
             <div id="blackKeys" class="hflex">
                 <div class="keypad-half-key"></div>
             </div>

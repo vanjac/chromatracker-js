@@ -12,8 +12,8 @@ import {freeze, type} from '../Util.js'
 import appVersion from '../gen/Version.js'
 
 const template = $dom.html`
-<div class="vflex flex-grow">
-    <div id="menu" class="vflex flex-grow hide">
+<div class="flex-grow">
+    <div id="menu" class="flex-grow hide">
         <div class="hflex">
             <div class="flex-grow"></div>
             <h2>ChromaTracker</h2>
@@ -35,10 +35,10 @@ const template = $dom.html`
             </select>
         </div>
         <strong id="storageWarning" class="message-out"></strong>
-        <div id="fileList" class="flex-grow vflex vscrollable"></div>
+        <div id="fileList" class="flex-grow vscrollable"></div>
         <em>Version:&nbsp;<code id="version"></code></em>
     </div>
-    <div id="editorContainer" class="vflex flex-grow hide"></div>
+    <div id="editorContainer" class="flex-grow hide"></div>
 </div>
 `
 

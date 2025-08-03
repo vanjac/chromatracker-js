@@ -8,7 +8,7 @@ import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
-<div class="vflex">
+<div>
     <piano-keyboard></piano-keyboard>
 
     <div id="sampleSection" class="hflex">
@@ -28,7 +28,7 @@ const template = $dom.html`
         <button id="param1"></button>
     </div>
 
-    <div id="effectKeyboard" class="hide vflex">
+    <div id="effectKeyboard" class="hide">
         <div class="hflex">
             <button id="closeEffectKeyboard">
                 ${$icons.arrow_left}

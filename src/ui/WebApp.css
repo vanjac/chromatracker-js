@@ -13,6 +13,13 @@ input, button, textarea, select {
 select {
     appearance: menulist-button;
 }
+div, body, form {
+    display: flex;
+    flex-direction: column;
+}
+.custom-element {
+    display: contents;
+}
 
 html, body {
     width: 100%;

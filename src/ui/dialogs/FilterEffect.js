@@ -29,7 +29,7 @@ const graphFreq = new Float32Array(numGraphFreq)
 
 const template = $dom.html`
 <dialog>
-    <form class="vflex">
+    <form>
         <h3>Filter / EQ</h3>
         <div class="hflex">
             <canvas class="flex-grow width0" id="graph" width="512" height="128"></canvas>

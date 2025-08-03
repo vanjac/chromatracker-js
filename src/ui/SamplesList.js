@@ -9,7 +9,7 @@ import {mod, Cell, Sample, CellPart} from '../Model.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
-<div class="vflex flex-grow">
+<div class="flex-grow">
     <div class="hflex">
         <button id="showList" class="hide">
             ${$icons.menu}
@@ -24,8 +24,8 @@ const template = $dom.html`
             ${$icons.plus}
         </button>
     </div>
-    <div id="sampleList" class="vflex flex-grow vscrollable"></div>
-    <div id="sampleEditContainer" class="vflex flex-grow hide"></div>
+    <div id="sampleList" class="flex-grow vscrollable"></div>
+    <div id="sampleEditContainer" class="flex-grow hide"></div>
 </div>
 `
 

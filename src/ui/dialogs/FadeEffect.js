@@ -6,7 +6,7 @@ import global from '../GlobalState.js'
 
 const template = $dom.html`
 <dialog>
-    <form class="vflex">
+    <form>
         <h3>Fade</h3>
         <div class="hflex">
             <div class="flex-grow"></div>

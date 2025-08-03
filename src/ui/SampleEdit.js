@@ -20,7 +20,7 @@ import global from './GlobalState.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
-<div class="vflex flex-grow">
+<div class="flex-grow">
     <div class="properties-grid">
         <label for="name">Name:</label>
         <div class="hflex">
@@ -50,7 +50,7 @@ const template = $dom.html`
         </div>
     </div>
 
-    <div id="waveEdit" class="vflex wave-edit">
+    <div id="waveEdit" class="wave-edit">
         <div id="waveContainer" class="hflex wave-container">
             <canvas id="wavePreview" class="flex-grow width0" width="1024" height="256"></canvas>
             <div id="selectMarkA" class="wave-mark wave-select hide"></div>

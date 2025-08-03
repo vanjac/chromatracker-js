@@ -5,7 +5,7 @@ import global from '../GlobalState.js'
 
 const template = $dom.html`
 <dialog>
-    <form class="vflex">
+    <form>
         <h3>Amplify</h3>
         <div class="properties-grid">
             <label for="amp">Amount:</label>

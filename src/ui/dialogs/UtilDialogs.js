@@ -4,7 +4,7 @@ import {type} from '../../Util.js'
 
 const alertDialogTemplate = $dom.html`
 <dialog class="message-dialog">
-    <form class="vflex">
+    <form>
         <h3 id="title"></h3>
         <output id="message" class="message-out selectable"></output>
         <div class="hflex">
@@ -57,7 +57,7 @@ export const AlertDialogElement = $dom.defineView('alert-dialog', AlertDialog)
 
 const confirmDialogTemplate = $dom.html`
 <dialog class="message-dialog">
-    <form class="vflex">
+    <form>
         <h3 id="title"></h3>
         <output id="message" class="message-out selectable"></output>
         <div class="hflex">
@@ -116,7 +116,7 @@ export const ConfirmDialogElement = $dom.defineView('confirm-dialog', ConfirmDia
 
 const inputDialogTemplate = $dom.html`
 <dialog>
-    <form class="vflex">
+    <form>
         <h3 id="title"></h3>
         <div class="hflex">
             <label id="prompt" for="value"></label>

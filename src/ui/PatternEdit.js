@@ -13,7 +13,7 @@ import './SequenceEdit.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
-<div class="vflex flex-grow">
+<div class="flex-grow">
     <sequence-edit></sequence-edit>
     <div class="hflex">
         <div id="playbackStatus" class="hflex">

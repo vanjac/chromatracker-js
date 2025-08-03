@@ -62,8 +62,8 @@ const template = $dom.html`
         <span>Samples</span>
     </label>
 </form>
-<div id="appTabBody" class="vflex flex-grow">
-    <div id="arrange" class="vflex flex-grow">
+<div id="appTabBody" class="flex-grow">
+    <div id="arrange" class="flex-grow">
         <hr>
         <div class="hflex">
             <button id="downloadModule">
@@ -73,14 +73,14 @@ const template = $dom.html`
         <hr>
         <module-properties></module-properties>
     </div>
-    <div id="sequence" class="vflex flex-grow shrink-clip-y hide">
+    <div id="sequence" class="flex-grow shrink-clip-y hide">
         <pattern-edit></pattern-edit>
     </div>
-    <div id="samples" class="vflex flex-grow shrink-clip-y hide">
+    <div id="samples" class="flex-grow shrink-clip-y hide">
         <samples-list></samples-list>
     </div>
 </div>
-<div class="vflex hide">
+<div class="hide">
     <cell-entry></cell-entry>
 </div>
 `
