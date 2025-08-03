@@ -222,7 +222,12 @@ dialog {
     display: flex;
     flex-direction: column;
 
-    margin: auto;
+    /* center dialog */
+    margin: 0 auto; /* margin:auto doesn't work in old Chrome versions */
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
     background: var(--color-bg);
     color: var(--color-fg);
     padding: 12pt;
