@@ -61,7 +61,8 @@
 }
 
 .justify-start,
-.button-list button {
+.button-list > button,
+.button-list button:first-child {
     justify-content: start;
 }
 

@@ -30,11 +30,11 @@ const template = $dom.html`
             <div class="flex-grow"></div>
         </div>
         <strong id="storageWarning" class="message-out"></strong>
-        <div class="flex-grow vscrollable button-list">
-            <div id="fileList"></div>
+        <div class="flex-grow vscrollable">
+            <div id="fileList" class="button-list"></div>
             <hr>
             <h3>&nbsp;Demo Files:</h3>
-            <div id="demoList">
+            <div id="demoList" class="button-list">
                 <button value="https://chroma.zone/share/space_debris.mod">space debris</button>
                 <button value="https://chroma.zone/share/pixipack1.mod">pixipack 1</button>
             </div>
