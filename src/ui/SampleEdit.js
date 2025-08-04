@@ -54,10 +54,10 @@ const template = $dom.html`
         <div id="waveContainer" class="hflex wave-container">
             <canvas id="wavePreview" class="flex-grow width0" width="1024" height="256"></canvas>
             <div id="selectMarkA" class="wave-mark wave-select hide">
-                <div id="selectHandleA" class="wave-handle wave-select"></div>
+                <div id="selectHandleA" class="wave-handle wave-handle-side wave-select"></div>
             </div>
             <div id="selectMarkB" class="wave-mark wave-select hide">
-                <div id="selectHandleB" class="wave-handle wave-select"></div>
+                <div id="selectHandleB" class="wave-handle wave-handle-side wave-select"></div>
             </div>
             <div id="selectRange" class="wave-range wave-select hide"></div>
             <div id="loopStartMark" class="wave-mark wave-loop hide"></div>
@@ -163,14 +163,14 @@ export class SampleEdit {
 
         this.waveEditBox.addEventListener('pointerdown', e => {
             if (e.pointerType != 'mouse' || e.button == 0) {
-                let pos = this.pointerToWavePos(e.clientX)
+                let pos = this.restrictWavePos(this.pointerToWaveCoord(e.clientX))
                 this.setSel(pos, pos)
                 this.waveEditBox.setPointerCapture(e.pointerId)
             }
         })
         this.waveEditBox.addEventListener('pointermove', e => {
             if (this.waveEditBox.hasPointerCapture(e.pointerId)) {
-                this.selectB = this.pointerToWavePos(e.clientX)
+                this.selectB = this.restrictWavePos(this.pointerToWaveCoord(e.clientX))
                 this.updateSelection()
             }
         })
@@ -185,12 +185,12 @@ export class SampleEdit {
             })
         })
 
-        this.addHandleEvents(this.selectHandleA, offset => {
-            this.selectA += offset
+        this.addHandleEvents(this.selectHandleA, () => this.selectA, value => {
+            this.selectA = value
             this.updateSelection()
         })
-        this.addHandleEvents(this.selectHandleB, offset => {
-            this.selectB += offset
+        this.addHandleEvents(this.selectHandleB, () => this.selectB, value => {
+            this.selectB = value
             this.updateSelection()
         })
 
@@ -516,35 +516,45 @@ export class SampleEdit {
      * @private
      * @param {number} clientX
      */
-    pointerToWavePos(clientX) {
+    pointerToWaveCoord(clientX) {
         let waveRect = this.wavePreview.getBoundingClientRect()
         if (waveRect.width == 0) {
             return 0
         }
-        let pos = (clientX - waveRect.left) * this.viewSample.wave.length / waveRect.width
-        return clamp(Sample.roundToNearest(pos), 0, this.viewSample.wave.length)
+        return (clientX - waveRect.left) * this.viewSample.wave.length / waveRect.width
+    }
+
+    /**
+     * @private
+     * @param {number} coord
+     */
+    restrictWavePos(coord) {
+        return clamp(Sample.roundToNearest(coord), 0, this.viewSample.wave.length)
     }
 
     /**
      * @param {HTMLElement} handle
-     * @param {(offset: number) => void} adjustPosFn
+     * @param {() => number} getPosFn
+     * @param {(value: number) => void} setPosFn
      */
-    addHandleEvents(handle, adjustPosFn) {
-        let grabPos = 0 // captured
+    addHandleEvents(handle, getPosFn, setPosFn) {
+        let curCoord = 0, grabCoord = 0 // captured
 
         handle.addEventListener('pointerdown', e => {
             if (e.pointerType != 'mouse' || e.button == 0) {
                 handle.setPointerCapture(e.pointerId)
                 e.stopPropagation()
-                grabPos = this.pointerToWavePos(e.clientX)
+                curCoord = getPosFn()
+                grabCoord = this.pointerToWaveCoord(e.clientX)
             }
 
         })
         handle.addEventListener('pointermove', e => {
             if (handle.hasPointerCapture(e.pointerId)) {
-                let pos = this.pointerToWavePos(e.clientX)
-                adjustPosFn(pos - grabPos)
-                grabPos = pos
+                let pos = this.pointerToWaveCoord(e.clientX)
+                curCoord += pos - grabCoord
+                grabCoord = pos
+                setPosFn(this.restrictWavePos(curCoord))
             }
         })
     }

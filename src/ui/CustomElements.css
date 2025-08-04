@@ -148,7 +148,7 @@ pattern-table td,
 /* SampleEdit */
 
 .wave-edit {
-    padding: 0 1em;
+    padding: 0 20px; /* room for selection handles */
     touch-action: none;
 }
 
@@ -183,10 +183,12 @@ pattern-table td,
     width: 20px;
     height: 20px;
     border-radius: 16px;
+}
+.wave-handle-side {
     top: 50%;
     transform: translate(0, -50%);
 }
-.wave-handle-flip {
+.wave-handle-side.wave-handle-flip {
     transform: translate(-100%, -50%);
 }
 
