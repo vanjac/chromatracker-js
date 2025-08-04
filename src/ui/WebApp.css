@@ -34,7 +34,7 @@ html, body {
     overscroll-behavior: none;
 }
 
-body, select {
+body, dialog, select {
     user-select: none;
     -webkit-user-select: none;
 }
