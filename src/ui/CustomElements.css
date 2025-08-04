@@ -86,6 +86,7 @@ pattern-table tr,
 pattern-table td,
 .pattern-col-head {
     width: 10ch;
+    padding: 0 2px;
 }
 .cell-pitch,
 .cell-effect,
