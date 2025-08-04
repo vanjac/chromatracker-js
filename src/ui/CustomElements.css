@@ -27,6 +27,12 @@ pattern-table th,
     white-space: nowrap;
     box-sizing: content-box;
 }
+.pattern-row-space th,
+.pattern-row-space .pattern-cell,
+pattern-table thead th {
+    border-top: none;
+    border-bottom: none;
+}
 pattern-table table {
     border-collapse: collapse;
     table-layout: fixed;
@@ -130,12 +136,6 @@ pattern-table td,
     touch-action: none;
 }
 
-.black-key :not(:checked) + span {
-    background: var(--color-fg);
-    color: var(--color-bg);
-    border-color: var(--color-bg);
-}
-
 .hex-grid {
     display: grid;
     grid: auto / 1fr 1fr 1fr 1fr;
@@ -143,6 +143,14 @@ pattern-table td,
 
 .effect-desc {
     font-size: 0.6em;
+}
+
+/* PianoKeyboard */
+
+.black-key :not(:checked) + span {
+    background: var(--color-fg);
+    color: var(--color-bg);
+    border-color: var(--color-bg);
 }
 
 /* SampleEdit */
@@ -182,7 +190,7 @@ pattern-table td,
     position: absolute;
     width: 20px;
     height: 20px;
-    border-radius: 16px;
+    border-radius: 50%;
 }
 .wave-handle-side {
     top: 50%;

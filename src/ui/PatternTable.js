@@ -147,6 +147,7 @@ export class PatternTable {
             let tableFrag = new DocumentFragment()
 
             this.spacerRow = tableFrag.appendChild($dom.createElem('tr'))
+            this.spacerRow.classList.add('pattern-row-space')
             let spacerHead = this.spacerRow.appendChild($dom.createElem('th'))
             spacerHead.classList.add('pattern-row-head')
             for (let c = 0; c < pattern.length; c++) {
@@ -179,7 +180,7 @@ export class PatternTable {
                 }
             }
             this.tbody.appendChild(tableFrag)
-            this.setSelCell(this.selChannel, this.selRow)
+            this.updateSelection()
         }
         this.viewPattern = pattern
     }
@@ -217,12 +218,9 @@ export class PatternTable {
      * @param {number} channel
      * @param {number} row
      */
-    setSelCell(channel, row, clearMark = false) {
+    setSelCell(channel, row) {
         this.selChannel = channel
         this.selRow = row
-        if (clearMark) {
-            this.markChannel = this.markRow = -1
-        }
         this.updateSelection()
     }
 
