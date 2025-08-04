@@ -1,4 +1,4 @@
-/* sequence edit */
+/* SequenceEdit */
 
 .seq-button,
 .seq-select {
@@ -19,7 +19,7 @@
     text-align-last: center;
 }
 
-/* pattern table */
+/* PatternTable */
 
 pattern-table th,
 .pattern-cell {
@@ -109,7 +109,7 @@ pattern-table td,
     height: 50%;
 }
 
-/* cell entry */
+/* CellEntry */
 
 .keypad-key {
     width: 2em;
@@ -145,7 +145,7 @@ pattern-table td,
     font-size: 0.6em;
 }
 
-/* wave editor */
+/* SampleEdit */
 
 .wave-edit {
     padding: 0 1em;
@@ -176,6 +176,18 @@ pattern-table td,
 }
 .wave-range {
     opacity: 0.3;
+}
+
+.wave-handle {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 16px;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+.wave-handle-flip {
+    transform: translate(-100%, -50%);
 }
 
 .wave-select {

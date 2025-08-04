@@ -53,8 +53,12 @@ const template = $dom.html`
     <div id="waveEdit" class="wave-edit">
         <div id="waveContainer" class="hflex wave-container">
             <canvas id="wavePreview" class="flex-grow width0" width="1024" height="256"></canvas>
-            <div id="selectMarkA" class="wave-mark wave-select hide"></div>
-            <div id="selectMarkB" class="wave-mark wave-select hide"></div>
+            <div id="selectMarkA" class="wave-mark wave-select hide">
+                <div id="selectHandleA" class="wave-handle wave-select"></div>
+            </div>
+            <div id="selectMarkB" class="wave-mark wave-select hide">
+                <div id="selectHandleB" class="wave-handle wave-select"></div>
+            </div>
             <div id="selectRange" class="wave-range wave-select hide"></div>
             <div id="loopStartMark" class="wave-mark wave-loop hide"></div>
             <div id="loopEndMark" class="wave-mark wave-loop hide"></div>
@@ -149,6 +153,8 @@ export class SampleEdit {
         this.wavePreview = type(HTMLCanvasElement, fragment.querySelector('#wavePreview'))
         this.selectMarkA = type(HTMLElement, fragment.querySelector('#selectMarkA'))
         this.selectMarkB = type(HTMLElement, fragment.querySelector('#selectMarkB'))
+        this.selectHandleA = type(HTMLElement, fragment.querySelector('#selectHandleA'))
+        this.selectHandleB = type(HTMLElement, fragment.querySelector('#selectHandleB'))
         this.selectRange = type(HTMLElement, fragment.querySelector('#selectRange'))
         this.loopStartMark = type(HTMLElement, fragment.querySelector('#loopStartMark'))
         this.loopEndMark = type(HTMLElement, fragment.querySelector('#loopEndMark'))
@@ -177,6 +183,15 @@ export class SampleEdit {
                 if (start == null) { start = -1 }
                 this.setSel(start, end != null ? end : start)
             })
+        })
+
+        this.addHandleEvents(this.selectHandleA, offset => {
+            this.selectA += offset
+            this.updateSelection()
+        })
+        this.addHandleEvents(this.selectHandleB, offset => {
+            this.selectB += offset
+            this.updateSelection()
         })
 
         this.loopToggle = type(HTMLInputElement, fragment.querySelector('#loopToggle'))
@@ -391,6 +406,10 @@ export class SampleEdit {
             let waveLen = this.viewSample.wave.length
             this.selectRange.style.width = (100 * this.selLen() / waveLen) + '%'
         }
+
+        this.selectHandleA.classList.toggle('wave-handle-flip', this.selectA <= this.selectB)
+        this.selectHandleB.classList.toggle('wave-handle-flip', this.selectA > this.selectB)
+
         this.trimButton.disabled = !rangeSelected
 
         let anySelected = this.anySelected()
@@ -504,6 +523,30 @@ export class SampleEdit {
         }
         let pos = (clientX - waveRect.left) * this.viewSample.wave.length / waveRect.width
         return clamp(Sample.roundToNearest(pos), 0, this.viewSample.wave.length)
+    }
+
+    /**
+     * @param {HTMLElement} handle
+     * @param {(offset: number) => void} adjustPosFn
+     */
+    addHandleEvents(handle, adjustPosFn) {
+        let grabPos = 0 // captured
+
+        handle.addEventListener('pointerdown', e => {
+            if (e.pointerType != 'mouse' || e.button == 0) {
+                handle.setPointerCapture(e.pointerId)
+                e.stopPropagation()
+                grabPos = this.pointerToWavePos(e.clientX)
+            }
+
+        })
+        handle.addEventListener('pointermove', e => {
+            if (handle.hasPointerCapture(e.pointerId)) {
+                let pos = this.pointerToWavePos(e.clientX)
+                adjustPosFn(pos - grabPos)
+                grabPos = pos
+            }
+        })
     }
 
     /** @private */
