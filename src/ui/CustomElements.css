@@ -34,7 +34,7 @@ pattern-table table {
 }
 pattern-table table,
 .pattern-cell {
-    font-size: 14px;
+    font-size: 15px;
 }
 /* https://issues.chromium.org/issues/40511425 */
 pattern-table th {

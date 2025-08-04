@@ -17,6 +17,7 @@ body {
 }
 
 input {
+    padding: 1px 3px;
     background: var(--color-bg);
     border-color: var(--color-fg);
     border: 1px solid var(--color-fg);

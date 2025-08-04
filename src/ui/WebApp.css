@@ -4,6 +4,7 @@
 }
 * {
     margin: 0;
+    padding: 0;
     contain: content;
 }
 input, button, textarea, select {
