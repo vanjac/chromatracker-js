@@ -37,10 +37,6 @@ body, select {
     user-select: none;
     -webkit-user-select: none;
 }
-.selectable {
-    user-select: text;
-    -webkit-user-select: text;
-}
 
 img {
     /* no drag-and-drop, long tap, right click... */
