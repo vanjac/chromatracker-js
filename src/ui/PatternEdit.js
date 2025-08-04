@@ -149,12 +149,14 @@ export class PatternEdit {
             )
             invoke(this.callbacks.jamPlay, id, this.selCell())
             this.advance()
+            navigator.vibrate?.(1)
         }, id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#clear'), id => {
             this.putCell(Cell.empty, this.getCellParts())
             invoke(this.callbacks.jamPlay, id, this.selCell())
             this.advance()
+            navigator.vibrate?.(1)
         }, id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#lift'), id => {
@@ -169,8 +171,14 @@ export class PatternEdit {
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
         fragment.querySelector('#paste').addEventListener('click', () => this.paste())
-        fragment.querySelector('#insert').addEventListener('click', () => this.insert(1))
-        fragment.querySelector('#delete').addEventListener('click', () => this.delete(1))
+        fragment.querySelector('#insert').addEventListener('click', () => {
+            this.insert(1)
+            navigator.vibrate?.(1)
+        })
+        fragment.querySelector('#delete').addEventListener('click', () => {
+            this.delete(1)
+            navigator.vibrate?.(1)
+        })
 
         this.pitchEnable.addEventListener('change', this.updateEntryParts.bind(this))
         this.sampleEnable.addEventListener('change', this.updateEntryParts.bind(this))
