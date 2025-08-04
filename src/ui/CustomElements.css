@@ -21,46 +21,47 @@
 
 /* pattern table */
 
-th, .pattern-cell {
+pattern-table th,
+.pattern-cell {
     border: 1px solid var(--color-fg);
     white-space: nowrap;
     box-sizing: content-box;
 }
-table {
+pattern-table table {
     border-collapse: collapse;
     table-layout: fixed;
     width: 0;
 }
-table,
+pattern-table table,
 .pattern-cell {
     font-size: 14px;
 }
 /* https://issues.chromium.org/issues/40511425 */
-th {
+pattern-table th {
     position: sticky;
     background-color: var(--color-bg);
     z-index: 1;
 }
-thead {
+pattern-table thead {
     /* Fix borders disappearing in Safari, and incorrect Z order in old Chrome */
     contain: none;
 }
-thead th {
+pattern-table thead th {
     top: 0;
 }
-tbody th {
+pattern-table tbody th {
     left: 0;
 }
-thead th input,
-thead th label {
+pattern-table thead th input,
+pattern-table thead th label {
     vertical-align: middle;
 }
-tbody tr:nth-child(4n+2),
-tbody tr:nth-child(4n+2) th {
+pattern-table tbody tr:nth-child(4n+2),
+pattern-table tbody tr:nth-child(4n+2) th {
     background: var(--color-bg-btn);
 }
-tbody tr:nth-child(16n+2),
-tbody tr:nth-child(16n+2) th {
+pattern-table tbody tr:nth-child(16n+2),
+pattern-table tbody tr:nth-child(16n+2) th {
     background: var(--color-bg-btn-press);
 }
 .sel-cell {
@@ -72,8 +73,8 @@ tbody tr:nth-child(16n+2) th {
     background: var(--color-fg-hl);
     color: var(--color-bg);
 }
-td,
-tr,
+pattern-table td,
+pattern-table tr,
 .cell-pitch,
 .cell-effect,
 .cell-inst {
@@ -82,7 +83,7 @@ tr,
     overflow: hidden;
     contain: strict;
 }
-td,
+pattern-table td,
 .pattern-col-head {
     width: 10ch;
 }
