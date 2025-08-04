@@ -70,9 +70,6 @@ pattern-table tbody tr:nth-child(16n+2) td,
 pattern-table tbody tr:nth-child(16n+2) th {
     background: var(--color-bg-btn-press);
 }
-.sel-cell {
-    background: var(--color-bg-hl);
-}
 .sel-pitch .cell-pitch,
 .sel-inst .cell-inst,
 .sel-effect .cell-effect {
@@ -107,8 +104,12 @@ pattern-table td,
 .cell-inst, .pattern-row-head {
     width: 2ch;
 }
-.hilite-row {
+.hilite-row td,
+.hilite-row th {
     background: var(--color-bg-alt) !important;
+}
+pattern-table .sel-cell { /* extra specificity */
+    background: var(--color-bg-hl) !important;
 }
 
 .pattern-table-space {
