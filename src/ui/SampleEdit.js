@@ -60,8 +60,12 @@ const template = $dom.html`
                 <div id="selectHandleB" class="wave-handle wave-handle-side wave-select"></div>
             </div>
             <div id="selectRange" class="wave-range wave-select hide"></div>
-            <div id="loopStartMark" class="wave-mark wave-loop hide"></div>
-            <div id="loopEndMark" class="wave-mark wave-loop hide"></div>
+            <div id="loopStartMark" class="wave-mark wave-loop hide">
+                <div id="loopStartHandle" class="wave-handle wave-handle-top wave-loop"></div>
+            </div>
+            <div id="loopEndMark" class="wave-mark wave-loop hide">
+                <div id="loopEndHandle" class="wave-handle wave-handle-bottom wave-loop"></div>
+            </div>
         </div>
     </div>
 
@@ -158,6 +162,8 @@ export class SampleEdit {
         this.selectRange = type(HTMLElement, fragment.querySelector('#selectRange'))
         this.loopStartMark = type(HTMLElement, fragment.querySelector('#loopStartMark'))
         this.loopEndMark = type(HTMLElement, fragment.querySelector('#loopEndMark'))
+        let loopStartHandle = type(HTMLElement, fragment.querySelector('#loopStartHandle'))
+        let loopEndHandle = type(HTMLElement, fragment.querySelector('#loopEndHandle'))
         /** @type {HTMLElement[]} */
         this.playMarks = []
 
@@ -192,6 +198,20 @@ export class SampleEdit {
         this.addHandleEvents(this.selectHandleB, () => this.selectB, value => {
             this.selectB = value
             this.updateSelection()
+        })
+        this.addHandleEvents(loopStartHandle, () => this.viewSample.loopStart, (value, commit) => {
+            this.changeSample(sample => {
+                if (value < sample.loopEnd) {
+                    sample.loopStart = value
+                }
+            }, commit, true)
+        })
+        this.addHandleEvents(loopEndHandle, () => this.viewSample.loopEnd, (value, commit) => {
+            this.changeSample(sample => {
+                if (value > sample.loopStart) {
+                    sample.loopEnd = value
+                }
+            }, commit, true)
         })
 
         this.loopToggle = type(HTMLInputElement, fragment.querySelector('#loopToggle'))
@@ -535,7 +555,7 @@ export class SampleEdit {
     /**
      * @param {HTMLElement} handle
      * @param {() => number} getPosFn
-     * @param {(value: number) => void} setPosFn
+     * @param {(value: number, commit: boolean) => void} setPosFn
      */
     addHandleEvents(handle, getPosFn, setPosFn) {
         let curCoord = 0, grabCoord = 0 // captured
@@ -554,8 +574,11 @@ export class SampleEdit {
                 let pos = this.pointerToWaveCoord(e.clientX)
                 curCoord += pos - grabCoord
                 grabCoord = pos
-                setPosFn(this.restrictWavePos(curCoord))
+                setPosFn(this.restrictWavePos(curCoord), false)
             }
+        })
+        handle.addEventListener('lostpointercapture', () => {
+            setPosFn(this.restrictWavePos(curCoord), true)
         })
     }
 

@@ -191,6 +191,12 @@ pattern-table td,
 .wave-handle-side.wave-handle-flip {
     transform: translate(-100%, -50%);
 }
+.wave-handle-top, .wave-handle-bottom {
+    transform: translate(-50%, 0);
+}
+.wave-handle-bottom {
+    bottom: 0;
+}
 
 .wave-select {
     background: var(--color-fg-hl);
