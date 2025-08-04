@@ -420,6 +420,7 @@ export class ModuleEdit {
         }
         if (!this.queuedStates.length) {
             this.viewState = null
+            this.patternEdit.controller.setPlaybackPos(-1, -1)
             this.samplesList.controller.setChannelStates(this.playback, [], curTime)
         } else {
             let i = 0
