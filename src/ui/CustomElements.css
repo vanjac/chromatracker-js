@@ -62,11 +62,11 @@ pattern-table thead th input,
 pattern-table thead th label {
     vertical-align: middle;
 }
-pattern-table tbody tr:nth-child(4n+2),
+pattern-table tbody tr:nth-child(4n+2) td,
 pattern-table tbody tr:nth-child(4n+2) th {
     background: var(--color-bg-btn);
 }
-pattern-table tbody tr:nth-child(16n+2),
+pattern-table tbody tr:nth-child(16n+2) td,
 pattern-table tbody tr:nth-child(16n+2) th {
     background: var(--color-bg-btn-press);
 }
