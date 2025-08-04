@@ -27,15 +27,6 @@ export function createNew() {
 
 /**
  * @param {Readonly<Module>} module
- * @param {string} name
- * @returns {Readonly<Module>}
- */
-export function setName(module, name) {
-    return freeze({...module, name})
-}
-
-/**
- * @param {Readonly<Module>} module
  * @param {number} count
  * @returns {Readonly<Module>}
  */

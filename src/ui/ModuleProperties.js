@@ -3,7 +3,7 @@ import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
-import {type, invoke, callbackDebugObject} from '../Util.js'
+import {freeze, type, invoke, callbackDebugObject} from '../Util.js'
 import {mod, Module} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
@@ -38,6 +38,11 @@ const template = $dom.html`
 
     <label for="sequenceCount">Length:</label>
     <output id="sequenceCount"></output>
+
+    <label for="restart">Restart pos:</label>
+    <div class="hflex">
+        <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off"></input>
+    </div>
 
     <label for="fileSize">File size:</label>
     <output id="fileSize"></output>
@@ -74,8 +79,13 @@ export class ModuleProperties {
         this.titleInput = type(HTMLInputElement, fragment.querySelector('#title'))
         $dom.addInputListeners(this.titleInput, commit => {
             invoke(this.callbacks.changeModule,
-                module => $module.setName(module, this.titleInput.value), commit)
+                module => freeze({...module, name: this.titleInput.value}), commit)
         })
+        this.restartPosInput = new $dom.ValidatedNumberInput(fragment.querySelector('#restart'),
+            (restartPos, commit) => {
+                invoke(this.callbacks.changeModule,
+                    module => freeze({...module, restartPos}), commit)
+            })
 
         this.channelCountOutput = type(HTMLOutputElement, fragment.querySelector('#channelCount'))
         this.sampleCountOutput = type(HTMLOutputElement, fragment.querySelector('#sampleCount'))
@@ -108,6 +118,10 @@ export class ModuleProperties {
         if (!this.viewModule || module.name != this.titleInput.value) {
             console.debug('update title')
             this.titleInput.value = module.name
+        }
+        if (!this.viewModule || module.restartPos != this.restartPosInput.getValue()) {
+            console.debug('update sequence count')
+            this.restartPosInput.setValue(module.restartPos)
         }
         if (module.numChannels != this.viewModule?.numChannels) {
             console.debug('update channel count')
