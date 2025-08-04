@@ -106,8 +106,11 @@ select,
 }
 
 button:active,
+button.active,
 select:active,
+select.active,
 .label-button :active + span,
+.label-button.active span,
 button:disabled,
 select:disabled
 .label-button :disabled + span {
@@ -120,8 +123,9 @@ select:disabled
     color: var(--color-bg)
 }
 
-.label-button :checked:active + span,
-.show-checked:active {
+.label-button :active:checked + span,
+.label-button.active :checked + span,
+.show-checked.active {
     background: var(--color-bg-hl);
     color: var(--color-fg)
 }

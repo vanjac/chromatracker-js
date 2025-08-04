@@ -1,4 +1,5 @@
 import * as $id from '../ID.js'
+import './WebApp.js'
 
 /**
  * @typedef {Object & {
