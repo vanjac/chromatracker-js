@@ -123,6 +123,7 @@ pattern-table .sel-cell { /* extra specificity */
     height: 20px;
     border-radius: 50%;
     background: var(--color-fg-hl);
+    opacity: 0.9;
 }
 .pattern-handle:nth-child(1) {
     transform: translate(-100%, -100%);
@@ -220,6 +221,7 @@ pattern-table .sel-cell { /* extra specificity */
 .wave-handle-side {
     top: 50%;
     transform: translate(0, -50%);
+    opacity: 0.9;
 }
 .wave-handle-side.wave-handle-flip {
     transform: translate(-100%, -50%);

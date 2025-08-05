@@ -214,6 +214,7 @@ export class PatternTable {
     updateSpaceSize() {
         if (this.spacerRow) {
             this.spacerRow.style.height = this.tableSpace.clientHeight + 'px'
+            this.updateSelectionHandles()
         }
     }
 
@@ -272,37 +273,11 @@ export class PatternTable {
             let selCell = this.getTd(this.selChannel, this.selRow)
             if (selCell) { $cell.toggleParts(selCell, this.viewEntryParts) }
 
-            let hasMark = this.markChannel >= 0 && this.markRow >= 0
-            this.selectHandleContainer.classList.toggle('hide', !hasMark)
-            if (!hasMark) {
+            if (this.markChannel < 0 || this.markRow < 0) {
                 if (selCell) { selCell.classList.add('sel-cell') }
             } else {
                 let [minChannel, maxChannel] = minMax(this.selChannel, this.markChannel)
                 let [minRow, maxRow] = minMax(this.selRow, this.markRow)
-
-                let scrollRect = this.patternScroll.getBoundingClientRect()
-                let {scrollTop, scrollLeft} = this.patternScroll
-                let minTr = this.getTr(minRow)
-                let maxTr = this.getTr(maxRow)
-                let minTd = minTr?.children[minChannel + 1]
-                let maxTd = minTr?.children[maxChannel + 1]
-                let selTop = minTr ?
-                    minTr.getBoundingClientRect().top - scrollRect.top + scrollTop : 0
-                let selBottom = maxTr ?
-                    maxTr.getBoundingClientRect().bottom - scrollRect.top + scrollTop : 0
-                let selLeft = minTd ?
-                    minTd.getBoundingClientRect().left - scrollRect.left + scrollLeft : 0
-                let selRight = maxTd ?
-                    maxTd.getBoundingClientRect().right - scrollRect.left + scrollLeft : 0
-
-                this.selectHandles[0].style.top = selTop + 'px'
-                this.selectHandles[1].style.top = selTop + 'px'
-                this.selectHandles[2].style.top = selBottom + 'px'
-                this.selectHandles[3].style.top = selBottom + 'px'
-                this.selectHandles[0].style.left = selLeft + 'px'
-                this.selectHandles[1].style.left = selRight + 'px'
-                this.selectHandles[2].style.left = selLeft + 'px'
-                this.selectHandles[3].style.left = selRight + 'px'
 
                 for (let row = minRow; row <= maxRow; row++) {
                     let tr = this.getTr(row)
@@ -312,6 +287,41 @@ export class PatternTable {
                     }
                 }
             }
+        }
+        this.updateSelectionHandles()
+    }
+
+    /** @private */
+    updateSelectionHandles() {
+        let hasSel = this.selRow >= 0 && this.selChannel >= 0
+            && this.markRow >= 0 && this.markChannel >= 0
+        this.selectHandleContainer.classList.toggle('hide', !hasSel)
+        if (hasSel) {
+            let scrollRect = this.patternScroll.getBoundingClientRect()
+            let {scrollTop, scrollLeft} = this.patternScroll
+            let [minChannel, maxChannel] = minMax(this.selChannel, this.markChannel)
+            let [minRow, maxRow] = minMax(this.selRow, this.markRow)
+            let minTr = this.getTr(minRow)
+            let maxTr = this.getTr(maxRow)
+            let minTd = minTr?.children[minChannel + 1]
+            let maxTd = minTr?.children[maxChannel + 1]
+            let selTop = minTr ?
+                minTr.getBoundingClientRect().top - scrollRect.top + scrollTop : 0
+            let selBottom = maxTr ?
+                maxTr.getBoundingClientRect().bottom - scrollRect.top + scrollTop : 0
+            let selLeft = minTd ?
+                minTd.getBoundingClientRect().left - scrollRect.left + scrollLeft : 0
+            let selRight = maxTd ?
+                maxTd.getBoundingClientRect().right - scrollRect.left + scrollLeft : 0
+
+            this.selectHandles[0].style.top = selTop + 'px'
+            this.selectHandles[1].style.top = selTop + 'px'
+            this.selectHandles[2].style.top = selBottom + 'px'
+            this.selectHandles[3].style.top = selBottom + 'px'
+            this.selectHandles[0].style.left = selLeft + 'px'
+            this.selectHandles[1].style.left = selRight + 'px'
+            this.selectHandles[2].style.left = selLeft + 'px'
+            this.selectHandles[3].style.left = selRight + 'px'
         }
     }
 
