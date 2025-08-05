@@ -92,14 +92,15 @@ export class PatternTable {
         this.addHandleEvents(this.selectHandles[3], true, true)
 
         new KeyPad(this.tbody, (id, elem, drag) => {
-            if (elem.dataset.c != null && this.markChannel < 0 && this.markRow < 0) {
+            let selectEnabled = this.markChannel < 0 && this.markRow < 0
+                || this.patternScroll.classList.contains('scroll-lock')
+            if (selectEnabled && elem.dataset.c != null) {
                 let c = Number(elem.dataset.c)
                 let row = Number(elem.dataset.row)
                 this.setSelCell(c, row, drag)
                 invoke(this.callbacks.jamPlay, id, this.viewPattern[c][row])
             }
         }, id => invoke(this.callbacks.jamRelease, id))
-        // TODO: alternate selection events
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('row', 'number', this.selRow,
