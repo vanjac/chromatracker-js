@@ -7,6 +7,9 @@ import {CellPart, Pattern} from '../Model.js'
 import {type, invoke, minMax, callbackDebugObject, freeze, clamp} from '../Util.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
+const scrollMargin = 32 // pixels
+const scrollRate = 240 // pixels per second
+
 const template = $dom.html`
 <div id="patternScroll" class="hscrollable vscrollable flex-grow">
     <div id="handles" class="nocontain hide">
@@ -32,6 +35,18 @@ const cellTemplate = $dom.html`
     <span id="effect" class="cell-effect">...</span>
 </td>
 `
+
+/**
+ * @param {Element} scrollElem
+ * @param {number} clientX
+ * @param {number} clientY
+ * @returns {[number, number]}
+ */
+function scrollCoords(scrollElem, clientX, clientY) {
+    let scrollRect = scrollElem.getBoundingClientRect()
+    let {scrollTop, scrollLeft} = scrollElem
+    return [clientX - scrollRect.left + scrollLeft, clientY - scrollRect.top + scrollTop]
+}
 
 export class PatternTable {
     /**
@@ -278,10 +293,13 @@ export class PatternTable {
      * @param {boolean} maxRow
      */
     addHandleEvents(handle, maxChannel, maxRow) {
+        // TODO: this all needs refactoring
         // captured variables:
         let startX = 0, startY = 0
         let startChannel = 0, startRow = 0
         let isMarkChannel = false, isMarkRow = false
+        let dragX = 0, dragY = 0
+        let animHandle = 0
         /** @type {DOMRect} */
         let cellRect
 
@@ -289,8 +307,7 @@ export class PatternTable {
             if (e.pointerType != 'mouse' || e.button == 0) {
                 handle.setPointerCapture(e.pointerId)
                 e.stopPropagation()
-                startX = e.clientX
-                startY = e.clientY
+                ;[startX, startY] = scrollCoords(this.patternScroll, e.clientX, e.clientY)
                 // prefer to move mark
                 isMarkChannel = maxChannel ?
                     (this.markChannel >= this.selChannel) : (this.markChannel <= this.selChannel)
@@ -302,18 +319,63 @@ export class PatternTable {
         })
         handle.addEventListener('pointermove', e => {
             if (handle.hasPointerCapture(e.pointerId)) {
-                let channel = startChannel + (e.clientX - startX) / cellRect.width
-                channel = clamp(Math.round(channel), 0, this.viewNumChannels - 1)
-                let row = Math.round(startRow + (e.clientY - startY) / cellRect.height)
-                row = clamp(Math.round(row), 0, this.viewNumRows - 1)
-                let curChannel = isMarkChannel ? this.markChannel : this.selChannel
-                let curRow = isMarkRow ? this.markRow : this.selRow
-                if (channel != curChannel || row != curRow) {
-                    if (isMarkChannel) {this.markChannel = channel} else {this.selChannel = channel}
-                    if (isMarkRow) {this.markRow = row} else {this.selRow = row}
-                    this.updateSelection()
+                dragX = e.clientX
+                dragY = e.clientY
+                if (animHandle != 0) {
+                    return
                 }
+
+                let lastTime = window.performance.now() // captured
+                /** @param {number} time */
+                let updateDrag = time => {
+                    let [x, y] = scrollCoords(this.patternScroll, dragX, dragY)
+                    let channel = startChannel + (x - startX) / cellRect.width
+                    channel = clamp(Math.round(channel), 0, this.viewNumChannels - 1)
+                    let row = Math.round(startRow + (y - startY) / cellRect.height)
+                    row = clamp(Math.round(row), 0, this.viewNumRows - 1)
+                    let curChannel = isMarkChannel ? this.markChannel : this.selChannel
+                    let curRow = isMarkRow ? this.markRow : this.selRow
+                    if (channel != curChannel || row != curRow) {
+                        if (isMarkChannel) {
+                            this.markChannel = channel
+                        } else {
+                            this.selChannel = channel
+                        }
+                        if (isMarkRow) {this.markRow = row} else {this.selRow = row}
+                        this.updateSelection()
+                    }
+
+                    let scrollRect = this.patternScroll.getBoundingClientRect()
+                    let autoScrollX = 0, autoScrollY = 0
+                    if (dragX > scrollRect.right - scrollMargin) {
+                        autoScrollX = 1
+                    } else if (dragX < scrollRect.left + scrollMargin) {
+                        autoScrollX = -1
+                    }
+                    if (dragY > scrollRect.bottom) {
+                        autoScrollY = 1
+                    } else if (dragY < scrollRect.top) {
+                        autoScrollY = -1
+                    }
+                    if (autoScrollX || autoScrollY) {
+                        let vel = (time - lastTime) / 1000 * scrollRate
+                        lastTime = time
+                        this.patternScroll.scrollBy(
+                            {left: autoScrollX * vel, top: autoScrollY * vel, behavior: 'instant'
+                        })
+                        animHandle = window.requestAnimationFrame(updateDrag)
+                    } else {
+                        animHandle = 0
+                    }
+                }
+                updateDrag(lastTime)
             }
+        })
+        handle.addEventListener('lostpointercapture', () => {
+            if (animHandle) {
+                window.cancelAnimationFrame(animHandle)
+            }
+            animHandle = 0
         })
     }
 
@@ -353,22 +415,18 @@ export class PatternTable {
             && this.markRow >= 0 && this.markChannel >= 0
         this.selectHandleContainer.classList.toggle('hide', !hasSel)
         if (hasSel) {
-            let scrollRect = this.patternScroll.getBoundingClientRect()
-            let {scrollTop, scrollLeft} = this.patternScroll
             let [minChannel, maxChannel] = minMax(this.selChannel, this.markChannel)
             let [minRow, maxRow] = minMax(this.selRow, this.markRow)
             let minTr = this.getTr(minRow)
             let maxTr = this.getTr(maxRow)
             let minTd = minTr?.children[minChannel + 1]
             let maxTd = minTr?.children[maxChannel + 1]
-            let selTop = minTr ?
-                minTr.getBoundingClientRect().top - scrollRect.top + scrollTop : 0
-            let selBottom = maxTr ?
-                maxTr.getBoundingClientRect().bottom - scrollRect.top + scrollTop : 0
-            let selLeft = minTd ?
-                minTd.getBoundingClientRect().left - scrollRect.left + scrollLeft : 0
-            let selRight = maxTd ?
-                maxTd.getBoundingClientRect().right - scrollRect.left + scrollLeft : 0
+            let selTop = minTr ? minTr.getBoundingClientRect().top : 0
+            let selBottom = maxTr ? maxTr.getBoundingClientRect().bottom : 0
+            let selLeft = minTd ? minTd.getBoundingClientRect().left : 0
+            let selRight = maxTd ? maxTd.getBoundingClientRect().right : 0
+            ;[selLeft, selTop] = scrollCoords(this.patternScroll, selLeft, selTop)
+            ;[selRight, selBottom] = scrollCoords(this.patternScroll, selRight, selBottom)
 
             this.selectHandles[0].style.top = selTop + 'px'
             this.selectHandles[1].style.top = selTop + 'px'
