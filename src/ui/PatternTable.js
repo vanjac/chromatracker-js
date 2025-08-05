@@ -92,7 +92,7 @@ export class PatternTable {
         this.addHandleEvents(this.selectHandles[3], true, true)
 
         new KeyPad(this.tbody, (id, elem, drag) => {
-            let selectEnabled = this.markChannel < 0 && this.markRow < 0
+            let selectEnabled = !this.selecting()
                 || this.patternScroll.classList.contains('scroll-lock')
             if (selectEnabled && elem.dataset.c != null) {
                 let c = Number(elem.dataset.c)
@@ -180,15 +180,41 @@ export class PatternTable {
             this.spacerRow.classList.add('pattern-row-space')
             let spacerHead = this.spacerRow.appendChild($dom.createElem('th'))
             spacerHead.classList.add('pattern-row-head')
+            spacerHead.addEventListener('click', () => {
+                this.selChannel = this.selRow = 0
+                if (this.selecting()) {
+                    this.markChannel = this.viewNumChannels - 1
+                    this.markRow = this.viewNumRows - 1
+                }
+                this.updateSelection()
+            })
             for (let c = 0; c < pattern.length; c++) {
                 let spacerData = this.spacerRow.appendChild($dom.createElem('td'))
                 spacerData.classList.add('pattern-cell')
+                spacerData.addEventListener('click', () => {
+                    this.selChannel = c
+                    this.selRow = 0
+                    if (this.selecting()) {
+                        this.markChannel = c
+                        this.markRow = this.viewNumRows - 1
+                    }
+                    this.updateSelection()
+                })
             }
 
             for (let row = 0; row < pattern[0].length; row++) {
                 let tr = tableFrag.appendChild($dom.createElem('tr'))
                 let th = $dom.createElem('th', {textContent: row.toString()})
                 th.classList.add('pattern-row-head')
+                th.addEventListener('click', () => {
+                    this.selChannel = 0
+                    this.selRow = row
+                    if (this.selecting()) {
+                        this.markChannel = this.viewNumChannels - 1
+                        this.markRow = row
+                    }
+                    this.updateSelection()
+                })
                 tr.appendChild(th)
 
                 for (let c = 0; c < pattern.length; c++) {
@@ -244,7 +270,7 @@ export class PatternTable {
      * @returns {[number, number]}
      */
     channelRange() {
-        if (this.markChannel < 0 || this.markRow < 0) {
+        if (!this.selecting()) {
             return [this.selChannel, this.selChannel]
         } else {
             return minMax(this.selChannel, this.markChannel)
@@ -255,7 +281,7 @@ export class PatternTable {
      * @returns {[number, number]}
      */
     rowRange() {
-        if (this.markChannel < 0 || this.markRow < 0) {
+        if (!this.selecting()) {
             return [this.selRow, this.selRow]
         } else {
             return minMax(this.selRow, this.markRow)
@@ -270,7 +296,7 @@ export class PatternTable {
     setSelCell(channel, row, drag) {
         this.selChannel = channel
         this.selRow = row
-        if (!drag && this.markChannel >= 0 && this.markRow >= 0) {
+        if (!drag && this.selecting()) {
             this.markChannel = channel
             this.markRow = row
         }
@@ -286,6 +312,11 @@ export class PatternTable {
     clearMark() {
         this.markChannel = this.markRow = -1
         this.updateSelection()
+    }
+
+    /** @private */
+    selecting() {
+        return this.markChannel >= 0 && this.markRow >= 0
     }
 
     /**
@@ -393,7 +424,7 @@ export class PatternTable {
             let selCell = this.getTd(this.selChannel, this.selRow)
             if (selCell) { $cell.toggleParts(selCell, this.viewEntryParts) }
 
-            if (this.markChannel < 0 || this.markRow < 0) {
+            if (!this.selecting()) {
                 if (selCell) { selCell.classList.add('sel-cell') }
             } else {
                 let [minChannel, maxChannel] = minMax(this.selChannel, this.markChannel)
@@ -413,8 +444,7 @@ export class PatternTable {
 
     /** @private */
     updateSelectionHandles() {
-        let hasSel = this.selRow >= 0 && this.selChannel >= 0
-            && this.markRow >= 0 && this.markChannel >= 0
+        let hasSel = this.selRow >= 0 && this.selChannel >= 0 && this.selecting()
         this.selectHandleContainer.classList.toggle('hide', !hasSel)
         if (hasSel) {
             let [minChannel, maxChannel] = minMax(this.selChannel, this.markChannel)
