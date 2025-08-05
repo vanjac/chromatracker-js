@@ -63,6 +63,7 @@ const template = $dom.html`
     <div id="arrange" class="flex-grow">
         <hr>
         <module-properties></module-properties>
+        <div class="placeholder flex-grow">PLACEHOLDER</div>
     </div>
     <div id="sequence" class="flex-grow shrink-clip-y hide">
         <pattern-edit></pattern-edit>

@@ -3,8 +3,6 @@ hr {
     border: none;
 }
 
-/* common */
-
 body {
     font-family: 'Iosevka Aile Custom Web', system-ui, sans-serif;
     font-size: 16px;
@@ -55,8 +53,6 @@ label,
 output {
     padding: 0 0.33em;
 }
-
-/* Buttons */
 
 .label-button {
     white-space: nowrap;
@@ -175,10 +171,15 @@ dialog {
     white-space: pre-wrap;
 }
 
-/* grid */
-
 .properties-grid {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
+}
+
+.placeholder {
+    margin: 16px;
+    background: var(--color-bg-btn-press);
+    align-items: center;
+    justify-content: center;
 }
