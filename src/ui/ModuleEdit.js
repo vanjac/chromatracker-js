@@ -3,6 +3,7 @@ import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
 import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
+import * as $icons from '../gen/Icons.js'
 import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
 import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
@@ -10,7 +11,6 @@ import {Cell, Module, CellPart} from '../Model.js'
 import './CellEntry.js'
 import './ModuleProperties.js'
 import './PatternEdit.js'
-import './PlaybackControls.js'
 import './SamplesList.js'
 
 const playbackQueueTime = 0.5
@@ -43,37 +43,67 @@ const processInterval = 200
  */
 
 const template = $dom.html`
-<playback-controls></playback-controls>
-
-<form id="appTabs" class="hflex tab-group" autocomplete="off">
-    <label class="label-button flex-grow">
-        <input type="radio" name="app-tab" value="arrange" checked="">
-        <span>Arrange</span>
-    </label>
-    <label class="label-button flex-grow">
-        <input type="radio" name="app-tab" value="sequence">
-        <span>Sequence</span>
-    </label>
-    <label class="label-button flex-grow">
-        <input type="radio" name="app-tab" value="samples">
-        <span>Samples</span>
-    </label>
-</form>
-<div id="appTabBody" class="flex-grow">
-    <div id="arrange" class="flex-grow">
-        <hr>
-        <module-properties></module-properties>
-        <div class="placeholder flex-grow">PLACEHOLDER</div>
+<div class="flex-grow">
+    <div class="hflex">
+        <button id="close">
+            ${$icons.arrow_left}
+        </button>
+        <div class="flex-grow"></div>
+        <button id="playStart">
+            ${$icons.step_forward}
+        </button>
+        <button id="playPattern">
+            ${$icons.playlist_play}
+        </button>
+        <label class="label-button hide">
+            <input id="patternLoop" type="checkbox">
+            <span>${$icons.repeat_variant}</span>
+        </label>
+        <button id="playRow">
+            ${$icons.play}
+        </button>
+        <button id="pause" class="hide show-checked">
+            ${$icons.pause}
+        </button>
+        <label class="label-button">
+            <input id="follow" type="checkbox" checked="">
+            <span>${$icons.format_indent_increase}</span>
+        </label>
+        <div class="flex-grow"></div>
+        <button id="undo">
+            ${$icons.undo}
+        </button>
     </div>
-    <div id="sequence" class="flex-grow shrink-clip-y hide">
-        <pattern-edit></pattern-edit>
+    <form id="appTabs" class="hflex tab-group" autocomplete="off">
+        <label class="label-button flex-grow">
+            <input type="radio" name="app-tab" value="arrange" checked="">
+            <span>Arrange</span>
+        </label>
+        <label class="label-button flex-grow">
+            <input type="radio" name="app-tab" value="sequence">
+            <span>Sequence</span>
+        </label>
+        <label class="label-button flex-grow">
+            <input type="radio" name="app-tab" value="samples">
+            <span>Samples</span>
+        </label>
+    </form>
+    <div id="appTabBody" class="flex-grow">
+        <div id="arrange" class="flex-grow">
+            <hr>
+            <module-properties></module-properties>
+            <div class="placeholder flex-grow">PLACEHOLDER</div>
+        </div>
+        <div id="sequence" class="flex-grow shrink-clip-y hide">
+            <pattern-edit></pattern-edit>
+        </div>
+        <div id="samples" class="flex-grow shrink-clip-y hide">
+            <samples-list></samples-list>
+        </div>
     </div>
-    <div id="samples" class="flex-grow shrink-clip-y hide">
-        <samples-list></samples-list>
+    <div class="hide">
+        <cell-entry></cell-entry>
     </div>
-</div>
-<div class="hide">
-    <cell-entry></cell-entry>
 </div>
 `
 
@@ -110,8 +140,14 @@ export class ModuleEdit {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        this.playPatternButton = fragment.querySelector('#playPattern')
+        this.playRowButton = fragment.querySelector('#playRow')
+        this.pauseButton = fragment.querySelector('#pause')
+        this.patternLoopInput = type(HTMLInputElement, fragment.querySelector('#patternLoop'))
+        this.followInput = type(HTMLInputElement, fragment.querySelector('#follow'))
+        this.undoButton = type(HTMLButtonElement, fragment.querySelector('#undo'))
+
         this.moduleProperties = fragment.querySelector('module-properties')
-        this.playbackControls = fragment.querySelector('playback-controls')
         this.patternEdit = fragment.querySelector('pattern-edit')
         this.samplesList = fragment.querySelector('samples-list')
         this.cellEntry = fragment.querySelector('cell-entry')
@@ -137,6 +173,28 @@ export class ModuleEdit {
             }
         }
 
+        fragment.querySelector('#close').addEventListener('click', () => this.close())
+
+        fragment.querySelector('#playStart').addEventListener('click', () => {
+            this.patternLoopInput.checked = false
+            this.resetPlayback()
+            this.play()
+        })
+        this.playPatternButton.addEventListener('click', () => {
+            this.patternLoopInput.checked = true
+            this.resetPlayback({restoreSpeed: true, restorePos: true})
+            this.play()
+        })
+        this.playRowButton.addEventListener('click', () => {
+            this.resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})
+            this.play()
+        })
+        this.pauseButton.addEventListener('click', () => this.pause())
+        this.playRowButton.addEventListener('contextmenu', () => this.destroyPlayback())
+        this.pauseButton.addEventListener('contextmenu', () => this.destroyPlayback())
+        this.patternLoopInput.addEventListener('change', () => this.updatePlaySettings())
+        this.undoButton.addEventListener('click', () => this.undo())
+
         this.view.addEventListener('contextmenu', () => {
             console.log('Selected:')
             $cli.resetSel()
@@ -158,15 +216,6 @@ export class ModuleEdit {
 
         this.moduleProperties.controller.callbacks = {
             changeModule: this.changeModule.bind(this),
-        }
-        this.playbackControls.controller.callbacks = {
-            close: this.close.bind(this),
-            resetPlayback: this.resetPlayback.bind(this),
-            play: this.play.bind(this),
-            pause: this.pause.bind(this),
-            destroyPlayback: this.destroyPlayback.bind(this),
-            updatePlaySettings: this.updatePlaySettings.bind(this),
-            undo: this.undo.bind(this),
         }
         this.patternEdit.controller.callbacks = {
             changeModule: this.changeModule.bind(this),
@@ -288,7 +337,7 @@ export class ModuleEdit {
         this.processPlayback()
         this.intervalHandle = window.setInterval(() => this.processPlayback(), processInterval)
         this.enableAnimation()
-        this.playbackControls.controller.setPlayState(true)
+        this.setPlayState(true)
     }
 
     /** @private */
@@ -302,8 +351,19 @@ export class ModuleEdit {
                 this.disableAnimation() // should be called after clearing queuedStates
             }
             this.intervalHandle = 0
-            this.playbackControls.controller.setPlayState(false)
+            this.setPlayState(false)
         }
+    }
+
+    /**
+     * @private
+     * @param {boolean} playing
+     */
+    setPlayState(playing) {
+        this.playPatternButton.classList.toggle('hide', playing)
+        this.playRowButton.classList.toggle('hide', playing)
+        this.pauseButton.classList.toggle('hide', !playing)
+        this.patternLoopInput.parentElement.classList.toggle('hide', !playing)
     }
 
     /** @private */
@@ -330,7 +390,7 @@ export class ModuleEdit {
     /** @private */
     updatePlaySettings() {
         if (this.playback) {
-            this.playback.userPatternLoop = this.playbackControls.controller.getPatternLoop()
+            this.playback.userPatternLoop = this.patternLoopInput.checked
         }
     }
 
@@ -436,7 +496,7 @@ export class ModuleEdit {
                 this.viewState = curState
 
                 this.patternEdit.controller.setTempoSpeed(curState.tempo, curState.speed)
-                if (this.playbackControls.controller.getFollow()) {
+                if (this.followInput.checked) {
                     this.patternEdit.controller.selectCell(
                         this.patternEdit.controller.selChannel(), curState.row)
                     if (this.patternEdit.controller.selPos() != curState.pos) {
@@ -461,7 +521,7 @@ export class ModuleEdit {
         if (this.playback) {
             $play.setModule(this.playback, this.module.value)
         }
-        this.playbackControls.controller.setUndoEnabled(this.module.canUndo())
+        this.undoButton.disabled = !this.module.canUndo()
         console.debug('===  end refresh  ===')
     }
 
