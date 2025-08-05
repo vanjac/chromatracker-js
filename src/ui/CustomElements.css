@@ -28,10 +28,14 @@ pattern-table th,
     box-sizing: content-box;
 }
 .pattern-row-space th,
-.pattern-row-space .pattern-cell,
+.pattern-row-space td,
 pattern-table thead th {
     border-top: none;
     border-bottom: none;
+}
+.pattern-row-head {
+    border-left: none;
+    border-right: none;
 }
 pattern-table table {
     border-collapse: collapse;
@@ -98,10 +102,10 @@ pattern-table td,
     vertical-align: top;
     box-sizing: content-box;
 }
-.cell-pitch, .cell-effect {
+.cell-pitch, .cell-effect, .pattern-row-head {
     width: 3ch;
 }
-.cell-inst, .pattern-row-head {
+.cell-inst {
     width: 2ch;
 }
 .hilite-row td,
