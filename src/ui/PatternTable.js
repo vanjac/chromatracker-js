@@ -450,10 +450,7 @@ export class PatternTable {
      */
     setEntryParts(parts) {
         this.viewEntryParts = parts
-        let selCell = this.tbody.querySelector('.sel-cell')
-        if (selCell) {
-            $cell.toggleParts(selCell, parts)
-        }
+        this.updateSelection()
     }
 
     /**
