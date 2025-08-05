@@ -1,3 +1,7 @@
+.nocontain {
+    contain: none;
+}
+
 .hflex {
     display: flex;
     flex-direction: row;

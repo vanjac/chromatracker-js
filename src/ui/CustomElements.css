@@ -116,6 +116,30 @@ pattern-table .sel-cell { /* extra specificity */
     height: 50%;
 }
 
+.pattern-handle {
+    position: absolute;
+    z-index: 1;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-fg-hl);
+}
+.pattern-handle:nth-child(1) {
+    transform: translate(-100%, -100%);
+    border-bottom-right-radius: 0;
+}
+.pattern-handle:nth-child(2) {
+    transform: translate(0, -100%);
+    border-bottom-left-radius: 0;
+}
+.pattern-handle:nth-child(3) {
+    transform: translate(-100%, 0);
+    border-top-right-radius: 0;
+}
+.pattern-handle:nth-child(4) {
+    border-top-left-radius: 0;
+}
+
 /* CellEntry */
 
 .keypad-key {
