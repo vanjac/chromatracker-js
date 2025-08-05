@@ -8,7 +8,7 @@ import {type, invoke, minMax, callbackDebugObject, freeze, clamp} from '../Util.
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const scrollMargin = 32 // pixels
-const scrollRate = 240 // pixels per second
+const scrollRate = 480 // pixels per second
 
 const template = $dom.html`
 <div id="patternScroll" class="hscrollable vscrollable flex-grow">
@@ -92,13 +92,14 @@ export class PatternTable {
         this.addHandleEvents(this.selectHandles[3], true, true)
 
         new KeyPad(this.tbody, (id, elem, drag) => {
-            if (elem.dataset.c != null) {
+            if (elem.dataset.c != null && this.markChannel < 0 && this.markRow < 0) {
                 let c = Number(elem.dataset.c)
                 let row = Number(elem.dataset.row)
                 this.setSelCell(c, row, drag)
                 invoke(this.callbacks.jamPlay, id, this.viewPattern[c][row])
             }
         }, id => invoke(this.callbacks.jamRelease, id))
+        // TODO: alternate selection events
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('row', 'number', this.selRow,
