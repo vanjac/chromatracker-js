@@ -192,6 +192,8 @@ export class PatternTable {
                 let spacerData = this.spacerRow.appendChild($dom.createElem('td'))
                 spacerData.classList.add('pattern-cell')
                 spacerData.addEventListener('click', () => {
+                    // TODO: a Firefox bug can cause this to trigger when resizing selection
+                    // https://stackoverflow.com/q/79171111
                     this.selChannel = c
                     this.selRow = 0
                     if (this.selecting()) {
