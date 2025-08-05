@@ -256,11 +256,9 @@ export class PatternEdit {
      * @param {number} channel
      * @param {number} row
      */
-    setSelCell(channel, row, scroll = false) {
-        this.patternTable.controller.setSelCell(channel, row)
-        if (scroll) {
-            this.patternTable.controller.scrollToSelCell()
-        }
+    selectCell(channel, row) {
+        this.patternTable.controller.setSelCell(channel, row, true)
+        this.patternTable.controller.scrollToSelCell()
     }
 
     /**
@@ -409,7 +407,7 @@ export class PatternEdit {
         let {selChannel, selRow} = this.patternTable.controller
         selRow++
         selRow %= this.selPattern()[0].length
-        this.patternTable.controller.setSelCell(selChannel, selRow)
+        this.patternTable.controller.setSelCell(selChannel, selRow, false)
         this.patternTable.controller.scrollToSelCell()
     }
 

@@ -124,6 +124,7 @@ pattern-table .sel-cell { /* extra specificity */
     border-radius: 50%;
     background: var(--color-fg-hl);
     opacity: 0.9;
+    touch-action: none;
 }
 .pattern-handle:nth-child(1) {
     transform: translate(-100%, -100%);

@@ -553,6 +553,7 @@ export class SampleEdit {
     }
 
     /**
+     * @private
      * @param {HTMLElement} handle
      * @param {() => number} getPosFn
      * @param {(value: number, commit: boolean) => void} setPosFn

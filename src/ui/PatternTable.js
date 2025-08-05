@@ -4,7 +4,7 @@ import * as $dom from './DOMUtil.js'
 import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
-import {type, invoke, minMax, callbackDebugObject, freeze} from '../Util.js'
+import {type, invoke, minMax, callbackDebugObject, freeze, clamp} from '../Util.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -71,20 +71,25 @@ export class PatternTable {
         this.selectHandleContainer = fragment.querySelector('#handles')
         this.selectHandles = [...this.selectHandleContainer.querySelectorAll('div')]
 
-        new KeyPad(this.tbody, (id, elem) => {
+        this.addHandleEvents(this.selectHandles[0], false, false)
+        this.addHandleEvents(this.selectHandles[1], true, false)
+        this.addHandleEvents(this.selectHandles[2], false, true)
+        this.addHandleEvents(this.selectHandles[3], true, true)
+
+        new KeyPad(this.tbody, (id, elem, drag) => {
             if (elem.dataset.c != null) {
                 let c = Number(elem.dataset.c)
                 let row = Number(elem.dataset.row)
-                this.setSelCell(c, row)
+                this.setSelCell(c, row, drag)
                 invoke(this.callbacks.jamPlay, id, this.viewPattern[c][row])
             }
         }, id => invoke(this.callbacks.jamRelease, id))
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('row', 'number', this.selRow,
-                row => this.setSelCell(this.selChannel, row))
+                row => this.setSelCell(this.selChannel, row, true))
             $cli.addSelProp('channel', 'number', this.selChannel,
-                channel => this.setSelCell(this.selChannel, channel))
+                channel => this.setSelCell(this.selChannel, channel, true))
             $cli.addSelProp('pattern', Array, this.viewPattern,
                 pattern => invoke(this.callbacks.onChange, freeze(pattern)))
         })
@@ -243,10 +248,15 @@ export class PatternTable {
     /**
      * @param {number} channel
      * @param {number} row
+     * @param {boolean} drag
      */
-    setSelCell(channel, row) {
+    setSelCell(channel, row, drag) {
         this.selChannel = channel
         this.selRow = row
+        if (!drag && this.markChannel >= 0 && this.markRow >= 0) {
+            this.markChannel = channel
+            this.markRow = row
+        }
         this.updateSelection()
     }
 
@@ -259,6 +269,52 @@ export class PatternTable {
     clearMark() {
         this.markChannel = this.markRow = -1
         this.updateSelection()
+    }
+
+    /**
+     * @private
+     * @param {HTMLElement} handle
+     * @param {boolean} maxChannel
+     * @param {boolean} maxRow
+     */
+    addHandleEvents(handle, maxChannel, maxRow) {
+        // captured variables:
+        let startX = 0, startY = 0
+        let startChannel = 0, startRow = 0
+        let isMarkChannel = false, isMarkRow = false
+        /** @type {DOMRect} */
+        let cellRect
+
+        handle.addEventListener('pointerdown', e => {
+            if (e.pointerType != 'mouse' || e.button == 0) {
+                handle.setPointerCapture(e.pointerId)
+                e.stopPropagation()
+                startX = e.clientX
+                startY = e.clientY
+                // prefer to move mark
+                isMarkChannel = maxChannel ?
+                    (this.markChannel >= this.selChannel) : (this.markChannel <= this.selChannel)
+                isMarkRow = maxRow ? (this.markRow >= this.selRow) : (this.markRow <= this.selRow)
+                startChannel = isMarkChannel ? this.markChannel : this.selChannel
+                startRow = isMarkRow ? this.markRow : this.selRow
+                cellRect = this.getTd(0, 0).getBoundingClientRect()
+            }
+        })
+        handle.addEventListener('pointermove', e => {
+            if (handle.hasPointerCapture(e.pointerId)) {
+                let channel = startChannel + (e.clientX - startX) / cellRect.width
+                channel = clamp(Math.round(channel), 0, this.viewNumChannels - 1)
+                let row = Math.round(startRow + (e.clientY - startY) / cellRect.height)
+                row = clamp(Math.round(row), 0, this.viewNumRows - 1)
+                let curChannel = isMarkChannel ? this.markChannel : this.selChannel
+                let curRow = isMarkRow ? this.markRow : this.selRow
+                if (channel != curChannel || row != curRow) {
+                    if (isMarkChannel) {this.markChannel = channel} else {this.selChannel = channel}
+                    if (isMarkRow) {this.markRow = row} else {this.selRow = row}
+                    this.updateSelection()
+                }
+            }
+        })
     }
 
     /** @private */

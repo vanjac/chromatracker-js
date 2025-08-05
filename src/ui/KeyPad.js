@@ -1,7 +1,7 @@
 export class KeyPad {
     /**
      * @param {HTMLElement} container
-     * @param {(id: number, elem: HTMLElement) => void} onPress
+     * @param {(id: number, elem: HTMLElement, drag: boolean) => void} onPress
      * @param {(id: number) => void} onRelease
      */
     constructor(container, onPress, onRelease) {
@@ -16,14 +16,14 @@ export class KeyPad {
 
         container.addEventListener('pointerdown', e => {
             if (e.pointerType != 'mouse' || e.button == 0) {
-                if (this.press(e.pointerId, e.clientX, e.clientY)) {
+                if (this.press(e.pointerId, e.clientX, e.clientY, false)) {
                     container.setPointerCapture(e.pointerId)
                 }
             }
         })
         container.addEventListener('pointermove', e => {
             if (container.hasPointerCapture(e.pointerId)) {
-                this.press(e.pointerId, e.clientX, e.clientY)
+                this.press(e.pointerId, e.clientX, e.clientY, true)
             }
         })
         container.addEventListener('lostpointercapture', e => this.release(e.pointerId))
@@ -34,15 +34,16 @@ export class KeyPad {
      * @param {number} id
      * @param {number} x
      * @param {number} y
+     * @param {boolean} drag
      */
-    press(id, x, y) {
+    press(id, x, y, drag) {
         let elem = document.elementFromPoint(x, y)
         let valid = elem && elem != this.container && this.container.contains(elem)
         let target = valid ? elem.closest('.keypad-target') : null
         if (target != this.pressed.get(id)) {
             this.pressed.set(id, target)
             if (target instanceof HTMLElement) {
-                this.onPress(id, target)
+                this.onPress(id, target, drag)
             }
         }
         return valid
