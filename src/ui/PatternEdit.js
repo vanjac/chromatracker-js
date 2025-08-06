@@ -78,7 +78,7 @@ const template = $dom.html`
             <span>Sample</span>
         </label>
         <label class="label-button flex-grow">
-            <input id="effectEnable" type="checkbox">
+            <input id="effectEnable" type="checkbox" checked="">
             <span>Effect</span>
         </label>
     </div>
