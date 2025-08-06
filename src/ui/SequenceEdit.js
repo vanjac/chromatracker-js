@@ -39,6 +39,7 @@ export class SequenceEdit {
          * }}
          */
         this.callbacks = {}
+        /** @public TODO */
         this.selPos = 0
         /** @private @type {readonly number[]} */
         this.viewSequence = null

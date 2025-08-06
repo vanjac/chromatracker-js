@@ -62,7 +62,9 @@ export class PatternTable {
          * }}
          */
         this.callbacks = {}
+        /** @public TODO */
         this.selChannel = 0
+        /** @public TODO */
         this.selRow = 0
         /** @private */
         this.markChannel = -1
