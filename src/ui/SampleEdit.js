@@ -77,6 +77,7 @@ const template = $dom.html`
             <span>Effect</span>
         </button>
     </div>
+    <hr>
     <div class="hflex">
         <label class="label-button">
             <input id="loopToggle" type="checkbox">
