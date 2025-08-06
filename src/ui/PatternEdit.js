@@ -471,4 +471,5 @@ if (import.meta.main) {
     })
     $dom.displayMain(testElem)
     testElem.controller.setModule(module)
+    testElem.controller.setEntryCell({pitch: 36, inst: 1, effect: 1, param0: 2, param1: 3})
 }

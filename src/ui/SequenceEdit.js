@@ -14,10 +14,7 @@ const template = $dom.html`
     <form id="seqList" class="hflex flex-grow hscrollable" autocomplete="off">
         <select id="patternSelect" class="seq-select show-checked"></select>
     </form>
-    <button id="seqInsSame">
-        ${$icons.equal}
-    </button>
-    <button id="seqInsClone">
+    <button id="seqIns">
         ${$icons.plus}
     </button>
     <button id="seqDel">
@@ -61,16 +58,19 @@ export class SequenceEdit {
 
         $dom.disableFormSubmit(this.sequenceList)
         /** @private @type {HTMLButtonElement} */
-        this.insSameButton = fragment.querySelector('#seqInsSame')
-        this.insSameButton.addEventListener('click', () => this.seqInsSame())
-        /** @private @type {HTMLButtonElement} */
-        this.insCloneButton = fragment.querySelector('#seqInsClone')
-        this.insCloneButton.addEventListener('click', () => this.seqInsClone())
+        this.insButton = fragment.querySelector('#seqIns')
+        this.insButton.addEventListener('click', () => this.seqIns())
         /** @private @type {HTMLButtonElement} */
         this.delButton = fragment.querySelector('#seqDel')
         this.delButton.addEventListener('click', () => this.seqDel())
 
-        this.select.addEventListener('input', () => this.seqSet(this.select.selectedIndex))
+        this.select.addEventListener('input', () => {
+            if (this.select.value == 'copy') {
+                this.seqClone()
+            } else {
+                this.seqSet(this.select.selectedIndex)
+            }
+        })
         this.select.addEventListener('contextmenu', () => {
             $cli.addSelProp('patnum', 'number', this.viewSequence[this.selPos],
                 num => invoke(this.callbacks.changeModule,
@@ -119,8 +119,7 @@ export class SequenceEdit {
         }
         this.sequenceInput = this.sequenceList.elements.namedItem('sequence')
         $dom.selectRadioButton(this.sequenceInput, this.selPos.toString())
-        this.insSameButton.disabled = sequence.length >= mod.numSongPositions
-        this.insCloneButton.disabled = !this.canInsClone()
+        this.insButton.disabled = sequence.length >= mod.numSongPositions
         this.delButton.disabled = sequence.length <= 1
         this.updateSel()
     }
@@ -140,12 +139,13 @@ export class SequenceEdit {
             this.select.appendChild($dom.createElem('option', {textContent: i.toString()}))
         }
         if (patterns.length < mod.maxPatterns) {
-            let textContent = `${patterns.length} (new)`
+            this.select.appendChild($dom.createElem('hr'))
+            let textContent = `${patterns.length} (blank)`
             this.select.appendChild($dom.createElem('option', {textContent}))
+            textContent = `${patterns.length} (copy)`
+            this.select.appendChild($dom.createElem('option', {textContent, value: 'copy'}))
         }
         this.select.selectedIndex = this.viewSequence[this.selPos]
-
-        this.insCloneButton.disabled = !this.canInsClone()
     }
 
     /** @private */
@@ -182,7 +182,15 @@ export class SequenceEdit {
     }
 
     /** @private */
-    seqInsSame() {
+    seqClone() {
+        invoke(this.callbacks.changeModule, module => {
+            module = $pattern.clone(module, module.sequence[this.selPos])
+            return $sequence.set(module, this.selPos, module.patterns.length - 1)
+        })
+    }
+
+    /** @private */
+    seqIns() {
         if (this.viewSequence.length >= mod.numSongPositions) {
             return
         }
@@ -190,25 +198,8 @@ export class SequenceEdit {
         invoke(this.callbacks.changeModule, module =>
             $sequence.insert(module, this.selPos, module.sequence[this.selPos - 1]))
         this.scrollToSelPos()
-    }
-
-    /** @private */
-    canInsClone() {
-        return this.viewSequence.length < mod.numSongPositions
-            && this.viewNumPatterns < mod.maxPatterns
-    }
-
-    /** @private */
-    seqInsClone() {
-        if (!this.canInsClone()) {
-            return
-        }
-        this.selPos++
-        invoke(this.callbacks.changeModule, module => {
-            module = $pattern.clone(module, module.sequence[this.selPos - 1])
-            return $sequence.insert(module, this.selPos, module.patterns.length - 1)
-        })
-        this.scrollToSelPos()
+        this.select.focus() // this opens the dropdown on Safari
+        this.select.showPicker?.() // TODO: works on newer versions of Firefox/Chrome
     }
 
     /** @private */
