@@ -14,9 +14,10 @@ import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
-import {type, invoke, clamp, minMax, callbackDebugObject, freeze} from '../Util.js'
+import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, Effect, mod, Sample, CellPart} from '../Model.js'
 import global from './GlobalState.js'
+import './WaveEdit.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -50,24 +51,7 @@ const template = $dom.html`
         </div>
     </div>
 
-    <div id="waveEdit" class="wave-edit">
-        <div id="waveContainer" class="hflex wave-container">
-            <canvas id="wavePreview" class="flex-grow width0" width="1024" height="256"></canvas>
-            <div id="selectMarkA" class="wave-mark wave-select hide">
-                <div id="selectHandleA" class="wave-handle wave-handle-side wave-select"></div>
-            </div>
-            <div id="selectMarkB" class="wave-mark wave-select hide">
-                <div id="selectHandleB" class="wave-handle wave-handle-side wave-select"></div>
-            </div>
-            <div id="selectRange" class="wave-range wave-select hide"></div>
-            <div id="loopStartMark" class="wave-mark wave-loop hide">
-                <div id="loopStartHandle" class="wave-handle wave-handle-top wave-loop"></div>
-            </div>
-            <div id="loopEndMark" class="wave-mark wave-loop hide">
-                <div id="loopEndHandle" class="wave-handle wave-handle-bottom wave-loop"></div>
-            </div>
-        </div>
-    </div>
+    <wave-edit></wave-edit>
 
     <div class="hflex">
         <button id="selectAll">
@@ -114,16 +98,6 @@ const template = $dom.html`
 </div>
 `
 
-/**
- * @param {HTMLElement} mark
- * @param {Readonly<Sample>} sample
- * @param {number} pos
- */
-function setMarkPos(mark, sample, pos) {
-    // TODO: animating absolute position has bad performance
-    mark.style.left = (100 * pos / sample.wave.length) + '%'
-}
-
 export class SampleEdit {
     /**
      * @param {HTMLElement} view
@@ -138,9 +112,6 @@ export class SampleEdit {
          */
         this.callbacks = {}
 
-        this.selectA = -1
-        this.selectB = -1
-
         /** @type {Readonly<Sample>} */
         this.viewSample = null
     }
@@ -152,67 +123,7 @@ export class SampleEdit {
         $dom.addInputListeners(this.nameInput, commit => this.changeSample(
             sample => {sample.name = this.nameInput.value}, commit))
 
-        this.waveEditBox = type(HTMLElement, fragment.querySelector('#waveEdit'))
-        this.waveContainer = fragment.querySelector('#waveContainer')
-        this.wavePreview = type(HTMLCanvasElement, fragment.querySelector('#wavePreview'))
-        this.selectMarkA = type(HTMLElement, fragment.querySelector('#selectMarkA'))
-        this.selectMarkB = type(HTMLElement, fragment.querySelector('#selectMarkB'))
-        this.selectHandleA = type(HTMLElement, fragment.querySelector('#selectHandleA'))
-        this.selectHandleB = type(HTMLElement, fragment.querySelector('#selectHandleB'))
-        this.selectRange = type(HTMLElement, fragment.querySelector('#selectRange'))
-        this.loopStartMark = type(HTMLElement, fragment.querySelector('#loopStartMark'))
-        this.loopEndMark = type(HTMLElement, fragment.querySelector('#loopEndMark'))
-        let loopStartHandle = type(HTMLElement, fragment.querySelector('#loopStartHandle'))
-        let loopEndHandle = type(HTMLElement, fragment.querySelector('#loopEndHandle'))
-        /** @type {HTMLElement[]} */
-        this.playMarks = []
-
-        this.waveEditBox.addEventListener('pointerdown', e => {
-            if (e.pointerType != 'mouse' || e.button == 0) {
-                let pos = this.restrictWavePos(this.pointerToWaveCoord(e.clientX))
-                this.setSel(pos, pos)
-                this.waveEditBox.setPointerCapture(e.pointerId)
-            }
-        })
-        this.waveEditBox.addEventListener('pointermove', e => {
-            if (this.waveEditBox.hasPointerCapture(e.pointerId)) {
-                this.selectB = this.restrictWavePos(this.pointerToWaveCoord(e.clientX))
-                this.updateSelection()
-            }
-        })
-        this.waveEditBox.addEventListener('contextmenu', () => {
-            let [start, end] = this.selRangeOrAll()
-            // slice for safety (can't be frozen)
-            $cli.addSelProp('wave', Int8Array, this.viewSample.wave.slice(start, end),
-                wave => this.replace(start, end, wave))
-            $cli.addSelProp('waverange', Array, [start, end], ([start, end]) => {
-                if (start == null) { start = -1 }
-                this.setSel(start, end != null ? end : start)
-            })
-        })
-
-        this.addHandleEvents(this.selectHandleA, () => this.selectA, value => {
-            this.selectA = value
-            this.updateSelection()
-        })
-        this.addHandleEvents(this.selectHandleB, () => this.selectB, value => {
-            this.selectB = value
-            this.updateSelection()
-        })
-        this.addHandleEvents(loopStartHandle, () => this.viewSample.loopStart, (value, commit) => {
-            this.changeSample(sample => {
-                if (value < sample.loopEnd) {
-                    sample.loopStart = value
-                }
-            }, commit, true)
-        })
-        this.addHandleEvents(loopEndHandle, () => this.viewSample.loopEnd, (value, commit) => {
-            this.changeSample(sample => {
-                if (value > sample.loopStart) {
-                    sample.loopEnd = value
-                }
-            }, commit, true)
-        })
+        this.waveEdit = fragment.querySelector('wave-edit')
 
         this.loopToggle = type(HTMLInputElement, fragment.querySelector('#loopToggle'))
         this.loopToggle.addEventListener('change', () => {
@@ -288,6 +199,11 @@ export class SampleEdit {
         })
 
         this.view.appendChild(fragment)
+
+        this.waveEdit.controller.callbacks = {
+            onChange: (...args) => invoke(this.callbacks.onChange, ...args),
+            updateSelection: this.updateSelection.bind(this),
+        }
     }
 
     /**
@@ -298,7 +214,7 @@ export class SampleEdit {
             return
         }
 
-        console.debug('update sample')
+        this.waveEdit.controller.setSample(sample)
 
         this.nameInput.value = sample.name
 
@@ -310,129 +226,29 @@ export class SampleEdit {
         this.selectLoopButton.disabled = !showLoop
         this.loopStartInput.input.disabled = !showLoop
         this.loopEndInput.input.disabled = !showLoop
-        this.loopStartMark.classList.toggle('hide', !showLoop)
-        this.loopEndMark.classList.toggle('hide', !showLoop)
-        if (showLoop) {
-            setMarkPos(this.loopStartMark, sample, sample.loopStart)
-            setMarkPos(this.loopEndMark, sample, sample.loopEnd)
-        }
 
         this.volumeInput.valueAsNumber = sample.volume
         this.volumeOutput.value = sample.volume.toString()
         this.finetuneInput.valueAsNumber = sample.finetune
         this.finetuneOutput.value = sample.finetune.toString()
 
-        if (sample.wave != this.viewSample?.wave) {
-            // TODO: async and only when visible!
-            this.createSamplePreview(sample.wave)
-        }
-
         this.viewSample = sample
-        this.selectA = Math.min(this.selectA, sample.wave.length)
-        this.selectB = Math.min(this.selectB, sample.wave.length)
-        this.updateSelection()
     }
 
     /**
      * @param {number[]} positions
      */
     setPlayPos(positions) {
-        while (this.playMarks.length > positions.length) {
-            this.playMarks.pop().remove()
-        }
-        while (this.playMarks.length < positions.length) {
-            let mark = this.waveContainer.appendChild($dom.createElem('div'))
-            mark.classList.add('wave-mark', 'wave-play-mark')
-            this.playMarks.push(mark)
-        }
-        for (let i = 0; i < positions.length; i++) {
-            let visible = positions[i] <= this.viewSample.wave.length
-            this.playMarks[i].classList.toggle('hide', !visible)
-            if (visible) {
-                setMarkPos(this.playMarks[i], this.viewSample, positions[i])
-            }
-        }
-    }
-
-    /** @private */
-    selMin() {
-        return Math.min(this.selectA, this.selectB)
-    }
-
-    /** @private */
-    selMax() {
-        return Math.max(this.selectA, this.selectB)
-    }
-
-    /** @private */
-    anySelected() {
-        return this.selectA >= 0 && this.selectB >= 0
-    }
-
-    /** @private */
-    rangeSelected() {
-        return this.anySelected() && this.selectA != this.selectB
-    }
-
-    /** @private */
-    sel() {
-        return minMax(this.selectA, this.selectB)
-    }
-
-    /**
-     * @private
-     * @returns {[number, number]}
-     */
-    selOrAll() {
-        if (this.anySelected()) {
-            return this.sel()
-        } else {
-            return [0, this.viewSample.wave.length]
-        }
-    }
-
-    /**
-     * @private
-     * @returns {[number, number]}
-     */
-    selRangeOrAll() {
-        if (this.rangeSelected()) {
-            return this.sel()
-        } else {
-            return [0, this.viewSample.wave.length]
-        }
-    }
-
-    /** @private */
-    selLen() {
-        return Math.abs(this.selectA - this.selectB)
+        this.waveEdit.controller.setPlayPos(positions)
     }
 
     /** @private */
     updateSelection() {
-        this.selectMarkA.classList.toggle('hide', this.selectA < 0)
-        if (this.selectA >= 0) {
-            setMarkPos(this.selectMarkA, this.viewSample, this.selectA)
-        }
-        this.selectMarkB.classList.toggle('hide', this.selectB < 0)
-        if (this.selectB >= 0) {
-            setMarkPos(this.selectMarkB, this.viewSample, this.selectB)
-        }
-
-        let rangeSelected = this.rangeSelected()
-        this.selectRange.classList.toggle('hide', !rangeSelected)
-        if (rangeSelected) {
-            setMarkPos(this.selectRange, this.viewSample, this.selMin())
-            let waveLen = this.viewSample.wave.length
-            this.selectRange.style.width = (100 * this.selLen() / waveLen) + '%'
-        }
-
-        this.selectHandleA.classList.toggle('wave-handle-flip', this.selectA <= this.selectB)
-        this.selectHandleB.classList.toggle('wave-handle-flip', this.selectA > this.selectB)
+        let rangeSelected = this.waveEdit.controller.rangeSelected()
 
         this.trimButton.disabled = !rangeSelected
 
-        let anySelected = this.anySelected()
+        let anySelected = this.waveEdit.controller.anySelected()
         this.selectAllButton.classList.toggle('hide', anySelected)
         this.selectNoneButton.classList.toggle('hide', !anySelected)
 
@@ -532,57 +348,6 @@ export class SampleEdit {
         $ext.download(blob, (this.viewSample.name || 'sample') + '.wav')
     }
 
-    /**
-     * @private
-     * @param {number} clientX
-     */
-    pointerToWaveCoord(clientX) {
-        let waveRect = this.wavePreview.getBoundingClientRect()
-        if (waveRect.width == 0) {
-            return 0
-        }
-        return (clientX - waveRect.left) * this.viewSample.wave.length / waveRect.width
-    }
-
-    /**
-     * @private
-     * @param {number} coord
-     */
-    restrictWavePos(coord) {
-        return clamp(Sample.roundToNearest(coord), 0, this.viewSample.wave.length)
-    }
-
-    /**
-     * @private
-     * @param {HTMLElement} handle
-     * @param {() => number} getPosFn
-     * @param {(value: number, commit: boolean) => void} setPosFn
-     */
-    addHandleEvents(handle, getPosFn, setPosFn) {
-        let curCoord = 0, grabCoord = 0 // captured
-
-        handle.addEventListener('pointerdown', e => {
-            if (e.pointerType != 'mouse' || e.button == 0) {
-                handle.setPointerCapture(e.pointerId)
-                e.stopPropagation()
-                curCoord = getPosFn()
-                grabCoord = this.pointerToWaveCoord(e.clientX)
-            }
-
-        })
-        handle.addEventListener('pointermove', e => {
-            if (handle.hasPointerCapture(e.pointerId)) {
-                let pos = this.pointerToWaveCoord(e.clientX)
-                curCoord += pos - grabCoord
-                grabCoord = pos
-                setPosFn(this.restrictWavePos(curCoord), false)
-            }
-        })
-        handle.addEventListener('lostpointercapture', () => {
-            setPosFn(this.restrictWavePos(curCoord), true)
-        })
-    }
-
     /** @private */
     useSampleOffset() {
         let {effect, param0, param1} = this.getOffsetEffect()
@@ -593,8 +358,8 @@ export class SampleEdit {
     /** @private */
     getOffsetEffect() {
         let effect = 0, param0 = 0, param1 = 0
-        if (this.anySelected()) {
-            let offset = Math.min(255, Math.floor(this.selMin() / 256))
+        if (this.waveEdit.controller.anySelected()) {
+            let offset = Math.min(255, Math.floor(this.waveEdit.controller.selMin() / 256))
             if (offset > 0) {
                 effect = Effect.SampleOffset
                 param0 = offset >> 4
@@ -604,58 +369,11 @@ export class SampleEdit {
         return {effect, param0, param1}
     }
 
-    /**
-     * @private
-     * @param {Readonly<Int8Array>} wave
-     */
-    createSamplePreview(wave) {
-        let {width, height} = this.wavePreview
-        let numBlocks = width
-        let blockPerFrame = numBlocks / wave.length
-
-        let ctx = this.wavePreview.getContext('2d')
-        // 'currentColor' doesn't work in Chrome or Safari
-        ctx.strokeStyle = window.getComputedStyle(this.view).getPropertyValue('--color-fg')
-        ctx.clearRect(0, 0, width, height)
-
-        /**
-         * @param {number} amp
-         */
-        let ampYPos = amp => height * ((127 - amp) / 256.0)
-
-        ctx.beginPath()
-        let min = 127
-        let max = -128
-        for (let i = 0; i < wave.length; i++) {
-            if (i == mod.maxSampleLength) {
-                ctx.stroke()
-                ctx.strokeStyle = 'red'
-                ctx.beginPath()
-            }
-
-            min = Math.min(min, wave[i])
-            max = Math.max(max, wave[i])
-
-            let blockIdx = Math.floor(i * blockPerFrame)
-            let nextBlockIdx = Math.floor((i + 1) * blockPerFrame)
-            if (nextBlockIdx != blockIdx) {
-                let minY = ampYPos(min)
-                let maxY = ampYPos(max + 1)
-                for (let x = blockIdx; x < nextBlockIdx; x++) {
-                    ctx.moveTo(x + 0.5, minY)
-                    ctx.lineTo(x + 0.5, maxY)
-                }
-                min = 127
-                max = -128
-            }
-        }
-        ctx.stroke()
-    }
-
     /** @private */
     loopSelection() {
-        this.changeSample(sample => [sample.loopStart, sample.loopEnd] = this.selRangeOrAll(),
-            true, true)
+        this.changeSample(sample => {
+            [sample.loopStart, sample.loopEnd] = this.waveEdit.controller.selRangeOrAll()
+        }, true, true)
     }
 
     /** @private */
@@ -663,73 +381,50 @@ export class SampleEdit {
         this.changeSample(sample => sample.loopStart = sample.loopEnd = 0, true, true)
     }
 
-    /**
-     * @private
-     * @param {number} a
-     * @param {number} b
-     */
-    setSel(a, b) {
-        this.selectA = a
-        this.selectB = b
-        this.updateSelection()
-    }
-
     /** @private */
     selectAll() {
-        this.setSel(0, this.viewSample.wave.length)
+        this.waveEdit.controller.setSel(0, this.viewSample.wave.length)
     }
 
     /** @private */
     selectNone() {
-        this.setSel(-1, -1)
+        this.waveEdit.controller.setSel(-1, -1)
     }
 
     /** @private */
     selectLoop() {
         if (Sample.hasLoop(this.viewSample)) {
-            this.setSel(this.viewSample.loopStart, this.viewSample.loopEnd)
+            this.waveEdit.controller.setSel(this.viewSample.loopStart, this.viewSample.loopEnd)
         }
     }
 
     /** @private */
     trim() {
-        if (this.rangeSelected()) {
-            invoke(this.callbacks.onChange,
-                $sample.trim(this.viewSample, this.selMin(), this.selMax()), true)
+        if (this.waveEdit.controller.rangeSelected()) {
+            let [start, end] = this.waveEdit.controller.sel()
+            invoke(this.callbacks.onChange, $sample.trim(this.viewSample, start, end), true)
             this.selectNone()
         }
     }
 
     /** @private */
     copy() {
-        let [start, end] = this.selRangeOrAll()
+        let [start, end] = this.waveEdit.controller.selRangeOrAll()
         global.audioClipboard = this.viewSample.wave.subarray(start, end)
     }
 
     /** @private */
     cut() {
         this.copy()
-        let [start, end] = this.selRangeOrAll()
+        let [start, end] = this.waveEdit.controller.selRangeOrAll()
         invoke(this.callbacks.onChange, $sample.del(this.viewSample, start, end), true)
-        this.setSel(start, start)
-    }
-
-    /**
-     * @private
-     * @param {number} start
-     * @param {number} end
-     * @param {Readonly<Int8Array>} wave
-     */
-    replace(start, end, wave) {
-        invoke(this.callbacks.onChange, $sample.splice(this.viewSample, start, end, wave), true)
-        let newEnd = start + wave.length
-        this.setSel(newEnd, newEnd)
+        this.waveEdit.controller.setSel(start, start)
     }
 
     /** @private */
     paste() {
-        let [start, end] = this.selOrAll()
-        this.replace(start, end, global.audioClipboard)
+        let [start, end] = this.waveEdit.controller.selOrAll()
+        this.waveEdit.controller.replace(start, end, global.audioClipboard)
     }
 
     /** @private */
@@ -800,7 +495,7 @@ export class SampleEdit {
      * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
      */
     applyEffect(effect) {
-        let [start, end] = this.selRangeOrAll()
+        let [start, end] = this.waveEdit.controller.selRangeOrAll()
         invoke(this.callbacks.onChange,
             $sample.applyEffect(this.viewSample, start, end, effect), true)
     }
@@ -825,12 +520,12 @@ export class SampleEdit {
     resample() {
         let defaultValue = global.lastResampleSemitones
         InputDialog.open('Semitones:', 'Resample', defaultValue).then(semitones => {
-            let [start, end] = this.selRangeOrAll()
+            let [start, end] = this.waveEdit.controller.selRangeOrAll()
             let length = Sample.roundToNearest((end - start) * (2 ** (-semitones / 12)))
             let newWave = $sample.spliceEffect(this.viewSample, start, end, length, $wave.resample)
             invoke(this.callbacks.onChange, newWave, true)
-            if (this.rangeSelected()) {
-                this.setSel(start, start + length)
+            if (this.waveEdit.controller.rangeSelected()) {
+                this.waveEdit.controller.setSel(start, start + length)
             }
             global.lastResampleSemitones = semitones
         }).catch(console.warn)
@@ -840,7 +535,7 @@ export class SampleEdit {
     filter() {
         let dialog = $dialog.open(new FilterEffectElement(), {dismissable: true})
         dialog.controller.onComplete = params => {
-            let [start, end] = this.selRangeOrAll()
+            let [start, end] = this.waveEdit.controller.selRangeOrAll()
             let waitDialog = $dialog.open(new WaitDialogElement())
             $sample.applyNode(this.viewSample, start, end, params.dither,
                 ctx => {

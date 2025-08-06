@@ -5,6 +5,7 @@ import {PatternTableElement} from './PatternTable.js'
 import {PianoKeyboardElement} from './PianoKeyboard.js'
 import {SamplesListElement} from './SamplesList.js'
 import {SequenceEditElement} from './SequenceEdit.js'
+import {WaveEditElement} from './WaveEdit.js'
 
 declare global {
     // Element type extensions
@@ -16,5 +17,6 @@ declare global {
         'piano-keyboard': InstanceType<typeof PianoKeyboardElement>
         'samples-list': InstanceType<typeof SamplesListElement>
         'sequence-edit': InstanceType<typeof SequenceEditElement>
+        'wave-edit': InstanceType<typeof WaveEditElement>
     }
 }
