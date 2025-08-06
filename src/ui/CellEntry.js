@@ -203,6 +203,7 @@ export class CellEntry {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /**
          * @type {JamCallbacks & {
@@ -211,32 +212,46 @@ export class CellEntry {
          * }}
          */
         this.callbacks = {}
-        /** @type {readonly Readonly<Sample>[]} */
+        /** @private @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
 
-        /** @type {number} */
+        /** @private @type {number} */
         this.effect = Effect.Arpeggio
+        /** @private */
         this.param0 = 0
+        /** @private */
         this.param1 = 0
 
+        /** @private */
         this.editDigit = 0
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private */
         this.piano = fragment.querySelector('piano-keyboard')
+        /** @private @type {HTMLElement} */
         this.sampleSection = fragment.querySelector('#sampleSection')
-        this.sampleList = type(HTMLFormElement, fragment.querySelector('#sampleList'))
-        /** @type {NamedFormItem} */
+        /** @private @type {HTMLFormElement} */
+        this.sampleList = fragment.querySelector('#sampleList')
+        /** @private @type {NamedFormItem} */
         this.sampleInput = null
+        /** @private @type {HTMLElement} */
         this.effectSection = fragment.querySelector('#effectSection')
-        this.resetEffectButton = type(HTMLButtonElement, fragment.querySelector('#resetEffect'))
-        this.effectButton = type(HTMLButtonElement, fragment.querySelector('#effect'))
-        this.param0Button = type(HTMLButtonElement, fragment.querySelector('#param0'))
-        this.param1Button = type(HTMLButtonElement, fragment.querySelector('#param1'))
+        /** @private @type {HTMLButtonElement} */
+        this.resetEffectButton = fragment.querySelector('#resetEffect')
+        /** @private @type {HTMLButtonElement} */
+        this.effectButton = fragment.querySelector('#effect')
+        /** @private @type {HTMLButtonElement} */
+        this.param0Button = fragment.querySelector('#param0')
+        /** @private @type {HTMLButtonElement} */
+        this.param1Button = fragment.querySelector('#param1')
+        /** @private @type {HTMLElement} */
         this.effectKeyboard = fragment.querySelector('#effectKeyboard')
+        /** @private @type {HTMLElement} */
         this.effectKeyboardTitle = fragment.querySelector('#effectKeyboardTitle')
+        /** @private @type {HTMLElement} */
         this.effectGrid = fragment.querySelector('#effectGrid')
 
         this.effectButton.addEventListener('click', () => this.openEffectKeyboard(0))
@@ -277,6 +292,7 @@ export class CellEntry {
             pitchChanged: () => invoke(this.callbacks.updateCell),
         }
 
+        /** @private */
         this.firstVisible = false
         this.updateEffect()
     }

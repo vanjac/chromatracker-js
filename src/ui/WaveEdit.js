@@ -1,7 +1,7 @@
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
 import * as $sample from '../edit/Sample.js'
-import {freeze, type, callbackDebugObject, minMax, clamp, invoke} from '../Util.js'
+import {freeze, callbackDebugObject, minMax, clamp, invoke} from '../Util.js'
 import {mod, Sample} from '../Model.js'
 
 const template = $dom.html`
@@ -40,6 +40,7 @@ export class WaveEdit {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /**
          * @type {{
@@ -61,19 +62,31 @@ export class WaveEdit {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this.waveEditBox = type(HTMLElement, fragment.querySelector('#waveEdit'))
+        /** @private @type {HTMLElement} */
+        this.waveEditBox = fragment.querySelector('#waveEdit')
+        /** @private @type {HTMLElement} */
         this.waveContainer = fragment.querySelector('#waveContainer')
-        this.wavePreview = type(HTMLCanvasElement, fragment.querySelector('#wavePreview'))
-        this.selectMarkA = type(HTMLElement, fragment.querySelector('#selectMarkA'))
-        this.selectMarkB = type(HTMLElement, fragment.querySelector('#selectMarkB'))
-        this.selectHandleA = type(HTMLElement, fragment.querySelector('#selectHandleA'))
-        this.selectHandleB = type(HTMLElement, fragment.querySelector('#selectHandleB'))
-        this.selectRange = type(HTMLElement, fragment.querySelector('#selectRange'))
-        this.loopStartMark = type(HTMLElement, fragment.querySelector('#loopStartMark'))
-        this.loopEndMark = type(HTMLElement, fragment.querySelector('#loopEndMark'))
-        let loopStartHandle = type(HTMLElement, fragment.querySelector('#loopStartHandle'))
-        let loopEndHandle = type(HTMLElement, fragment.querySelector('#loopEndHandle'))
-        /** @type {HTMLElement[]} */
+        /** @private @type {HTMLCanvasElement} */
+        this.wavePreview = fragment.querySelector('#wavePreview')
+        /** @private @type {HTMLElement} */
+        this.selectMarkA = fragment.querySelector('#selectMarkA')
+        /** @private @type {HTMLElement} */
+        this.selectMarkB = fragment.querySelector('#selectMarkB')
+        /** @private @type {HTMLElement} */
+        this.selectHandleA = fragment.querySelector('#selectHandleA')
+        /** @private @type {HTMLElement} */
+        this.selectHandleB = fragment.querySelector('#selectHandleB')
+        /** @private @type {HTMLElement} */
+        this.selectRange = fragment.querySelector('#selectRange')
+        /** @private @type {HTMLElement} */
+        this.loopStartMark = fragment.querySelector('#loopStartMark')
+        /** @private @type {HTMLElement} */
+        this.loopEndMark = fragment.querySelector('#loopEndMark')
+        /** @private @type {HTMLElement} */
+        let loopStartHandle = fragment.querySelector('#loopStartHandle')
+        /** @private @type {HTMLElement} */
+        let loopEndHandle = fragment.querySelector('#loopEndHandle')
+        /** @private @type {HTMLElement[]} */
         this.playMarks = []
 
         this.waveEditBox.addEventListener('pointerdown', e => {

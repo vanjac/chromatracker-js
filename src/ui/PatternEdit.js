@@ -5,7 +5,7 @@ import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
 import {makeKeyButton} from './KeyPad.js'
-import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
+import {invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, CellPart, Module, Pattern, Sample} from '../Model.js'
 import global from './GlobalState.js'
 import './PatternTable.js'
@@ -90,6 +90,7 @@ export class PatternEdit {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /**
          * @type {ModuleEditCallbacks & JamCallbacks & {
@@ -98,31 +99,45 @@ export class PatternEdit {
          * }}
          */
         this.callbacks = {}
-        /** @type {readonly number[]} */
+        /** @private @type {readonly number[]} */
         this.viewSequence = null
-        /** @type {readonly Readonly<Pattern>[]} */
+        /** @private @type {readonly Readonly<Pattern>[]} */
         this.viewPatterns = null
+        /** @private */
         this.entryCell = Cell.empty
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private */
         this.sequenceEdit = fragment.querySelector('sequence-edit')
+        /** @private */
         this.patternTable = fragment.querySelector('pattern-table')
 
+        /** @private */
         this.tempoInput = new $dom.ValidatedNumberInput(fragment.querySelector('#tempo'))
+        /** @private */
         this.speedInput = new $dom.ValidatedNumberInput(fragment.querySelector('#speed'))
-        this.selectInput = type(HTMLInputElement, fragment.querySelector('#select'))
+        /** @private @type {HTMLInputElement} */
+        this.selectInput = fragment.querySelector('#select')
+        /** @private @type {HTMLElement} */
         this.playbackStatus = fragment.querySelector('#playbackStatus')
+        /** @private @type {HTMLElement} */
         this.selectTools = fragment.querySelector('#selectTools')
-        let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
-        this.entryCellElem = type(HTMLElement, fragment.querySelector('#entryCell'))
+        /** @private @type {HTMLInputElement} */
+        let scrollLockCheck = fragment.querySelector('#scrollLock')
+        /** @private @type {HTMLElement} */
+        this.entryCellElem = fragment.querySelector('#entryCell')
 
-        this.partToggles = type(HTMLElement, fragment.querySelector('#partToggles'))
-        this.pitchEnable = type(HTMLInputElement, fragment.querySelector('#pitchEnable'))
-        this.sampleEnable = type(HTMLInputElement, fragment.querySelector('#sampleEnable'))
-        this.effectEnable = type(HTMLInputElement, fragment.querySelector('#effectEnable'))
+        /** @private @type {HTMLElement} */
+        this.partToggles = fragment.querySelector('#partToggles')
+        /** @private @type {HTMLInputElement} */
+        this.pitchEnable = fragment.querySelector('#pitchEnable')
+        /** @private @type {HTMLInputElement} */
+        this.sampleEnable = fragment.querySelector('#sampleEnable')
+        /** @private @type {HTMLInputElement} */
+        this.effectEnable = fragment.querySelector('#effectEnable')
 
         this.selectInput.addEventListener('change', () => {
             this.selectTools.classList.toggle('hide', !this.selectInput.checked)

@@ -3,7 +3,7 @@ import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
-import {freeze, type, invoke, callbackDebugObject} from '../Util.js'
+import {freeze, invoke, callbackDebugObject} from '../Util.js'
 import {mod, Module} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
@@ -64,36 +64,48 @@ export class ModuleProperties {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /** @type {ModuleEditCallbacks} */
         this.callbacks = {}
-        /** @type {Module} */
+        /** @private @type {Module} */
         this.viewModule = null
+        /** @private */
         this.viewPatternsSize = 0
+        /** @private */
         this.viewSamplesSize = 0
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this.titleInput = type(HTMLInputElement, fragment.querySelector('#title'))
+        /** @private @type {HTMLInputElement} */
+        this.titleInput = fragment.querySelector('#title')
         $dom.addInputListeners(this.titleInput, commit => {
             invoke(this.callbacks.changeModule,
                 module => freeze({...module, name: this.titleInput.value}), commit)
         })
+        /** @private */
         this.restartPosInput = new $dom.ValidatedNumberInput(fragment.querySelector('#restart'),
             (restartPos, commit) => {
                 invoke(this.callbacks.changeModule,
                     module => freeze({...module, restartPos}), commit)
             })
 
-        this.channelCountOutput = type(HTMLOutputElement, fragment.querySelector('#channelCount'))
-        this.sampleCountOutput = type(HTMLOutputElement, fragment.querySelector('#sampleCount'))
-        this.patternCountOutput = type(HTMLOutputElement, fragment.querySelector('#patternCount'))
-        this.sequenceCountOutput = type(HTMLOutputElement, fragment.querySelector('#sequenceCount'))
-        this.fileSizeOutput = type(HTMLOutputElement, fragment.querySelector('#fileSize'))
-        this.addChannelsButton = type(HTMLButtonElement, fragment.querySelector('#addChannels'))
-        this.delChannelsButton = type(HTMLButtonElement, fragment.querySelector('#delChannels'))
+        /** @private @type {HTMLOutputElement} */
+        this.channelCountOutput = fragment.querySelector('#channelCount')
+        /** @private @type {HTMLOutputElement} */
+        this.sampleCountOutput = fragment.querySelector('#sampleCount')
+        /** @private @type {HTMLOutputElement} */
+        this.patternCountOutput = fragment.querySelector('#patternCount')
+        /** @private @type {HTMLOutputElement} */
+        this.sequenceCountOutput = fragment.querySelector('#sequenceCount')
+        /** @private @type {HTMLOutputElement} */
+        this.fileSizeOutput = fragment.querySelector('#fileSize')
+        /** @private @type {HTMLButtonElement} */
+        this.addChannelsButton = fragment.querySelector('#addChannels')
+        /** @private @type {HTMLButtonElement} */
+        this.delChannelsButton = fragment.querySelector('#delChannels')
 
         this.addChannelsButton.addEventListener('click',
             () => invoke(this.callbacks.changeModule, module => $module.addChannels(module, 2)))

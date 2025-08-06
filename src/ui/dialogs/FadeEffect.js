@@ -1,7 +1,7 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import * as $icons from '../../gen/Icons.js'
-import {freeze, type} from '../../Util.js'
+import {freeze} from '../../Util.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -42,6 +42,7 @@ export class FadeEffect {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /** @param {{startAmp: number, endAmp: number, dithering: boolean}} params */
         this.onComplete = ({startAmp, endAmp, dithering}) => {}
@@ -50,10 +51,14 @@ export class FadeEffect {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private */
         this.form = fragment.querySelector('form')
-        this.startAmpInput = type(HTMLInputElement, fragment.querySelector('#startAmp'))
-        this.endAmpInput = type(HTMLInputElement, fragment.querySelector('#endAmp'))
-        this.ditherInput = type(HTMLInputElement, fragment.querySelector('#dither'))
+        /** @private @type {HTMLInputElement} */
+        this.startAmpInput = fragment.querySelector('#startAmp')
+        /** @private @type {HTMLInputElement} */
+        this.endAmpInput = fragment.querySelector('#endAmp')
+        /** @private @type {HTMLInputElement} */
+        this.ditherInput = fragment.querySelector('#dither')
 
         fragment.querySelector('#fadeIn').addEventListener('click', () => {
             this.startAmpInput.valueAsNumber = 0

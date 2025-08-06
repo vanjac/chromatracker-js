@@ -14,7 +14,7 @@ import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
-import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
+import {invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, Effect, mod, Sample, CellPart} from '../Model.js'
 import global from './GlobalState.js'
 import './WaveEdit.js'
@@ -103,6 +103,7 @@ export class SampleEdit {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /**
          * @type {JamCallbacks & {
@@ -112,20 +113,23 @@ export class SampleEdit {
          */
         this.callbacks = {}
 
-        /** @type {Readonly<Sample>} */
+        /** @private @type {Readonly<Sample>} */
         this.viewSample = null
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this.nameInput = type(HTMLInputElement, fragment.querySelector('#name'))
+        /** @private @type {HTMLInputElement} */
+        this.nameInput = fragment.querySelector('#name')
         $dom.addInputListeners(this.nameInput, commit => this.changeSample(
             sample => {sample.name = this.nameInput.value}, commit))
 
+        /** @private */
         this.waveEdit = fragment.querySelector('wave-edit')
 
-        this.loopToggle = type(HTMLInputElement, fragment.querySelector('#loopToggle'))
+        /** @private @type {HTMLInputElement} */
+        this.loopToggle = fragment.querySelector('#loopToggle')
         this.loopToggle.addEventListener('change', () => {
             if (this.loopToggle.checked) {
                 this.loopSelection()
@@ -133,14 +137,17 @@ export class SampleEdit {
                 this.clearLoop()
             }
         })
-        this.selectLoopButton = type(HTMLButtonElement, fragment.querySelector('#selectLoop'))
+        /** @private @type {HTMLButtonElement} */
+        this.selectLoopButton = fragment.querySelector('#selectLoop')
         this.selectLoopButton.addEventListener('click', () => this.selectLoop())
+        /** @private */
         this.loopStartInput = new $dom.ValidatedNumberInput(
             fragment.querySelector('#loopStart'), (value, commit) => {
                 if (commit) {
                     this.changeSample(sample => {sample.loopStart = value}, true, true)
                 }
             })
+        /** @private */
         this.loopEndInput = new $dom.ValidatedNumberInput(
             fragment.querySelector('#loopEnd'), (value, commit) => {
                 if (commit) {
@@ -148,27 +155,34 @@ export class SampleEdit {
                 }
             })
 
-        this.selectAllButton = type(HTMLButtonElement, fragment.querySelector('#selectAll'))
+        /** @private @type {HTMLButtonElement} */
+        this.selectAllButton = fragment.querySelector('#selectAll')
         this.selectAllButton.addEventListener('click', () => this.selectAll())
-        this.selectNoneButton = type(HTMLButtonElement, fragment.querySelector('#selectNone'))
+        /** @private @type {HTMLButtonElement} */
+        this.selectNoneButton = fragment.querySelector('#selectNone')
         this.selectNoneButton.addEventListener('click', () => this.selectNone())
 
-        this.trimButton = type(HTMLButtonElement, fragment.querySelector('#trim'))
+        /** @private @type {HTMLButtonElement} */
+        this.trimButton = fragment.querySelector('#trim')
         this.trimButton.addEventListener('click', () => this.trim())
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
         fragment.querySelector('#paste').addEventListener('click', () => this.paste())
         fragment.querySelector('#effect').addEventListener('click', () => this.effectMenu())
 
-        this.volumeInput = type(HTMLInputElement, fragment.querySelector('#volume'))
-        this.volumeOutput = type(HTMLOutputElement, fragment.querySelector('#volumeOut'))
+        /** @private @type {HTMLInputElement} */
+        this.volumeInput = fragment.querySelector('#volume')
+        /** @private @type {HTMLOutputElement} */
+        this.volumeOutput = fragment.querySelector('#volumeOut')
         $dom.addInputListeners(this.volumeInput, commit => {
             this.changeSample(sample => {sample.volume = this.volumeInput.valueAsNumber}, commit)
             this.volumeOutput.value = this.volumeInput.value
         })
 
-        this.finetuneInput = type(HTMLInputElement, fragment.querySelector('#finetune'))
-        this.finetuneOutput = type(HTMLOutputElement, fragment.querySelector('#finetuneOut'))
+        /** @private @type {HTMLInputElement} */
+        this.finetuneInput = fragment.querySelector('#finetune')
+        /** @private @type {HTMLOutputElement} */
+        this.finetuneOutput = fragment.querySelector('#finetuneOut')
         $dom.addInputListeners(this.finetuneInput, commit => {
             this.changeSample(sample => {sample.finetune = this.finetuneInput.valueAsNumber},
                 commit)
@@ -191,6 +205,7 @@ export class SampleEdit {
             this.useSampleOffset()
             invoke(this.callbacks.jamPlay, id)
         }, id => invoke(this.callbacks.jamRelease, id))
+        /** @private @type {HTMLElement} */
         this.offsetEffectSpan = fragment.querySelector('#offsetEffect')
 
         this.view.addEventListener('contextmenu', () => {

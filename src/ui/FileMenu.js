@@ -61,11 +61,13 @@ export class FileMenu {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
-        this.db = type(IDBDatabase, null)
-        /** @type {number} */
+        /** @private @type {IDBDatabase} */
+        this.db = null
+        /** @private @type {number} */
         this.fileID = null
-        /** @type {InstanceType<typeof ModuleEditElement>} */
+        /** @private @type {InstanceType<typeof ModuleEditElement>} */
         this.editor = null
     }
 
@@ -81,8 +83,11 @@ export class FileMenu {
             button.addEventListener('click', () => this.importFromUrl(button.value))
         }
 
+        /** @private @type {HTMLElement} */
         this.menu = fragment.querySelector('#menu')
+        /** @private @type {HTMLElement} */
         this.fileList = fragment.querySelector('#fileList')
+        /** @private @type {HTMLElement} */
         this.editorContainer = fragment.querySelector('#editorContainer')
 
         fragment.querySelector('#version').textContent = appVersion
@@ -105,8 +110,10 @@ export class FileMenu {
             }
         })
 
+        /** @private */
         this.visibilityChangeListener = this.onVisibilityChange.bind(this)
         document.addEventListener('visibilitychange', this.visibilityChangeListener)
+        /** @private */
         this.beforeUnloadListener = this.autosave.bind(this)
         window.addEventListener('beforeunload', this.beforeUnloadListener)
     }
@@ -137,6 +144,7 @@ export class FileMenu {
     }
 
     /**
+     * @private
      * @param {number} id
      * @param {string} name
      */

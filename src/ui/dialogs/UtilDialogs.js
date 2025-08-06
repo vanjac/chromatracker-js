@@ -20,6 +20,7 @@ export class AlertDialog {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         this.title = ''
         this.message = ''
@@ -74,6 +75,7 @@ export class ConfirmDialog {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         this.title = ''
         this.message = ''
@@ -136,6 +138,7 @@ export class InputDialog {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         this.title = ''
         this.prompt = ''
@@ -155,6 +158,7 @@ export class InputDialog {
         fragment.querySelector('#title').textContent = this.title
         fragment.querySelector('#prompt').textContent = this.prompt
 
+        /** @private */
         this.input = fragment.querySelector('input')
         this.input.valueAsNumber = this.defaultValue
         this.input.step = this.integerOnly ? '1' : 'any'
@@ -212,6 +216,7 @@ export class WaitDialog {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
     }
 
@@ -246,6 +251,7 @@ export class MenuDialog {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /** @type {MenuOption[]} */
         this.options = []

@@ -4,7 +4,7 @@ import * as $dom from './DOMUtil.js'
 import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
-import {type, invoke, minMax, callbackDebugObject, freeze, clamp} from '../Util.js'
+import {invoke, minMax, callbackDebugObject, freeze, clamp} from '../Util.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const scrollMargin = 32 // pixels
@@ -53,6 +53,7 @@ export class PatternTable {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /**
          * @type {JamCallbacks & {
@@ -63,27 +64,38 @@ export class PatternTable {
         this.callbacks = {}
         this.selChannel = 0
         this.selRow = 0
+        /** @private */
         this.markChannel = -1
+        /** @private */
         this.markRow = -1
-        /** @type {CellPart} */
+        /** @private @type {CellPart} */
         this.viewEntryParts = CellPart.none
+        /** @private */
         this.viewNumChannels = 0
+        /** @private */
         this.viewNumRows = 0
-        /** @type {Readonly<Pattern>} */
+        /** @private @type {Readonly<Pattern>} */
         this.viewPattern = null
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private @type {HTMLElement} */
         this.patternScroll = fragment.querySelector('#patternScroll')
+        /** @private */
         this.theadRow = fragment.querySelector('tr')
+        /** @private */
         this.tbody = fragment.querySelector('tbody')
-        this.spacerRow = type(HTMLElement, null)
+        /** @private @type {HTMLElement} */
+        this.spacerRow = null
+        /** @private @type {HTMLElement} */
         this.tableSpace = fragment.querySelector('#tableSpace')
-        /** @type {HTMLInputElement[]} */
+        /** @private @type {HTMLInputElement[]} */
         this.muteInputs = []
+        /** @private @type {HTMLElement} */
         this.selectHandleContainer = fragment.querySelector('#handles')
+        /** @private */
         this.selectHandles = [...this.selectHandleContainer.querySelectorAll('div')]
 
         this.addHandleEvents(this.selectHandles[0], false, false)
@@ -244,6 +256,7 @@ export class PatternTable {
     }
 
     /**
+     * @private
      * @param {number} row
      */
     getTr(row) {
@@ -252,6 +265,7 @@ export class PatternTable {
     }
 
     /**
+     * @private
      * @param {number} channel
      * @param {number} row
      */

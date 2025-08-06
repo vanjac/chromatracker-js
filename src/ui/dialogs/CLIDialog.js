@@ -20,7 +20,11 @@ export class CLIDialog {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
+    }
+
+    connectedCallback() {
         let fragment = template.cloneNode(true)
 
         fragment.querySelector('dialog').addEventListener('cancel', () => $cli.cancelSel())

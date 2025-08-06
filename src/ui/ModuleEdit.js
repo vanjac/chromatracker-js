@@ -112,6 +112,7 @@ export class ModuleEdit {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
 
         /**
@@ -121,35 +122,50 @@ export class ModuleEdit {
          */
         this.callbacks = {}
 
+        /** @private */
         this.module = new Undoable($module.defaultNew)
 
-        this.context = type(AudioContext, null)
-        /** @type {$play.Playback} */
+        /** @private @type {AudioContext} */
+        this.context = null
+        /** @private @type {$play.Playback} */
         this.playback = null
 
+        /** @private */
         this.animHandle = 0
+        /** @private */
         this.intervalHandle = 0
 
+        /** @private */
         this.queuedTime = 0
-        /** @type {Readonly<PlaybackState>[]} */
+        /** @private @type {Readonly<PlaybackState>[]} */
         this.queuedStates = []
-        /** @type {PlaybackState} */
+        /** @private @type {PlaybackState} */
         this.viewState = null
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private @type {HTMLElement} */
         this.playPatternButton = fragment.querySelector('#playPattern')
+        /** @private @type {HTMLElement} */
         this.playRowButton = fragment.querySelector('#playRow')
+        /** @private @type {HTMLElement} */
         this.pauseButton = fragment.querySelector('#pause')
-        this.patternLoopInput = type(HTMLInputElement, fragment.querySelector('#patternLoop'))
-        this.followInput = type(HTMLInputElement, fragment.querySelector('#follow'))
-        this.undoButton = type(HTMLButtonElement, fragment.querySelector('#undo'))
+        /** @private @type {HTMLInputElement} */
+        this.patternLoopInput = fragment.querySelector('#patternLoop')
+        /** @private @type {HTMLInputElement} */
+        this.followInput = fragment.querySelector('#follow')
+        /** @private @type {HTMLButtonElement} */
+        this.undoButton = fragment.querySelector('#undo')
 
+        /** @private */
         this.moduleProperties = fragment.querySelector('module-properties')
+        /** @private */
         this.patternEdit = fragment.querySelector('pattern-edit')
+        /** @private */
         this.samplesList = fragment.querySelector('samples-list')
+        /** @private */
         this.cellEntry = fragment.querySelector('cell-entry')
 
         let tabForm = type(HTMLFormElement, fragment.querySelector('#appTabs'))

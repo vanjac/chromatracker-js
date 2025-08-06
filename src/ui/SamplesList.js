@@ -3,7 +3,7 @@ import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import * as $sample from '../edit/Sample.js'
 import * as $icons from '../gen/Icons.js'
-import {type, invoke} from '../Util.js'
+import {invoke} from '../Util.js'
 import {SampleEditElement} from './SampleEdit.js'
 import {mod, Cell, Sample, CellPart} from '../Model.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
@@ -34,6 +34,7 @@ export class SamplesList {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /**
          * @type {ModuleEditCallbacks & JamCallbacks & {
@@ -41,27 +42,35 @@ export class SamplesList {
          * }}
          */
         this.callbacks = {}
-        /** @type {readonly Readonly<Sample>[]} */
+        /** @private @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
+        /** @private */
         this.viewSampleCount = 0
+        /** @private */
         this.viewIndex = -1
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private @type {HTMLElement} */
         this.titleElem = fragment.querySelector('#title')
 
+        /** @private @type {HTMLElement} */
         this.sampleList = fragment.querySelector('#sampleList')
+        /** @private @type {HTMLElement} */
         this.sampleEditContainer = fragment.querySelector('#sampleEditContainer')
-        /** @type {InstanceType<typeof SampleEditElement>} */
+        /** @private @type {InstanceType<typeof SampleEditElement>} */
         this.sampleEdit = null
 
-        this.showListButton = type(HTMLButtonElement, fragment.querySelector('#showList'))
+        /** @private @type {HTMLButtonElement} */
+        this.showListButton = fragment.querySelector('#showList')
         this.showListButton.addEventListener('click', () => this.closeSampleEdit())
-        this.addButton = type(HTMLButtonElement, fragment.querySelector('#addSample'))
+        /** @private @type {HTMLButtonElement} */
+        this.addButton = fragment.querySelector('#addSample')
         this.addButton.addEventListener('click', () => this.addSample())
-        this.deleteButton = type(HTMLButtonElement, fragment.querySelector('#delSample'))
+        /** @private @type {HTMLButtonElement} */
+        this.deleteButton = fragment.querySelector('#delSample')
         this.deleteButton.addEventListener('click', () => this.deleteSample())
 
         this.view.appendChild(fragment)

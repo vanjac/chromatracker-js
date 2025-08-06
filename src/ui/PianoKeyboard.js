@@ -29,6 +29,7 @@ export class PianoKeyboard {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /**
          * @type {JamCallbacks & {
@@ -41,11 +42,12 @@ export class PianoKeyboard {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this.piano = type(HTMLFormElement, fragment.querySelector('#piano'))
-        /** @type {NamedFormItem} */
+        /** @private @type {HTMLFormElement} */
+        this.piano = fragment.querySelector('#piano')
+        /** @private @type {NamedFormItem} */
         this.pitchInput = null
 
-        /** @type {Element[]} */
+        /** @private @type {Element[]} */
         this.pianoKeys = []
         this.createPiano()
 

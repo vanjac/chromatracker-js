@@ -1,6 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {freeze, type} from '../../Util.js'
+import {freeze} from '../../Util.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -28,6 +28,7 @@ export class AmplifyEffect {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /** @param {{amount: number, dithering: boolean}} params */
         this.onComplete = ({amount, dithering}) => {}
@@ -36,9 +37,12 @@ export class AmplifyEffect {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private */
         this.form = fragment.querySelector('form')
-        this.amountInput = type(HTMLInputElement, fragment.querySelector('#amp'))
-        this.ditherInput = type(HTMLInputElement, fragment.querySelector('#dither'))
+        /** @private @type {HTMLInputElement} */
+        this.amountInput = fragment.querySelector('#amp')
+        /** @private @type {HTMLInputElement} */
+        this.ditherInput = fragment.querySelector('#dither')
 
         fragment.querySelector('form').addEventListener('submit', () => this.submit())
         $dom.restoreFormData(this.form, inputNames, global.effectFormData)

@@ -5,7 +5,7 @@ import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $icons from '../gen/Icons.js'
-import {type, invoke, callbackDebugObject} from '../Util.js'
+import {invoke, callbackDebugObject} from '../Util.js'
 import {mod, Pattern} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
@@ -31,6 +31,7 @@ export class SequenceEdit {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /**
          * @type {ModuleEditCallbacks & {
@@ -39,27 +40,33 @@ export class SequenceEdit {
          */
         this.callbacks = {}
         this.selPos = 0
-        /** @type {readonly number[]} */
+        /** @private @type {readonly number[]} */
         this.viewSequence = null
+        /** @private */
         this.viewNumPatterns = 0
     }
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
-        this.sequenceList = type(HTMLFormElement, fragment.querySelector('#seqList'))
-        /** @type {Element[]} */
+        /** @private @type {HTMLFormElement} */
+        this.sequenceList = fragment.querySelector('#seqList')
+        /** @private @type {Element[]} */
         this.sequenceButtons = []
-        /** @type {NamedFormItem} */
+        /** @private @type {NamedFormItem} */
         this.sequenceInput = null
-        this.select = type(HTMLSelectElement, fragment.querySelector('#patternSelect'))
+        /** @private @type {HTMLSelectElement} */
+        this.select = fragment.querySelector('#patternSelect')
 
         $dom.disableFormSubmit(this.sequenceList)
-        this.insSameButton = type(HTMLButtonElement, fragment.querySelector('#seqInsSame'))
+        /** @private @type {HTMLButtonElement} */
+        this.insSameButton = fragment.querySelector('#seqInsSame')
         this.insSameButton.addEventListener('click', () => this.seqInsSame())
-        this.insCloneButton = type(HTMLButtonElement, fragment.querySelector('#seqInsClone'))
+        /** @private @type {HTMLButtonElement} */
+        this.insCloneButton = fragment.querySelector('#seqInsClone')
         this.insCloneButton.addEventListener('click', () => this.seqInsClone())
-        this.delButton = type(HTMLButtonElement, fragment.querySelector('#seqDel'))
+        /** @private @type {HTMLButtonElement} */
+        this.delButton = fragment.querySelector('#seqDel')
         this.delButton.addEventListener('click', () => this.seqDel())
 
         this.select.addEventListener('input', () => this.seqSet(this.select.selectedIndex))

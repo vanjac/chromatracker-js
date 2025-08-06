@@ -1,6 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {freeze, type} from '../../Util.js'
+import {freeze} from '../../Util.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -39,6 +39,7 @@ export class AudioImport {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /**
          * @param {{
@@ -54,11 +55,16 @@ export class AudioImport {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private */
         this.form = fragment.querySelector('form')
-        this.sampleRateInput = type(HTMLInputElement, fragment.querySelector('#sampleRate'))
-        this.channelSelect = type(HTMLSelectElement, fragment.querySelector('#channel'))
-        this.ditherInput = type(HTMLInputElement, fragment.querySelector('#dither'))
-        this.normalizeInput = type(HTMLInputElement, fragment.querySelector('#normalize'))
+        /** @private @type {HTMLInputElement} */
+        this.sampleRateInput = fragment.querySelector('#sampleRate')
+        /** @private @type {HTMLSelectElement} */
+        this.channelSelect = fragment.querySelector('#channel')
+        /** @private @type {HTMLInputElement} */
+        this.ditherInput = fragment.querySelector('#dither')
+        /** @private @type {HTMLInputElement} */
+        this.normalizeInput = fragment.querySelector('#normalize')
 
         fragment.querySelector('form').addEventListener('submit', () => this.submit())
         $dom.restoreFormData(this.form, inputNames, global.effectFormData)

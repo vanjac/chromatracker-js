@@ -1,6 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
-import {freeze, type} from '../../Util.js'
+import {freeze} from '../../Util.js'
 import {defaultSampleRate} from '../../Model.js'
 import global from '../GlobalState.js'
 
@@ -94,6 +94,7 @@ export class FilterEffect {
      * @param {HTMLElement} view
      */
     constructor(view) {
+        /** @private */
         this.view = view
         /** @param {FilterEffectParams} params */
         this.onComplete = params => {}
@@ -102,20 +103,31 @@ export class FilterEffect {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private */
         this.form = fragment.querySelector('form')
-        this.typeInput = type(HTMLInputElement, fragment.querySelector('#filterType'))
-        this.envelopeEnableInput = type(HTMLInputElement, fragment.querySelector('#freqEnvelope'))
-        this.freqStartInput = type(HTMLInputElement, fragment.querySelector('#frequency'))
-        this.freqEndInput = type(HTMLInputElement, fragment.querySelector('#freqEnd'))
-        this.qInput = type(HTMLInputElement, fragment.querySelector('#q'))
-        this.gainInput = type(HTMLInputElement, fragment.querySelector('#gain'))
-        this.ditherInput = type(HTMLInputElement, fragment.querySelector('#dither'))
-        this.graph = type(HTMLCanvasElement, fragment.querySelector('#graph'))
+        /** @private @type {HTMLInputElement} */
+        this.typeInput = fragment.querySelector('#filterType')
+        /** @private @type {HTMLInputElement} */
+        this.envelopeEnableInput = fragment.querySelector('#freqEnvelope')
+        /** @private @type {HTMLInputElement} */
+        this.freqStartInput = fragment.querySelector('#frequency')
+        /** @private @type {HTMLInputElement} */
+        this.freqEndInput = fragment.querySelector('#freqEnd')
+        /** @private @type {HTMLInputElement} */
+        this.qInput = fragment.querySelector('#q')
+        /** @private @type {HTMLInputElement} */
+        this.gainInput = fragment.querySelector('#gain')
+        /** @private @type {HTMLInputElement} */
+        this.ditherInput = fragment.querySelector('#dither')
+        /** @private @type {HTMLCanvasElement} */
+        this.graph = fragment.querySelector('#graph')
 
         fragment.querySelector('form').addEventListener('submit', () => this.submit())
         $dom.restoreFormData(this.form, inputNames, global.effectFormData)
 
+        /** @private */
         this.context = new OfflineAudioContext(1, 1, defaultSampleRate)
+        /** @private */
         this.filter = this.context.createBiquadFilter()
 
         this.updateFilterType()
