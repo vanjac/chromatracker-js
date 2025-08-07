@@ -41,7 +41,7 @@ const template = $dom.html`
 
     <label for="restart">Restart pos:</label>
     <div class="hflex">
-        <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off"></input>
+        <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off">
     </div>
 
     <label for="fileSize">File size:</label>

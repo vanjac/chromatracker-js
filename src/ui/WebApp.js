@@ -3,10 +3,12 @@
 export default null
 
 document.addEventListener('keydown', e => {
-    /** @type {ViewElement<Controller>} */
-    let mainElem = document.querySelector('#main')
-    if (mainElem?.controller?.keyDown?.(e)) {
-        e.preventDefault()
+    if (e.target instanceof Element && !e.target.closest('dialog')) {
+        /** @type {ViewElement<Controller>} */
+        let mainElem = document.querySelector('#main')
+        if (mainElem?.controller?.keyDown?.(e)) {
+            e.preventDefault()
+        }
     }
 })
 
