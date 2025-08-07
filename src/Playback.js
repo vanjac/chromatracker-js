@@ -282,7 +282,8 @@ export function processTick(playback) {
         if (playback.tick == 0 && playback.rowDelayCount == 0) {
             // Protracker instrument changes always take effect at the start of the row
             // (not affected by note delays). Other trackers are different!
-            processCellInst(playback, channel, cell)
+            let sample = playback.mod.samples[cell.inst]
+            processCellInst(channel, cell, sample)
             if (! (cell.effect == Effect.Extended && cell.param0 == ExtEffect.NoteDelay
                     && cell.param1)) {
                 processCellNote(playback, channel, cell)
@@ -325,12 +326,11 @@ export function processTick(playback) {
 }
 
 /**
- * @param {Playback} playback
  * @param {ChannelPlayback} channel
  * @param {Readonly<Cell>} cell
+ * @param {Readonly<Sample>} sample
  */
-function processCellInst(playback, channel, cell) {
-    let sample = playback.mod.samples[cell.inst]
+function processCellInst(channel, cell, sample) {
     if (sample) {
         // TODO: support sample swapping
         channel.sample = cell.inst
@@ -686,7 +686,8 @@ function calcOscillator(osc, sawDir) {
  * @param {ChannelPlayback} channel
  */
 function playNote(playback, channel) {
-    let [source, sourceSample] = createNoteSource(playback, channel.sample)
+    let sourceSample = playback.mod.samples[channel.sample]
+    let source = createNoteSource(playback, sourceSample, playback.samples[channel.sample])
     if (!source) {
         return
     }
@@ -717,18 +718,18 @@ function playNote(playback, channel) {
 
 /**
  * @param {Playback} playback
- * @param {number} inst
- * @returns {[AudioBufferSourceNode, Sample]}
+ * @param {Readonly<Sample>} sample,
+ * @param {SamplePlayback} samplePlayback
+ * @returns {AudioBufferSourceNode}
  */
-function createNoteSource(playback, inst) {
-    let sample = playback.mod.samples[inst]
-    if (!sample) { return [null, null] }
+function createNoteSource(playback, sample, samplePlayback) {
+    if (!sample) { return null }
     let source = playback.ctx.createBufferSource()
-    source.buffer = playback.samples[inst].buffer
+    source.buffer = samplePlayback.buffer
     source.loop = Sample.hasLoop(sample)
     source.loopStart = sample.loopStart / baseRate
     source.loopEnd = sample.loopEnd / baseRate
-    return [source, sample]
+    return source
 }
 
 /**
@@ -755,8 +756,9 @@ export function getSamplePredictedPos(channel, time) {
  * @param {number} id
  * @param {number} c
  * @param {Readonly<Cell>} cell
+ * @param {Readonly<Sample>} sampleOverride
  */
-export function jamPlay(playback, id, c, cell) {
+export function jamPlay(playback, id, c, cell, sampleOverride = null) {
     jamRelease(playback, id)
     if (cell.pitch < 0) {
         return
@@ -773,13 +775,16 @@ export function jamPlay(playback, id, c, cell) {
     playback.jamChannels.set(id, jam)
 
     initChannelNodes(playback, jam)
-    processCellInst(playback, jam, cell)
-    let sample = playback.mod.samples[jam.sample]
+    let sample = sampleOverride ?? playback.mod.samples[cell.inst]
+    processCellInst(jam, cell, sample)
     if (sample) {
         jam.period = pitchToPeriod(cell.pitch, sample.finetune)
         processCellFirst(playback, jam, cell)
 
-        ;[jam.source, jam.sourceSample] = createNoteSource(playback, jam.sample)
+        let samplePlayback = sampleOverride ? createSamplePlayback(playback.ctx, sampleOverride)
+            : playback.samples[jam.sample]
+        jam.source = createNoteSource(playback, sample, samplePlayback)
+        jam.sourceSample = sample
         jam.source.connect(jam.gain)
         jam.source.start(0, calcSampleOffset(jam.sampleOffset))
         jam.samplePredictPos = jam.sampleOffset

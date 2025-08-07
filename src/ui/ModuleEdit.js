@@ -7,7 +7,7 @@ import * as $icons from '../gen/Icons.js'
 import {Undoable} from './Undoable.js'
 import {CLIDialogElement} from './dialogs/CLIDialog.js'
 import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
-import {Cell, Module, CellPart} from '../Model.js'
+import {Cell, Sample, Module, CellPart} from '../Model.js'
 import './CellEntry.js'
 import './ModuleProperties.js'
 import './PatternEdit.js'
@@ -26,7 +26,7 @@ const processInterval = 200
 
 /**
  * @typedef {{
- *      jamPlay?: (id: number, cell?: Readonly<Cell>) => void
+ *      jamPlay?: (id: number, cell?: Readonly<Cell>, sampleOverride?: Readonly<Sample>) => void
         jamRelease?: (id: number) => void
  * }} JamCallbacks
  */
@@ -459,16 +459,24 @@ export class ModuleEdit {
      * @private
      * @param {number} id
      * @param {Readonly<Cell>} cell
+     * @param {Readonly<Sample>} sampleOverride
      */
-    jamPlay(id, cell = null) {
+    jamPlay(id, cell = null, sampleOverride = null) {
         this.enablePlayback()
         this.enableAnimation()
         let useChannel = this.selectedTab() == 'sequence'
         let channel = useChannel ? this.patternEdit.controller.selChannel() : -1
         if (!cell) {
             cell = this.getEntryCell()
+        } else {
+            if (cell.pitch < 0) {
+                cell = {...cell, pitch: this.getEntryCell().pitch}
+            }
+            if (!cell.inst) {
+                cell = {...cell, inst: this.getEntryCell().inst}
+            }
         }
-        $play.jamPlay(this.playback, id, channel, cell)
+        $play.jamPlay(this.playback, id, channel, cell, sampleOverride)
     }
 
     /**

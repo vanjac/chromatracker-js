@@ -15,6 +15,7 @@ import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
+import {SamplePickerElement} from './dialogs/SamplePicker.js'
 import {invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, Effect, mod, Sample, Module, CellPart} from '../Model.js'
 import global from './GlobalState.js'
@@ -369,23 +370,18 @@ export class SampleEdit {
      * @private
      * @param {Readonly<Module>} mod
      */
-    async modPickSample(mod) {
-        let options = mod.samples.flatMap((sample, idx) => !sample ? [] : [{
-            value: idx.toString(),
-            title: `${idx.toString().padStart(2, '0')}: ${sample.name}`,
-        }])
-        if (!options.length) {
-            AlertDialog.open('Module does not contain any samples.')
-            return
+    modPickSample(mod) {
+        let dialog = new SamplePickerElement()
+        dialog.controller.module = mod
+        dialog.controller.callbacks = {
+            jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
+            jamRelease: (...args) => invoke(this.callbacks.jamRelease, ...args),
+            onDismiss() {},
+            onComplete: sample => {
+                invoke(this.callbacks.onChange, sample, true)
+            },
         }
-        let selected
-        try {
-            selected = await MenuDialog.open(options, 'Import Sample:')
-        } catch (e) {
-            console.warn(e)
-            return
-        }
-        invoke(this.callbacks.onChange, mod.samples[Number(selected)], true)
+        $dialog.open(dialog, {dismissable: true})
     }
 
     /** @private */
