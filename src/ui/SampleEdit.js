@@ -390,8 +390,8 @@ export class SampleEdit {
 
     /** @private */
     pickAudioFile() {
-        // Safari requires individual audio types
-        $ext.pickFiles().then(files => {
+        let accept = navigator.vendor.startsWith('Apple') ? '' : 'audio/*,.mod'
+        $ext.pickFiles(accept).then(files => {
             if (files.length == 1) {
                 this.readAudioFile(files[0])
             }

@@ -224,7 +224,8 @@ export class FileMenu {
 
     /** @private */
     importFile() {
-        $ext.pickFiles().then(files => {
+        let accept = navigator.vendor.startsWith('Apple') ? '' : '.mod,audio/mod,audio/x-mod'
+        $ext.pickFiles(accept).then(files => {
             if (files.length == 1) {
                 files[0].arrayBuffer().then(buf => this.openModuleFile(null, buf))
             }
