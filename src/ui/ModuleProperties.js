@@ -1,5 +1,4 @@
 import * as $dom from './DOMUtil.js'
-import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
 import * as $mod from '../file/Mod.js'
 import * as $icons from '../gen/Icons.js'
@@ -31,9 +30,6 @@ const template = $dom.html`
     <label for="patternCount">Patterns:</label>
     <div class="hflex">
         <output id="patternCount" class="med-input"></output>
-        <button id="patternZap">
-            ${$icons.playlist_remove}
-        </button>
     </div>
 
     <label for="sequenceCount">Length:</label>
@@ -112,9 +108,6 @@ export class ModuleProperties {
         this.delChannelsButton.addEventListener('click',
             () => invoke(this.callbacks.changeModule,
                 module => $module.delChannels(module, module.numChannels - 2, 2)))
-
-        fragment.querySelector('#patternZap').addEventListener('click',
-            () => invoke(this.callbacks.changeModule, module => $sequence.zap(module)))
 
         this.view.appendChild(fragment)
     }
