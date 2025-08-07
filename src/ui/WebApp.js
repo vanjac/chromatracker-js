@@ -2,11 +2,18 @@
 
 export default null
 
+/**
+ * @param {KeyboardEvent} event
+ */
+function dispatchKeyDown(event) {
+    /** @type {ViewElement<Controller>} */
+    let mainElem = document.querySelector('#main')
+    return mainElem?.controller?.keyDown?.(event) ?? false
+}
+
 document.addEventListener('keydown', e => {
     if (e.target instanceof Element && !e.target.closest('dialog')) {
-        /** @type {ViewElement<Controller>} */
-        let mainElem = document.querySelector('#main')
-        if (mainElem?.controller?.keyDown?.(e)) {
+        if (dispatchKeyDown(e)) {
             e.preventDefault()
         }
     }
@@ -46,3 +53,16 @@ function onPointerUp(e) {
 document.addEventListener('pointerdown', onPointerDown)
 document.addEventListener('pointerup', onPointerUp)
 document.addEventListener('pointerout', onPointerUp)
+
+window.history.replaceState('back', null)
+window.history.pushState('app', null)
+window.addEventListener('popstate', e => {
+    if (e.state == 'back') {
+        let event = new KeyboardEvent('keydown', {key: 'Escape'})
+        if (dispatchKeyDown(event)) {
+            window.history.pushState('app', null)
+        } else {
+            window.history.back()
+        }
+    }
+})
