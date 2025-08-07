@@ -411,7 +411,7 @@ export class SampleEdit {
     getOffsetEffect() {
         let effect = 0, param0 = 0, param1 = 0
         if (this.waveEdit.controller.anySelected()) {
-            let offset = Math.min(255, Math.floor(this.waveEdit.controller.selMin() / 256))
+            let offset = Math.min(255, Math.round(this.waveEdit.controller.selMin() / 256))
             if (offset > 0) {
                 effect = Effect.SampleOffset
                 param0 = offset >> 4
