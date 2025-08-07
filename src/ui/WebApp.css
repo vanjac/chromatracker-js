@@ -12,6 +12,7 @@ input, button, textarea, select {
     color: inherit;
 }
 select {
+    -webkit-appearance: menulist-button;
     appearance: menulist-button;
 }
 div, body, form {

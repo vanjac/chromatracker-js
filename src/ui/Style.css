@@ -61,6 +61,7 @@ output {
     contain: none;
 }
 .label-button input {
+    -webkit-appearance: none;
     appearance: none;
 
     position: absolute;
