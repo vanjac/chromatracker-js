@@ -120,6 +120,14 @@ export class ModuleProperties {
     }
 
     /**
+     * @param {KeyboardEvent} event
+     */
+    // eslint-disable-next-line class-methods-use-this
+    keyDown(event) {
+        return false
+    }
+
+    /**
      * @param {Module} module
      */
     setModule(module) {

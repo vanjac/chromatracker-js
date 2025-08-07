@@ -132,6 +132,14 @@ export class PatternTable {
     }
 
     /**
+     * @param {KeyboardEvent} event
+     */
+    // eslint-disable-next-line class-methods-use-this
+    keyDown(event) {
+        return false
+    }
+
+    /**
      * @param {number} numChannels
      */
     setNumChannels(numChannels) {

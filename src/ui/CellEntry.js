@@ -297,6 +297,16 @@ export class CellEntry {
         this.updateEffect()
     }
 
+    /**
+     * @param {KeyboardEvent} event
+     */
+    keyDown(event) {
+        if (this.piano.controller.keyDown(event)) {
+            return true
+        }
+        return false
+    }
+
     onVisible() {
         if (!this.firstVisible) {
             this.piano.controller.scrollToSelPitch()

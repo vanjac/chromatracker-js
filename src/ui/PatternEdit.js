@@ -226,6 +226,18 @@ export class PatternEdit {
     }
 
     /**
+     * @param {KeyboardEvent} event
+     */
+    keyDown(event) {
+        let handled = this.sequenceEdit.controller.keyDown(event)
+            || this.patternTable.controller.keyDown(event)
+        if (handled) {
+            return true
+        }
+        return false
+    }
+
+    /**
      * @param {Readonly<Module>} module
      */
     setModule(module) {

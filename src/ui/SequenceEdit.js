@@ -81,6 +81,14 @@ export class SequenceEdit {
     }
 
     /**
+     * @param {KeyboardEvent} event
+     */
+    // eslint-disable-next-line class-methods-use-this
+    keyDown(event) {
+        return false
+    }
+
+    /**
      * @param {readonly number[]} sequence
      */
     setSequence(sequence) {

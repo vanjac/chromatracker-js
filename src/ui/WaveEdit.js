@@ -138,6 +138,14 @@ export class WaveEdit {
     }
 
     /**
+     * @param {KeyboardEvent} event
+     */
+    // eslint-disable-next-line class-methods-use-this
+    keyDown(event) {
+        return false
+    }
+
+    /**
      * @param {Readonly<Sample>} sample
      */
     setSample(sample) {

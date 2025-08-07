@@ -69,6 +69,14 @@ export class PianoKeyboard {
         this.view.appendChild(fragment)
     }
 
+    /**
+     * @param {KeyboardEvent} event
+     */
+    // eslint-disable-next-line class-methods-use-this
+    keyDown(event) {
+        return false
+    }
+
     /** @private */
     createPiano() {
         let blackKeys = this.piano.querySelector('#blackKeys')

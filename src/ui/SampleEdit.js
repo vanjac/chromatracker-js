@@ -222,6 +222,16 @@ export class SampleEdit {
     }
 
     /**
+     * @param {KeyboardEvent} event
+     */
+    keyDown(event) {
+        if (this.waveEdit.controller.keyDown(event)) {
+            return true
+        }
+        return false
+    }
+
+    /**
      * @param {Readonly<Sample>} sample
      */
     setSample(sample) {

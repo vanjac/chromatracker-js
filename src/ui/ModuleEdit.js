@@ -76,15 +76,15 @@ const template = $dom.html`
     </div>
     <form id="appTabs" class="hflex tab-group" autocomplete="off">
         <label class="label-button flex-grow">
-            <input type="radio" name="app-tab" value="arrange" checked="">
+            <input type="radio" name="appTab" value="arrange" checked="">
             <span>Arrange</span>
         </label>
         <label class="label-button flex-grow">
-            <input type="radio" name="app-tab" value="sequence">
+            <input type="radio" name="appTab" value="sequence">
             <span>Sequence</span>
         </label>
         <label class="label-button flex-grow">
-            <input type="radio" name="app-tab" value="samples">
+            <input type="radio" name="appTab" value="samples">
             <span>Samples</span>
         </label>
     </form>
@@ -170,6 +170,7 @@ export class ModuleEdit {
 
         let tabForm = type(HTMLFormElement, fragment.querySelector('#appTabs'))
         $dom.disableFormSubmit(tabForm)
+        this.tabInput = tabForm.elements.namedItem('appTab')
         let tabBody = fragment.querySelector('#appTabBody')
         for (let tabButton of tabForm.elements) {
             if (tabButton instanceof HTMLInputElement) {
@@ -259,6 +260,31 @@ export class ModuleEdit {
             },
         }
         this.patternEdit.controller.setEntryCell(this.getEntryCell())
+    }
+
+    /**
+     * @param {KeyboardEvent} event
+     */
+    keyDown(event) {
+        let tab = this.selectedTab()
+        let target = null
+        switch (tab) {
+        case 'arrange': target = this.moduleProperties.controller; break
+        case 'sequence': target = this.patternEdit.controller; break
+        case 'samples': target = this.samplesList.controller; break
+        }
+        if (target?.keyDown(event)) {
+            return true
+        }
+        if ((tab == 'sequence' || tab == 'samples') && this.cellEntry.controller.keyDown(event)) {
+            return true
+        }
+        return false
+    }
+
+    /** @private */
+    selectedTab() {
+        return $dom.getRadioButtonValue(this.tabInput, '')
     }
 
     getModule() {
@@ -429,7 +455,7 @@ export class ModuleEdit {
     jamPlay(id, cell = null) {
         this.enablePlayback()
         this.enableAnimation()
-        let useChannel = this.patternEdit.parentElement.offsetParent != null // Sequence tab visible
+        let useChannel = this.selectedTab() == 'sequence'
         let channel = useChannel ? this.patternEdit.controller.selChannel() : -1
         if (!cell) {
             cell = this.getEntryCell()

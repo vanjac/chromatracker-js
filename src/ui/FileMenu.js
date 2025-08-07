@@ -126,6 +126,16 @@ export class FileMenu {
         this.db = null
     }
 
+    /**
+     * @param {KeyboardEvent} event
+     */
+    keyDown(event) {
+        if (this.editor?.controller.keyDown(event)) {
+            return true
+        }
+        return false
+    }
+
     /** @private */
     async listLocalFiles() {
         let files = await $local.listFiles(this.db)

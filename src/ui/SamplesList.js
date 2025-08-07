@@ -77,6 +77,16 @@ export class SamplesList {
     }
 
     /**
+     * @param {KeyboardEvent} event
+     */
+    keyDown(event) {
+        if (this.sampleEdit?.controller.keyDown(event)) {
+            return true
+        }
+        return false
+    }
+
+    /**
      * @private
      * @param {number} idx
      */
