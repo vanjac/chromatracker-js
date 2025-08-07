@@ -269,14 +269,8 @@ export class ModuleEdit {
             return true
         }
         if (event.key == 'Escape') {
-            if (tab == 'sequence' || tab == 'samples') {
-                $dom.selectRadioButton(this.tabInput, 'arrange')
-                this.updateTab()
-                return true
-            } else {
-                this.close()
-                return true
-            }
+            this.close()
+            return true
         }
         return false
     }
