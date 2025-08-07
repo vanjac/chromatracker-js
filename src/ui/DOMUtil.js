@@ -5,6 +5,7 @@ import './WebApp.js'
  * @typedef {Object & {
  *      connectedCallback?: (elem: HTMLElement) => void
  *      disconnectedCallback?: (elem: HTMLElement) => void
+        keyDown?: (event: KeyboardEvent) => boolean
  * }} Controller
  */
 
@@ -127,6 +128,7 @@ export function createElem(tagName, properties = {}) {
  * @param {Element} elem
  */
 export function displayMain(elem) {
+    elem.id = 'main'
     document.body.textContent = ''
     document.body.append(elem)
 }

@@ -1,4 +1,14 @@
+/** @import {ViewElement, Controller} from './DOMUtil.js' */
+
 export default null
+
+document.addEventListener('keydown', e => {
+    /** @type {ViewElement<Controller>} */
+    let mainElem = document.querySelector('#main')
+    if (mainElem?.controller?.keyDown?.(e)) {
+        e.preventDefault()
+    }
+})
 
 // Disable pinch to zoom on iOS
 document.addEventListener('touchmove', e => {
@@ -12,23 +22,23 @@ document.addEventListener('touchmove', e => {
  * @param {PointerEvent} e
  */
 function onPointerDown(e) {
-	// Some browsers have delays on :active state
-	if (e.target instanceof Element) {
-		for (let elem = e.target; elem; elem = elem.parentElement) {
-			elem.classList.add('active')
-		}
-	}
+    // Some browsers have delays on :active state
+    if (e.target instanceof Element) {
+        for (let elem = e.target; elem; elem = elem.parentElement) {
+            elem.classList.add('active')
+        }
+    }
 }
 
 /**
  * @param {PointerEvent} e
  */
 function onPointerUp(e) {
-	if (e.target instanceof Element) {
-		for (let elem = e.target; elem; elem = elem.parentElement) {
-			elem.classList.remove('active')
-		}
-	}
+    if (e.target instanceof Element) {
+        for (let elem = e.target; elem; elem = elem.parentElement) {
+            elem.classList.remove('active')
+        }
+    }
 }
 
 document.addEventListener('pointerdown', onPointerDown)
