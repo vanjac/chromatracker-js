@@ -468,13 +468,8 @@ export class ModuleEdit {
         let channel = useChannel ? this.patternEdit.controller.selChannel() : -1
         if (!cell) {
             cell = this.getEntryCell()
-        } else {
-            if (cell.pitch < 0) {
-                cell = {...cell, pitch: this.getEntryCell().pitch}
-            }
-            if (!cell.inst) {
-                cell = {...cell, inst: this.getEntryCell().inst}
-            }
+        } else if (cell.pitch < 0) {
+            cell = {...cell, pitch: this.getEntryCell().pitch}
         }
         $play.jamPlay(this.playback, id, channel, cell, sampleOverride)
     }
