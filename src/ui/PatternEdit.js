@@ -139,15 +139,7 @@ export class PatternEdit {
         /** @private @type {HTMLInputElement} */
         this.effectEnable = fragment.querySelector('#effectEnable')
 
-        this.selectInput.addEventListener('change', () => {
-            this.selectTools.classList.toggle('hide', !this.selectInput.checked)
-            this.playbackStatus.classList.toggle('hide', this.selectInput.checked)
-            if (this.selectInput.checked) {
-                this.patternTable.controller.setMark()
-            } else {
-                this.patternTable.controller.clearMark()
-            }
-        })
+        this.selectInput.addEventListener('change', () => this.updateSelectMode())
 
         scrollLockCheck.addEventListener('change', () => {
             this.patternTable.controller.setScrollLock(scrollLockCheck.checked)
@@ -232,6 +224,11 @@ export class PatternEdit {
         let handled = this.sequenceEdit.controller.keyDown(event)
             || this.patternTable.controller.keyDown(event)
         if (handled) {
+            return true
+        }
+        if (event.key == 'Escape' && this.selectInput.checked) {
+            this.selectInput.checked = false
+            this.updateSelectMode()
             return true
         }
         return false
@@ -319,6 +316,17 @@ export class PatternEdit {
     changePattern(callback) {
         invoke(this.callbacks.changeModule,
             module => $pattern.change(module, module.sequence[this.selPos()], callback))
+    }
+
+    /** @private */
+    updateSelectMode() {
+        this.selectTools.classList.toggle('hide', !this.selectInput.checked)
+        this.playbackStatus.classList.toggle('hide', this.selectInput.checked)
+        if (this.selectInput.checked) {
+            this.patternTable.controller.setMark()
+        } else {
+            this.patternTable.controller.clearMark()
+        }
     }
 
     /**

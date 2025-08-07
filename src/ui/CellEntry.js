@@ -223,7 +223,7 @@ export class CellEntry {
         this.param1 = 0
 
         /** @private */
-        this.editDigit = 0
+        this.editDigit = -1
     }
 
     connectedCallback() {
@@ -301,7 +301,12 @@ export class CellEntry {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
-        if (this.piano.controller.keyDown(event)) {
+        if (this.editDigit >= 0) {
+            if (event.key == 'Escape') {
+                this.closeEffectKeyboard()
+                return true
+            }
+        } else if (this.piano.controller.keyDown(event)) {
             return true
         }
         return false
@@ -447,6 +452,7 @@ export class CellEntry {
 
     /** @private */
     closeEffectKeyboard() {
+        this.editDigit = -1
         this.piano.classList.remove('hide')
         this.sampleSection.classList.remove('hide')
         this.effectSection.classList.remove('hide')

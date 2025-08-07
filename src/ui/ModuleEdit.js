@@ -171,22 +171,11 @@ export class ModuleEdit {
         let tabForm = type(HTMLFormElement, fragment.querySelector('#appTabs'))
         $dom.disableFormSubmit(tabForm)
         this.tabInput = tabForm.elements.namedItem('appTab')
-        let tabBody = fragment.querySelector('#appTabBody')
+        /** @private @type {HTMLElement} */
+        this.tabBody = fragment.querySelector('#appTabBody')
         for (let tabButton of tabForm.elements) {
             if (tabButton instanceof HTMLInputElement) {
-                let tabName = tabButton.value
-                tabButton.addEventListener('change', () => {
-                    for (let element of tabBody.children) {
-                        element.classList.toggle('hide', element.id != tabName)
-                    }
-                    if (tabName == 'sequence' || tabName == 'samples') {
-                        this.patternEdit.controller.onVisible()
-                        this.cellEntry.parentElement.classList.remove('hide')
-                        this.cellEntry.controller.onVisible()
-                    } else {
-                        this.cellEntry.parentElement.classList.add('hide')
-                    }
-                })
+                tabButton.addEventListener('change', () => this.updateTab())
             }
         }
 
@@ -267,6 +256,9 @@ export class ModuleEdit {
      */
     keyDown(event) {
         let tab = this.selectedTab()
+        if ((tab == 'sequence' || tab == 'samples') && this.cellEntry.controller.keyDown(event)) {
+            return true
+        }
         let target = null
         switch (tab) {
         case 'arrange': target = this.moduleProperties.controller; break
@@ -276,8 +268,15 @@ export class ModuleEdit {
         if (target?.keyDown(event)) {
             return true
         }
-        if ((tab == 'sequence' || tab == 'samples') && this.cellEntry.controller.keyDown(event)) {
-            return true
+        if (event.key == 'Escape') {
+            if (tab == 'sequence' || tab == 'samples') {
+                $dom.selectRadioButton(this.tabInput, 'arrange')
+                this.updateTab()
+                return true
+            } else {
+                this.close()
+                return true
+            }
         }
         return false
     }
@@ -285,6 +284,21 @@ export class ModuleEdit {
     /** @private */
     selectedTab() {
         return $dom.getRadioButtonValue(this.tabInput, '')
+    }
+
+    /** @private */
+    updateTab() {
+        let tabName = this.selectedTab()
+        for (let element of this.tabBody.children) {
+            element.classList.toggle('hide', element.id != tabName)
+        }
+        if (tabName == 'sequence' || tabName == 'samples') {
+            this.patternEdit.controller.onVisible()
+            this.cellEntry.parentElement.classList.remove('hide')
+            this.cellEntry.controller.onVisible()
+        } else {
+            this.cellEntry.parentElement.classList.add('hide')
+        }
     }
 
     getModule() {

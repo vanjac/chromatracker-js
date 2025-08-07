@@ -83,6 +83,10 @@ export class SamplesList {
         if (this.sampleEdit?.controller.keyDown(event)) {
             return true
         }
+        if (event.key == 'Escape' && this.sampleEdit) {
+            this.closeSampleEdit()
+            return true
+        }
         return false
     }
 
