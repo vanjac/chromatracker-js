@@ -6,6 +6,7 @@ import * as $sample from '../edit/Sample.js'
 import * as $wave from '../edit/Wave.js'
 import * as $audio from '../file/Audio.js'
 import * as $ext from '../file/External.js'
+import * as $mod from '../file/Mod.js'
 import * as $wav from '../file/Wav.js'
 import * as $icons from '../gen/Icons.js'
 import {makeKeyButton} from './KeyPad.js'
@@ -15,7 +16,7 @@ import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
 import {invoke, callbackDebugObject, freeze} from '../Util.js'
-import {Cell, Effect, mod, Sample, CellPart} from '../Model.js'
+import {Cell, Effect, mod, Sample, Module, CellPart} from '../Model.js'
 import global from './GlobalState.js'
 import './WaveEdit.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
@@ -198,7 +199,7 @@ export class SampleEdit {
         this.finetuneInput.addEventListener('pointerleave',
             () => invoke(this.callbacks.jamRelease, -1))
 
-        fragment.querySelector('#open').addEventListener('click', () => this.openAudioFile())
+        fragment.querySelector('#open').addEventListener('click', () => this.pickAudioFile())
         fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
 
         makeKeyButton(fragment.querySelector('#useOffset'), id => {
@@ -308,7 +309,14 @@ export class SampleEdit {
             if ($wav.identify(buf)) {
                 this.importWav(buf, name)
             } else {
-                this.importAudio(buf, name)
+                let module
+                try {
+                    module = freeze($mod.read(buf))
+                } catch { // not a module
+                    this.importAudio(buf, name)
+                    return
+                }
+                this.modPickSample(module)
             }
         })
     }
@@ -357,10 +365,33 @@ export class SampleEdit {
         }
     }
 
+    /**
+     * @private
+     * @param {Readonly<Module>} mod
+     */
+    async modPickSample(mod) {
+        let options = mod.samples.flatMap((sample, idx) => !sample ? [] : [{
+            value: idx.toString(),
+            title: `${idx.toString().padStart(2, '0')}: ${sample.name}`,
+        }])
+        if (!options.length) {
+            AlertDialog.open('Module does not contain any samples.')
+            return
+        }
+        let selected
+        try {
+            selected = await MenuDialog.open(options, 'Import Sample:')
+        } catch (e) {
+            console.warn(e)
+            return
+        }
+        invoke(this.callbacks.onChange, mod.samples[Number(selected)], true)
+    }
+
     /** @private */
-    openAudioFile() {
+    pickAudioFile() {
         // Safari requires individual audio types
-        $ext.pickFiles('audio/*,audio/wav,audio/mpeg,audio/flac').then(files => {
+        $ext.pickFiles().then(files => {
             if (files.length == 1) {
                 this.readAudioFile(files[0])
             }
