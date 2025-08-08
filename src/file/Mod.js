@@ -60,6 +60,8 @@ export function read(buf) {
     let chanStr = initials.replace(/\D/g, '') // remove non-digits
     if (initials == 'OCTA' || initials == 'CD81') {
         numChannels = 8
+    } else if (initials == 'CD61') {
+        numChannels = 6
     } else if (chanStr) {
         numChannels = parseInt(chanStr)
     }
