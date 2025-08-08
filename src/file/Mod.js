@@ -58,7 +58,9 @@ export function read(buf) {
     }
     // TODO: support old 15-sample formats?
     let chanStr = initials.replace(/\D/g, '') // remove non-digits
-    if (chanStr) {
+    if (initials == 'OCTA' || initials == 'CD81') {
+        numChannels = 8
+    } else if (chanStr) {
         numChannels = parseInt(chanStr)
     }
     if (numChannels > 99) {throw Error(genericError)}
