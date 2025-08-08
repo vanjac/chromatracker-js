@@ -8,10 +8,11 @@ Currently implemented:
 
 - Custom MOD playback engine, mostly complete
   - Supports MOD extensions like extra channels, panning effects, and expanded frequency limits
-- Basic pattern editor
+- Pattern editor with touch keyboard
 - Sample editor with basic audio effects, 8-bit dithering
 - Full undo support
 - "Time travel" -- the onscreen playback position accounts for audio latency, so it matches what you're currently hearing, even with a high-latency Bluetooth connection
+- Persistent local file storage
 - Supports mobile browsers and PWA installation
 
 TODO:
