@@ -222,7 +222,9 @@ export class PatternEdit {
         if (!$dom.needsKeyboardInput(event.target)) {
             if (event.key == 'Enter' && !(event.target instanceof HTMLButtonElement)) {
                 if (event.shiftKey) {
-                    this.lift(-1)
+                    if (!event.repeat) {
+                        this.lift(-1)
+                    }
                     $dom.addKeyUpListener(event, () => invoke(this.callbacks.jamRelease, -1))
                 } else {
                     this.write(-1)
