@@ -1,6 +1,12 @@
 /** @import {ViewElement, Controller} from './DOMUtil.js' */
 
-export default null
+/**
+ * @param {EventTarget} target
+ */
+export function needsKeyboardInput(target) {
+    return (target instanceof HTMLInputElement) || (target instanceof HTMLSelectElement)
+        || (target instanceof HTMLTextAreaElement)
+}
 
 /**
  * @param {KeyboardEvent} event
@@ -13,7 +19,10 @@ function dispatchKeyDown(event) {
 
 document.addEventListener('keydown', e => {
     if (e.target instanceof Element && !e.target.closest('dialog')) {
-        if ((e.key == 'Escape' || e.key == 'Enter') && e.target instanceof HTMLInputElement) {
+        if (
+            e.key == 'Escape'
+                && (needsKeyboardInput(e.target) || e.target instanceof HTMLButtonElement)
+        ) {
             e.target.blur()
         } else if (dispatchKeyDown(e)) {
             e.preventDefault()

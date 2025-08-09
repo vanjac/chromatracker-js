@@ -223,7 +223,7 @@ export class PatternEdit {
             return true
         }
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (event.key == 'Enter') {
+            if (event.key == 'Enter' && !(event.target instanceof HTMLButtonElement)) {
                 if (event.shiftKey) {
                     this.lift()
                 } else {

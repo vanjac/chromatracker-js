@@ -1,5 +1,5 @@
 import * as $id from '../ID.js'
-import './WebApp.js'
+import * as $webapp from './WebApp.js'
 
 /**
  * @typedef {Object & {
@@ -140,13 +140,7 @@ export function disableFormSubmit(form) {
     form.addEventListener('submit', e => e.preventDefault())
 }
 
-/**
- * @param {EventTarget} target
- */
-export function needsKeyboardInput(target) {
-    return (target instanceof HTMLInputElement) || (target instanceof HTMLSelectElement)
-        || (target instanceof HTMLTextAreaElement)
-}
+export const {needsKeyboardInput} = $webapp
 
 /**
  * @param {KeyboardEvent} event
