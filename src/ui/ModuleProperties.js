@@ -10,7 +10,7 @@ const template = $dom.html`
 <div class="properties-grid">
     <label for="title">Title:</label>
     <div class="hflex">
-        <input id="title" maxlength="20" autocomplete="off">
+        <input id="title" maxlength="20" autocomplete="off" accesskey="t">
     </div>
 
     <label for="channelCount">Channels:</label>
@@ -37,7 +37,7 @@ const template = $dom.html`
 
     <label for="restart">Restart pos:</label>
     <div class="hflex">
-        <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off">
+        <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off" accesskey="r">
     </div>
 
     <label for="fileSize">File size:</label>

@@ -27,18 +27,18 @@ const template = $dom.html`
     <div class="properties-grid">
         <label for="name">Name:</label>
         <div class="hflex">
-            <input id="name" maxlength="22" autocomplete="off">
+            <input id="name" maxlength="22" autocomplete="off" accesskey="n">
         </div>
 
         <label for="volume">Volume:</label>
         <div class="hflex">
-            <input id="volume" type="range" class="flex-grow" min="0" max="64" autocomplete="off">
+            <input id="volume" type="range" class="flex-grow" min="0" max="64" autocomplete="off" accesskey="v">
             <output id="volumeOut" class="small-input"></output>
         </div>
 
         <label for="finetune">Finetune:</label>
         <div class="hflex">
-            <input id="finetune" type="range" class="flex-grow" min="-8" max="7" autocomplete="off">
+            <input id="finetune" type="range" class="flex-grow" min="-8" max="7" autocomplete="off" accesskey="f">
             <output id="finetuneOut" class="small-input"></output>
         </div>
 
@@ -89,9 +89,9 @@ const template = $dom.html`
             ${$icons.select}
         </button>
         <span>&nbsp;</span>
-        <input id="loopStart" type="number" required="" class="med-input" min="0" step="2" autocomplete="off">
+        <input id="loopStart" type="number" required="" class="med-input" min="0" step="2" autocomplete="off" accesskey="s">
         <span>&nbsp;to&nbsp;</span>
-        <input id="loopEnd" type="number" required="" class="med-input" min="0" step="2" autocomplete="off">
+        <input id="loopEnd" type="number" required="" class="med-input" min="0" step="2" autocomplete="off" accesskey="e">
     </div>
     <div class="flex-grow"></div>
     <div class="hflex">
