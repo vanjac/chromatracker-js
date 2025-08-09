@@ -1,5 +1,4 @@
 import * as $dom from './DOMUtil.js'
-import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
 import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
@@ -348,7 +347,7 @@ export class CellEntry {
                 continue
             }
             anySamples = true
-            let label = $util.makeRadioButton('sample', i.toString(), i.toString())
+            let label = $dom.makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key', 'keypad-target')
             this.sampleList.appendChild(label)
         }

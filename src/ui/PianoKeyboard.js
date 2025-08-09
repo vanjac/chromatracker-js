@@ -1,6 +1,5 @@
 import * as $cell from './Cell.js'
 import * as $dom from './DOMUtil.js'
-import * as $util from './UtilTemplates.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad} from './KeyPad.js'
 import {type, invoke, callbackDebugObject} from '../Util.js'
@@ -87,7 +86,7 @@ export class PianoKeyboard {
             if (note == 0) {
                 noteStr += Math.floor(i / 12)
             }
-            let label = $util.makeRadioButton('pitch', i.toString(), noteStr)
+            let label = $dom.makeRadioButton('pitch', i.toString(), noteStr)
             label.classList.add('keypad-key', 'keypad-target')
             let isBlackKey = [1, 3, 6, 8, 10].includes(note)
             label.classList.add(isBlackKey ? 'black-key' : 'white-key')

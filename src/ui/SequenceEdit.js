@@ -1,6 +1,5 @@
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
-import * as $util from './UtilTemplates.js'
 import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
@@ -147,7 +146,7 @@ export class SequenceEdit {
         this.sequenceButtons = []
 
         for (let [i, num] of sequence.entries()) {
-            let label = $util.makeRadioButton('sequence', i.toString(), num.toString())
+            let label = $dom.makeRadioButton('sequence', i.toString(), num.toString())
             label.classList.add('seq-button')
             this.sequenceList.appendChild(label)
             label.addEventListener('change', () => {

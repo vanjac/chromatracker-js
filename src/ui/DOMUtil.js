@@ -166,6 +166,25 @@ export function commandKey(event) {
     return useMeta ? event.metaKey : event.ctrlKey
 }
 
+const radioButtonTemplate = html`
+<label class="label-button">
+    <input type="radio">
+    <span></span>
+</label>
+`
+
+/**
+ * @param {string} group
+ * @param {string} value
+ * @param {string} text
+ */
+export function makeRadioButton(group, value, text) {
+    let fragment = radioButtonTemplate.cloneNode(true)
+    Object.assign(fragment.querySelector('input'), {name: group, value})
+    fragment.querySelector('span').textContent = text
+    return /** @type {HTMLElement} */(fragment.children[0])
+}
+
 /**
  * @param {NamedFormItem} namedItem
  * @param {string} value
