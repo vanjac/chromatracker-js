@@ -71,7 +71,7 @@ const template = $dom.html`
 
             <label for="gain">Gain:</label>
             <div class="hflex">
-                <input id="gain" name="gain" type="number" required="" min="-40" max="40" step="any" value="2">
+                <input id="gain" name="gain" type="number" required="" min="-40" max="40" step="any" value="2" class="min-width-0">
                 &nbsp;dB
             </div>
 
