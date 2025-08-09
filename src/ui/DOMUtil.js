@@ -144,6 +144,22 @@ export const {needsKeyboardInput} = $webapp
 
 /**
  * @param {KeyboardEvent} event
+ * @param {(event: KeyboardEvent) => void} listener
+ */
+export function addKeyUpListener(event, listener) {
+    if (event.repeat) {
+        return
+    }
+    let {code} = event
+    document.addEventListener('keyup', e => {
+        if (e.code == code) {
+            listener(e)
+        }
+    }, {once: true})
+}
+
+/**
+ * @param {KeyboardEvent} event
  */
 export function commandKey(event) {
     let useMeta = navigator.platform.startsWith('Mac') || navigator.platform.startsWith('i')

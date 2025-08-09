@@ -150,20 +150,17 @@ export class PatternEdit {
             id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#write'), id => {
-            this.write()
-            invoke(this.callbacks.jamPlay, id, this.selCell())
+            this.write(id)
             navigator.vibrate?.(1)
         }, id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#clear'), id => {
-            this.erase()
-            invoke(this.callbacks.jamPlay, id, this.selCell())
+            this.erase(id)
             navigator.vibrate?.(1)
         }, id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#lift'), id => {
-            this.lift()
-            invoke(this.callbacks.jamPlay, id)
+            this.lift(id)
         }, id => invoke(this.callbacks.jamRelease, id))
 
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
@@ -225,16 +222,20 @@ export class PatternEdit {
         if (!$dom.needsKeyboardInput(event.target)) {
             if (event.key == 'Enter' && !(event.target instanceof HTMLButtonElement)) {
                 if (event.shiftKey) {
-                    this.lift()
+                    this.lift(-1)
+                    $dom.addKeyUpListener(event, () => invoke(this.callbacks.jamRelease, -1))
                 } else {
-                    this.write()
+                    this.write(-1)
+                    $dom.addKeyUpListener(event, () => invoke(this.callbacks.jamRelease, -1))
                 }
                 return true
             } else if (event.key == ' ' && !(event.target instanceof HTMLButtonElement)) {
-                this.erase()
+                this.erase(-1)
+                $dom.addKeyUpListener(event, () => invoke(this.callbacks.jamRelease, -1))
                 return true
             } else if (event.key == 'Backspace') {
-                this.backErase()
+                this.backErase(-1)
+                $dom.addKeyUpListener(event, () => invoke(this.callbacks.jamRelease, -1))
                 return true
             } else if (event.key == 'Insert' && !$dom.commandKey(event)) {
                 this.insert(1)
@@ -373,31 +374,47 @@ export class PatternEdit {
         this.changePattern(pattern => $pattern.putCell(pattern, channel, row, cell, parts))
     }
 
-    /** @private */
-    write() {
+    /**
+     * @private
+     * @param {number} jamId
+     */
+    write(jamId) {
         this.putCell(this.entryCell, this.getCellParts())
+        invoke(this.callbacks.jamPlay, jamId, this.selCell())
         this.advance()
     }
 
-    /** @private */
-    erase() {
+    /**
+     * @private
+     * @param {number} jamId
+     */
+    erase(jamId) {
         this.putCell(Cell.empty, this.getCellParts())
+        invoke(this.callbacks.jamPlay, jamId, this.selCell())
         this.advance()
     }
 
-    /** @private */
-    backErase() {
+    /**
+     * @private
+     * @param {number} jamId
+     */
+    backErase(jamId) {
         this.patternTable.controller.move(0, -1, false, true)
         this.putCell(Cell.empty, this.getCellParts())
+        invoke(this.callbacks.jamPlay, jamId, this.selCell())
     }
 
-    /** @private */
-    lift() {
+    /**
+     * @private
+     * @param {number} jamId
+     */
+    lift(jamId) {
         let cell = this.selCell()
         let parts = this.getCellParts()
         if (cell.pitch < 0) { parts &= ~CellPart.pitch }
         if (!cell.inst) { parts &= ~CellPart.inst }
         invoke(this.callbacks.setEntryCell, cell, parts)
+        invoke(this.callbacks.jamPlay, jamId)
     }
 
     /**
