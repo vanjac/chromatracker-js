@@ -385,6 +385,7 @@ export class PatternEdit {
         this.advance()
     }
 
+    /** @private */
     backErase() {
         this.patternTable.controller.move(0, -1, false, true)
         this.putCell(Cell.empty, this.getCellParts())

@@ -181,20 +181,9 @@ export class ModuleEdit {
 
         fragment.querySelector('#close').addEventListener('click', () => this.close())
 
-        fragment.querySelector('#playStart').addEventListener('click', () => {
-            this.patternLoopInput.checked = false
-            this.resetPlayback()
-            this.play()
-        })
-        this.playPatternButton.addEventListener('click', () => {
-            this.patternLoopInput.checked = true
-            this.resetPlayback({restoreSpeed: true, restorePos: true})
-            this.play()
-        })
-        this.playRowButton.addEventListener('click', () => {
-            this.resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})
-            this.play()
-        })
+        fragment.querySelector('#playStart').addEventListener('click', () => this.playFromStart())
+        this.playPatternButton.addEventListener('click', () => this.playPattern())
+        this.playRowButton.addEventListener('click', () => this.playFromHere())
         this.pauseButton.addEventListener('click', () => this.pause())
         this.playRowButton.addEventListener('contextmenu', () => this.destroyPlayback())
         this.pauseButton.addEventListener('contextmenu', () => this.destroyPlayback())
@@ -270,6 +259,46 @@ export class ModuleEdit {
         }
         if (event.key == 'Escape') {
             this.close()
+            return true
+        }
+        if (!$dom.needsKeyboardInput(event.target)) {
+            if (event.key == 'z' && $dom.commandKey(event)) {
+                this.undo()
+                return true
+            } else if ((event.key == 'Z' || event.key == 'y' && $dom.commandKey(event))) {
+                this.redo()
+                return true
+            }
+        }
+        if (event.key == 'F1') {
+            $dom.selectRadioButton(this.tabInput, 'arrange')
+            this.updateTab()
+            return true
+        } else if (event.key == 'F2') {
+            $dom.selectRadioButton(this.tabInput, 'sequence')
+            this.updateTab()
+            return true
+        } else if (event.key == 'F3') {
+            $dom.selectRadioButton(this.tabInput, 'samples')
+            this.updateTab()
+            return true
+        } else if (event.key == 'F5') {
+            if (this.isPlaying()) {
+                this.pause()
+            } else {
+                this.playFromHere()
+            }
+            return true
+        } else if (event.key == 'F6') {
+            this.playFromStart()
+            return true
+        } else if (event.key == 'F7') {
+            if (this.isPlaying()) {
+                this.patternLoopInput.checked = !this.patternLoopInput.checked
+                this.updatePlaySettings()
+            } else {
+                this.playPattern()
+            }
             return true
         }
         return false
@@ -419,6 +448,26 @@ export class ModuleEdit {
     /** @private */
     isPlaying() {
         return !!this.intervalHandle
+    }
+
+    /** @private */
+    playFromStart() {
+        this.patternLoopInput.checked = false
+        this.resetPlayback()
+        this.play()
+    }
+
+    /** @private */
+    playPattern() {
+        this.patternLoopInput.checked = true
+        this.resetPlayback({restoreSpeed: true, restorePos: true})
+        this.play()
+    }
+
+    /** @private */
+    playFromHere() {
+        this.resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})
+        this.play()
     }
 
     /** @private */
@@ -591,6 +640,13 @@ export class ModuleEdit {
     /** @private */
     undo() {
         if (this.module.undo()) {
+            this.refreshModule()
+        }
+    }
+
+    /** @private */
+    redo() {
+        if (this.module.redo()) {
             this.refreshModule()
         }
     }
