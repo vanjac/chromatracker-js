@@ -142,6 +142,14 @@ export class WaveEdit {
      */
     // eslint-disable-next-line class-methods-use-this
     keyDown(event) {
+        if (event.key == 'Escape' && this.anySelected) {
+            this.selectNone()
+            return true
+        }
+        if (event.key == 'a' && $dom.commandKey(event)) {
+            this.selectAll()
+            return true
+        }
         return false
     }
 
@@ -243,6 +251,14 @@ export class WaveEdit {
         this.selectA = a
         this.selectB = b
         this.updateSelection()
+    }
+
+    selectAll() {
+        this.setSel(0, this.viewSample.wave.length)
+    }
+
+    selectNone() {
+        this.setSel(-1, -1)
     }
 
     /** @private */

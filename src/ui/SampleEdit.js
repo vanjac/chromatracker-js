@@ -159,10 +159,10 @@ export class SampleEdit {
 
         /** @private @type {HTMLButtonElement} */
         this.selectAllButton = fragment.querySelector('#selectAll')
-        this.selectAllButton.addEventListener('click', () => this.selectAll())
+        this.selectAllButton.addEventListener('click', () => this.waveEdit.controller.selectAll())
         /** @private @type {HTMLButtonElement} */
         this.selectNoneButton = fragment.querySelector('#selectNone')
-        this.selectNoneButton.addEventListener('click', () => this.selectNone())
+        this.selectNoneButton.addEventListener('click', () => this.waveEdit.controller.selectNone())
 
         /** @private @type {HTMLButtonElement} */
         this.trimButton = fragment.querySelector('#trim')
@@ -228,6 +228,38 @@ export class SampleEdit {
      */
     keyDown(event) {
         if (this.waveEdit.controller.keyDown(event)) {
+            return true
+        }
+        if (event.key == 'o' && $dom.commandKey(event)) {
+            this.pickAudioFile()
+            return true
+        } else if (event.key == 's' && $dom.commandKey(event)) {
+            this.saveAudioFile()
+            return true
+        } else if (event.key == 'k' && $dom.commandKey(event)) {
+            this.trim()
+            return true
+        } else if (event.key == 'x' && $dom.commandKey(event)) {
+            this.cut()
+            return true
+        } else if (event.key == 'c' && $dom.commandKey(event)) {
+            this.copy()
+            return true
+        } else if (event.key == 'v' && $dom.commandKey(event)) {
+            this.paste()
+            return true
+        } else if (event.key == 'l' && $dom.commandKey(event)) {
+            if (!Sample.hasLoop(this.viewSample)) {
+                this.loopSelection()
+            } else {
+                this.clearLoop()
+            }
+            return true
+        } else if (event.key == 'L' && $dom.commandKey(event)) {
+            this.selectLoop()
+            return true
+        } else if (event.key == '9' && $dom.commandKey(event)) {
+            this.useSampleOffset()
             return true
         }
         return false
@@ -434,16 +466,6 @@ export class SampleEdit {
     }
 
     /** @private */
-    selectAll() {
-        this.waveEdit.controller.setSel(0, this.viewSample.wave.length)
-    }
-
-    /** @private */
-    selectNone() {
-        this.waveEdit.controller.setSel(-1, -1)
-    }
-
-    /** @private */
     selectLoop() {
         if (Sample.hasLoop(this.viewSample)) {
             this.waveEdit.controller.setSel(this.viewSample.loopStart, this.viewSample.loopEnd)
@@ -455,7 +477,7 @@ export class SampleEdit {
         if (this.waveEdit.controller.rangeSelected()) {
             let [start, end] = this.waveEdit.controller.sel()
             invoke(this.callbacks.onChange, $sample.trim(this.viewSample, start, end), true)
-            this.selectNone()
+            this.waveEdit.controller.selectNone()
         }
     }
 
