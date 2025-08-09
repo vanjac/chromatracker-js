@@ -13,7 +13,9 @@ function dispatchKeyDown(event) {
 
 document.addEventListener('keydown', e => {
     if (e.target instanceof Element && !e.target.closest('dialog')) {
-        if (dispatchKeyDown(e)) {
+        if ((e.key == 'Escape' || e.key == 'Enter') && e.target instanceof HTMLInputElement) {
+            e.target.blur()
+        } else if (dispatchKeyDown(e)) {
             e.preventDefault()
         }
     }

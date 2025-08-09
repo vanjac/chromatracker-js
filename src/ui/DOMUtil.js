@@ -141,6 +141,22 @@ export function disableFormSubmit(form) {
 }
 
 /**
+ * @param {EventTarget} target
+ */
+export function needsKeyboardInput(target) {
+    return (target instanceof HTMLInputElement) || (target instanceof HTMLSelectElement)
+        || (target instanceof HTMLTextAreaElement)
+}
+
+/**
+ * @param {KeyboardEvent} event
+ */
+export function commandKey(event) {
+    let useMeta = navigator.platform.startsWith('Mac') || navigator.platform.startsWith('i')
+    return useMeta ? event.metaKey : event.ctrlKey
+}
+
+/**
  * @param {NamedFormItem} namedItem
  * @param {string} value
  */

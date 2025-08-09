@@ -150,28 +150,19 @@ export class PatternEdit {
             id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#write'), id => {
-            this.putCell(
-                this.entryCell,
-                this.getCellParts()
-            )
+            this.write()
             invoke(this.callbacks.jamPlay, id, this.selCell())
-            this.advance()
             navigator.vibrate?.(1)
         }, id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#clear'), id => {
-            this.putCell(Cell.empty, this.getCellParts())
+            this.erase()
             invoke(this.callbacks.jamPlay, id, this.selCell())
-            this.advance()
             navigator.vibrate?.(1)
         }, id => invoke(this.callbacks.jamRelease, id))
 
         makeKeyButton(fragment.querySelector('#lift'), id => {
-            let cell = this.selCell()
-            let parts = this.getCellParts()
-            if (cell.pitch < 0) { parts &= ~CellPart.pitch }
-            if (!cell.inst) { parts &= ~CellPart.inst }
-            invoke(this.callbacks.setEntryCell, cell, parts)
+            this.lift()
             invoke(this.callbacks.jamPlay, id)
         }, id => invoke(this.callbacks.jamRelease, id))
 
@@ -230,6 +221,49 @@ export class PatternEdit {
             this.selectInput.checked = false
             this.updateSelectMode()
             return true
+        }
+        if (!$dom.needsKeyboardInput(event.target)) {
+            if (event.key == 'Enter') {
+                if (event.shiftKey) {
+                    this.lift()
+                } else {
+                    this.write()
+                }
+                return true
+            } else if (event.key == ' ' && !(event.target instanceof HTMLButtonElement)) {
+                this.erase()
+                return true
+            } else if (event.key == 'Backspace') {
+                this.backErase()
+                return true
+            } else if (event.key == 'Insert') {
+                this.insert(1)
+                return true
+            } else if (event.key == 'Delete') {
+                this.delete(1)
+                return true
+            } else if (event.key == 'x' && $dom.commandKey(event)) {
+                this.cut()
+                return true
+            } else if (event.key == 'c' && $dom.commandKey(event)) {
+                this.copy()
+                return true
+            } else if (event.key == 'v' && $dom.commandKey(event)) {
+                this.paste()
+                return true
+            } else if (event.key == 'p' && event.altKey) {
+                this.pitchEnable.checked = !this.pitchEnable.checked
+                this.updateEntryParts()
+                return true
+            } else if (event.key == 's' && event.altKey) {
+                this.sampleEnable.checked = !this.sampleEnable.checked
+                this.updateEntryParts()
+                return true
+            } else if (event.key == 'e' && event.altKey) {
+                this.effectEnable.checked = !this.effectEnable.checked
+                this.updateEntryParts()
+                return true
+            }
         }
         return false
     }
@@ -339,6 +373,32 @@ export class PatternEdit {
         this.changePattern(pattern => $pattern.putCell(pattern, channel, row, cell, parts))
     }
 
+    /** @private */
+    write() {
+        this.putCell(this.entryCell, this.getCellParts())
+        this.advance()
+    }
+
+    /** @private */
+    erase() {
+        this.putCell(Cell.empty, this.getCellParts())
+        this.advance()
+    }
+
+    backErase() {
+        this.patternTable.controller.move(0, -1, false, true)
+        this.putCell(Cell.empty, this.getCellParts())
+    }
+
+    /** @private */
+    lift() {
+        let cell = this.selCell()
+        let parts = this.getCellParts()
+        if (cell.pitch < 0) { parts &= ~CellPart.pitch }
+        if (!cell.inst) { parts &= ~CellPart.inst }
+        invoke(this.callbacks.setEntryCell, cell, parts)
+    }
+
     /**
      * @private
      * @param {number} count
@@ -439,11 +499,7 @@ export class PatternEdit {
 
     /** @private */
     advance() {
-        let {selChannel, selRow} = this.patternTable.controller
-        selRow++
-        selRow %= this.selPattern()[0].length
-        this.patternTable.controller.setSelCell(selChannel, selRow, false)
-        this.patternTable.controller.scrollToSelCell()
+        this.patternTable.controller.move(0, 1, false, true)
     }
 
     /**

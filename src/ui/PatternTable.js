@@ -134,8 +134,36 @@ export class PatternTable {
     /**
      * @param {KeyboardEvent} event
      */
-    // eslint-disable-next-line class-methods-use-this
     keyDown(event) {
+        if (!$dom.needsKeyboardInput(event.target)) {
+            if (event.key == 'ArrowDown') {
+                this.move(0, 1, event.shiftKey, false)
+                return true
+            } else if (event.key == 'ArrowUp') {
+                this.move(0, -1, event.shiftKey, false)
+                return true
+            } else if (event.key == 'ArrowRight') {
+                this.move(1, 0, event.shiftKey, false)
+                return true
+            } else if (event.key == 'ArrowLeft') {
+                this.move(-1, 0, event.shiftKey, false)
+                return true
+            } else if (event.key == 'PageDown') {
+                this.move(0, 16, event.shiftKey, false)
+                return true
+            } else if (event.key == 'PageUp') {
+                this.move(0, -16, event.shiftKey, false)
+                return true
+            } else if (event.key == 'Home') {
+                this.setSelCell(this.selChannel, 0, event.shiftKey)
+                this.scrollToSelCell(true)
+                return true
+            } else if (event.key == 'End') {
+                this.setSelCell(this.selChannel, this.viewNumRows - 1, event.shiftKey)
+                this.scrollToSelCell(true)
+                return true
+            }
+        }
         return false
     }
 
@@ -329,6 +357,26 @@ export class PatternTable {
         this.updateSelection()
     }
 
+    /**
+     * @param {number} channels
+     * @param {number} rows
+     * @param {boolean} drag
+     * @param {boolean} center
+     */
+    move(channels, rows, drag, center) {
+        let selChannel = (this.selChannel + channels + this.viewNumChannels) % this.viewNumChannels
+        let selRow = this.selRow + rows
+        if (selRow >= this.viewNumRows) {
+            center = true
+            selRow %= this.viewNumRows
+        } else if (selRow < 0) {
+            center = true
+            selRow += this.viewNumRows
+        }
+        this.setSelCell(selChannel, selRow, drag)
+        this.scrollToSelCell(center)
+    }
+
     setMark() {
         this.markChannel = this.selChannel
         this.markRow = this.selRow
@@ -517,9 +565,12 @@ export class PatternTable {
         this.getTr(row)?.classList.add('hilite-row')
     }
 
-    scrollToSelCell() {
+    scrollToSelCell(center = true) {
         this.updateSpaceSize()
-        this.getTr(this.selRow)?.scrollIntoView({block: 'center', behavior: 'instant'})
+        this.getTd(this.selChannel, this.selRow)?.scrollIntoView({
+            block: center ? 'center' : 'nearest',
+            behavior: 'instant',
+        })
     }
 
     /**
