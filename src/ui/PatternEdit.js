@@ -236,10 +236,10 @@ export class PatternEdit {
             } else if (event.key == 'Backspace') {
                 this.backErase()
                 return true
-            } else if (event.key == 'Insert') {
+            } else if (event.key == 'Insert' && !$dom.commandKey(event)) {
                 this.insert(1)
                 return true
-            } else if (event.key == 'Delete') {
+            } else if (event.key == 'Delete' && !$dom.commandKey(event)) {
                 this.delete(1)
                 return true
             } else if (event.key == 'x' && $dom.commandKey(event)) {

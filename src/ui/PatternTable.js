@@ -136,31 +136,52 @@ export class PatternTable {
      */
     keyDown(event) {
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (event.key == 'ArrowDown') {
+            if (event.key == 'ArrowDown' && !$dom.commandKey(event)) {
                 this.move(0, 1, event.shiftKey, false)
                 return true
-            } else if (event.key == 'ArrowUp') {
+            } else if (event.key == 'ArrowUp' && !$dom.commandKey(event)) {
                 this.move(0, -1, event.shiftKey, false)
                 return true
-            } else if (event.key == 'ArrowRight') {
+            } else if (event.key == 'ArrowRight' && !$dom.commandKey(event)) {
                 this.move(1, 0, event.shiftKey, false)
                 return true
-            } else if (event.key == 'ArrowLeft') {
+            } else if (event.key == 'ArrowLeft' && !$dom.commandKey(event)) {
                 this.move(-1, 0, event.shiftKey, false)
                 return true
-            } else if (event.key == 'PageDown') {
+            } else if (event.key == 'PageDown' && !$dom.commandKey(event)) {
                 this.move(0, 16, event.shiftKey, false)
                 return true
-            } else if (event.key == 'PageUp') {
+            } else if (event.key == 'PageUp' && !$dom.commandKey(event)) {
                 this.move(0, -16, event.shiftKey, false)
                 return true
-            } else if (event.key == 'Home') {
+            } else if (event.key == 'Home' && !$dom.commandKey(event)) {
                 this.setSelCell(this.selChannel, 0, event.shiftKey)
                 this.scrollToSelCell(true)
                 return true
-            } else if (event.key == 'End') {
+            } else if (event.key == 'End' && !$dom.commandKey(event)) {
                 this.setSelCell(this.selChannel, this.viewNumRows - 1, event.shiftKey)
                 this.scrollToSelCell(true)
+                return true
+            } else if (event.key == 'a' && $dom.commandKey(event)) {
+                this.selChannel = this.selRow = 0
+                this.markChannel = this.viewNumChannels - 1
+                this.markRow = this.viewNumRows - 1
+                this.updateSelection()
+                return true
+            } else if (event.key == 'l' && $dom.commandKey(event)) {
+                this.selRow = 0
+                this.markRow = this.viewNumRows - 1
+                if (this.markChannel < 0) {
+                    this.markChannel = this.selChannel
+                }
+                this.updateSelection()
+                return true
+            } else if (event.key == 'm' && $dom.commandKey(event)) {
+                let [minChannel, maxChannel] = this.channelRange()
+                for (let c = minChannel; c <= maxChannel; c++) {
+                    this.muteInputs[c].checked = !this.muteInputs[c].checked
+                    invoke(this.callbacks.setMute, c, this.muteInputs[c].checked)
+                }
                 return true
             }
         }
@@ -194,7 +215,7 @@ export class PatternTable {
             }
             input.addEventListener('change',
                 () => invoke(this.callbacks.setMute, c, !input.checked))
-                newMuteInputs.push(input)
+            newMuteInputs.push(input)
             let label = th.appendChild($dom.createElem('label', {htmlFor: input.id}))
             label.textContent = 'Ch ' + (c + 1).toString()
         }
@@ -603,5 +624,6 @@ if (import.meta.main) {
     $dom.displayMain(testElem)
     testElem.controller.setNumChannels(4)
     testElem.controller.setPattern($pattern.create(4))
+    testElem.controller.setEntryParts(CellPart.all)
     testElem.controller.onVisible()
 }
