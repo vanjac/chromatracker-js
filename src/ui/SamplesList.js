@@ -87,6 +87,13 @@ export class SamplesList {
             this.closeSampleEdit()
             return true
         }
+        if (event.key == 'Insert' && $dom.commandKey(event)) {
+            this.addSample()
+            return true
+        } else if (event.key == 'Delete' && $dom.commandKey(event)) {
+            this.deleteSample()
+            return true
+        }
         return false
     }
 
@@ -218,9 +225,11 @@ export class SamplesList {
 
     /** @private */
     deleteSample() {
-        let idx = this.viewIndex
-        this.closeSampleEdit()
-        invoke(this.callbacks.changeModule, module => $sample.update(module, idx, null))
+        if (this.sampleEdit) {
+            let idx = this.viewIndex
+            this.closeSampleEdit()
+            invoke(this.callbacks.changeModule, module => $sample.update(module, idx, null))
+        }
     }
 }
 export const SamplesListElement = $dom.defineView('samples-list', SamplesList)
