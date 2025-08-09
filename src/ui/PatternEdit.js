@@ -223,21 +223,21 @@ export class PatternEdit {
             if (event.key == 'Enter' && !(event.target instanceof HTMLButtonElement)) {
                 if (event.shiftKey) {
                     if (!event.repeat) {
-                        this.lift(-1)
+                        this.lift(event.code)
                     }
-                    $dom.addKeyUpListener(event, () => invoke(this.callbacks.jamRelease, -1))
+                    $dom.addKeyUpListener(event, e => invoke(this.callbacks.jamRelease, e.code))
                 } else {
-                    this.write(-1)
-                    $dom.addKeyUpListener(event, () => invoke(this.callbacks.jamRelease, -1))
+                    this.write(event.code)
+                    $dom.addKeyUpListener(event, e => invoke(this.callbacks.jamRelease, e.code))
                 }
                 return true
             } else if (event.key == ' ' && !(event.target instanceof HTMLButtonElement)) {
-                this.erase(-1)
-                $dom.addKeyUpListener(event, () => invoke(this.callbacks.jamRelease, -1))
+                this.erase(event.code)
+                $dom.addKeyUpListener(event, e => invoke(this.callbacks.jamRelease, e.code))
                 return true
             } else if (event.key == 'Backspace') {
-                this.backErase(-1)
-                $dom.addKeyUpListener(event, () => invoke(this.callbacks.jamRelease, -1))
+                this.backErase(event.code)
+                $dom.addKeyUpListener(event, e => invoke(this.callbacks.jamRelease, e.code))
                 return true
             } else if (event.key == 'Insert' && !$dom.commandKey(event)) {
                 this.insert(1)
@@ -378,7 +378,7 @@ export class PatternEdit {
 
     /**
      * @private
-     * @param {number} jamId
+     * @param {number|string} jamId
      */
     write(jamId) {
         this.putCell(this.entryCell, this.getCellParts())
@@ -388,7 +388,7 @@ export class PatternEdit {
 
     /**
      * @private
-     * @param {number} jamId
+     * @param {number|string} jamId
      */
     erase(jamId) {
         this.putCell(Cell.empty, this.getCellParts())
@@ -398,7 +398,7 @@ export class PatternEdit {
 
     /**
      * @private
-     * @param {number} jamId
+     * @param {number|string} jamId
      */
     backErase(jamId) {
         this.patternTable.controller.move(0, -1, false, true)
@@ -408,7 +408,7 @@ export class PatternEdit {
 
     /**
      * @private
-     * @param {number} jamId
+     * @param {number|string} jamId
      */
     lift(jamId) {
         let cell = this.selCell()

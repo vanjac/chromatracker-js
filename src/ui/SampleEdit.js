@@ -190,15 +190,15 @@ export class SampleEdit {
                 commit)
             this.finetuneOutput.value = this.finetuneInput.value
             if (!commit) {
-                invoke(this.callbacks.jamPlay, -1)
+                invoke(this.callbacks.jamPlay, 'finetune')
             } else {
-                invoke(this.callbacks.jamRelease, -1)
+                invoke(this.callbacks.jamRelease, 'finetune')
             }
         })
         this.finetuneInput.addEventListener('pointerup',
-            () => invoke(this.callbacks.jamRelease, -1))
+            () => invoke(this.callbacks.jamRelease, 'finetune'))
         this.finetuneInput.addEventListener('pointerleave',
-            () => invoke(this.callbacks.jamRelease, -1))
+            () => invoke(this.callbacks.jamRelease, 'finetune'))
 
         fragment.querySelector('#open').addEventListener('click', () => this.pickAudioFile())
         fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())

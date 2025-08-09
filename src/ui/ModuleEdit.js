@@ -26,8 +26,9 @@ const processInterval = 200
 
 /**
  * @typedef {{
- *      jamPlay?: (id: number, cell?: Readonly<Cell>, sampleOverride?: Readonly<Sample>) => void
-        jamRelease?: (id: number) => void
+ *      jamPlay?:
+ *          (id: number|string, cell?: Readonly<Cell>, sampleOverride?: Readonly<Sample>) => void
+        jamRelease?: (id: number|string) => void
  * }} JamCallbacks
  */
 
@@ -511,7 +512,7 @@ export class ModuleEdit {
 
     /**
      * @private
-     * @param {number} id
+     * @param {number|string} id
      * @param {Readonly<Cell>} cell
      * @param {Readonly<Sample>} sampleOverride
      */
@@ -530,7 +531,7 @@ export class ModuleEdit {
 
     /**
      * @private
-     * @param {number} id
+     * @param {number|string} id
      */
     jamRelease(id) {
         if (!this.playback) {

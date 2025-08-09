@@ -33,7 +33,7 @@ function playback() {
         channels: [],
         /** @type {Set<AudioBufferSourceNode>} */
         activeSources: new Set(), // not including jam
-        /** @type {Map<number, ChannelPlayback>} */
+        /** @type {Map<number|string, ChannelPlayback>} */
         jamChannels: new Map(),
         /** @type {number} */
         tempo: mod.defaultTempo,
@@ -753,7 +753,7 @@ export function getSamplePredictedPos(channel, time) {
 
 /**
  * @param {Playback} playback
- * @param {number} id
+ * @param {number|string} id
  * @param {number} c
  * @param {Readonly<Cell>} cell
  * @param {Readonly<Sample>} sampleOverride
@@ -798,7 +798,7 @@ export function jamPlay(playback, id, c, cell, sampleOverride = null) {
 
 /**
  * @param {Playback} playback
- * @param {number} id
+ * @param {number|string} id
  */
 export function jamRelease(playback, id) {
     let jam = playback.jamChannels.get(id)
