@@ -10,24 +10,24 @@ const template = $dom.html`
         <h3>Fade</h3>
         <div class="hflex">
             <div class="flex-grow"></div>
-            <button id="fadeIn" type="button">
+            <button id="fadeIn" type="button" accesskey="i">
                 ${$icons.arrow_top_right_thin}
             </button>
-            <button id="fadeOut" type="button">
+            <button id="fadeOut" type="button" accesskey="o">
                 ${$icons.arrow_bottom_right_thin}
             </button>
             <div class="flex-grow"></div>
         </div>
         <div class="properties-grid">
             <label for="startAmp">Start:</label>
-            <input id="startAmp" name="startAmp" type="number" required="" step="any" value="1">
+            <input id="startAmp" name="startAmp" type="number" required="" step="any" value="1" accesskey="s">
 
             <label for="endAmp">End:</label>
-            <input id="endAmp" name="endAmp" type="number" required="" step="any" value="0">
+            <input id="endAmp" name="endAmp" type="number" required="" step="any" value="0" accesskey="e">
 
             <label for="dither">Dither:</label>
             <div class="hflex">
-                <input id="dither" name="dither" type="checkbox" checked="">
+                <input id="dither" name="dither" type="checkbox" checked="" accesskey="d">
             </div>
         </div>
         <button formmethod="dialog">Apply</button>

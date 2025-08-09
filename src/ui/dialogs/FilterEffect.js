@@ -36,7 +36,7 @@ const template = $dom.html`
         </div>
         <div class="properties-grid">
             <label for="filterType">Type:</label>
-            <select id="filterType" name="filterType">
+            <select id="filterType" name="filterType" accesskey="t">
                 <optgroup label="Filter">
                     <option value="lowpass">Lowpass</option>
                     <option value="highpass">Highpass</option>
@@ -53,12 +53,12 @@ const template = $dom.html`
 
             <label for="freqEnvelope">Envelope:</label>
             <div class="hflex">
-                <input id="freqEnvelope" name="freqEnvelope" type="checkbox">
+                <input id="freqEnvelope" name="freqEnvelope" type="checkbox" accesskey="e">
             </div>
 
             <label for="frequency">Frequency:</label>
             <div class="hflex">
-                <input id="frequency" name="frequency" type="number" required="" class="small-input" min="10" max="22050" step="any" value="350">
+                <input id="frequency" name="frequency" type="number" required="" class="small-input" min="10" max="22050" step="any" value="350" accesskey="f">
                 &nbsp;Hz
                 <div class="flex-grow"></div>
                 <label for="freqEnd">To:</label>
@@ -67,17 +67,17 @@ const template = $dom.html`
             </div>
 
             <label for="q">Q:</label>
-            <input id="q" name="q" type="number" required="" step="any" value="1">
+            <input id="q" name="q" type="number" required="" step="any" value="1" accesskey="q">
 
             <label for="gain">Gain:</label>
             <div class="hflex">
-                <input id="gain" name="gain" type="number" required="" min="-40" max="40" step="any" value="2" class="min-width-0">
+                <input id="gain" name="gain" type="number" required="" min="-40" max="40" step="any" value="2" class="min-width-0" accesskey="g">
                 &nbsp;dB
             </div>
 
             <label for="dither">Dither:</label>
             <div class="hflex">
-                <input id="dither" name="dither" type="checkbox" checked="">
+                <input id="dither" name="dither" type="checkbox" checked="" accesskey="d">
             </div>
         </div>
         <button formmethod="dialog">Apply</button>

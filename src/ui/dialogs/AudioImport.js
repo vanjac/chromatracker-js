@@ -9,22 +9,22 @@ const template = $dom.html`
         <h3>Import Audio</h3>
         <div class="properties-grid">
             <label for="resample">Resample (Hz):</label>
-            <input id="sampleRate" name="sampleRate" type="number" required="" min="8000" max="96000" step="any" value="16574.27">
+            <input id="sampleRate" name="sampleRate" type="number" required="" min="8000" max="96000" step="any" value="16574.27" accesskey="r">
 
             <label for="channel">Channel(s):</label>
-            <select id="channel" name="channel">
+            <select id="channel" name="channel" accesskey="c">
                 <option>Left</option>
                 <option>Right</option>
             </select>
 
             <label for="normalize">Normalize:</label>
             <div class="hflex">
-                <input id="normalize" name="normalize" type="checkbox" checked="">
+                <input id="normalize" name="normalize" type="checkbox" checked="" accesskey="n">
             </div>
 
             <label for="dither">Dither:</label>
             <div class="hflex">
-                <input id="dither" name="dither" type="checkbox" checked="">
+                <input id="dither" name="dither" type="checkbox" checked="" accesskey="d">
             </div>
         </div>
         <button formmethod="dialog">Import</button>

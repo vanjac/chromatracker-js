@@ -74,7 +74,7 @@ const template = $dom.html`
         <button id="paste">
             ${$icons.content_paste}
         </button>
-        <button id="effect">
+        <button id="effect" accesskey="e">
             ${$icons.dots_vertical}
             <span>Effect</span>
         </button>
@@ -89,9 +89,9 @@ const template = $dom.html`
             ${$icons.select}
         </button>
         <span>&nbsp;</span>
-        <input id="loopStart" type="number" required="" class="med-input" min="0" step="2" autocomplete="off" accesskey="s">
+        <input id="loopStart" type="number" required="" class="med-input" min="0" step="2" autocomplete="off" accesskey="l">
         <span>&nbsp;to&nbsp;</span>
-        <input id="loopEnd" type="number" required="" class="med-input" min="0" step="2" autocomplete="off" accesskey="e">
+        <input id="loopEnd" type="number" required="" class="med-input" min="0" step="2" autocomplete="off">
     </div>
     <div class="flex-grow"></div>
     <div class="hflex">
@@ -485,13 +485,14 @@ export class SampleEdit {
         let option
         try {
             option = await MenuDialog.open([
-                {value: 'amplify', title: 'Amplify'},
-                {value: 'fade', title: 'Fade'},
-                {value: 'reverse', title: 'Reverse'},
-                {value: 'resample', title: 'Resample'},
-                {value: 'filter', title: 'Filter / EQ'},
-                {value: 'loopRepeat', title: 'Loop Repeat', disabled: !hasLoop},
-                {value: 'loopPingPong', title: 'Loop Ping-Pong', disabled: !hasLoop},
+                {value: 'amplify', title: 'Amplify', accessKey: 'a'},
+                {value: 'fade', title: 'Fade', accessKey: 'f'},
+                {value: 'reverse', title: 'Reverse', accessKey: 'r'},
+                {value: 'resample', title: 'Resample', accessKey: 's'},
+                {value: 'filter', title: 'Filter / EQ', accessKey: 'e'},
+                {value: 'loopRepeat', title: 'Loop Repeat', accessKey: 'l', disabled: !hasLoop},
+                {value: 'loopPingPong', title: 'Loop Ping-Pong', accessKey: 'p',
+                    disabled: !hasLoop},
             ], 'Apply Effect:')
         } catch (e) {
             console.warn(e)
