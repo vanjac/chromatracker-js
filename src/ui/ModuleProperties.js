@@ -15,7 +15,8 @@ const template = $dom.html`
 
     <label for="channelCount">Channels:</label>
     <div class="hflex">
-        <output id="channelCount" class="med-input"></output>
+        <input id="channelCount" type="number" required="" value="4" min="2" max="32" step="2" autocomplete="off" accesskey="c">
+        &nbsp;
         <button id="delChannels">
             ${$icons.minus}
         </button>
@@ -29,7 +30,7 @@ const template = $dom.html`
 
     <label for="patternCount">Patterns:</label>
     <div class="hflex">
-        <output id="patternCount" class="med-input"></output>
+        <output id="patternCount"></output>
     </div>
 
     <label for="sequenceCount">Length:</label>
@@ -87,9 +88,14 @@ export class ModuleProperties {
                 invoke(this.callbacks.changeModule,
                     module => freeze({...module, restartPos}), commit)
             })
+        /** @private */
+        this.channelCountInput = new $dom.ValidatedNumberInput(
+            fragment.querySelector('#channelCount'), (channelCount, commit) => {
+                if (commit) {
+                    this.setNumChannels(channelCount)
+                }
+            })
 
-        /** @private @type {HTMLOutputElement} */
-        this.channelCountOutput = fragment.querySelector('#channelCount')
         /** @private @type {HTMLOutputElement} */
         this.sampleCountOutput = fragment.querySelector('#sampleCount')
         /** @private @type {HTMLOutputElement} */
@@ -138,7 +144,7 @@ export class ModuleProperties {
         }
         if (module.numChannels != this.viewModule?.numChannels) {
             console.debug('update channel count')
-            this.channelCountOutput.value = module.numChannels.toString()
+            this.channelCountInput.setValue(module.numChannels)
             this.delChannelsButton.disabled = module.numChannels <= 2
             this.addChannelsButton.disabled = module.numChannels >= mod.maxChannels
         }
@@ -165,6 +171,20 @@ export class ModuleProperties {
         this.fileSizeOutput.value = formatFileSize(fileSize)
 
         this.viewModule = module
+    }
+
+    /**
+     * @private
+     * @param {number} numChannels
+     */
+    setNumChannels(numChannels) {
+        invoke(this.callbacks.changeModule, module => {
+            if (numChannels > module.numChannels) {
+                return $module.addChannels(module, numChannels - module.numChannels)
+            } else {
+                return $module.delChannels(module, numChannels, module.numChannels - numChannels)
+            }
+        })
     }
 }
 export const ModulePropertiesElement = $dom.defineView('module-properties', ModuleProperties)
