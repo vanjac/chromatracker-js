@@ -83,8 +83,47 @@ export class SequenceEdit {
     /**
      * @param {KeyboardEvent} event
      */
-    // eslint-disable-next-line class-methods-use-this
     keyDown(event) {
+        if (!$dom.needsKeyboardInput(event.target)) {
+            if ((event.key == 'ArrowRight' || event.key == 'ArrowDown') && $dom.commandKey(event)) {
+                this.setSelPos(this.selPos + 1)
+                invoke(this.callbacks.onSelect)
+                return true
+            } else if (
+                (event.key == 'ArrowLeft' || event.key == 'ArrowUp') && $dom.commandKey(event)
+            ) {
+                this.setSelPos(this.selPos - 1)
+                invoke(this.callbacks.onSelect)
+                return true
+            } else if (event.key == 'Home' && $dom.commandKey(event)) {
+                this.setSelPos(0)
+                invoke(this.callbacks.onSelect)
+                return true
+            } else if (event.key == 'End' && $dom.commandKey(event)) {
+                this.setSelPos(this.viewSequence.length - 1)
+                invoke(this.callbacks.onSelect)
+                return true
+            } else if (event.key == 'Insert' && $dom.commandKey(event)) {
+                this.seqIns()
+                return true
+            } else if (event.key == 'Delete' && $dom.commandKey(event)) {
+                this.seqDel()
+                return true
+            }
+        }
+        if (event.key == '+' && $dom.commandKey(event)) {
+            this.seqSet(this.viewSequence[this.selPos] + 1)
+            return true
+        } else if (event.key == '_' && $dom.commandKey(event)) {
+            this.seqSet(this.viewSequence[this.selPos] - 1)
+            return true
+        } else if (event.key == 'p' && $dom.commandKey(event)) {
+            this.seqSet(this.viewNumPatterns)
+            return true
+        } else if (event.key == 'd' && $dom.commandKey(event)) {
+            this.seqClone()
+            return true
+        }
         return false
     }
 
@@ -170,7 +209,7 @@ export class SequenceEdit {
      * @param {number} pos
      */
     setSelPos(pos) {
-        if (pos != this.selPos && pos < this.viewSequence.length) {
+        if (pos != this.selPos && pos < this.viewSequence.length && pos >= 0) {
             this.selPos = pos
             $dom.selectRadioButton(this.sequenceInput, pos.toString())
             this.updateSel()
@@ -191,6 +230,7 @@ export class SequenceEdit {
 
     /** @private */
     seqClone() {
+        if (this.viewNumPatterns >= mod.maxPatterns) { return }
         invoke(this.callbacks.changeModule, module => {
             module = $pattern.clone(module, module.sequence[this.selPos])
             return $sequence.set(module, this.selPos, module.patterns.length - 1)

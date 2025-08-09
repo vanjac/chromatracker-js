@@ -1,6 +1,6 @@
 import * as $pattern from './Pattern.js'
 import {immSplice} from './EditUtil.js'
-import {Module} from '../Model.js'
+import {mod, Module} from '../Model.js'
 import {freeze} from '../Util.js'
 
 /**
@@ -20,7 +20,7 @@ export function zap(module) {
  * @returns {Readonly<Module>}
  */
 export function set(module, pos, pat) {
-    if (pat < 0) {
+    if (pat < 0 || pat >= mod.maxPatterns) {
         return module
     }
     let sequence = immSplice(module.sequence, pos, 1, pat)
