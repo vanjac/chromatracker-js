@@ -140,7 +140,6 @@ export class WaveEdit {
     /**
      * @param {KeyboardEvent} event
      */
-    // eslint-disable-next-line class-methods-use-this
     keyDown(event) {
         if (event.key == 'Escape' && this.anySelected) {
             this.selectNone()

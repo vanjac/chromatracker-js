@@ -133,6 +133,15 @@ export class FileMenu {
         if (this.editor?.controller.keyDown(event)) {
             return true
         }
+        if (!this.editor) {
+            if (event.key == 'o' && $dom.commandKey(event)) {
+                this.importFile()
+                return true
+            } else if (event.key == 'm' && $dom.commandKey(event)) {
+                this.openEditor(null, $module.createNew())
+                return true
+            }
+        }
         return false
     }
 
