@@ -625,8 +625,7 @@ export class ModuleEdit {
 
                 this.patternEdit.controller.setTempoSpeed(curState.tempo, curState.speed)
                 if (this.followInput.checked) {
-                    this.patternEdit.controller.selectCell(
-                        this.patternEdit.controller.selChannel(), curState.row)
+                    this.patternEdit.controller.selectRow(curState.row)
                     if (this.patternEdit.controller.selPos() != curState.pos) {
                         this.patternEdit.controller.setSelPos(curState.pos, true)
                     }

@@ -311,11 +311,10 @@ export class PatternEdit {
     }
 
     /**
-     * @param {number} channel
      * @param {number} row
      */
-    selectCell(channel, row) {
-        this.patternTable.controller.setSelCell(channel, row, false)
+    selectRow(row) {
+        this.patternTable.controller.setSelRow(row)
         this.patternTable.controller.scrollToSelCell()
     }
 

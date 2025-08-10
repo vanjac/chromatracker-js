@@ -353,6 +353,7 @@ export class PatternTable {
     }
 
     /**
+     * @private
      * @param {number} channel
      * @param {number} row
      * @param {boolean} extend
@@ -364,6 +365,14 @@ export class PatternTable {
             this.markChannel = channel
             this.markRow = row
         }
+        this.updateSelection()
+    }
+
+    /**
+     * @param {number} row
+     */
+    setSelRow(row) {
+        this.selRow = this.markRow = row
         this.updateSelection()
     }
 
