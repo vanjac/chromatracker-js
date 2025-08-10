@@ -210,10 +210,15 @@ export class PatternEdit {
         if (handled) {
             return true
         }
-        if (event.key == 'Escape' && this.selectInput.checked) {
-            this.selectInput.checked = false
-            this.updateSelectMode()
-            return true
+        if (event.key == 'Escape') {
+            if (this.selectInput.checked) {
+                this.selectInput.checked = false
+                this.updateSelectMode()
+                return true
+            } else if (this.patternTable.controller.rangeSelected()) {
+                this.patternTable.controller.disableSelectMode()
+                return true
+            }
         }
         if (!$dom.needsKeyboardInput(event.target)) {
             if (event.key == 'Enter' && !(event.target instanceof HTMLButtonElement)) {

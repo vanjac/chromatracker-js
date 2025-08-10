@@ -348,6 +348,10 @@ export class PatternTable {
         return minMax(this.selRow, this.markRow)
     }
 
+    rangeSelected() {
+        return this.selChannel != this.markChannel || this.selRow != this.markRow
+    }
+
     /**
      * @param {number} channel
      * @param {number} row
