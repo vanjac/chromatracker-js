@@ -313,8 +313,33 @@ export class CellEntry {
             return true
         }
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (event.code.startsWith('Numpad') && !$dom.commandKey(event)) {
-                let num = Number(event.key)
+            if (this.editDigit >= 0 && !$dom.commandKey(event) && event.key.length == 1) {
+                let num = parseInt(event.key, 16)
+                if (!Number.isNaN(num)) {
+                    this.effectKeyboardButton(num)
+                    return true
+                }
+            }
+            if (event.key == '1' && event.altKey) {
+                this.openEffectKeyboard(0)
+                return true
+            } else if (event.key == '2' && event.altKey) {
+                this.openEffectKeyboard(1)
+                return true
+            } else if (event.key == '3' && event.altKey) {
+                this.openEffectKeyboard(2)
+                return true
+            } else if (
+                (event.key == '`' || (event.key == '.' && event.code.startsWith('Numpad')))
+                    && !$dom.commandKey(event)
+            ) {
+                if (!event.repeat) {
+                    this.setCell(Cell.empty, CellPart.effect | CellPart.param)
+                    invoke(this.callbacks.jamPlay, event.code)
+                }
+                return true
+            } else if (event.code.startsWith('Numpad') && !$dom.commandKey(event)) {
+                let num = Number(event.key) // make sure numlock is on
                 if (!Number.isNaN(num)) {
                     num = (num == 0 ? 10 : num) + this.keyboardInstBase
                     this.keyboardSample(event, num)
