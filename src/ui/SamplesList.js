@@ -87,10 +87,10 @@ export class SamplesList {
             this.closeSampleEdit()
             return true
         }
-        if (event.key == 'Insert' && $dom.commandKey(event)) {
+        if (event.key == '+' && $dom.commandKey(event)) {
             this.addSample()
             return true
-        } else if (event.key == 'Delete' && $dom.commandKey(event)) {
+        } else if ('-_'.includes(event.key) && event.shiftKey && $dom.commandKey(event)) {
             this.deleteSample()
             return true
         }

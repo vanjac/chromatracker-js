@@ -84,13 +84,11 @@ export class SequenceEdit {
      */
     keyDown(event) {
         if (!$dom.needsKeyboardInput(event.target)) {
-            if ((event.key == 'ArrowRight' || event.key == 'ArrowDown') && $dom.commandKey(event)) {
+            if (event.key == 'ArrowRight' && $dom.commandKey(event)) {
                 this.setSelPos(this.selPos + 1)
                 invoke(this.callbacks.onSelect)
                 return true
-            } else if (
-                (event.key == 'ArrowLeft' || event.key == 'ArrowUp') && $dom.commandKey(event)
-            ) {
+            } else if (event.key == 'ArrowLeft' && $dom.commandKey(event)) {
                 this.setSelPos(this.selPos - 1)
                 invoke(this.callbacks.onSelect)
                 return true
@@ -108,17 +106,15 @@ export class SequenceEdit {
             } else if (event.key == 'Delete' && $dom.commandKey(event)) {
                 this.seqDel()
                 return true
+            } else if (event.key == 'ArrowDown' && $dom.commandKey(event)) {
+                this.seqSet(this.viewSequence[this.selPos] + 1)
+                return true
+            } else if (event.key == 'ArrowUp' && $dom.commandKey(event)) {
+                this.seqSet(this.viewSequence[this.selPos] - 1)
+                return true
             }
         }
-        if (event.key == '+' && $dom.commandKey(event)) {
-            this.seqSet(this.viewSequence[this.selPos] + 1)
-            return true
-        } else if (
-            (event.key == '_' || event.key == '-') && event.shiftKey && $dom.commandKey(event)
-        ) {
-            this.seqSet(this.viewSequence[this.selPos] - 1)
-            return true
-        } else if (event.key == 'p' && $dom.commandKey(event)) {
+        if (event.key == 'p' && $dom.commandKey(event)) {
             this.seqSet(this.viewNumPatterns)
             return true
         } else if (event.key == 'd' && $dom.commandKey(event)) {

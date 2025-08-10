@@ -284,7 +284,7 @@ export class ModuleEdit {
             if (event.key == 'z' && $dom.commandKey(event)) {
                 this.undo()
                 return true
-            } else if ((event.key == 'Z' || event.key == 'y' && $dom.commandKey(event))) {
+            } else if ((event.key == 'Z' || event.key == 'y') && $dom.commandKey(event)) {
                 this.redo()
                 return true
             }
