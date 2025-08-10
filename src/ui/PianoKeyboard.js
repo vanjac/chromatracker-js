@@ -48,6 +48,7 @@ export class PianoKeyboard {
          */
         this.callbacks = {}
 
+        /** @private */
         this.keyboardOctave = 3
     }
 
@@ -84,9 +85,8 @@ export class PianoKeyboard {
     /**
      * @param {KeyboardEvent} event
      */
-    // eslint-disable-next-line class-methods-use-this
     keyDown(event) {
-        if (!$dom.needsKeyboardInput(event.target)) {
+        if (!$dom.needsKeyboardInput(event.target) && !$dom.commandKey(event)) {
             let note = noteShortcuts[event.code]
             if (note != null) {
                 this.keyboardNote(event, (this.keyboardOctave * 12) + note)
@@ -96,11 +96,13 @@ export class PianoKeyboard {
                     this.keyboardOctave++
                     this.keyboardNote(event, this.getPitch() + 12)
                 }
+                return true
             } else if (event.code == 'Minus') {
                 if (this.keyboardOctave > 0 && !event.repeat) {
                     this.keyboardOctave--
                     this.keyboardNote(event, this.getPitch() - 12)
                 }
+                return true
             }
         }
         return false
@@ -155,7 +157,7 @@ export class PianoKeyboard {
      * @param {ScrollLogicalPosition} inline
      */
     scrollToPitch(pitch, inline) {
-        this.pianoKeys[pitch].scrollIntoView({inline, behavior: 'instant'})
+        this.pianoKeys[pitch]?.scrollIntoView({inline, behavior: 'instant'})
     }
 
     /**

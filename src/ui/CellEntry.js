@@ -2,7 +2,7 @@ import * as $dom from './DOMUtil.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
 import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
-import {Cell, CellPart, Sample, Effect, ExtEffect} from '../Model.js'
+import {Cell, CellPart, Sample, Effect, ExtEffect, mod} from '../Model.js'
 import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
@@ -223,6 +223,9 @@ export class CellEntry {
 
         /** @private */
         this.editDigit = -1
+
+        /** @private */
+        this.keyboardInstBase = 0
     }
 
     connectedCallback() {
@@ -252,6 +255,9 @@ export class CellEntry {
         this.effectKeyboardTitle = fragment.querySelector('#effectKeyboardTitle')
         /** @private @type {HTMLElement} */
         this.effectGrid = fragment.querySelector('#effectGrid')
+
+        /** @private @type {Element[]} */
+        this.sampleKeys = []
 
         this.effectButton.addEventListener('click', () => this.openEffectKeyboard(0))
         this.param0Button.addEventListener('click', () => this.openEffectKeyboard(1))
@@ -306,6 +312,54 @@ export class CellEntry {
         } else if (this.piano.controller.keyDown(event)) {
             return true
         }
+        if (!$dom.needsKeyboardInput(event.target)) {
+            if (event.code.startsWith('Numpad') && !$dom.commandKey(event)) {
+                let num = Number(event.key)
+                if (!Number.isNaN(num)) {
+                    num = (num == 0 ? 10 : num) + this.keyboardInstBase
+                    this.keyboardSample(event, num)
+                    return true
+                } else if (event.code == 'NumpadAdd') {
+                    for (let i = this.selSample() + 1; i < mod.numSamples; i++) {
+                        if (this.viewSamples[i]) {
+                            this.keyboardSample(event, i)
+                            break
+                        }
+                    }
+                    return true
+                } else if (event.code == 'NumpadSubtract') {
+                    for (let i = this.selSample() - 1; i >= 1; i--) {
+                        if (this.viewSamples[i]) {
+                            this.keyboardSample(event, i)
+                            break
+                        }
+                    }
+                    return true
+                } else if (event.code == 'NumpadMultiply') {
+                    if (this.keyboardInstBase < 20 && !event.repeat) {
+                        this.keyboardInstBase += 10
+                        for (let i = 1; i <= 10; i++) {
+                            if (this.viewSamples[i + this.keyboardInstBase]) {
+                                this.keyboardSample(event, i + this.keyboardInstBase)
+                                break
+                            }
+                        }
+                    }
+                    return true
+                } else if (event.code == 'NumpadDivide') {
+                    if (this.keyboardInstBase > 0 && !event.repeat) {
+                        this.keyboardInstBase -= 10
+                        for (let i = 1; i <= 10; i++) {
+                            if (this.viewSamples[i + this.keyboardInstBase]) {
+                                this.keyboardSample(event, i + this.keyboardInstBase)
+                                break
+                            }
+                        }
+                    }
+                    return true
+                }
+            }
+        }
         return false
     }
 
@@ -318,7 +372,7 @@ export class CellEntry {
      */
     getCell() {
         let pitch = this.piano.controller.getPitch()
-        let inst = Number($dom.getRadioButtonValue(this.sampleInput, '0'))
+        let inst = this.selSample()
         let {effect, param0, param1} = this
         return {pitch, inst, effect, param0, param1}
     }
@@ -339,18 +393,25 @@ export class CellEntry {
         let anySamples = false
         for (let [i, sample] of samples.entries()) {
             if (!sample) {
+                this.sampleKeys.push(null)
                 continue
             }
             anySamples = true
             let label = $dom.makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key', 'keypad-target')
             this.sampleList.appendChild(label)
+            this.sampleKeys.push(label)
         }
         this.sampleInput = this.sampleList.elements.namedItem('sample')
         this.setSelSample(selSample)
         if (!anySamples) {
             this.sampleList.textContent = 'No samples.'
         }
+    }
+
+    /** @private */
+    selSample() {
+        return Number($dom.getRadioButtonValue(this.sampleInput, '0'))
     }
 
     /**
@@ -362,6 +423,25 @@ export class CellEntry {
             $dom.selectRadioButton(this.sampleInput, s.toString())
         }
         invoke(this.callbacks.updateCell)
+    }
+
+    /**
+     * @private
+     * @param {number} s
+     */
+    scrollToSample(s) {
+        this.sampleKeys[s]?.scrollIntoView({inline: 'nearest', behavior: 'instant'})
+    }
+
+    /**
+     * @private
+     * @param {KeyboardEvent} event
+     * @param {number} s
+     */
+    keyboardSample(event, s) {
+        this.setSelSample(s)
+        this.scrollToSample(this.selSample())
+        invoke(this.callbacks.jamPlay, event.code)
     }
 
     /**
