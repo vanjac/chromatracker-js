@@ -383,12 +383,12 @@ export class PatternTable {
         this.scrollToSelCell(center)
     }
 
-    enableSelect() {
+    enableSelectMode() {
         this.selectMode = true
         this.updateSelection()
     }
 
-    disableSelect() {
+    disableSelectMode() {
         this.selectMode = false
         this.markChannel = this.selChannel
         this.markRow = this.selRow
