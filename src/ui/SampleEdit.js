@@ -206,7 +206,7 @@ export class SampleEdit {
         makeKeyButton(fragment.querySelector('#useOffset'), id => {
             this.useSampleOffset()
             invoke(this.callbacks.jamPlay, id)
-        }, id => invoke(this.callbacks.jamRelease, id))
+        })
         /** @private @type {HTMLElement} */
         this.offsetEffectSpan = fragment.querySelector('#offsetEffect')
 

@@ -60,7 +60,7 @@ export class SamplePicker {
             selectButton.addEventListener('click', () => this.select(sample))
             makeKeyButton(previewButton, id => {
                 invoke(this.callbacks.jamPlay, id, Cell.empty, sample)
-            }, id => invoke(this.callbacks.jamRelease, id))
+            })
             buttonList.appendChild(itemFrag)
         }
 

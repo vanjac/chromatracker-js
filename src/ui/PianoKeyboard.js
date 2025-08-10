@@ -58,7 +58,7 @@ export class PianoKeyboard {
                 invoke(this.callbacks.pitchChanged)
                 invoke(this.callbacks.jamPlay, id)
             }
-        }, id => invoke(this.callbacks.jamRelease, id))
+        })
 
         let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
         scrollLockCheck.addEventListener('change', () => {

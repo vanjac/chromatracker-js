@@ -239,6 +239,24 @@ export class ModuleEdit {
             },
         }
         this.patternEdit.controller.setEntryCell(this.getEntryCell())
+
+        /** @param {PointerEvent} e */
+        this.pointerUpListener = e => {
+            this.jamRelease(e.pointerId)
+        }
+        /** @param {KeyboardEvent} e */
+        this.keyUpListener = e => {
+            this.jamRelease(e.code)
+        }
+        document.addEventListener('pointerup', this.pointerUpListener)
+        document.addEventListener('pointercancel', this.pointerUpListener)
+        document.addEventListener('keyup', this.keyUpListener)
+    }
+
+    disconnectedCallback() {
+        document.removeEventListener('pointerup', this.pointerUpListener)
+        document.removeEventListener('pointercancel', this.pointerUpListener)
+        document.removeEventListener('keyup', this.keyUpListener)
     }
 
     /**

@@ -145,23 +145,19 @@ export class PatternEdit {
             this.patternTable.controller.setScrollLock(scrollLockCheck.checked)
         })
 
-        makeKeyButton(this.entryCellElem,
-            id => invoke(this.callbacks.jamPlay, id),
-            id => invoke(this.callbacks.jamRelease, id))
+        makeKeyButton(this.entryCellElem, id => invoke(this.callbacks.jamPlay, id))
 
         makeKeyButton(fragment.querySelector('#write'), id => {
             this.write(id)
             navigator.vibrate?.(1)
-        }, id => invoke(this.callbacks.jamRelease, id))
+        })
 
         makeKeyButton(fragment.querySelector('#clear'), id => {
             this.erase(id)
             navigator.vibrate?.(1)
-        }, id => invoke(this.callbacks.jamRelease, id))
+        })
 
-        makeKeyButton(fragment.querySelector('#lift'), id => {
-            this.lift(id)
-        }, id => invoke(this.callbacks.jamRelease, id))
+        makeKeyButton(fragment.querySelector('#lift'), id => this.lift(id))
 
         fragment.querySelector('#cut').addEventListener('click', () => this.cut())
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
@@ -225,19 +221,15 @@ export class PatternEdit {
                     if (!event.repeat) {
                         this.lift(event.code)
                     }
-                    $dom.addKeyUpListener(event, e => invoke(this.callbacks.jamRelease, e.code))
                 } else {
                     this.write(event.code)
-                    $dom.addKeyUpListener(event, e => invoke(this.callbacks.jamRelease, e.code))
                 }
                 return true
             } else if (event.key == ' ' && !(event.target instanceof HTMLButtonElement)) {
                 this.erase(event.code)
-                $dom.addKeyUpListener(event, e => invoke(this.callbacks.jamRelease, e.code))
                 return true
             } else if (event.key == 'Backspace') {
                 this.backErase(event.code)
-                $dom.addKeyUpListener(event, e => invoke(this.callbacks.jamRelease, e.code))
                 return true
             } else if (event.key == 'Insert' && !$dom.commandKey(event)) {
                 this.insert(1)

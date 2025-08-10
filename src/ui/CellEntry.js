@@ -264,7 +264,7 @@ export class CellEntry {
                 this.setSelSample(Number(input.value))
                 invoke(this.callbacks.jamPlay, id)
             }
-        }, id => invoke(this.callbacks.jamRelease, id))
+        })
 
         let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#sampleScrollLock'))
         scrollLockCheck.addEventListener('change', () => {
@@ -274,7 +274,7 @@ export class CellEntry {
         makeKeyButton(this.resetEffectButton, id => {
             this.setCell(Cell.empty, CellPart.effect | CellPart.param)
             invoke(this.callbacks.jamPlay, id)
-        }, id => invoke(this.callbacks.jamRelease, id))
+        })
 
         fragment.querySelector('#closeEffectKeyboard').addEventListener('click',
             () => this.closeEffectKeyboard())

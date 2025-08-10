@@ -114,7 +114,7 @@ export class PatternTable {
                 this.setSelCell(c, row, drag)
                 invoke(this.callbacks.jamPlay, id, this.viewPattern[c][row])
             }
-        }, id => invoke(this.callbacks.jamRelease, id))
+        })
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('row', 'number', this.selRow,

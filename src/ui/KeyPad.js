@@ -2,17 +2,14 @@ export class KeyPad {
     /**
      * @param {HTMLElement} container
      * @param {(id: number, elem: HTMLElement, drag: boolean) => void} onPress
-     * @param {(id: number) => void} onRelease
      */
-    constructor(container, onPress, onRelease) {
+    constructor(container, onPress) {
         /** @private */
         this.container = container
         /** @private @type {Map<number, Element>} */
         this.pressed = new Map()
         /** @private */
         this.onPress = onPress
-        /** @private */
-        this.onRelease = onRelease
 
         container.addEventListener('pointerdown', e => {
             if (e.pointerType != 'mouse' || e.button == 0) {
@@ -26,7 +23,7 @@ export class KeyPad {
                 this.press(e.pointerId, e.clientX, e.clientY, true)
             }
         })
-        container.addEventListener('lostpointercapture', e => this.release(e.pointerId))
+        container.addEventListener('lostpointercapture', e => this.pressed.delete(e.pointerId))
     }
 
     /**
@@ -48,31 +45,17 @@ export class KeyPad {
         }
         return valid
     }
-
-    /**
-     * @private
-     * @param {number} id
-     */
-    release(id) {
-        if (this.pressed.delete(id)) {
-            this.onRelease(id)
-        }
-    }
 }
 
 /**
  * @param {HTMLElement} elem
  * @param {(id: number) => void} onPress
- * @param {(id: number) => void} onRelease
  */
-export function makeKeyButton(elem, onPress, onRelease) {
+export function makeKeyButton(elem, onPress) {
     elem.addEventListener('pointerdown', e => {
         if (e.pointerType != 'mouse' || e.button == 0) {
             onPress(e.pointerId)
             elem.setPointerCapture(e.pointerId)
         }
-    })
-    elem.addEventListener('lostpointercapture', e => {
-        onRelease(e.pointerId)
     })
 }
