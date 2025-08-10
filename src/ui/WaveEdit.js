@@ -92,7 +92,11 @@ export class WaveEdit {
         this.waveEditBox.addEventListener('pointerdown', e => {
             if (e.pointerType != 'mouse' || e.button == 0) {
                 let pos = this.restrictWavePos(this.pointerToWaveCoord(e.clientX))
-                this.setSel(pos, pos)
+                this.selectB = pos
+                if (!e.shiftKey || this.selectA < 0) {
+                    this.selectA = pos
+                }
+                this.updateSelection()
                 this.waveEditBox.setPointerCapture(e.pointerId)
             }
         })

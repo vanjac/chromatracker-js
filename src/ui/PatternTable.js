@@ -107,13 +107,14 @@ export class PatternTable {
         this.addHandleEvents(this.selectHandles[2], false, true)
         this.addHandleEvents(this.selectHandles[3], true, true)
 
-        new KeyPad(this.tbody, (id, elem, drag) => {
+        new KeyPad(this.tbody, (id, elem, ev) => {
             let selectEnabled = !this.selectMode
                 || this.patternScroll.classList.contains('scroll-lock')
             if (selectEnabled && elem.dataset.c != null) {
                 let c = Number(elem.dataset.c)
                 let row = Number(elem.dataset.row)
-                this.setSelCell(c, row, drag && this.selectMode)
+                let extend = (ev.type == 'pointermove' && this.selectMode) || ev.shiftKey
+                this.setSelCell(c, row, extend)
                 invoke(this.callbacks.jamPlay, id, this.viewPattern[c][row])
             }
         })
