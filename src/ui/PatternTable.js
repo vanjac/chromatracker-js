@@ -573,12 +573,20 @@ export class PatternTable {
         this.getTr(row)?.classList.add('hilite-row')
     }
 
-    scrollToSelCell(center = true) {
+    /**
+     * @private
+     * @param {boolean} center
+     */
+    scrollToSelCell(center) {
         this.updateSpaceSize()
         this.getTd(this.selChannel, this.selRow)?.scrollIntoView({
             block: center ? 'center' : 'nearest',
             behavior: 'instant',
         })
+    }
+
+    scrollToSelRow() {
+        this.getTr(this.selRow)?.scrollIntoView({block: 'center', behavior: 'instant'})
     }
 
     /**
@@ -599,7 +607,7 @@ export class PatternTable {
     }
 
     onVisible() {
-        window.requestAnimationFrame(() => this.scrollToSelCell()) // TODO: jank
+        window.requestAnimationFrame(() => this.scrollToSelCell(true)) // TODO: jank
     }
 }
 export const PatternTableElement = $dom.defineView('pattern-table', PatternTable)

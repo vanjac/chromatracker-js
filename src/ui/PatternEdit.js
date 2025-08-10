@@ -315,7 +315,7 @@ export class PatternEdit {
      */
     selectRow(row) {
         this.patternTable.controller.setSelRow(row)
-        this.patternTable.controller.scrollToSelCell()
+        this.patternTable.controller.scrollToSelRow()
     }
 
     /**
