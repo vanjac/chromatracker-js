@@ -149,6 +149,28 @@ export class WaveEdit {
             if (event.key == 'a' && $dom.commandKey(event)) {
                 this.selectAll()
                 return true
+            } else if (event.key == 'ArrowRight') {
+                if (!this.anySelected()) {
+                    this.selectA = this.selectB = 0
+                } else {
+                    this.selectB += $dom.commandKey(event) ? 256 : 2
+                    this.selectB = this.restrictWavePos(this.selectB)
+                }
+                if (!event.shiftKey) {
+                    this.selectA = this.selectB
+                }
+                this.updateSelection()
+            } else if (event.key == 'ArrowLeft') {
+                if (!this.anySelected()) {
+                    this.selectA = this.selectB = this.viewSample.wave.length
+                } else {
+                    this.selectB -= $dom.commandKey(event) ? 256 : 2
+                    this.selectB = this.restrictWavePos(this.selectB)
+                }
+                if (!event.shiftKey) {
+                    this.selectA = this.selectB
+                }
+                this.updateSelection()
             }
         }
         return false
