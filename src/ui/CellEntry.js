@@ -291,8 +291,6 @@ export class CellEntry {
             pitchChanged: () => invoke(this.callbacks.updateCell),
         }
 
-        /** @private */
-        this.firstVisible = false
         this.updateEffect()
     }
 
@@ -312,10 +310,7 @@ export class CellEntry {
     }
 
     onVisible() {
-        if (!this.firstVisible) {
-            this.piano.controller.scrollToSelPitch()
-        }
-        this.firstVisible = true
+        this.piano.controller.scrollToSelOctave()
     }
 
     /**

@@ -341,8 +341,10 @@ export class ModuleEdit {
         }
         if (tabName == 'sequence' || tabName == 'samples') {
             this.patternEdit.controller.onVisible()
-            this.cellEntry.parentElement.classList.remove('hide')
-            this.cellEntry.controller.onVisible()
+            if (this.cellEntry.parentElement.classList.contains('hide')) {
+                this.cellEntry.parentElement.classList.remove('hide')
+                this.cellEntry.controller.onVisible()
+            }
         } else {
             this.cellEntry.parentElement.classList.add('hide')
         }
