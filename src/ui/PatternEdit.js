@@ -310,7 +310,7 @@ export class PatternEdit {
      * @param {number} row
      */
     selectCell(channel, row) {
-        this.patternTable.controller.setSelCell(channel, row, true)
+        this.patternTable.controller.setSelCell(channel, row, false)
         this.patternTable.controller.scrollToSelCell()
     }
 
@@ -352,9 +352,9 @@ export class PatternEdit {
         this.selectTools.classList.toggle('hide', !this.selectInput.checked)
         this.playbackStatus.classList.toggle('hide', this.selectInput.checked)
         if (this.selectInput.checked) {
-            this.patternTable.controller.setMark()
+            this.patternTable.controller.enableSelectMode()
         } else {
-            this.patternTable.controller.clearMark()
+            this.patternTable.controller.disableSelectMode()
         }
     }
 
