@@ -89,16 +89,18 @@ export class PianoKeyboard {
         if (!$dom.needsKeyboardInput(event.target) && !$dom.commandKey(event)) {
             let note = noteShortcuts[event.code]
             if (note != null) {
-                this.keyboardNote(event, (this.keyboardOctave * 12) + note)
+                if (!event.repeat) {
+                    this.keyboardNote(event, (this.keyboardOctave * 12) + note)
+                }
                 return true
             } else if (event.code == 'Equal') {
-                if (this.keyboardOctave < 4 && !event.repeat) {
+                if (this.keyboardOctave < 4) {
                     this.keyboardOctave++
                     this.keyboardNote(event, this.getPitch() + 12)
                 }
                 return true
             } else if (event.code == 'Minus') {
-                if (this.keyboardOctave > 0 && !event.repeat) {
+                if (this.keyboardOctave > 0) {
                     this.keyboardOctave--
                     this.keyboardNote(event, this.getPitch() - 12)
                 }

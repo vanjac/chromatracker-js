@@ -341,8 +341,10 @@ export class CellEntry {
             } else if (event.code.startsWith('Numpad') && !$dom.commandKey(event)) {
                 let num = Number(event.key) // make sure numlock is on
                 if (!Number.isNaN(num)) {
-                    num = (num == 0 ? 10 : num) + this.keyboardInstBase
-                    this.keyboardSample(event, num)
+                    if (!event.repeat) {
+                        num = (num == 0 ? 10 : num) + this.keyboardInstBase
+                        this.keyboardSample(event, num)
+                    }
                     return true
                 } else if (event.code == 'NumpadAdd') {
                     for (let i = this.selSample() + 1; i < mod.numSamples; i++) {
@@ -361,7 +363,7 @@ export class CellEntry {
                     }
                     return true
                 } else if (event.code == 'NumpadMultiply') {
-                    if (this.keyboardInstBase < 20 && !event.repeat) {
+                    if (this.keyboardInstBase < 20) {
                         this.keyboardInstBase += 10
                         for (let i = 1; i <= 10; i++) {
                             if (this.viewSamples[i + this.keyboardInstBase]) {
@@ -372,7 +374,7 @@ export class CellEntry {
                     }
                     return true
                 } else if (event.code == 'NumpadDivide') {
-                    if (this.keyboardInstBase > 0 && !event.repeat) {
+                    if (this.keyboardInstBase > 0) {
                         this.keyboardInstBase -= 10
                         for (let i = 1; i <= 10; i++) {
                             if (this.viewSamples[i + this.keyboardInstBase]) {
