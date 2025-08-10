@@ -230,6 +230,18 @@ export class SampleEdit {
         if (this.waveEdit.controller.keyDown(event)) {
             return true
         }
+        if (!$dom.needsKeyboardInput(event.target)) {
+            if (event.key == 'x' && $dom.commandKey(event)) {
+                this.cut()
+                return true
+            } else if (event.key == 'c' && $dom.commandKey(event)) {
+                this.copy()
+                return true
+            } else if (event.key == 'v' && $dom.commandKey(event)) {
+                this.paste()
+                return true
+            }
+        }
         if (event.key == 'o' && $dom.commandKey(event)) {
             this.pickAudioFile()
             return true
@@ -238,15 +250,6 @@ export class SampleEdit {
             return true
         } else if (event.key == 'k' && $dom.commandKey(event)) {
             this.trim()
-            return true
-        } else if (event.key == 'x' && $dom.commandKey(event)) {
-            this.cut()
-            return true
-        } else if (event.key == 'c' && $dom.commandKey(event)) {
-            this.copy()
-            return true
-        } else if (event.key == 'v' && $dom.commandKey(event)) {
-            this.paste()
             return true
         } else if (event.key == 'l' && $dom.commandKey(event)) {
             if (!Sample.hasLoop(this.viewSample)) {

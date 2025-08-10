@@ -145,9 +145,11 @@ export class WaveEdit {
             this.selectNone()
             return true
         }
-        if (event.key == 'a' && $dom.commandKey(event)) {
-            this.selectAll()
-            return true
+        if (!$dom.needsKeyboardInput(event.target)) {
+            if (event.key == 'a' && $dom.commandKey(event)) {
+                this.selectAll()
+                return true
+            }
         }
         return false
     }
