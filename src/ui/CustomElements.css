@@ -134,17 +134,21 @@ pattern-table .sel-cell { /* extra specificity */
 .pattern-handle:nth-child(1) {
     transform: translate(-100%, -100%);
     border-bottom-right-radius: 0;
+    cursor: nwse-resize;
 }
 .pattern-handle:nth-child(2) {
     transform: translate(0, -100%);
     border-bottom-left-radius: 0;
+    cursor: nesw-resize;
 }
 .pattern-handle:nth-child(3) {
     transform: translate(-100%, 0);
     border-top-right-radius: 0;
+    cursor: nesw-resize;
 }
 .pattern-handle:nth-child(4) {
     border-top-left-radius: 0;
+    cursor: nwse-resize;
 }
 
 /* CellEntry */
@@ -223,6 +227,7 @@ pattern-table .sel-cell { /* extra specificity */
     width: 20px;
     height: 20px;
     border-radius: 50%;
+    cursor: ew-resize;
 }
 .wave-handle-side {
     top: 50%;
