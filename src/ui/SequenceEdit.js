@@ -113,7 +113,9 @@ export class SequenceEdit {
         if (event.key == '+' && $dom.commandKey(event)) {
             this.seqSet(this.viewSequence[this.selPos] + 1)
             return true
-        } else if (event.key == '_' && $dom.commandKey(event)) {
+        } else if (
+            (event.key == '_' || event.key == '-') && event.shiftKey && $dom.commandKey(event)
+        ) {
             this.seqSet(this.viewSequence[this.selPos] - 1)
             return true
         } else if (event.key == 'p' && $dom.commandKey(event)) {
