@@ -199,6 +199,7 @@ pattern-table .sel-cell { /* extra specificity */
 .wave-container {
     contain: none;
     position: relative;
+    cursor: text;
 }
 
 .wave-mark,
