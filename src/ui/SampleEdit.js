@@ -259,7 +259,10 @@ export class SampleEdit {
             this.selectLoop()
             return true
         } else if (event.key == '9' && $dom.commandKey(event)) {
-            this.useSampleOffset()
+            if (!event.repeat) {
+                this.useSampleOffset()
+                invoke(this.callbacks.jamPlay, event.code)
+            }
             return true
         }
         return false

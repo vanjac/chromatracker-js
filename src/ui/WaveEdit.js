@@ -141,7 +141,7 @@ export class WaveEdit {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
-        if (event.key == 'Escape' && this.anySelected) {
+        if (event.key == 'Escape' && this.anySelected()) {
             this.selectNone()
             return true
         }
