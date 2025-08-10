@@ -276,7 +276,7 @@ export class ModuleEdit {
         if (target?.keyDown(event)) {
             return true
         }
-        if (event.key == 'Escape') {
+        if (event.code == 'BrowserBack') {
             this.close()
             return true
         }

@@ -69,7 +69,7 @@ window.history.replaceState('back', null)
 window.history.pushState('app', null)
 window.addEventListener('popstate', e => {
     if (e.state == 'back') {
-        let event = new KeyboardEvent('keydown', {key: 'Escape'})
+        let event = new KeyboardEvent('keydown', {key: 'Escape', code: 'BrowserBack'})
         if (dispatchKeyDown(event)) {
             window.history.pushState('app', null)
         } else {
