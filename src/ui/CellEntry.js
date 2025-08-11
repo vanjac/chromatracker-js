@@ -69,7 +69,7 @@ const effectShortNames = freeze([
     'Arpeggio', 'Slide Up', 'Slide Down', 'Portamento',
     'Vibrato', 'Port + Vol', 'Vibrato + Vol', 'Tremolo',
     'Set Panning', 'Offset', 'Volume Slide', 'Pos. Jump',
-    'Set Volume', 'Pat. Break', 'Extended...', 'Tempo',
+    'Set Volume', 'Pat. Break', 'More...', 'Tempo',
 ])
 
 const extEffectNames = freeze([
