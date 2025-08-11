@@ -199,3 +199,7 @@ dialog {
     align-items: center;
     justify-content: center;
 }
+
+.warning {
+    color: red;
+}

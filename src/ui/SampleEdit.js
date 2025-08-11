@@ -50,6 +50,8 @@ const template = $dom.html`
             <button id="save">
                 ${$icons.download}
             </button>
+            &nbsp;
+            <span id="warning" class="warning"></span>
         </div>
     </div>
 
@@ -203,6 +205,9 @@ export class SampleEdit {
         fragment.querySelector('#open').addEventListener('click', () => this.pickAudioFile())
         fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
 
+        /** @type {HTMLElement} */
+        this.warningText = fragment.querySelector('#warning')
+
         makeKeyButton(fragment.querySelector('#useOffset'), id => {
             this.useSampleOffset()
             invoke(this.callbacks.jamPlay, id)
@@ -296,6 +301,9 @@ export class SampleEdit {
         this.volumeOutput.value = sample.volume.toString()
         this.finetuneInput.valueAsNumber = sample.finetune
         this.finetuneOutput.value = sample.finetune.toString()
+
+        this.warningText.textContent = sample.wave.length > mod.maxSampleLength ?
+            'Sample is too long!' : ''
 
         this.viewSample = sample
     }
