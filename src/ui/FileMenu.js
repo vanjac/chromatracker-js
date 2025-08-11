@@ -29,7 +29,7 @@ const template = $dom.html`
             </button>
             <div class="flex-grow"></div>
         </div>
-        <strong id="storageWarning" class="message-out"></strong>
+        <strong id="storageWarning" class="message-out warning"></strong>
         <div class="flex-grow vscrollable">
             <div id="fileList" class="button-list"></div>
             <hr>
