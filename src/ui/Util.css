@@ -72,8 +72,3 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-.selectable {
-    -webkit-user-select: text;
-    user-select: text;
-}

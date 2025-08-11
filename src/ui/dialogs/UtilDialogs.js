@@ -6,7 +6,7 @@ const alertDialogTemplate = $dom.html`
 <dialog class="message-dialog">
     <form>
         <h3 id="title"></h3>
-        <output id="message" class="message-out selectable"></output>
+        <output id="message" class="message-out"></output>
         <div class="hflex">
             <div class="flex-grow"></div>
             <button formmethod="dialog" class="show-checked">OK</button>
@@ -60,7 +60,7 @@ const confirmDialogTemplate = $dom.html`
 <dialog class="message-dialog">
     <form>
         <h3 id="title"></h3>
-        <output id="message" class="message-out selectable"></output>
+        <output id="message" class="message-out"></output>
         <div class="hflex">
             <div class="flex-grow"></div>
             <button formmethod="dialog" class="show-checked">OK</button>
