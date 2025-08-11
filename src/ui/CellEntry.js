@@ -493,6 +493,15 @@ export class CellEntry {
         invoke(this.callbacks.updateCell)
     }
 
+    /**
+     * @param {CellPart} parts
+     */
+    setEntryParts(parts) {
+        this.piano.classList.toggle('dim', !(parts & CellPart.pitch))
+        this.sampleSection.classList.toggle('dim', !(parts & CellPart.inst))
+        this.effectSection.classList.toggle('dim', !(parts & CellPart.effect))
+    }
+
     /** @private */
     updateEffect() {
         this.effectButton.textContent = this.getEffectTitle()

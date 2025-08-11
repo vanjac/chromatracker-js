@@ -95,7 +95,8 @@ export class PatternEdit {
         /**
          * @type {ModuleEditCallbacks & JamCallbacks & {
          *      setMute?: (c: number, mute: boolean) => void
-                setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
+         *      setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
+         *      setEntryParts?: (parts: CellPart) => void
          * }}
          */
         this.callbacks = {}
@@ -198,7 +199,8 @@ export class PatternEdit {
             onChange: (pattern) => this.changePattern(_ => pattern),
             setMute: (...args) => invoke(this.callbacks.setMute, ...args),
         }
-        this.updateEntryParts()
+        $cell.toggleParts(this.entryCellElem, this.getCellParts())
+        this.patternTable.controller.setEntryParts(this.getCellParts())
     }
 
     /**
@@ -490,7 +492,6 @@ export class PatternEdit {
         $cell.setContents(this.entryCellElem, cell)
     }
 
-    /** @private */
     getCellParts() {
         /** @type {CellPart} */
         let parts = CellPart.none
@@ -511,6 +512,7 @@ export class PatternEdit {
         let parts = this.getCellParts()
         $cell.toggleParts(this.entryCellElem, parts)
         this.patternTable.controller.setEntryParts(parts)
+        invoke(this.callbacks.setEntryParts, parts)
     }
 
     /**

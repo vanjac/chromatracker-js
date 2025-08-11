@@ -1,12 +1,14 @@
 body {
     --color-bg: #000;
     --color-fg: #fff;
+    --color-fg-dim: #bbb;
 
     --color-bg-btn: #333;
     --color-bg-btn-press: #666;
 
     --color-bg-hl: #60a;
     --color-fg-hl: #b4f;
+    --color-fg-hl-dim: #a6d;
 
     --color-bg-alt: #d28;
     --color-fg-alt: #f8a;

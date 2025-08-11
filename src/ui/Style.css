@@ -14,10 +14,16 @@ body {
     accent-color: var(--color-fg-hl);
 }
 
+.dim {
+    color: var(--color-fg-dim);
+    --color-fg: var(--color-fg-dim);
+    --color-fg-hl: var(--color-fg-hl-dim);
+}
+
 input {
     padding: 1px 3px;
     background: var(--color-bg);
-    border: 1px solid var(--color-fg);
+    border: 1px solid currentColor;
     border-radius: 3px;
 }
 
@@ -135,14 +141,14 @@ select:disabled
 .label-button :checked + span,
 .show-checked {
     background: var(--color-fg-hl);
-    color: var(--color-bg)
+    color: var(--color-bg);
 }
 
 .label-button :active:checked + span,
 .label-button.active :checked + span,
 .show-checked.active {
     background: var(--color-bg-hl);
-    color: var(--color-fg)
+    color: var(--color-fg);
 }
 
 .icon svg {

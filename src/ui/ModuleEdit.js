@@ -219,6 +219,7 @@ export class ModuleEdit {
             jamRelease: this.jamRelease.bind(this),
             setMute: this.setMute.bind(this),
             setEntryCell: this.setEntryCell.bind(this),
+            setEntryParts: parts => this.cellEntry.controller.setEntryParts(parts)
         }
         this.samplesList.controller.callbacks = {
             jamPlay: this.jamPlay.bind(this),
@@ -338,6 +339,11 @@ export class ModuleEdit {
         let tabName = this.selectedTab()
         for (let element of this.tabBody.children) {
             element.classList.toggle('hide', element.id != tabName)
+        }
+        if (tabName == 'sequence') {
+            this.cellEntry.controller.setEntryParts(this.patternEdit.controller.getCellParts())
+        } else {
+            this.cellEntry.controller.setEntryParts(CellPart.all)
         }
         if (tabName == 'sequence' || tabName == 'samples') {
             this.patternEdit.controller.onVisible()
