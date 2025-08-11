@@ -221,7 +221,10 @@ export class PatternEdit {
             }
         }
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (event.key == 'Enter' && !(event.target instanceof HTMLButtonElement)) {
+            if (event.key == '\\' && !$dom.commandKey(event)) {
+                this.selectInput.checked = !this.selectInput.checked
+                this.updateSelectMode()
+            } else if (event.key == 'Enter' && !(event.target instanceof HTMLButtonElement)) {
                 if (event.shiftKey) {
                     if (!event.repeat) {
                         this.lift(event.code)
