@@ -183,7 +183,7 @@ pattern-table .sel-cell { /* extra specificity */
 
 /* PianoKeyboard */
 
-.black-key :not(:checked) + span {
+.white-keys :not(:checked) + span {
     background: var(--color-fg);
     color: var(--color-bg);
     border-color: var(--color-bg);

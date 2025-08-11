@@ -1,6 +1,6 @@
 export default null
 
-window.location.href = import.meta.resolve('../webl.html')
+// window.location.href = import.meta.resolve('../webl.html')
 
 async function reloadCSS() {
     /** @type {NodeListOf<HTMLLinkElement>} */

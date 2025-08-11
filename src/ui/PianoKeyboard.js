@@ -17,7 +17,7 @@ const template = $dom.html`
             <div id="blackKeys" class="hflex">
                 <div class="keypad-half-key"></div>
             </div>
-            <div id="whiteKeys" class="hflex"></div>
+            <div id="whiteKeys" class="hflex white-keys"></div>
         </div>
     </form>
 </div>
@@ -123,7 +123,6 @@ export class PianoKeyboard {
             let label = $dom.makeRadioButton('pitch', i.toString(), noteStr)
             label.classList.add('keypad-key', 'keypad-target')
             let isBlackKey = [1, 3, 6, 8, 10].includes(note)
-            label.classList.add(isBlackKey ? 'black-key' : 'white-key')
             ;(isBlackKey ? blackKeys : whiteKeys).appendChild(label)
             this.pianoKeys.push(label)
 
