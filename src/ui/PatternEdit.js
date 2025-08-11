@@ -525,6 +525,14 @@ export class PatternEdit {
         return this.patternTable.controller.isChannelMuted(channel)
     }
 
+    /**
+     * @param {boolean} playing
+     */
+    setPlayState(playing) {
+        this.tempoInput.input.disabled = playing
+        this.speedInput.input.disabled = playing
+    }
+
     getTempo() {
         return this.tempoInput.getValue()
     }

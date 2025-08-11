@@ -469,6 +469,7 @@ export class ModuleEdit {
         this.playRowButton.classList.toggle('hide', playing)
         this.pauseButton.classList.toggle('hide', !playing)
         this.patternLoopInput.parentElement.classList.toggle('hide', !playing)
+        this.patternEdit.controller.setPlayState(playing)
     }
 
     /** @private */
