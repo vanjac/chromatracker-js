@@ -1,8 +1,12 @@
 # Development
 
-## Building
+## Running Locally
 
-You must have [npm](https://www.npmjs.com/) and [GNU Make](https://www.gnu.org/software/make/) installed. Run `make` to install packages, rebuild generated files, and run the type-checker/linter.
+ChromaTracker works with any static HTML server. It's written in plain JavaScript so there's no compilation step required for hosting the development version; just navigate to `index.html`.
+
+## Development Tools
+
+You must have [npm](https://www.npmjs.com/) and [GNU Make](https://www.gnu.org/software/make/) installed. Run `make` to install development packages, rebuild generated files, and run the type-checker/linter.
 
 ## WEBL
 
