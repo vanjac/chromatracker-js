@@ -33,6 +33,7 @@ html, body {
     touch-action: none;
     /* no swipe to go back or refresh */
     overscroll-behavior: none;
+    -webkit-touch-callout: none;
 }
 
 body {
