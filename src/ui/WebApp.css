@@ -35,6 +35,11 @@ html, body {
     overscroll-behavior: none;
 }
 
+body {
+    padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0)
+             env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+}
+
 body, dialog, select {
     -webkit-user-select: none;
     user-select: none;
