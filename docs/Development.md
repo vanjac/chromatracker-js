@@ -2,7 +2,7 @@
 
 ## Running Locally
 
-ChromaTracker works with any static HTML server. It's written in plain JavaScript so there's no compilation step required for hosting the development version; just navigate to `index.html`.
+ChromaTracker works with any static HTML server. It's written in plain JavaScript without dependencies, so there's no compilation step required for hosting the development version; just navigate to `index.html`.
 
 ## Development Tools
 
