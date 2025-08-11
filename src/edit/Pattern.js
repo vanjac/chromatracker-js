@@ -94,19 +94,22 @@ export function putCell(pattern, c, r, cell, parts) {
 /**
  * @param {Readonly<Pattern>} dest
  * @param {number} cStart
+ * @param {number} cSize
  * @param {number} rStart
+ * @param {number} rSize
  * @param {Readonly<Pattern>} src
  * @param {CellPart} parts
  */
-export function write(dest, cStart, rStart, src, parts) {
+export function write(dest, cStart, cSize, rStart, rSize, src, parts) {
     let mutPat = [...dest]
-    let cSize = Math.min(src.length, dest.length - cStart)
+    cSize = Math.min(cSize, dest.length - cStart)
     for (let c = 0; c < cSize; c++) {
         let srcChan = src[c]
         let mutChan = [...mutPat[c + cStart]]
-        let rSize = Math.min(srcChan.length, mutChan.length - rStart)
+        rSize = Math.min(rSize, mutChan.length - rStart)
         for (let r = 0; r < rSize; r++) {
-            mutChan[r + rStart] = freeze(cellApply(mutChan[r + rStart], srcChan[r], parts))
+            let cell = srcChan?.[r] ?? Cell.empty
+            mutChan[r + rStart] = freeze(cellApply(mutChan[r + rStart], cell, parts))
         }
         mutPat[c + cStart] = freeze(mutChan)
     }

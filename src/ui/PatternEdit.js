@@ -459,11 +459,21 @@ export class PatternEdit {
 
     /** @private */
     paste() {
-        let [channel, row] = this.selCellPos()
+        let minChannel, maxChannel, minRow, maxRow
+        if (this.selectInput.checked) {
+            ;[minChannel, maxChannel] = this.patternTable.controller.channelRange()
+            ;[minRow, maxRow] = this.patternTable.controller.rowRange()
+        } else {
+            ;[minChannel, minRow] = this.selCellPos()
+            maxChannel = minChannel + global.patternClipboard.length - 1
+            maxRow = minRow + global.patternClipboard[0].length - 1
+        }
         this.changePattern(pattern => $pattern.write(
             pattern,
-            channel,
-            row,
+            minChannel,
+            maxChannel - minChannel + 1,
+            minRow,
+            maxRow - minRow + 1,
             global.patternClipboard,
             this.getCellParts()
         ))
