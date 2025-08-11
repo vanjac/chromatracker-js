@@ -176,11 +176,11 @@ export class PatternEdit {
         this.effectEnable.addEventListener('change', this.updateEntryParts.bind(this))
 
         this.pitchEnable.parentElement.addEventListener('contextmenu',
-            () => this.putCell(this.entryCell, CellPart.pitch))
+            () => this.putCells(this.entryCell, CellPart.pitch))
         this.sampleEnable.parentElement.addEventListener('contextmenu',
-            () => this.putCell(this.entryCell, CellPart.inst))
+            () => this.putCells(this.entryCell, CellPart.inst))
         this.effectEnable.parentElement.addEventListener('contextmenu',
-            () => this.putCell(this.entryCell, CellPart.effect | CellPart.param))
+            () => this.putCells(this.entryCell, CellPart.effect | CellPart.param))
 
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('seqpos', 'number', this.selPos(), pos => this.setSelPos(pos))
@@ -367,9 +367,11 @@ export class PatternEdit {
      * @param {Readonly<Cell>} cell
      * @param {CellPart} parts
      */
-    putCell(cell, parts) {
-        let [channel, row] = this.selCellPos()
-        this.changePattern(pattern => $pattern.putCell(pattern, channel, row, cell, parts))
+    putCells(cell, parts) {
+        let [minChannel, maxChannel] = this.patternTable.controller.channelRange()
+        let [minRow, maxRow] = this.patternTable.controller.rowRange()
+        this.changePattern(pattern => $pattern.fill(
+            pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, cell, parts))
     }
 
     /**
@@ -377,7 +379,7 @@ export class PatternEdit {
      * @param {number|string} jamId
      */
     write(jamId) {
-        this.putCell(this.entryCell, this.getCellParts())
+        this.putCells(this.entryCell, this.getCellParts())
         invoke(this.callbacks.jamPlay, jamId, this.selCell())
         this.advance()
     }
@@ -387,7 +389,7 @@ export class PatternEdit {
      * @param {number|string} jamId
      */
     erase(jamId) {
-        this.putCell(Cell.empty, this.getCellParts())
+        this.putCells(Cell.empty, this.getCellParts())
         invoke(this.callbacks.jamPlay, jamId, this.selCell())
         this.advance()
     }
@@ -397,8 +399,10 @@ export class PatternEdit {
      * @param {number|string} jamId
      */
     backErase(jamId) {
-        this.patternTable.controller.move(0, -1, false, true)
-        this.putCell(Cell.empty, this.getCellParts())
+        if (!this.selectInput.checked) {
+            this.patternTable.controller.move(0, -1, false, true)
+        }
+        this.putCells(Cell.empty, this.getCellParts())
         invoke(this.callbacks.jamPlay, jamId, this.selCell())
     }
 
@@ -515,7 +519,9 @@ export class PatternEdit {
 
     /** @private */
     advance() {
-        this.patternTable.controller.move(0, 1, false, true)
+        if (!this.selectInput.checked) {
+            this.patternTable.controller.move(0, 1, false, true)
+        }
     }
 
     /**
