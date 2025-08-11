@@ -6,7 +6,7 @@ types: node_modules
 lint: node_modules
 	npm run lint
 
-src/gen/Version.js src/gen/Icons.js: version assets/icons
+src/gen/Version.js src/gen/Icons.js: version assets/icons build.mjs
 	node build.mjs
 
 node_modules: package.json

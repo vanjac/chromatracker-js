@@ -25,6 +25,7 @@ import {html, xhtml} from '../ui/DOMUtil.js'
 
     let iconFiles = fs.readdirSync('assets/icons')
     for (let file of iconFiles) {
+        if (!file.endsWith('.svg')) { continue }
         let content = fs.readFileSync(path.join('assets/icons', file), {encoding: 'utf8'})
         let var_name = file.replaceAll('-', '_').replaceAll('.svg', '')
         let q = '`', $ = '$'
