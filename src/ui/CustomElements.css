@@ -77,7 +77,8 @@ pattern-table tbody tr:nth-child(16n+2) th {
 }
 .sel-pitch .cell-pitch,
 .sel-inst .cell-inst,
-.sel-effect .cell-effect {
+.sel-effect .cell-effect,
+.sel-digit {
     background: var(--color-fg-hl);
     color: var(--color-bg);
 }

@@ -43,6 +43,19 @@ export function setContents(elem, cell) {
 }
 
 /**
+ * @param {Element|DocumentFragment} elem
+ * @param {Readonly<Cell>} cell
+ */
+export function setPreviewContents(elem, cell) {
+    elem.querySelector('#pitch').childNodes[0].nodeValue = pitchString(cell.pitch)
+    elem.querySelector('#inst').childNodes[0].nodeValue = instString(cell.inst)
+    let effect = effectString(cell)
+    elem.querySelector('#effDigit0').childNodes[0].nodeValue = effect[0]
+    elem.querySelector('#effDigit1').childNodes[0].nodeValue = effect[1]
+    elem.querySelector('#effDigit2').childNodes[0].nodeValue = effect[2]
+}
+
+/**
  * @param {Element} elem
  * @param {CellPart} parts
  */

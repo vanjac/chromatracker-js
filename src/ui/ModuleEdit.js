@@ -238,6 +238,7 @@ export class ModuleEdit {
             setPartTogglesVisible: visible => {
                 this.patternEdit.controller.setPartTogglesVisible(visible)
             },
+            highlightEffectDigit: digit => this.patternEdit.controller.highlightEffectDigit(digit)
         }
         this.patternEdit.controller.setEntryCell(this.getEntryCell())
 

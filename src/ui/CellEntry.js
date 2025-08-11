@@ -208,6 +208,7 @@ export class CellEntry {
          * @type {JamCallbacks & {
          *      updateCell?: () => void
          *      setPartTogglesVisible?: (visible: boolean) => void
+         *      highlightEffectDigit?: (digit: number) => void
          * }}
          */
         this.callbacks = {}
@@ -558,6 +559,7 @@ export class CellEntry {
             button.querySelector('#desc').textContent = desc[i]
         }
         invoke(this.callbacks.setPartTogglesVisible, false)
+        invoke(this.callbacks.highlightEffectDigit, digit)
     }
 
     /** @private */
@@ -568,6 +570,7 @@ export class CellEntry {
         this.effectSection.classList.remove('hide')
         this.effectKeyboard.classList.add('hide')
         invoke(this.callbacks.setPartTogglesVisible, true)
+        invoke(this.callbacks.highlightEffectDigit, -1)
     }
 
     /**

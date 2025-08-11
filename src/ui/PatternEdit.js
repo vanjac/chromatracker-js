@@ -52,7 +52,9 @@ const template = $dom.html`
         <span id="entryCell" class="pattern-cell">
             <span id="pitch" class="cell-pitch">...</span>
             <span id="inst" class="cell-inst">..</span>
-            <span id="effect" class="cell-effect">...</span>
+            <span id="effect" class="cell-effect">
+                <span id="effDigit0">.</span><span id="effDigit1">.</span><span id="effDigit2">.</span>
+            </span>
         </span>
         <div class="flex-grow"></div>
         <button id="write">
@@ -489,7 +491,7 @@ export class PatternEdit {
      */
     setEntryCell(cell) {
         this.entryCell = cell
-        $cell.setContents(this.entryCellElem, cell)
+        $cell.setPreviewContents(this.entryCellElem, cell)
     }
 
     getCellParts() {
@@ -520,6 +522,21 @@ export class PatternEdit {
      */
     setPartTogglesVisible(visible) {
         this.partToggles.classList.toggle('hide', !visible)
+    }
+
+    /**
+     * @param {number} digit
+     */
+    highlightEffectDigit(digit) {
+        if (digit >= 0) {
+            $cell.toggleParts(this.entryCellElem, CellPart.none)
+        } else {
+            $cell.toggleParts(this.entryCellElem, this.getCellParts())
+        }
+        for (let d = 0; d < 3; d++) {
+            let elem = this.entryCellElem.querySelector('#effDigit' + d)
+            elem.classList.toggle('sel-digit', d == digit)
+        }
     }
 
     /**
