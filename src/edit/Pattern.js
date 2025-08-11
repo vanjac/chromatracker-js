@@ -136,30 +136,36 @@ export function fill(pattern, cStart, cEnd, rStart, rEnd, cell, parts) {
 
 /**
  * @param {Readonly<Pattern>} pattern
- * @param {number} c
+ * @param {number} cStart
+ * @param {number} cEnd
  * @param {number} r
  * @param {number} count
  */
-export function channelInsert(pattern, c, r, count) {
-    return changeItem(pattern, c, channel => {
-        let newChannel = [...channel]
-        newChannel.copyWithin(r + count, r, channel.length - count + 1)
-        newChannel.fill(Cell.empty, r, r + count)
-        return freeze(newChannel)
-    })
+export function channelInsert(pattern, cStart, cEnd, r, count) {
+    let mutPat = [...pattern]
+    for (let c = cStart; c < cEnd; c++) {
+        let mutChan = [...mutPat[c]]
+        mutChan.copyWithin(r + count, r, mutChan.length - count + 1)
+        mutChan.fill(Cell.empty, r, r + count)
+        mutPat[c] = freeze(mutChan)
+    }
+    return freeze(mutPat)
 }
 
 /**
  * @param {Readonly<Pattern>} pattern
- * @param {number} c
+ * @param {number} cStart
+ * @param {number} cEnd
  * @param {number} r
  * @param {number} count
  */
-export function channelDelete(pattern, c, r, count) {
-    return changeItem(pattern, c, channel => {
-        let newChannel = [...channel]
-        newChannel.copyWithin(r, r + count, channel.length)
-        newChannel.fill(Cell.empty, channel.length - count, channel.length)
-        return freeze(newChannel)
-    })
+export function channelDelete(pattern, cStart, cEnd, r, count) {
+    let mutPat = [...pattern]
+    for (let c = cStart; c < cEnd; c++) {
+        let mutChan = [...mutPat[c]]
+        mutChan.copyWithin(r, r + count, mutChan.length)
+        mutChan.fill(Cell.empty, mutChan.length - count, mutChan.length)
+        mutPat[c] = freeze(mutChan)
+    }
+    return freeze(mutPat)
 }

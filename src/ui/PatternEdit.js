@@ -163,11 +163,11 @@ export class PatternEdit {
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
         fragment.querySelector('#paste').addEventListener('click', () => this.paste())
         fragment.querySelector('#insert').addEventListener('click', () => {
-            this.insert(1)
+            this.insert()
             navigator.vibrate?.(1)
         })
         fragment.querySelector('#delete').addEventListener('click', () => {
-            this.delete(1)
+            this.delete()
             navigator.vibrate?.(1)
         })
 
@@ -237,10 +237,10 @@ export class PatternEdit {
                 this.backErase(event.code)
                 return true
             } else if (event.key == 'Insert' && !$dom.commandKey(event)) {
-                this.insert(1)
+                this.insert()
                 return true
             } else if (event.key == 'Delete' && !$dom.commandKey(event)) {
-                this.delete(1)
+                this.delete()
                 return true
             } else if (event.key == 'x' && $dom.commandKey(event)) {
                 this.cut()
@@ -421,20 +421,22 @@ export class PatternEdit {
 
     /**
      * @private
-     * @param {number} count
      */
-    insert(count) {
-        let [channel, row] = this.selCellPos()
-        this.changePattern(pattern => $pattern.channelInsert(pattern, channel, row, count))
+    insert() {
+        let [minChannel, maxChannel] = this.patternTable.controller.channelRange()
+        let [minRow, maxRow] = this.patternTable.controller.rowRange()
+        this.changePattern(pattern => $pattern.channelInsert(
+            pattern, minChannel, maxChannel + 1, minRow, maxRow - minRow + 1))
     }
 
     /**
      * @private
-     * @param {number} count
      */
-    delete(count) {
-        let [channel, row] = this.selCellPos()
-        this.changePattern(pattern => $pattern.channelDelete(pattern, channel, row, count))
+    delete() {
+        let [minChannel, maxChannel] = this.patternTable.controller.channelRange()
+        let [minRow, maxRow] = this.patternTable.controller.rowRange()
+        this.changePattern(pattern => $pattern.channelDelete(
+            pattern, minChannel, maxChannel + 1, minRow, maxRow - minRow + 1))
     }
 
     /** @private */
