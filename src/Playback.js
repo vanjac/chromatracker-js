@@ -154,12 +154,16 @@ export function setModule(playback, module) {
         for (let channel of playback.channels) {
             disconnectChannel(channel)
         }
+        let oldChannels = playback.channels
         playback.channels = []
         for (let c = 0; c < module.numChannels; c++) {
             let channel = channelPlayback()
             playback.channels.push(channel)
             channel.panning = ((c % 4) == 0 || (c % 4) == 3) ? 64 : 191
             initChannelNodes(playback, channel)
+            if (oldChannels[c]?.userMute) {
+                setChannelMute(playback, c, true)
+            }
         }
     }
 
