@@ -176,14 +176,15 @@ export class PatternTable {
                 this.markRow = this.viewNumRows - 1
                 this.updateSelection()
                 return true
-            } else if (event.key == 'm' && $dom.commandKey(event)) {
-                let [minChannel, maxChannel] = this.channelRange()
-                for (let c = minChannel; c <= maxChannel; c++) {
-                    this.muteInputs[c].checked = !this.muteInputs[c].checked
-                    invoke(this.callbacks.setMute, c, this.muteInputs[c].checked)
-                }
-                return true
             }
+        }
+        if (event.key == 'm' && $dom.commandKey(event)) {
+            let [minChannel, maxChannel] = this.channelRange()
+            for (let c = minChannel; c <= maxChannel; c++) {
+                this.muteInputs[c].checked = !this.muteInputs[c].checked
+                this.updateMuteState(c)
+            }
+            return true
         }
         return false
     }
@@ -213,8 +214,7 @@ export class PatternTable {
             if (!this.muteInputs[c] || this.muteInputs[c].checked) {
                 input.checked = true
             }
-            input.addEventListener('change',
-                () => invoke(this.callbacks.setMute, c, !input.checked))
+            input.addEventListener('change', () => this.updateMuteState(c))
             newMuteInputs.push(input)
             let label = th.appendChild($dom.createElem('label', {htmlFor: input.id}))
             label.textContent = 'Ch ' + (c + 1).toString()
@@ -271,6 +271,7 @@ export class PatternTable {
                 })
             }
 
+            let muteStates = this.muteInputs.map(input => !input.checked)
             for (let row = 0; row < pattern[0].length; row++) {
                 let tr = tableFrag.appendChild($dom.createElem('tr'))
                 let th = $dom.createElem('th', {textContent: row.toString()})
@@ -290,6 +291,7 @@ export class PatternTable {
                     $cell.setContents(cellFrag, cell)
 
                     let td = cellFrag.querySelector('td')
+                    td.classList.toggle('dim', muteStates[c])
                     td.dataset.c = c.toString()
                     td.dataset.row = row.toString()
                     td.addEventListener('contextmenu', () => {
@@ -598,6 +600,19 @@ export class PatternTable {
             return false
         }
         return ! this.muteInputs[channel].checked
+    }
+
+    /**
+     * @private
+     * @param {number} c
+     */
+    updateMuteState(c) {
+        let mute = this.isChannelMuted(c)
+        invoke(this.callbacks.setMute, c, mute)
+
+        for (let row = 0; row < this.viewPattern[c].length; row++) {
+            this.getTd(c, row)?.classList.toggle('dim', mute)
+        }
     }
 
     /**
