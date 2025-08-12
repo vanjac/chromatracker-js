@@ -182,19 +182,19 @@ pattern-table .sel-cell { /* extra specificity */
     font-size: 0.6em;
 }
 
-.pitch-effect-btn:not(.show-checked) {
+.pitch-effect-btn:not(.show-checked):not(:active):not(.active) {
     background: var(--color-bg-pitch);
 }
-.volume-effect-btn:not(.show-checked) {
+.volume-effect-btn:not(.show-checked):not(:active):not(.active) {
     background: var(--color-bg-volume);
 }
-.panning-effect-btn:not(.show-checked) {
+.panning-effect-btn:not(.show-checked):not(:active):not(.active) {
     background: var(--color-bg-panning);
 }
-.timing-effect-btn:not(.show-checked) {
+.timing-effect-btn:not(.show-checked):not(:active):not(.active) {
     background: var(--color-bg-timing);
 }
-.control-effect-btn:not(.show-checked) {
+.control-effect-btn:not(.show-checked):not(:active):not(.active) {
     background: var(--color-bg-control);
 }
 
