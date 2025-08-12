@@ -59,15 +59,15 @@ const template = $dom.html`
 `
 
 const effectNames = freeze([
-    'Arpeggio', 'Slide Up', 'Slide Down', 'Portamento',
-    'Vibrato', 'Portamento + Vol Slide', 'Vibrato + Vol Slide', 'Tremolo',
+    'Arpeggio', 'Slide Up', 'Slide Down', 'Note Glide',
+    'Vibrato', 'Glide + Vol Slide', 'Vibrato + Vol Slide', 'Tremolo',
     'Set Panning', 'Sample Offset', 'Volume Slide', 'Position Jump',
     'Set Volume', 'Pattern Break', 'Extended...', 'Speed / Tempo',
 ])
 
 const effectShortNames = freeze([
-    'Arpeggio', 'Slide Up', 'Slide Down', 'Portamento',
-    'Vibrato', 'Port + Vol', 'Vibrato + Vol', 'Tremolo',
+    'Arpeggio', 'Slide Up', 'Slide Down', 'Note Glide',
+    'Vibrato', 'Glide + Vol', 'Vibrato + Vol', 'Tremolo',
     'Set Panning', 'Offset', 'Volume Slide', 'Pos. Jump',
     'Set Volume', 'Pat. Break', 'More...', 'Tempo',
 ])

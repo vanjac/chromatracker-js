@@ -10,7 +10,7 @@ You must have [npm](https://www.npmjs.com/) and [GNU Make](https://www.gnu.org/s
 
 ## WEBL
 
-This repo includes a custom "WEBL" (Web REPL) page to support interactive development using [Replete](https://github.com/jamesdiacono/replete). You can navigate to this page within Replete by evaluating the snippet in `scratch.js`.
+This repo includes a custom "WEBL" (Web REPL) page to support interactive development using [Replete](https://github.com/jamesdiacono/replete). You can navigate to this page from the default Replete WEBL by evaluating the snippet in `scratch.js`.
 
 Some modules include test code designed to be evaluated by Replete. These tests are guarded by `if (import.meta.main)`, which will be ignored by browsers.
 

@@ -191,6 +191,9 @@ dialog {
 }
 .message-out {
     white-space: pre-wrap;
+    -webkit-user-select: text;
+    user-select: text;
+
 }
 
 .properties-grid {
@@ -208,4 +211,6 @@ dialog {
 
 .warning {
     color: red;
+    -webkit-user-select: text;
+    user-select: text;
 }
