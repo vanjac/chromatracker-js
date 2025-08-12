@@ -622,6 +622,14 @@ export class PatternTable {
         this.patternScroll.classList.toggle('scroll-lock', scrollLock)
     }
 
+    /**
+     * @param {boolean} scrollable
+     */
+    setVScrollable(scrollable) {
+        this.patternScroll.classList.toggle('vscrollable', scrollable)
+        this.patternScroll.classList.toggle('vnoscroll', !scrollable)
+    }
+
     onVisible() {
         window.requestAnimationFrame(() => this.scrollToSelCell(true)) // TODO: jank
     }

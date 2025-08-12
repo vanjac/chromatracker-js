@@ -5,7 +5,7 @@ import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
 import {makeKeyButton} from './KeyPad.js'
-import {invoke, callbackDebugObject, freeze} from '../Util.js'
+import {invoke, callbackDebugObject, freeze, type} from '../Util.js'
 import {Cell, CellPart, Module, Pattern, Sample} from '../Model.js'
 import global from './GlobalState.js'
 import './PatternTable.js'
@@ -128,8 +128,7 @@ export class PatternEdit {
         this.playbackStatus = fragment.querySelector('#playbackStatus')
         /** @private @type {HTMLElement} */
         this.selectTools = fragment.querySelector('#selectTools')
-        /** @private @type {HTMLInputElement} */
-        this.scrollLockCheck = fragment.querySelector('#scrollLock')
+        let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
         /** @private @type {HTMLElement} */
         this.entryCellElem = fragment.querySelector('#entryCell')
 
@@ -144,8 +143,8 @@ export class PatternEdit {
 
         this.selectInput.addEventListener('change', () => this.updateSelectMode())
 
-        this.scrollLockCheck.addEventListener('change', () => {
-            this.patternTable.controller.setScrollLock(this.scrollLockCheck.checked)
+        scrollLockCheck.addEventListener('change', () => {
+            this.patternTable.controller.setScrollLock(scrollLockCheck.checked)
         })
 
         makeKeyButton(this.entryCellElem, id => invoke(this.callbacks.jamPlay, id))
@@ -577,12 +576,7 @@ export class PatternEdit {
      * @param {boolean} following
      */
     setFollowState(following) {
-        this.scrollLockCheck.disabled = following
-        if (following) {
-            this.patternTable.controller.setScrollLock(true)
-        } else {
-            this.patternTable.controller.setScrollLock(this.scrollLockCheck.checked)
-        }
+        this.patternTable.controller.setVScrollable(!following)
     }
 
     getTempo() {

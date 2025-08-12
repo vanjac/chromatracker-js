@@ -26,6 +26,9 @@
 .vscrollable {
     overflow-y: auto;
 }
+.vnoscroll {
+    overflow-y: hidden;
+}
 .hscrollable > *,
 .vscrollable > * {
     flex-shrink: 0;
