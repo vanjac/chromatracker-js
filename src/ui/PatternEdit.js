@@ -129,7 +129,7 @@ export class PatternEdit {
         /** @private @type {HTMLElement} */
         this.selectTools = fragment.querySelector('#selectTools')
         /** @private @type {HTMLInputElement} */
-        let scrollLockCheck = fragment.querySelector('#scrollLock')
+        this.scrollLockCheck = fragment.querySelector('#scrollLock')
         /** @private @type {HTMLElement} */
         this.entryCellElem = fragment.querySelector('#entryCell')
 
@@ -144,8 +144,8 @@ export class PatternEdit {
 
         this.selectInput.addEventListener('change', () => this.updateSelectMode())
 
-        scrollLockCheck.addEventListener('change', () => {
-            this.patternTable.controller.setScrollLock(scrollLockCheck.checked)
+        this.scrollLockCheck.addEventListener('change', () => {
+            this.patternTable.controller.setScrollLock(this.scrollLockCheck.checked)
         })
 
         makeKeyButton(this.entryCellElem, id => invoke(this.callbacks.jamPlay, id))
@@ -571,6 +571,18 @@ export class PatternEdit {
     setPlayState(playing) {
         this.tempoInput.input.disabled = playing
         this.speedInput.input.disabled = playing
+    }
+
+    /**
+     * @param {boolean} following
+     */
+    setFollowState(following) {
+        this.scrollLockCheck.disabled = following
+        if (following) {
+            this.patternTable.controller.setScrollLock(true)
+        } else {
+            this.patternTable.controller.setScrollLock(this.scrollLockCheck.checked)
+        }
     }
 
     getTempo() {

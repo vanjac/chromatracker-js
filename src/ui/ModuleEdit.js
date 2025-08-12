@@ -189,6 +189,11 @@ export class ModuleEdit {
         this.playRowButton.addEventListener('contextmenu', () => this.destroyPlayback())
         this.pauseButton.addEventListener('contextmenu', () => this.destroyPlayback())
         this.patternLoopInput.addEventListener('change', () => this.updatePlaySettings())
+        this.followInput.addEventListener('change', () => {
+            if (this.isPlaying()) {
+                this.patternEdit.controller.setFollowState(this.followInput.checked)
+            }
+        })
         this.undoButton.addEventListener('click', () => this.undo())
 
         this.view.addEventListener('contextmenu', () => {
@@ -450,6 +455,7 @@ export class ModuleEdit {
         this.intervalHandle = window.setInterval(() => this.processPlayback(), processInterval)
         this.enableAnimation()
         this.setPlayState(true)
+        this.patternEdit.controller.setFollowState(this.followInput.checked)
     }
 
     /** @private */
@@ -464,6 +470,7 @@ export class ModuleEdit {
             }
             this.intervalHandle = 0
             this.setPlayState(false)
+            this.patternEdit.controller.setFollowState(false)
         }
     }
 

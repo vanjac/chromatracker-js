@@ -133,7 +133,7 @@ select.active,
 .label-button :active + span,
 .label-button.active span,
 button:disabled,
-select:disabled
+select:disabled,
 .label-button :disabled + span {
     background: var(--color-bg-btn-press);
 }
@@ -193,7 +193,6 @@ dialog {
     white-space: pre-wrap;
     -webkit-user-select: text;
     user-select: text;
-
 }
 
 .properties-grid {
