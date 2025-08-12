@@ -309,9 +309,7 @@ export class ModuleEdit {
             this.updateTab()
             return true
         } else if (event.key == 'F5') {
-            if ($dom.commandKey(event)) {
-                this.destroyPlayback()
-            } else if (this.isPlaying()) {
+            if (this.isPlaying()) {
                 this.pause()
             } else {
                 this.playFromHere()
@@ -330,6 +328,9 @@ export class ModuleEdit {
             return true
         } else if (event.key == 'ScrollLock') {
             this.followInput.checked = !this.followInput.checked
+            return true
+        } else if (event.key == 'Pause') {
+            this.destroyPlayback()
             return true
         }
         return false
