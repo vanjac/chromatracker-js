@@ -58,6 +58,14 @@ const template = $dom.html`
 </div>
 `
 
+const colorClasses = freeze({
+    pitch: 'pitch-effect-btn',
+    volume: 'volume-effect-btn',
+    panning: 'panning-effect-btn',
+    timing: 'timing-effect-btn',
+    control: 'control-effect-btn',
+})
+
 const effectNames = freeze([
     'Arpeggio', 'Slide Up', 'Slide Down', 'Note Glide',
     'Vibrato', 'Glide + Vol Slide', 'Vibrato + Vol Slide', 'Tremolo',
@@ -72,6 +80,14 @@ const effectShortNames = freeze([
     'Set Volume', 'Pat. Break', 'More...', 'Tempo',
 ])
 
+/** @type {readonly (keyof colorClasses)[]}*/
+const effectColors = freeze([
+    'pitch', 'pitch', 'pitch', 'pitch',
+    'pitch', 'volume', 'volume', 'volume',
+    'panning', 'timing', 'volume', 'control',
+    'volume', 'control', null, 'control',
+])
+
 const extEffectNames = freeze([
     '', 'Fine Slide Up', 'Fine Slide Down', '',
     'Vibrato Waveform', 'Set Finetune', 'Pattern Loop', 'Tremolo Waveform',
@@ -84,6 +100,14 @@ const extEffectShortNames = freeze([
     'Vib. Wave', 'Set Finetune', 'Pat. Loop', 'Trem. Wave',
     '', 'Retrigger', 'Volume Up', 'Volume Down',
     'Note Cut', 'Note Delay', 'Pat. Delay', '',
+])
+
+/** @type {readonly (keyof colorClasses)[]}*/
+const extEffectColors = freeze([
+    null, 'pitch', 'pitch', null,
+    'pitch', 'pitch', 'control', 'volume',
+    null, 'timing', 'volume', 'volume',
+    'timing', 'timing', 'control', null,
 ])
 
 /**
@@ -535,16 +559,20 @@ export class CellEntry {
         let title = ''
         let value = 0
         let desc = freeze(Array(16).fill(''))
+        /** @type {readonly (keyof colorClasses)[]}*/
+        let colors = freeze(Array(16).fill(null))
         switch (this.editDigit) {
         case 0:
             title = 'Effect'
             value = this.effect
             desc = effectShortNames
+            colors = effectColors
             break
         case 1:
             title = this.effect.toString(16).toUpperCase() + ': ' + effectNames[this.effect]
             value = this.param0
             desc = getParam0Descriptions(this.effect)
+            if (this.effect == Effect.Extended) { colors = extEffectColors }
             break
         case 2:
             title = this.getEffectTitle()
@@ -557,6 +585,12 @@ export class CellEntry {
             let button = this.effectGrid.children[i]
             button.classList.toggle('show-checked', i == value)
             button.querySelector('#desc').textContent = desc[i]
+            for (let color of Object.values(colorClasses)) {
+                button.classList.remove(color)
+            }
+            if (colors[i]) {
+                button.classList.add(colorClasses[colors[i]])
+            }
         }
         invoke(this.callbacks.setPartTogglesVisible, false)
         invoke(this.callbacks.highlightEffectDigit, digit)

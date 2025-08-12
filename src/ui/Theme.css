@@ -12,4 +12,10 @@ body {
 
     --color-bg-alt: #d28;
     --color-fg-alt: #f8a;
+
+    --color-bg-pitch: #503;
+    --color-bg-volume: #053;
+    --color-bg-panning: #530;
+    --color-bg-timing: #035;
+    --color-bg-control: #305;
 }
