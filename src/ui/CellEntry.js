@@ -206,6 +206,18 @@ function getParam1Descriptions(effect, param0) {
     }
 }
 
+/**
+ * @param {Element} elem
+ * @param {$cell.Color} color
+ */
+function setEffectButtonColor(elem, color) {
+    /** @type {$cell.Color} */
+    let key
+    for (key in colorButtonClasses) {
+        elem.classList.toggle(colorButtonClasses[key], key == color)
+    }
+}
+
 export class CellEntry {
     /**
      * @param {HTMLElement} view
@@ -517,6 +529,10 @@ export class CellEntry {
         this.effectButton.textContent = this.getEffectTitle()
         this.param0Button.textContent = this.param0.toString(16).toUpperCase()
         this.param1Button.textContent = this.param1.toString(16).toUpperCase()
+        let color = $cell.effectColor(this.getCell())
+        setEffectButtonColor(this.effectButton, color)
+        setEffectButtonColor(this.param0Button, color)
+        setEffectButtonColor(this.param1Button, color)
         this.resetEffectButton.disabled = this.effect == 0 && this.param0 == 0 && this.param1 == 0
     }
 
@@ -570,12 +586,7 @@ export class CellEntry {
             let button = this.effectGrid.children[i]
             button.classList.toggle('show-checked', i == value)
             button.querySelector('#desc').textContent = desc[i]
-            for (let color of Object.values(colorButtonClasses)) {
-                button.classList.remove(color)
-            }
-            if (colors[i]) {
-                button.classList.add(colorButtonClasses[colors[i]])
-            }
+            setEffectButtonColor(button, colors[i])
         }
         invoke(this.callbacks.setPartTogglesVisible, false)
         invoke(this.callbacks.highlightEffectDigit, digit)

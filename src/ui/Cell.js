@@ -60,7 +60,7 @@ export function effectString(cell) {
  * @param {Readonly<Cell>} cell
  * @returns {Color}
  */
-function effectColor(cell) {
+export function effectColor(cell) {
     if (! (cell.effect || cell.param0 || cell.param1)) {
         return null
     }

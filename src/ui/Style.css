@@ -18,6 +18,16 @@ body {
     color: var(--color-fg-dim);
     --color-fg: var(--color-fg-dim);
     --color-fg-hl: var(--color-fg-hl-dim);
+    --color-fg-pitch: var(--color-fg-dim);
+    --color-fg-volume: var(--color-fg-dim);
+    --color-fg-panning: var(--color-fg-dim);
+    --color-fg-timing: var(--color-fg-dim);
+    --color-fg-control: var(--color-fg-dim);
+    --color-bg-pitch: var(--color-bg-btn);
+    --color-bg-volume: var(--color-bg-btn);
+    --color-bg-panning: var(--color-bg-btn);
+    --color-bg-timing: var(--color-bg-btn);
+    --color-bg-control: var(--color-bg-btn);
 }
 
 input {
