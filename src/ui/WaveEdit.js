@@ -376,7 +376,8 @@ export class WaveEdit {
 
         let ctx = this.wavePreview.getContext('2d')
         // 'currentColor' doesn't work in Chrome or Safari
-        ctx.strokeStyle = window.getComputedStyle(this.view).getPropertyValue('--color-fg')
+        ctx.strokeStyle = window.getComputedStyle(this.view).getPropertyValue('color')
+        let errorColor = window.getComputedStyle(this.view).getPropertyValue('--color-error')
         ctx.clearRect(0, 0, width, height)
 
         /**
@@ -390,7 +391,7 @@ export class WaveEdit {
         for (let i = 0; i < wave.length; i++) {
             if (i == mod.maxSampleLength) {
                 ctx.stroke()
-                ctx.strokeStyle = 'red'
+                ctx.strokeStyle = errorColor
                 ctx.beginPath()
             }
 

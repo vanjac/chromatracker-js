@@ -13,6 +13,8 @@ body {
     --color-bg-alt: #d28;
     --color-fg-alt: #f8a;
 
+    --color-error: #f44;
+
     --color-bg-pitch: #503;
     --color-fg-pitch: #fac;
     --color-bg-volume: #053;

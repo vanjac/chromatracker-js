@@ -219,7 +219,7 @@ dialog {
 }
 
 .warning {
-    color: red;
+    color: var(--color-error);
     -webkit-user-select: text;
     user-select: text;
 }
