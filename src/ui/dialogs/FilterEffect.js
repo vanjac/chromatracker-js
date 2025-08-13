@@ -32,7 +32,7 @@ const template = $dom.html`
     <form>
         <h3>Filter / EQ</h3>
         <div class="hflex">
-            <canvas class="flex-grow width0" id="graph" width="512" height="128"></canvas>
+            <canvas class="wave-canvas" id="graph" width="512" height="128"></canvas>
         </div>
         <div class="properties-grid">
             <label for="filterType">Type:</label>

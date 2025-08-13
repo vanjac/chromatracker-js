@@ -235,6 +235,13 @@ pattern-table .sel-cell { /* extra specificity */
     cursor: text;
 }
 
+.wave-canvas {
+    flex: 1 0 0;
+    width: 0;
+    min-height: 64px;
+    max-height: 192px;
+}
+
 .wave-mark,
 .wave-mark:before,
 .wave-range {

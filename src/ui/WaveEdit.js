@@ -8,7 +8,7 @@ import {mod, Sample} from '../Model.js'
 const template = $dom.html`
 <div id="waveEdit" class="wave-edit">
     <div id="waveContainer" class="hflex wave-container">
-        <canvas id="wavePreview" class="flex-grow width0" width="1024" height="256"></canvas>
+        <canvas id="wavePreview" class="wave-canvas" width="1024" height="256"></canvas>
         <div id="selectMarkA" class="wave-mark wave-select hide">
             <div id="selectHandleA" class="wave-handle wave-handle-side wave-select"></div>
         </div>
@@ -377,7 +377,7 @@ export class WaveEdit {
         let ctx = this.wavePreview.getContext('2d')
         // 'currentColor' doesn't work in Chrome or Safari
         ctx.strokeStyle = window.getComputedStyle(this.view).getPropertyValue('color')
-        let errorColor = window.getComputedStyle(this.view).getPropertyValue('--color-error')
+        let errorColor = window.getComputedStyle(this.view).getPropertyValue('--color-fg-error')
         ctx.clearRect(0, 0, width, height)
 
         /**
