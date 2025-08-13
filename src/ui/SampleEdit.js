@@ -77,7 +77,7 @@ const template = $dom.html`
         <button id="paste" title="Paste (${$shortcut.ctrl('V')})">
             ${$icons.content_paste}
         </button>
-        <button id="effect" accesskey="e" title="(${$shortcut.accessKey('E')})">
+        <button id="effect" title="(${$shortcut.ctrl('E')})">
             ${$icons.dots_vertical}
             <span>Effect</span>
         </button>
@@ -258,6 +258,9 @@ export class SampleEdit {
             return true
         } else if (event.key == 'k' && $shortcut.commandKey(event)) {
             this.trim()
+            return true
+        } else if (event.key == 'e' && $shortcut.commandKey(event)) {
+            this.effectMenu()
             return true
         } else if (event.key == 'l' && $shortcut.commandKey(event)) {
             if (!Sample.hasLoop(this.viewSample)) {
