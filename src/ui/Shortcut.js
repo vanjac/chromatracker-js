@@ -1,3 +1,5 @@
+import * as $dom from './DOMUtil.js'
+
 function isApple() {
     return navigator.platform.startsWith('Mac') || navigator.platform.startsWith('i')
 }
@@ -24,16 +26,17 @@ export function alt(text) {
 }
 
 /**
- * @param {string} text
+ * @param {string} key
  */
-export function accessKey(text) {
-    if (isApple()) {
-        return 'Ctrl+Option+' + text
-    } else if (navigator.vendor == '') { // Firefox
-        return 'Alt+Shift+' + text
-    } else if (navigator.vendor.startsWith('Google') && navigator.platform.startsWith('Linux')) {
-        return 'Ctrl+Alt+' + text
+export function accessKey(key) {
+    let input = $dom.createElem('input', {accessKey: key})
+    if (input.accessKeyLabel) {
+        return input.accessKeyLabel
+    } else if (isApple()) {
+        return 'Ctrl+Option+' + key
+    } else if ('DEF'.includes(key)) {
+        return 'Alt+Shift+' + key
     } else {
-        return 'Alt+' + text
+        return 'Alt+' + key
     }
 }
