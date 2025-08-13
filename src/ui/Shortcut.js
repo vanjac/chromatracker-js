@@ -30,7 +30,7 @@ export function alt(text) {
  */
 export function accessKey(key) {
     let input = $dom.createElem('input', {accessKey: key})
-    if (input.accessKeyLabel) {
+    if (input.accessKeyLabel) { // Firefox and Safari
         return input.accessKeyLabel
     } else if (isApple()) {
         return 'Ctrl+Option+' + key

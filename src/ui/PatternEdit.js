@@ -39,7 +39,7 @@ const template = $dom.html`
             <input id="select" type="checkbox">
             <span>${$icons.selection}</span>
         </label>
-        <label class="label-button" title="Scroll Lock">
+        <label class="label-button touch-only" title="Scroll Lock">
             <input id="scrollLock" type="checkbox">
             <span>${$icons.arrow_vertical_lock}</span>
         </label>

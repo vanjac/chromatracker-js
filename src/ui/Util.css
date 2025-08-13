@@ -2,6 +2,15 @@
     contain: none;
 }
 
+.hide {
+    display: none !important;
+}
+@media (pointer: fine) {
+    .touch-only {
+        display: none !important;
+    }
+}
+
 .hflex {
     display: flex;
     flex-direction: row;
@@ -32,9 +41,6 @@
 .hscrollable > *,
 .vscrollable > * {
     flex-shrink: 0;
-}
-.hide {
-    display: none !important;
 }
 
 .shrink-clip-y {

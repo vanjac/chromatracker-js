@@ -81,6 +81,8 @@ export class PatternTable {
         this.viewNumRows = 0
         /** @private @type {Readonly<Pattern>} */
         this.viewPattern = null
+
+        this.pointerQuery = window.matchMedia('(pointer: fine)')
     }
 
     connectedCallback() {
@@ -111,6 +113,7 @@ export class PatternTable {
         new KeyPad(this.tbody, (id, elem, ev) => {
             let selectEnabled = !this.selectMode
                 || this.patternScroll.classList.contains('scroll-lock')
+                || this.pointerQuery.matches
             if (selectEnabled && elem.dataset.c != null) {
                 let c = Number(elem.dataset.c)
                 let row = Number(elem.dataset.row)
