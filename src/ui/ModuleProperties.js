@@ -17,10 +17,10 @@ const template = $dom.html`
     <div class="hflex">
         <input id="channelCount" type="number" required="" value="4" min="2" max="32" step="2" autocomplete="off" accesskey="c">
         &nbsp;
-        <button id="delChannels" title="Remove">
+        <button id="delChannels" class="touch-only" title="Remove">
             ${$icons.minus}
         </button>
-        <button id="addChannels" title="Add">
+        <button id="addChannels" class="touch-only" title="Add">
             ${$icons.plus}
         </button>
     </div>
