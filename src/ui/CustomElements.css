@@ -95,7 +95,7 @@ pattern-table tr,
 }
 pattern-table td,
 .pattern-col-head {
-    width: 10ch;
+    width: 11ch;
     padding: 0 2px;
 }
 .cell-pitch,
@@ -106,10 +106,10 @@ pattern-table td,
     box-sizing: content-box;
 }
 .cell-pitch, .cell-effect, .pattern-row-head {
-    width: 3ch;
+    width: 3.3ch;
 }
 .cell-inst {
-    width: 2ch;
+    width: 2.2ch;
 }
 .hilite-row td,
 .hilite-row th {
