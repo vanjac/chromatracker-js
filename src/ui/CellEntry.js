@@ -12,7 +12,7 @@ const template = $dom.html`
     <piano-keyboard></piano-keyboard>
 
     <div id="sampleSection" class="hflex">
-        <label class="label-button">
+        <label class="label-button" title="Scroll Lock">
             <input id="sampleScrollLock" type="checkbox">
             <span>${$icons.arrow_horizontal_lock}</span>
         </label>
@@ -20,7 +20,7 @@ const template = $dom.html`
     </div>
 
     <div id="effectSection" class="hflex">
-        <button id="resetEffect" disabled="">
+        <button id="resetEffect" disabled="" title="Reset Effect">
             ${$icons.close}
         </button>
         <button id="effect" class="flex-grow justify-start"></button>
@@ -30,7 +30,7 @@ const template = $dom.html`
 
     <div id="effectKeyboard" class="hide">
         <div class="hflex">
-            <button id="closeEffectKeyboard">
+            <button id="closeEffectKeyboard" title="Close">
                 ${$icons.arrow_left}
             </button>
             <div class="flex-grow"></div>

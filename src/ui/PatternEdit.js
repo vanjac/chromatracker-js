@@ -24,28 +24,28 @@ const template = $dom.html`
         </div>
         <div class="flex-grow"></div>
         <div id="selectTools" class="hide hflex">
-            <button id="cut">
+            <button id="cut" title="Cut">
                 ${$icons.content_cut}
             </button>
-            <button id="copy">
+            <button id="copy" title="Copy">
                 ${$icons.content_copy}
             </button>
         </div>
-        <button id="paste">
+        <button id="paste" title="Paste">
             ${$icons.content_paste}
         </button>
-        <label class="label-button">
+        <label class="label-button" title="Select">
             <input id="select" type="checkbox">
             <span>${$icons.selection}</span>
         </label>
-        <label class="label-button">
+        <label class="label-button" title="Scroll Lock">
             <input id="scrollLock" type="checkbox">
             <span>${$icons.arrow_vertical_lock}</span>
         </label>
     </div>
     <pattern-table></pattern-table>
     <div class="hflex">
-        <button id="lift">
+        <button id="lift" title="Lift Cell">
             ${$icons.export_}
         </button>
         <div class="flex-grow"></div>
@@ -57,16 +57,16 @@ const template = $dom.html`
             </span>
         </span>
         <div class="flex-grow"></div>
-        <button id="write">
+        <button id="write" title="Write Cell">
             ${$icons.pencil}
         </button>
-        <button id="clear">
+        <button id="clear" title="Erase Cell">
             ${$icons.eraser}
         </button>
-        <button id="insert">
+        <button id="insert" title="Insert">
             ${$icons.arrow_expand_down}
         </button>
-        <button id="delete">
+        <button id="delete" title="Delete">
             ${$icons.arrow_collapse_up}
         </button>
     </div>

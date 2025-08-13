@@ -46,32 +46,32 @@ const processInterval = 200
 const template = $dom.html`
 <div class="flex-grow">
     <div class="hflex">
-        <button id="close">
+        <button id="close" title="Close">
             ${$icons.arrow_left}
         </button>
         <div class="flex-grow"></div>
-        <button id="playStart">
+        <button id="playStart" title="Restart">
             ${$icons.step_forward}
         </button>
-        <button id="playPattern">
+        <button id="playPattern" title="Play Pattern">
             ${$icons.playlist_play}
         </button>
-        <label class="label-button hide">
+        <label class="label-button hide" title="Loop Pattern">
             <input id="patternLoop" type="checkbox">
             <span>${$icons.repeat_variant}</span>
         </label>
-        <button id="playRow">
+        <button id="playRow" title="Play">
             ${$icons.play}
         </button>
-        <button id="pause" class="hide show-checked">
+        <button id="pause" class="hide show-checked" title="Pause">
             ${$icons.pause}
         </button>
-        <label class="label-button">
+        <label class="label-button" title="Follow Playback">
             <input id="follow" type="checkbox" checked="">
             <span>${$icons.format_indent_increase}</span>
         </label>
         <div class="flex-grow"></div>
-        <button id="undo">
+        <button id="undo" title="Undo">
             ${$icons.undo}
         </button>
     </div>

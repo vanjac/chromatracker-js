@@ -19,7 +19,7 @@ const itemTemplate = $dom.html`
     <button id="select" class="flex-grow min-width-0">
         <span id="name" class="overflow-content"></span>
     </button>
-    <button id="preview">
+    <button id="preview" title="Hold to Preview">
         ${$icons.play}
     </button>
 </div>

@@ -8,7 +8,7 @@ import periodTable from '../PeriodTable.js'
 
 const template = $dom.html`
 <div class="hflex">
-    <label class="label-button">
+    <label class="label-button" title="Scroll Lock">
         <input id="scrollLock" type="checkbox" checked="">
         <span>${$icons.arrow_horizontal_lock}</span>
     </label>

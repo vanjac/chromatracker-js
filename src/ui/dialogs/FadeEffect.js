@@ -12,9 +12,11 @@ const template = $dom.html`
             <div class="flex-grow"></div>
             <button id="fadeIn" type="button" accesskey="i">
                 ${$icons.arrow_top_right_thin}
+                <span>&nbsp;In&nbsp;</span>
             </button>
             <button id="fadeOut" type="button" accesskey="o">
                 ${$icons.arrow_bottom_right_thin}
+                <span>&nbsp;Out</span>
             </button>
             <div class="flex-grow"></div>
         </div>

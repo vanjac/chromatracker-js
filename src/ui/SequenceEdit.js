@@ -13,10 +13,10 @@ const template = $dom.html`
     <form id="seqList" class="hflex flex-grow hscrollable" autocomplete="off">
         <select id="patternSelect" class="seq-select show-checked"></select>
     </form>
-    <button id="seqIns">
+    <button id="seqIns" title="Insert">
         ${$icons.plus}
     </button>
-    <button id="seqDel">
+    <button id="seqDel" title="Delete">
         ${$icons.close}
     </button>
 </div>

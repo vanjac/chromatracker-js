@@ -23,9 +23,11 @@ const template = $dom.html`
         <div class="hflex">
             <button id="newModule">
                 ${$icons.file_plus_outline}
+                <span>&nbsp;Create</span>
             </button>
             <button id="fileOpen">
                 ${$icons.folder_open}
+                <span>&nbsp;Import</span>
             </button>
             <div class="flex-grow"></div>
         </div>
@@ -50,7 +52,7 @@ const itemTemplate = $dom.html`
     <button id="open" class="flex-grow min-width-0">
         <span id="name" class="overflow-content"></span>
     </button>
-    <button id="options">
+    <button id="options" title="Menu">
         ${$icons.dots_vertical}
     </button>
 </div>

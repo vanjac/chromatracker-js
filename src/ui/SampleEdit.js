@@ -44,10 +44,10 @@ const template = $dom.html`
 
         <label class="hflex" for="file">Wave file:</label>
         <div class="hflex">
-            <button id="open">
+            <button id="open" title="Import">
                 ${$icons.folder_open}
             </button>
-            <button id="save">
+            <button id="save" title="Save">
                 ${$icons.download}
             </button>
             &nbsp;
@@ -58,22 +58,22 @@ const template = $dom.html`
     <wave-edit></wave-edit>
 
     <div class="hflex">
-        <button id="selectAll">
+        <button id="selectAll" title="Select All">
             ${$icons.select_all}
         </button>
-        <button id="selectNone" class="hide">
+        <button id="selectNone" class="hide" title="Select None">
             ${$icons.select_off}
         </button>
-        <button id="trim">
+        <button id="trim" title="Trim">
             ${$icons.crop}
         </button>
-        <button id="cut">
+        <button id="cut" title="Cut">
             ${$icons.content_cut}
         </button>
-        <button id="copy">
+        <button id="copy" title="Copy">
             ${$icons.content_copy}
         </button>
-        <button id="paste">
+        <button id="paste" title="Paste">
             ${$icons.content_paste}
         </button>
         <button id="effect" accesskey="e">
@@ -87,7 +87,7 @@ const template = $dom.html`
             <input id="loopToggle" type="checkbox">
             <span>Loop</span>
         </label>
-        <button id="selectLoop">
+        <button id="selectLoop" title="Select Loop">
             ${$icons.select}
         </button>
         <span>&nbsp;</span>

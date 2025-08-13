@@ -11,16 +11,16 @@ import {mod, Cell, Sample, CellPart} from '../Model.js'
 const template = $dom.html`
 <div class="flex-grow">
     <div class="hflex">
-        <button id="showList" class="hide">
+        <button id="showList" class="hide" title="Sample List">
             ${$icons.menu}
         </button>
         <div class="flex-grow"></div>
         <strong id="title"></strong>
         <div class="flex-grow"></div>
-        <button id="delSample" class="hide">
+        <button id="delSample" class="hide" title="Delete">
             ${$icons.delete_outline}
         </button>
-        <button id="addSample">
+        <button id="addSample" title="Add Sample">
             ${$icons.plus}
         </button>
     </div>
