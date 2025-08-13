@@ -142,14 +142,6 @@ export function disableFormSubmit(form) {
 
 export const {needsKeyboardInput} = $webapp
 
-/**
- * @param {KeyboardEvent} event
- */
-export function commandKey(event) {
-    let useMeta = navigator.platform.startsWith('Mac') || navigator.platform.startsWith('i')
-    return useMeta ? event.metaKey : event.ctrlKey
-}
-
 const radioButtonTemplate = html`
 <label class="label-button">
     <input type="radio">

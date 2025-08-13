@@ -1,6 +1,7 @@
 import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
+import * as $shortcut from './Shortcut.js'
 import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
@@ -24,17 +25,17 @@ const template = $dom.html`
         </div>
         <div class="flex-grow"></div>
         <div id="selectTools" class="hide hflex">
-            <button id="cut" title="Cut">
+            <button id="cut" title="Cut (${$shortcut.ctrl('X')})">
                 ${$icons.content_cut}
             </button>
-            <button id="copy" title="Copy">
+            <button id="copy" title="Copy (${$shortcut.ctrl('C')})">
                 ${$icons.content_copy}
             </button>
         </div>
-        <button id="paste" title="Paste">
+        <button id="paste" title="Paste (${$shortcut.ctrl('V')})">
             ${$icons.content_paste}
         </button>
-        <label class="label-button" title="Select">
+        <label class="label-button" title="Select (\\)">
             <input id="select" type="checkbox">
             <span>${$icons.selection}</span>
         </label>
@@ -45,7 +46,7 @@ const template = $dom.html`
     </div>
     <pattern-table></pattern-table>
     <div class="hflex">
-        <button id="lift" title="Lift Cell">
+        <button id="lift" title="Lift Cell (Shift+Enter)">
             ${$icons.export_}
         </button>
         <div class="flex-grow"></div>
@@ -57,29 +58,29 @@ const template = $dom.html`
             </span>
         </span>
         <div class="flex-grow"></div>
-        <button id="write" title="Write Cell">
+        <button id="write" title="Write Cell (Enter)">
             ${$icons.pencil}
         </button>
-        <button id="clear" title="Erase Cell">
+        <button id="clear" title="Erase Cell (Space)">
             ${$icons.eraser}
         </button>
-        <button id="insert" title="Insert">
+        <button id="insert" title="Insert (Ins)">
             ${$icons.arrow_expand_down}
         </button>
-        <button id="delete" title="Delete">
+        <button id="delete" title="Delete (Del)">
             ${$icons.arrow_collapse_up}
         </button>
     </div>
     <div id="partToggles" class="hflex">
-        <label class="label-button flex-grow">
+        <label class="label-button flex-grow" title="(${$shortcut.alt('P')})">
             <input id="pitchEnable" type="checkbox" checked="">
             <span>Pitch</span>
         </label>
-        <label class="label-button flex-grow">
+        <label class="label-button flex-grow" title="(${$shortcut.alt('S')})">
             <input id="sampleEnable" type="checkbox" checked="">
             <span>Sample</span>
         </label>
-        <label class="label-button flex-grow">
+        <label class="label-button flex-grow" title="(${$shortcut.alt('E')})">
             <input id="effectEnable" type="checkbox" checked="">
             <span>Effect</span>
         </label>
@@ -224,7 +225,7 @@ export class PatternEdit {
             }
         }
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (event.key == '\\' && !$dom.commandKey(event)) {
+            if (event.key == '\\' && !$shortcut.commandKey(event)) {
                 this.selectInput.checked = !this.selectInput.checked
                 this.updateSelectMode()
             } else if (event.key == 'Enter' && !(event.target instanceof HTMLButtonElement)) {
@@ -242,19 +243,19 @@ export class PatternEdit {
             } else if (event.key == 'Backspace') {
                 this.backErase(event.code)
                 return true
-            } else if (event.key == 'Insert' && !$dom.commandKey(event)) {
+            } else if (event.key == 'Insert' && !$shortcut.commandKey(event)) {
                 this.insert()
                 return true
-            } else if (event.key == 'Delete' && !$dom.commandKey(event)) {
+            } else if (event.key == 'Delete' && !$shortcut.commandKey(event)) {
                 this.delete()
                 return true
-            } else if (event.key == 'x' && $dom.commandKey(event)) {
+            } else if (event.key == 'x' && $shortcut.commandKey(event)) {
                 this.cut()
                 return true
-            } else if (event.key == 'c' && $dom.commandKey(event)) {
+            } else if (event.key == 'c' && $shortcut.commandKey(event)) {
                 this.copy()
                 return true
-            } else if (event.key == 'v' && $dom.commandKey(event)) {
+            } else if (event.key == 'v' && $shortcut.commandKey(event)) {
                 this.paste()
                 return true
             } else if (event.key == 'p' && event.altKey) {

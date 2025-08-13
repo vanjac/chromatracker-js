@@ -1,6 +1,7 @@
 import * as $cell from './Cell.js'
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
+import * as $shortcut from './Shortcut.js'
 import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
@@ -139,46 +140,46 @@ export class PatternTable {
      */
     keyDown(event) {
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (event.key == 'ArrowDown' && !$dom.commandKey(event)) {
+            if (event.key == 'ArrowDown' && !$shortcut.commandKey(event)) {
                 this.move(0, 1, event.shiftKey, false)
                 return true
-            } else if (event.key == 'ArrowUp' && !$dom.commandKey(event)) {
+            } else if (event.key == 'ArrowUp' && !$shortcut.commandKey(event)) {
                 this.move(0, -1, event.shiftKey, false)
                 return true
-            } else if (event.key == 'ArrowRight' && !$dom.commandKey(event)) {
+            } else if (event.key == 'ArrowRight' && !$shortcut.commandKey(event)) {
                 this.move(1, 0, event.shiftKey, false)
                 return true
-            } else if (event.key == 'ArrowLeft' && !$dom.commandKey(event)) {
+            } else if (event.key == 'ArrowLeft' && !$shortcut.commandKey(event)) {
                 this.move(-1, 0, event.shiftKey, false)
                 return true
-            } else if (event.key == 'PageDown' && !$dom.commandKey(event)) {
+            } else if (event.key == 'PageDown' && !$shortcut.commandKey(event)) {
                 this.move(0, 16, event.shiftKey, false)
                 return true
-            } else if (event.key == 'PageUp' && !$dom.commandKey(event)) {
+            } else if (event.key == 'PageUp' && !$shortcut.commandKey(event)) {
                 this.move(0, -16, event.shiftKey, false)
                 return true
-            } else if (event.key == 'Home' && !$dom.commandKey(event)) {
+            } else if (event.key == 'Home' && !$shortcut.commandKey(event)) {
                 this.setSelCell(this.selChannel, 0, event.shiftKey)
                 this.scrollToSelCell(true)
                 return true
-            } else if (event.key == 'End' && !$dom.commandKey(event)) {
+            } else if (event.key == 'End' && !$shortcut.commandKey(event)) {
                 this.setSelCell(this.selChannel, this.viewNumRows - 1, event.shiftKey)
                 this.scrollToSelCell(true)
                 return true
-            } else if (event.key == 'a' && $dom.commandKey(event)) {
+            } else if (event.key == 'a' && $shortcut.commandKey(event)) {
                 this.selChannel = this.selRow = 0
                 this.markChannel = this.viewNumChannels - 1
                 this.markRow = this.viewNumRows - 1
                 this.updateSelection()
                 return true
-            } else if (event.key == 'l' && $dom.commandKey(event)) {
+            } else if (event.key == 'l' && $shortcut.commandKey(event)) {
                 this.selRow = 0
                 this.markRow = this.viewNumRows - 1
                 this.updateSelection()
                 return true
             }
         }
-        if (event.key == 'm' && $dom.commandKey(event)) {
+        if (event.key == 'm' && $shortcut.commandKey(event)) {
             let [minChannel, maxChannel] = this.channelRange()
             for (let c = minChannel; c <= maxChannel; c++) {
                 this.muteInputs[c].checked = !this.muteInputs[c].checked

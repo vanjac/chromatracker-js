@@ -1,5 +1,6 @@
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
+import * as $shortcut from './Shortcut.js'
 import * as $sample from '../edit/Sample.js'
 import {freeze, callbackDebugObject, minMax, clamp, invoke} from '../Util.js'
 import {mod, Sample} from '../Model.js'
@@ -150,14 +151,14 @@ export class WaveEdit {
             return true
         }
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (event.key == 'a' && $dom.commandKey(event)) {
+            if (event.key == 'a' && $shortcut.commandKey(event)) {
                 this.selectAll()
                 return true
             } else if (event.key == 'ArrowRight') {
                 if (!this.anySelected()) {
                     this.selectA = this.selectB = 0
                 } else {
-                    this.selectB += $dom.commandKey(event) ? 256 : 2
+                    this.selectB += $shortcut.commandKey(event) ? 256 : 2
                     this.selectB = this.restrictWavePos(this.selectB)
                 }
                 if (!event.shiftKey) {
@@ -168,7 +169,7 @@ export class WaveEdit {
                 if (!this.anySelected()) {
                     this.selectA = this.selectB = this.viewSample.wave.length
                 } else {
-                    this.selectB -= $dom.commandKey(event) ? 256 : 2
+                    this.selectB -= $shortcut.commandKey(event) ? 256 : 2
                     this.selectB = this.restrictWavePos(this.selectB)
                 }
                 if (!event.shiftKey) {

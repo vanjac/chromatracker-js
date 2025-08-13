@@ -1,5 +1,6 @@
 import * as $cell from './Cell.js'
 import * as $dom from './DOMUtil.js'
+import * as $shortcut from './Shortcut.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad} from './KeyPad.js'
 import {type, invoke, callbackDebugObject, freeze, clamp} from '../Util.js'
@@ -86,9 +87,9 @@ export class PianoKeyboard {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
-        if (!$dom.needsKeyboardInput(event.target) && !$dom.commandKey(event)) {
+        if (!$dom.needsKeyboardInput(event.target) && !$shortcut.commandKey(event)) {
             let note = noteShortcuts[event.code]
-            if (note != null) {
+            if (note != null && !event.altKey) {
                 if (!event.repeat) {
                     this.keyboardNote(event, (this.keyboardOctave * 12) + note)
                 }

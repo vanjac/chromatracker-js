@@ -1,5 +1,6 @@
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
+import * as $shortcut from './Shortcut.js'
 import * as $module from '../edit/Module.js'
 import * as $icons from '../gen/Icons.js'
 import * as $ext from '../file/External.js'
@@ -21,11 +22,11 @@ const template = $dom.html`
         </div>
         <hr>
         <div class="hflex">
-            <button id="newModule">
+            <button id="newModule" title="(${$shortcut.ctrl('M')})">
                 ${$icons.file_plus_outline}
                 <span>&nbsp;Create</span>
             </button>
-            <button id="fileOpen">
+            <button id="fileOpen" title="(${$shortcut.ctrl('O')})">
                 ${$icons.folder_open}
                 <span>&nbsp;Import</span>
             </button>
@@ -136,10 +137,10 @@ export class FileMenu {
             return true
         }
         if (!this.editor) {
-            if (event.key == 'o' && $dom.commandKey(event)) {
+            if (event.key == 'o' && $shortcut.commandKey(event)) {
                 this.importFile()
                 return true
-            } else if (event.key == 'm' && $dom.commandKey(event)) {
+            } else if (event.key == 'm' && $shortcut.commandKey(event)) {
                 this.openEditor(null, $module.createNew())
                 return true
             }

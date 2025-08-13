@@ -1,6 +1,7 @@
 import * as $cli from './CLI.js'
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
+import * as $shortcut from './Shortcut.js'
 import * as $play from '../Playback.js'
 import * as $sample from '../edit/Sample.js'
 import * as $wave from '../edit/Wave.js'
@@ -44,10 +45,10 @@ const template = $dom.html`
 
         <label class="hflex" for="file">Wave file:</label>
         <div class="hflex">
-            <button id="open" title="Import">
+            <button id="open" title="Import (${$shortcut.ctrl('O')})">
                 ${$icons.folder_open}
             </button>
-            <button id="save" title="Save">
+            <button id="save" title="Save (${$shortcut.ctrl('S')})">
                 ${$icons.download}
             </button>
             &nbsp;
@@ -58,36 +59,36 @@ const template = $dom.html`
     <wave-edit></wave-edit>
 
     <div class="hflex">
-        <button id="selectAll" title="Select All">
+        <button id="selectAll" title="Select All (${$shortcut.ctrl('A')})">
             ${$icons.select_all}
         </button>
-        <button id="selectNone" class="hide" title="Select None">
+        <button id="selectNone" class="hide" title="Select None (Esc)">
             ${$icons.select_off}
         </button>
-        <button id="trim" title="Trim">
+        <button id="trim" title="Trim (${$shortcut.ctrl('K')})">
             ${$icons.crop}
         </button>
-        <button id="cut" title="Cut">
+        <button id="cut" title="Cut (${$shortcut.ctrl('X')})">
             ${$icons.content_cut}
         </button>
-        <button id="copy" title="Copy">
+        <button id="copy" title="Copy (${$shortcut.ctrl('C')})">
             ${$icons.content_copy}
         </button>
-        <button id="paste" title="Paste">
+        <button id="paste" title="Paste (${$shortcut.ctrl('V')})">
             ${$icons.content_paste}
         </button>
-        <button id="effect" accesskey="e">
+        <button id="effect" accesskey="e" title="(${$shortcut.accessKey('E')})">
             ${$icons.dots_vertical}
             <span>Effect</span>
         </button>
     </div>
     <hr>
     <div class="hflex">
-        <label class="label-button">
+        <label class="label-button" title="(${$shortcut.ctrl('L')})">
             <input id="loopToggle" type="checkbox">
             <span>Loop</span>
         </label>
-        <button id="selectLoop" title="Select Loop">
+        <button id="selectLoop" title="Select Loop (${$shortcut.ctrl('Shift+L')})">
             ${$icons.select}
         </button>
         <span>&nbsp;</span>
@@ -97,7 +98,9 @@ const template = $dom.html`
     </div>
     <div class="flex-grow"></div>
     <div class="hflex">
-        <button id="useOffset">Offset:&nbsp;<span id="offsetEffect">000</span></button>
+        <button id="useOffset" title="Offset Effect (${$shortcut.ctrl('9')})">
+            Offset:&nbsp;<span id="offsetEffect">000</span>
+        </button>
     </div>
 </div>
 `
@@ -236,37 +239,37 @@ export class SampleEdit {
             return true
         }
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (event.key == 'x' && $dom.commandKey(event)) {
+            if (event.key == 'x' && $shortcut.commandKey(event)) {
                 this.cut()
                 return true
-            } else if (event.key == 'c' && $dom.commandKey(event)) {
+            } else if (event.key == 'c' && $shortcut.commandKey(event)) {
                 this.copy()
                 return true
-            } else if (event.key == 'v' && $dom.commandKey(event)) {
+            } else if (event.key == 'v' && $shortcut.commandKey(event)) {
                 this.paste()
                 return true
             }
         }
-        if (event.key == 'o' && $dom.commandKey(event)) {
+        if (event.key == 'o' && $shortcut.commandKey(event)) {
             this.pickAudioFile()
             return true
-        } else if (event.key == 's' && $dom.commandKey(event)) {
+        } else if (event.key == 's' && $shortcut.commandKey(event)) {
             this.saveAudioFile()
             return true
-        } else if (event.key == 'k' && $dom.commandKey(event)) {
+        } else if (event.key == 'k' && $shortcut.commandKey(event)) {
             this.trim()
             return true
-        } else if (event.key == 'l' && $dom.commandKey(event)) {
+        } else if (event.key == 'l' && $shortcut.commandKey(event)) {
             if (!Sample.hasLoop(this.viewSample)) {
                 this.loopSelection()
             } else {
                 this.clearLoop()
             }
             return true
-        } else if (event.key == 'L' && $dom.commandKey(event)) {
+        } else if (event.key == 'L' && $shortcut.commandKey(event)) {
             this.selectLoop()
             return true
-        } else if (event.key == '9' && $dom.commandKey(event)) {
+        } else if (event.key == '9' && $shortcut.commandKey(event)) {
             if (!event.repeat) {
                 this.useSampleOffset()
                 invoke(this.callbacks.jamPlay, event.code)

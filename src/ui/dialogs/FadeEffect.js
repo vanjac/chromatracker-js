@@ -1,5 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
+import * as $shortcut from '../Shortcut.js'
 import * as $icons from '../../gen/Icons.js'
 import {freeze} from '../../Util.js'
 import global from '../GlobalState.js'
@@ -10,11 +11,11 @@ const template = $dom.html`
         <h3>Fade</h3>
         <div class="hflex">
             <div class="flex-grow"></div>
-            <button id="fadeIn" type="button" accesskey="i">
+            <button id="fadeIn" type="button" accesskey="i" title="(${$shortcut.accessKey('I')})">
                 ${$icons.arrow_top_right_thin}
                 <span>&nbsp;In&nbsp;</span>
             </button>
-            <button id="fadeOut" type="button" accesskey="o">
+            <button id="fadeOut" type="button" accesskey="o" title="(${$shortcut.accessKey('O')})">
                 ${$icons.arrow_bottom_right_thin}
                 <span>&nbsp;Out</span>
             </button>

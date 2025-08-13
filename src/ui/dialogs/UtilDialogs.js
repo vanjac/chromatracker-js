@@ -1,5 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
+import * as $shortcut from '../Shortcut.js'
 import {type} from '../../Util.js'
 
 const alertDialogTemplate = $dom.html`
@@ -272,6 +273,9 @@ export class MenuDialog {
         for (let option of this.options) {
             let button = $dom.createElem('button', {type: 'button', accessKey: option.accessKey})
             button.disabled = option.disabled ?? false
+            if (option.accessKey) {
+                button.title = '(' + $shortcut.accessKey(option.accessKey.toUpperCase()) + ')'
+            }
             if (option.icon) {
                 button.appendChild(option.icon.cloneNode(true))
                 button.appendChild($dom.createElem('span', {innerHTML: '&nbsp;'}))

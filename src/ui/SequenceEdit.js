@@ -1,5 +1,6 @@
 import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
+import * as $shortcut from './Shortcut.js'
 import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
@@ -13,10 +14,10 @@ const template = $dom.html`
     <form id="seqList" class="hflex flex-grow hscrollable" autocomplete="off">
         <select id="patternSelect" class="seq-select show-checked"></select>
     </form>
-    <button id="seqIns" title="Insert">
+    <button id="seqIns" title="Insert (${$shortcut.ctrl('Ins')})">
         ${$icons.plus}
     </button>
-    <button id="seqDel" title="Delete">
+    <button id="seqDel" title="Delete (${$shortcut.ctrl('Del')})">
         ${$icons.close}
     </button>
 </div>
@@ -84,40 +85,40 @@ export class SequenceEdit {
      */
     keyDown(event) {
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (event.key == 'ArrowRight' && $dom.commandKey(event)) {
+            if (event.key == 'ArrowRight' && $shortcut.commandKey(event)) {
                 this.setSelPos(this.selPos + 1)
                 invoke(this.callbacks.onSelect)
                 return true
-            } else if (event.key == 'ArrowLeft' && $dom.commandKey(event)) {
+            } else if (event.key == 'ArrowLeft' && $shortcut.commandKey(event)) {
                 this.setSelPos(this.selPos - 1)
                 invoke(this.callbacks.onSelect)
                 return true
-            } else if (event.key == 'Home' && $dom.commandKey(event)) {
+            } else if (event.key == 'Home' && $shortcut.commandKey(event)) {
                 this.setSelPos(0)
                 invoke(this.callbacks.onSelect)
                 return true
-            } else if (event.key == 'End' && $dom.commandKey(event)) {
+            } else if (event.key == 'End' && $shortcut.commandKey(event)) {
                 this.setSelPos(this.viewSequence.length - 1)
                 invoke(this.callbacks.onSelect)
                 return true
-            } else if (event.key == 'Insert' && $dom.commandKey(event)) {
+            } else if (event.key == 'Insert' && $shortcut.commandKey(event)) {
                 this.seqIns()
                 return true
-            } else if (event.key == 'Delete' && $dom.commandKey(event)) {
+            } else if (event.key == 'Delete' && $shortcut.commandKey(event)) {
                 this.seqDel()
                 return true
-            } else if (event.key == 'ArrowDown' && $dom.commandKey(event)) {
+            } else if (event.key == 'ArrowDown' && $shortcut.commandKey(event)) {
                 this.seqSet(this.viewSequence[this.selPos] + 1)
                 return true
-            } else if (event.key == 'ArrowUp' && $dom.commandKey(event)) {
+            } else if (event.key == 'ArrowUp' && $shortcut.commandKey(event)) {
                 this.seqSet(this.viewSequence[this.selPos] - 1)
                 return true
             }
         }
-        if (event.key == 'p' && $dom.commandKey(event)) {
+        if (event.key == 'p' && $shortcut.commandKey(event)) {
             this.seqSet(this.viewNumPatterns)
             return true
-        } else if (event.key == 'd' && $dom.commandKey(event)) {
+        } else if (event.key == 'd' && $shortcut.commandKey(event)) {
             this.seqClone()
             return true
         }

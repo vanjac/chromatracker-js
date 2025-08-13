@@ -1,4 +1,5 @@
 import * as $dom from './DOMUtil.js'
+import * as $shortcut from './Shortcut.js'
 import * as $cell from './Cell.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
@@ -20,17 +21,17 @@ const template = $dom.html`
     </div>
 
     <div id="effectSection" class="hflex">
-        <button id="resetEffect" disabled="" title="Reset Effect">
+        <button id="resetEffect" disabled="" title="Reset Effect (${'`'})">
             ${$icons.close}
         </button>
-        <button id="effect" class="flex-grow justify-start"></button>
-        <button id="param0"></button>
-        <button id="param1"></button>
+        <button id="effect" class="flex-grow justify-start" title="Effect (${$shortcut.alt('1')})"></button>
+        <button id="param0" title="Parameter (${$shortcut.alt('2')})"></button>
+        <button id="param1" title="Parameter (${$shortcut.alt('3')})"></button>
     </div>
 
     <div id="effectKeyboard" class="hide">
         <div class="hflex">
-            <button id="closeEffectKeyboard" title="Close">
+            <button id="closeEffectKeyboard" title="Close (Esc)">
                 ${$icons.arrow_left}
             </button>
             <div class="flex-grow"></div>
@@ -335,7 +336,7 @@ export class CellEntry {
             return true
         }
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (this.editDigit >= 0 && !$dom.commandKey(event) && event.key.length == 1) {
+            if (this.editDigit >= 0 && !$shortcut.commandKey(event) && event.key.length == 1) {
                 let num = parseInt(event.key, 16)
                 if (!Number.isNaN(num)) {
                     this.effectKeyboardButton(num)
@@ -353,14 +354,14 @@ export class CellEntry {
                 return true
             } else if (
                 (event.key == '`' || (event.key == '.' && event.code.startsWith('Numpad')))
-                    && !$dom.commandKey(event)
+                    && !$shortcut.commandKey(event)
             ) {
                 if (!event.repeat) {
                     this.setCell(Cell.empty, CellPart.effect | CellPart.param)
                     invoke(this.callbacks.jamPlay, event.code)
                 }
                 return true
-            } else if (event.code.startsWith('Numpad') && !$dom.commandKey(event)) {
+            } else if (event.code.startsWith('Numpad') && !$shortcut.commandKey(event)) {
                 let num = Number(event.key) // make sure numlock is on
                 if (!Number.isNaN(num)) {
                     if (!event.repeat) {

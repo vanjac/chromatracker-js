@@ -1,4 +1,5 @@
 import * as $dom from './DOMUtil.js'
+import * as $shortcut from './Shortcut.js'
 import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import * as $sample from '../edit/Sample.js'
@@ -11,16 +12,16 @@ import {mod, Cell, Sample, CellPart} from '../Model.js'
 const template = $dom.html`
 <div class="flex-grow">
     <div class="hflex">
-        <button id="showList" class="hide" title="Sample List">
+        <button id="showList" class="hide" title="Sample List (Esc)">
             ${$icons.menu}
         </button>
         <div class="flex-grow"></div>
         <strong id="title"></strong>
         <div class="flex-grow"></div>
-        <button id="delSample" class="hide" title="Delete">
+        <button id="delSample" class="hide" title="Delete (${$shortcut.ctrl('Shift+Minus')})">
             ${$icons.delete_outline}
         </button>
-        <button id="addSample" title="Add Sample">
+        <button id="addSample" title="Add Sample (${$shortcut.ctrl('Shift+Plus')})">
             ${$icons.plus}
         </button>
     </div>
@@ -87,10 +88,10 @@ export class SamplesList {
             this.closeSampleEdit()
             return true
         }
-        if (event.key == '+' && $dom.commandKey(event)) {
+        if (event.key == '+' && $shortcut.commandKey(event)) {
             this.addSample()
             return true
-        } else if ('-_'.includes(event.key) && event.shiftKey && $dom.commandKey(event)) {
+        } else if ('-_'.includes(event.key) && event.shiftKey && $shortcut.commandKey(event)) {
             this.deleteSample()
             return true
         }
