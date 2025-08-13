@@ -50,9 +50,9 @@ const template = $dom.html`
         </button>
         <div class="flex-grow"></div>
         <span id="entryCell" class="pattern-cell">
-            <span id="pitch" class="cell-pitch">...</span>
-            <span id="inst" class="cell-inst">..</span>
-            <span id="effect" class="cell-effect">
+            <span class="cell-pitch">...</span>
+            <span class="cell-inst">..</span>
+            <span class="cell-effect">
                 <span id="effDigit0">.</span><span id="effDigit1">.</span><span id="effDigit2">.</span>
             </span>
         </span>

@@ -14,8 +14,13 @@ body {
     --color-fg-alt: #f8a;
 
     --color-bg-pitch: #503;
+    --color-fg-pitch: #fac;
     --color-bg-volume: #053;
+    --color-fg-volume: #afc;
     --color-bg-panning: #530;
+    --color-fg-panning: #fca;
     --color-bg-timing: #035;
+    --color-fg-timing: #acf;
     --color-bg-control: #305;
+    --color-fg-control: #caf;
 }

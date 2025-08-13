@@ -30,9 +30,9 @@ const template = $dom.html`
 
 const cellTemplate = $dom.html`
 <td class="pattern-cell keypad-target">
-    <span id="pitch" class="cell-pitch">...</span>
-    <span id="inst" class="cell-inst">..</span>
-    <span id="effect" class="cell-effect">...</span>
+    <span class="cell-pitch">...</span>
+    <span class="cell-inst">..</span>
+    <span class="cell-effect">...</span>
 </td>
 `
 
@@ -288,7 +288,7 @@ export class PatternTable {
                 for (let c = 0; c < pattern.length; c++) {
                     let cell = pattern[c][row]
                     let cellFrag = cellTemplate.cloneNode(true)
-                    $cell.setContents(cellFrag, cell)
+                    $cell.setContents(cellFrag.querySelector('td'), cell)
 
                     let td = cellFrag.querySelector('td')
                     td.classList.toggle('dim', muteStates[c])

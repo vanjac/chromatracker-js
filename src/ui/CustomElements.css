@@ -46,6 +46,7 @@ pattern-table table {
 pattern-table table,
 .pattern-cell {
     font-size: 15px;
+    font-weight: bold;
 }
 /* https://issues.chromium.org/issues/40511425 */
 pattern-table th {
@@ -116,6 +117,22 @@ pattern-table td,
 }
 pattern-table .sel-cell { /* extra specificity */
     background: var(--color-bg-hl) !important;
+}
+
+.pitch-effect:not(.sel-effect) .cell-effect {
+    color: var(--color-fg-pitch);
+}
+.volume-effect:not(.sel-effect) .cell-effect {
+    color: var(--color-fg-volume);
+}
+.panning-effect:not(.sel-effect) .cell-effect {
+    color: var(--color-fg-panning);
+}
+.timing-effect:not(.sel-effect) .cell-effect {
+    color: var(--color-fg-timing);
+}
+.control-effect:not(.sel-effect) .cell-effect {
+    color: var(--color-fg-control);
 }
 
 .pattern-table-space {
