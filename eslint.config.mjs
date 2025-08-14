@@ -1,10 +1,11 @@
 // @ts-nocheck
 
-import {defineConfig} from 'eslint/config'
+import {defineConfig, globalIgnores} from 'eslint/config'
 import js from '@eslint/js'
 import css from "@eslint/css"
 
 export default defineConfig([
+    globalIgnores(['build/']),
     {
         files: ["**/*.js", "**/*.mjs"],
         plugins: {js},

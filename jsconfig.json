@@ -12,6 +12,7 @@
         "noImplicitOverride": true,
     },
     "exclude": [
+        "build/",
         "scripts/",
     ],
 }

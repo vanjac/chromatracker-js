@@ -1,4 +1,4 @@
-build: src/gen/Commit.js src/gen/Icons.js types lint
+debug: src/gen/Commit.js src/gen/Icons.js types lint
 
 types: node_modules
 	npm run types
