@@ -6,6 +6,7 @@
 }
 
 .file-menu-layout #fileMenu {
+    min-width: 0;
     max-width: 44em;
 }
 
