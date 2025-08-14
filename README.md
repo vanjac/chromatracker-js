@@ -1,4 +1,4 @@
-This will (eventually) be a web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) tracker with a touch-friendly interface. Currently it's very unfinished!
+This will be a web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) tracker with a touch-friendly interface. Currently it's very unfinished!
 
 This shares a name with [a previous project](https://github.com/vanjac/chromatracker) I attempted -- this new iteration of ChromaTracker is more limited in scope.
 
@@ -14,6 +14,8 @@ Currently implemented:
 - "Time travel" -- the onscreen playback position accounts for audio latency, so it matches what you're currently hearing, even with a high-latency Bluetooth connection
 - Persistent local file storage
 - Supports mobile browsers and PWA installation
+
+You can try the current alpha build at [tracker.chroma.zone](https://tracker.chroma.zone/).
 
 TODO:
 
