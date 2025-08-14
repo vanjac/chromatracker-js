@@ -48,7 +48,7 @@ const template = $dom.html`
 <div class="flex-grow">
     <div class="hflex flex-wrap">
         <div class="hflex flex-grow">
-            <button id="close" title="Close">
+            <button id="close" title="Close (F4)">
                 ${$icons.arrow_left}
             </button>
             <div class="flex-grow"></div>
@@ -282,7 +282,7 @@ export class ModuleEdit {
         if (target?.keyDown(event)) {
             return true
         }
-        if (event.code == 'BrowserBack') {
+        if (event.code == 'BrowserBack' || (event.key == 'F4' && !$shortcut.commandKey(event))) {
             this.close()
             return true
         }
