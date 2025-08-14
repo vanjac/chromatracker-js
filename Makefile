@@ -6,8 +6,8 @@ types: node_modules
 lint: node_modules
 	npm run lint
 
-src/gen/Commit.js src/gen/Icons.js: commit assets/icons build.mjs
-	node build.mjs
+src/gen/Commit.js src/gen/Icons.js: commit assets/icons scripts/build.mjs
+	node scripts/build.mjs
 
 node_modules: package.json
 	npm install

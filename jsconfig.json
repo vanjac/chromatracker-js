@@ -12,6 +12,6 @@
         "noImplicitOverride": true,
     },
     "exclude": [
-        "eslint.config.mjs",
+        "scripts/",
     ],
 }
