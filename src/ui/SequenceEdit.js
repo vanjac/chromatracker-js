@@ -10,8 +10,8 @@ import {mod, Pattern} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
-<div class="hflex">
-    <form id="seqList" class="hflex flex-grow hscrollable" autocomplete="off">
+<div class="sequence-edit-layout">
+    <form id="seqList" class="seq-list flex-grow" autocomplete="off">
         <select id="patternSelect" class="seq-select show-checked"></select>
     </form>
     <button id="seqIns" title="Insert (${$shortcut.ctrl('Ins')})">
@@ -85,11 +85,11 @@ export class SequenceEdit {
      */
     keyDown(event) {
         if (!$dom.needsKeyboardInput(event.target)) {
-            if (event.key == 'ArrowRight' && $shortcut.commandKey(event)) {
+            if (event.key == 'ArrowDown' && $shortcut.commandKey(event)) {
                 this.setSelPos(this.selPos + 1)
                 invoke(this.callbacks.onSelect)
                 return true
-            } else if (event.key == 'ArrowLeft' && $shortcut.commandKey(event)) {
+            } else if (event.key == 'ArrowUp' && $shortcut.commandKey(event)) {
                 this.setSelPos(this.selPos - 1)
                 invoke(this.callbacks.onSelect)
                 return true
@@ -107,10 +107,10 @@ export class SequenceEdit {
             } else if (event.key == 'Delete' && $shortcut.commandKey(event)) {
                 this.seqDel()
                 return true
-            } else if (event.key == 'ArrowDown' && $shortcut.commandKey(event)) {
+            } else if (event.key == 'ArrowRight' && $shortcut.commandKey(event)) {
                 this.seqSet(this.viewSequence[this.selPos] + 1)
                 return true
-            } else if (event.key == 'ArrowUp' && $shortcut.commandKey(event)) {
+            } else if (event.key == 'ArrowLeft' && $shortcut.commandKey(event)) {
                 this.seqSet(this.viewSequence[this.selPos] - 1)
                 return true
             }

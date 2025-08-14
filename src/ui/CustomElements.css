@@ -1,4 +1,31 @@
+/* PatternEdit */
+
+@media (min-width: 35em) {
+    .pattern-edit-layout {
+        flex-direction: row;
+    }
+}
+
 /* SequenceEdit */
+
+.sequence-edit-layout,
+.seq-list {
+    flex-direction: row;
+}
+@media (min-width: 35em) {
+    .sequence-edit-layout,
+    .seq-list {
+        flex-direction: column;
+    }
+    .seq-list {
+        overflow-y: auto;
+    }
+}
+@media not (min-width: 35em) {
+    .seq-list {
+        overflow-x: auto;
+    }
+}
 
 .seq-button,
 .seq-select {

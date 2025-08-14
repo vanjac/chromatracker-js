@@ -15,36 +15,40 @@ import './SequenceEdit.js'
 
 const template = $dom.html`
 <div class="flex-grow">
-    <sequence-edit></sequence-edit>
-    <div class="hflex">
-        <div id="playbackStatus" class="hflex">
-            <label for="tempo">BPM</label>
-            <input id="tempo" type="number" required="" value="125" min="32" max="255" autocomplete="off" accesskey="b">
-            <label for="speed">Speed</label>
-            <input id="speed" type="number" required="" value="6" min="1" max="31" autocomplete="off" accesskey="s">
+    <div class="flex-grow pattern-edit-layout">
+        <sequence-edit></sequence-edit>
+        <div class="flex-grow">
+            <div class="hflex">
+                <div id="playbackStatus" class="hflex">
+                    <label for="tempo">BPM</label>
+                    <input id="tempo" type="number" required="" value="125" min="32" max="255" autocomplete="off" accesskey="b">
+                    <label for="speed">Speed</label>
+                    <input id="speed" type="number" required="" value="6" min="1" max="31" autocomplete="off" accesskey="s">
+                </div>
+                <div class="flex-grow"></div>
+                <div id="selectTools" class="hide hflex">
+                    <button id="cut" title="Cut (${$shortcut.ctrl('X')})">
+                        ${$icons.content_cut}
+                    </button>
+                    <button id="copy" title="Copy (${$shortcut.ctrl('C')})">
+                        ${$icons.content_copy}
+                    </button>
+                </div>
+                <button id="paste" title="Paste (${$shortcut.ctrl('V')})">
+                    ${$icons.content_paste}
+                </button>
+                <label class="label-button" title="Select (\\)">
+                    <input id="select" type="checkbox">
+                    <span>${$icons.selection}</span>
+                </label>
+                <label class="label-button touch-only" title="Scroll Lock">
+                    <input id="scrollLock" type="checkbox">
+                    <span>${$icons.arrow_vertical_lock}</span>
+                </label>
+            </div>
+            <pattern-table></pattern-table>
         </div>
-        <div class="flex-grow"></div>
-        <div id="selectTools" class="hide hflex">
-            <button id="cut" title="Cut (${$shortcut.ctrl('X')})">
-                ${$icons.content_cut}
-            </button>
-            <button id="copy" title="Copy (${$shortcut.ctrl('C')})">
-                ${$icons.content_copy}
-            </button>
-        </div>
-        <button id="paste" title="Paste (${$shortcut.ctrl('V')})">
-            ${$icons.content_paste}
-        </button>
-        <label class="label-button" title="Select (\\)">
-            <input id="select" type="checkbox">
-            <span>${$icons.selection}</span>
-        </label>
-        <label class="label-button touch-only" title="Scroll Lock">
-            <input id="scrollLock" type="checkbox">
-            <span>${$icons.arrow_vertical_lock}</span>
-        </label>
     </div>
-    <pattern-table></pattern-table>
     <div class="hflex">
         <button id="lift" title="Lift Cell (Shift+Enter)">
             ${$icons.export_}
