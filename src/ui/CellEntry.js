@@ -10,39 +10,40 @@ import './PianoKeyboard.js'
 
 const template = $dom.html`
 <div>
-    <div id="partToggles" class="hflex">
-        <label class="label-button flex-grow" title="(${$shortcut.alt('P')})">
-            <input id="pitchEnable" type="checkbox" checked="">
-            <span>Pitch</span>
-        </label>
-        <label class="label-button flex-grow" title="(${$shortcut.alt('S')})">
-            <input id="sampleEnable" type="checkbox" checked="">
-            <span>Sample</span>
-        </label>
-        <label class="label-button flex-grow" title="(${$shortcut.alt('E')})">
-            <input id="effectEnable" type="checkbox" checked="">
-            <span>Effect</span>
-        </label>
-    </div>
-
-    <piano-keyboard></piano-keyboard>
-
-    <div id="sampleSection" class="hflex">
-        <div class="tap-height"></div>
-        <label class="label-button touch-only" title="Scroll Lock">
-            <input id="sampleScrollLock" type="checkbox">
-            <span>${$icons.arrow_horizontal_lock}</span>
-        </label>
-        <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
-    </div>
-
-    <div id="effectSection" class="hflex">
-        <button id="resetEffect" disabled="" title="Reset Effect (${'`'})">
-            ${$icons.close}
-        </button>
-        <button id="effect" class="flex-grow justify-start" title="Effect (${$shortcut.alt('1')})"></button>
-        <button id="param0" title="Parameter (${$shortcut.alt('2')})"></button>
-        <button id="param1" title="Parameter (${$shortcut.alt('3')})"></button>
+    <div class="cell-entry-layout">
+        <div id="partToggles" class="cell-entry-toggles">
+            <label class="label-button" title="(${$shortcut.alt('P')})">
+                <input id="pitchEnable" type="checkbox" checked="">
+                <span>Pitch</span>
+            </label>
+            <label class="label-button" title="(${$shortcut.alt('S')})">
+                <input id="sampleEnable" type="checkbox" checked="">
+                <span>Sample</span>
+            </label>
+            <label class="label-button" title="(${$shortcut.alt('E')})">
+                <input id="effectEnable" type="checkbox" checked="">
+                <span>Effect</span>
+            </label>
+        </div>
+        <div id="entrySections" class="min-width-0">
+            <piano-keyboard></piano-keyboard>
+            <div id="sampleSection" class="hflex">
+                <div class="tap-height"></div>
+                <label class="label-button touch-only" title="Scroll Lock">
+                    <input id="sampleScrollLock" type="checkbox">
+                    <span>${$icons.arrow_horizontal_lock}</span>
+                </label>
+                <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
+            </div>
+            <div id="effectSection" class="hflex">
+                <button id="resetEffect" disabled="" title="Reset Effect (${'`'})">
+                    ${$icons.close}
+                </button>
+                <button id="effect" class="flex-grow justify-start" title="Effect (${$shortcut.alt('1')})"></button>
+                <button id="param0" title="Parameter (${$shortcut.alt('2')})"></button>
+                <button id="param1" title="Parameter (${$shortcut.alt('3')})"></button>
+            </div>
+        </div>
     </div>
 
     <div id="effectKeyboard" class="hide">
@@ -280,6 +281,8 @@ export class CellEntry {
         this.sampleEnable = fragment.querySelector('#sampleEnable')
         /** @private @type {HTMLInputElement} */
         this.effectEnable = fragment.querySelector('#effectEnable')
+        /** @private @type {HTMLElement} */
+        this.entrySections = fragment.querySelector('#entrySections')
         /** @private */
         this.piano = fragment.querySelector('piano-keyboard')
         /** @private @type {HTMLElement} */
@@ -628,9 +631,7 @@ export class CellEntry {
      */
     openEffectKeyboard(digit) {
         this.editDigit = digit
-        this.piano.classList.add('hide')
-        this.sampleSection.classList.add('hide')
-        this.effectSection.classList.add('hide')
+        this.entrySections.classList.add('hide')
         this.partToggles.classList.add('hide')
         this.effectKeyboard.classList.remove('hide')
 
@@ -671,9 +672,7 @@ export class CellEntry {
     /** @private */
     closeEffectKeyboard() {
         this.editDigit = -1
-        this.piano.classList.remove('hide')
-        this.sampleSection.classList.remove('hide')
-        this.effectSection.classList.remove('hide')
+        this.entrySections.classList.remove('hide')
         if (!this.hidePartToggles) {
             this.partToggles.classList.remove('hide')
         }

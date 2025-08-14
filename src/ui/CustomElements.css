@@ -170,6 +170,28 @@ pattern-table .sel-cell { /* extra specificity */
 
 /* CellEntry */
 
+.cell-entry-layout {
+    flex-direction: column;
+}
+.cell-entry-toggles {
+    flex-direction: row;
+}
+.cell-entry-toggles > label {
+    flex: 1 0 0;
+}
+@media (min-width: 35em) {
+    .cell-entry-layout {
+        flex-direction: row;
+    }
+    .cell-entry-toggles {
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+    .cell-entry-toggles > label {
+        flex-grow: 0;
+    }
+}
+
 .keypad-key {
     width: 2em;
     flex-shrink: 0;
