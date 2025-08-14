@@ -1,5 +1,3 @@
-export const version = '0.0.1'
-
 /**
  * Read a null-terminated string
  * @param {ArrayBuffer} buf

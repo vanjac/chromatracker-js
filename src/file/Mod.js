@@ -3,6 +3,7 @@
 
 import * as $file from './FileUtil.js'
 import periodTable from '../PeriodTable.js'
+import version from '../Version.js'
 import {Cell, mod, Module, Pattern, PatternChannel, Sample} from '../Model.js'
 import {freeze} from '../Util.js'
 
@@ -235,7 +236,7 @@ export function write(module) {
     }
 
     $file.writeU8Array(buf, wavePos + 8, trackerInfoSize - 8,
-        textEncode.encode(`ChromaTracker v${$file.version}`))
+        textEncode.encode(`ChromaTracker v${version}`))
 
     return buf
 }

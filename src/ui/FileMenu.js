@@ -10,7 +10,8 @@ import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
 import {AlertDialog, ConfirmDialog, WaitDialogElement, MenuDialog} from './dialogs/UtilDialogs.js'
 import {freeze, type} from '../Util.js'
-import appVersion from '../gen/Version.js'
+import appVersion from '../Version.js'
+import appCommit from '../gen/Commit.js'
 
 const template = $dom.html`
 <div class="flex-grow file-menu-layout">
@@ -42,7 +43,7 @@ const template = $dom.html`
                 <button value="https://chroma.zone/share/pixipack1.mod">pixipack 1</button>
             </div>
         </div>
-        <em>Version:&nbsp;<code id="version"></code></em>
+        <em>Version:&nbsp;<span id="version"></span></em>
     </div>
     <div id="editorContainer" class="flex-grow hide"></div>
 </div>
@@ -93,7 +94,7 @@ export class FileMenu {
         /** @private @type {HTMLElement} */
         this.editorContainer = fragment.querySelector('#editorContainer')
 
-        fragment.querySelector('#version').textContent = appVersion
+        fragment.querySelector('#version').textContent = `${appVersion} (${appCommit.slice(0, 7)})`
 
         this.view.appendChild(fragment)
 

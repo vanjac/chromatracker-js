@@ -1,4 +1,4 @@
-build: src/gen/Version.js src/gen/Icons.js types lint
+build: src/gen/Commit.js src/gen/Icons.js types lint
 
 types: node_modules
 	npm run types
@@ -6,7 +6,7 @@ types: node_modules
 lint: node_modules
 	npm run lint
 
-src/gen/Version.js src/gen/Icons.js: version assets/icons build.mjs
+src/gen/Commit.js src/gen/Icons.js: commit assets/icons build.mjs
 	node build.mjs
 
 node_modules: package.json

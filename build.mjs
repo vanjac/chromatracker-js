@@ -4,16 +4,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-/**
- * @param {string} version
- */
-function makeVersion() {
-    let version = fs.readFileSync('version', {encoding: 'utf8'}).trim()
-    let versionScript = `// GENERATED
+function makeCommit() {
+    let commit = fs.readFileSync('commit', {encoding: 'utf8'}).trim()
+    let commitScript = `// GENERATED
 
-export default "${version}"
+export default "${commit}"
 `
-    fs.writeFileSync('src/gen/Version.js', versionScript)
+    fs.writeFileSync('src/gen/Commit.js', commitScript)
 }
 
 function makeIcons() {
@@ -36,5 +33,5 @@ import {html, xhtml} from '../ui/DOMUtil.js'
     fs.writeFileSync('src/gen/Icons.js', iconsScript)
 }
 
-makeVersion()
+makeCommit()
 makeIcons()
