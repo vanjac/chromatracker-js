@@ -19,7 +19,7 @@ const template = $dom.html`
         <sequence-edit></sequence-edit>
         <div class="flex-grow">
             <div class="hflex">
-                <div id="playbackStatus" class="hflex">
+                <div class="hflex shrink-clip-x">
                     <label for="tempo">BPM</label>
                     <input id="tempo" type="number" required="" value="125" min="32" max="255" autocomplete="off" accesskey="b">
                     <label for="speed">Speed</label>
@@ -116,8 +116,6 @@ export class PatternEdit {
         this.speedInput = new $dom.ValidatedNumberInput(fragment.querySelector('#speed'))
         /** @private @type {HTMLInputElement} */
         this.selectInput = fragment.querySelector('#select')
-        /** @private @type {HTMLElement} */
-        this.playbackStatus = fragment.querySelector('#playbackStatus')
         /** @private @type {HTMLElement} */
         this.selectTools = fragment.querySelector('#selectTools')
         let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
@@ -320,7 +318,6 @@ export class PatternEdit {
     /** @private */
     updateSelectMode() {
         this.selectTools.classList.toggle('hide', !this.selectInput.checked)
-        this.playbackStatus.classList.toggle('hide', this.selectInput.checked)
         if (this.selectInput.checked) {
             this.patternTable.controller.enableSelectMode()
         } else {
