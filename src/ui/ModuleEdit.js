@@ -225,7 +225,6 @@ export class ModuleEdit {
             jamRelease: this.jamRelease.bind(this),
             setMute: this.setMute.bind(this),
             setEntryCell: this.setEntryCell.bind(this),
-            setEntryParts: parts => this.cellEntry.controller.setEntryParts(parts)
         }
         this.samplesList.controller.callbacks = {
             jamPlay: this.jamPlay.bind(this),
@@ -241,10 +240,8 @@ export class ModuleEdit {
                 this.patternEdit.controller.setEntryCell(cell)
                 this.samplesList.controller.setSelSample(cell.inst)
             },
-            setPartTogglesVisible: visible => {
-                this.patternEdit.controller.setPartTogglesVisible(visible)
-            },
-            highlightEffectDigit: digit => this.patternEdit.controller.highlightEffectDigit(digit)
+            highlightEffectDigit: digit => this.patternEdit.controller.highlightEffectDigit(digit),
+            setEntryParts: parts => this.patternEdit.controller.setEntryParts(parts),
         }
         this.patternEdit.controller.setEntryCell(this.getEntryCell())
 
@@ -349,9 +346,9 @@ export class ModuleEdit {
             element.classList.toggle('hide', element.id != tabName)
         }
         if (tabName == 'sequence') {
-            this.cellEntry.controller.setEntryParts(this.patternEdit.controller.getCellParts())
+            this.cellEntry.controller.setHidePartToggles(false)
         } else {
-            this.cellEntry.controller.setEntryParts(CellPart.all)
+            this.cellEntry.controller.setHidePartToggles(true)
         }
         if (tabName == 'sequence' || tabName == 'samples') {
             this.patternEdit.controller.onVisible()

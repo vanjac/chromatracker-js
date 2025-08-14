@@ -10,6 +10,21 @@ import './PianoKeyboard.js'
 
 const template = $dom.html`
 <div>
+    <div id="partToggles" class="hflex">
+        <label class="label-button flex-grow" title="(${$shortcut.alt('P')})">
+            <input id="pitchEnable" type="checkbox" checked="">
+            <span>Pitch</span>
+        </label>
+        <label class="label-button flex-grow" title="(${$shortcut.alt('S')})">
+            <input id="sampleEnable" type="checkbox" checked="">
+            <span>Sample</span>
+        </label>
+        <label class="label-button flex-grow" title="(${$shortcut.alt('E')})">
+            <input id="effectEnable" type="checkbox" checked="">
+            <span>Effect</span>
+        </label>
+    </div>
+
     <piano-keyboard></piano-keyboard>
 
     <div id="sampleSection" class="hflex">
@@ -229,7 +244,7 @@ export class CellEntry {
         /**
          * @type {JamCallbacks & {
          *      updateCell?: () => void
-         *      setPartTogglesVisible?: (visible: boolean) => void
+         *      setEntryParts?: (parts: CellPart) => void
          *      highlightEffectDigit?: (digit: number) => void
          * }}
          */
@@ -245,6 +260,8 @@ export class CellEntry {
         this.param1 = 0
 
         /** @private */
+        this.hidePartToggles = false
+        /** @private */
         this.editDigit = -1
 
         /** @private */
@@ -254,6 +271,14 @@ export class CellEntry {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private @type {HTMLElement} */
+        this.partToggles = fragment.querySelector('#partToggles')
+        /** @private @type {HTMLInputElement} */
+        this.pitchEnable = fragment.querySelector('#pitchEnable')
+        /** @private @type {HTMLInputElement} */
+        this.sampleEnable = fragment.querySelector('#sampleEnable')
+        /** @private @type {HTMLInputElement} */
+        this.effectEnable = fragment.querySelector('#effectEnable')
         /** @private */
         this.piano = fragment.querySelector('piano-keyboard')
         /** @private @type {HTMLElement} */
@@ -281,6 +306,10 @@ export class CellEntry {
 
         /** @private @type {Element[]} */
         this.sampleKeys = []
+
+        this.pitchEnable.addEventListener('change', this.updateEntryParts.bind(this))
+        this.sampleEnable.addEventListener('change', this.updateEntryParts.bind(this))
+        this.effectEnable.addEventListener('change', this.updateEntryParts.bind(this))
 
         this.effectButton.addEventListener('click', () => this.openEffectKeyboard(0))
         this.param0Button.addEventListener('click', () => this.openEffectKeyboard(1))
@@ -343,7 +372,19 @@ export class CellEntry {
                     return true
                 }
             }
-            if (event.key == '1' && event.altKey) {
+            if (event.key == 'p' && event.altKey) {
+                this.pitchEnable.checked = !this.pitchEnable.checked
+                this.updateEntryParts()
+                return true
+            } else if (event.key == 's' && event.altKey) {
+                this.sampleEnable.checked = !this.sampleEnable.checked
+                this.updateEntryParts()
+                return true
+            } else if (event.key == 'e' && event.altKey) {
+                this.effectEnable.checked = !this.effectEnable.checked
+                this.updateEntryParts()
+                return true
+            } else if (event.key == '1' && event.altKey) {
                 this.openEffectKeyboard(0)
                 return true
             } else if (event.key == '2' && event.altKey) {
@@ -425,6 +466,22 @@ export class CellEntry {
         let inst = this.selSample()
         let {effect, param0, param1} = this
         return {pitch, inst, effect, param0, param1}
+    }
+
+    /** @private */
+    getCellParts() {
+        /** @type {CellPart} */
+        let parts = CellPart.none
+        if (this.pitchEnable.checked) {
+            parts |= CellPart.pitch
+        }
+        if (this.sampleEnable.checked) {
+            parts |= CellPart.inst
+        }
+        if (this.effectEnable.checked) {
+            parts |= CellPart.effect | CellPart.param
+        }
+        return parts
     }
 
     /**
@@ -516,13 +573,30 @@ export class CellEntry {
         invoke(this.callbacks.updateCell)
     }
 
+    /** @private */
+    updateEntryParts() {
+        this.updateSectionDim()
+        invoke(this.callbacks.setEntryParts, this.getCellParts())
+    }
+
+    /** @private */
+    updateSectionDim() {
+        let parts = this.getCellParts()
+        let hide = this.hidePartToggles
+        this.piano.classList.toggle('dim', !hide && !(parts & CellPart.pitch))
+        this.sampleSection.classList.toggle('dim', !hide && !(parts & CellPart.inst))
+        this.effectSection.classList.toggle('dim', !hide && !(parts & CellPart.effect))
+    }
+
     /**
-     * @param {CellPart} parts
+     * @param {boolean} hide
      */
-    setEntryParts(parts) {
-        this.piano.classList.toggle('dim', !(parts & CellPart.pitch))
-        this.sampleSection.classList.toggle('dim', !(parts & CellPart.inst))
-        this.effectSection.classList.toggle('dim', !(parts & CellPart.effect))
+    setHidePartToggles(hide) {
+        this.hidePartToggles = hide
+        if (this.editDigit < 0) {
+            this.partToggles.classList.toggle('hide', hide)
+        }
+        this.updateSectionDim()
     }
 
     /** @private */
@@ -556,6 +630,7 @@ export class CellEntry {
         this.piano.classList.add('hide')
         this.sampleSection.classList.add('hide')
         this.effectSection.classList.add('hide')
+        this.partToggles.classList.add('hide')
         this.effectKeyboard.classList.remove('hide')
 
         let title = ''
@@ -589,7 +664,6 @@ export class CellEntry {
             button.querySelector('#desc').textContent = desc[i]
             setEffectButtonColor(button, colors[i])
         }
-        invoke(this.callbacks.setPartTogglesVisible, false)
         invoke(this.callbacks.highlightEffectDigit, digit)
     }
 
@@ -599,8 +673,10 @@ export class CellEntry {
         this.piano.classList.remove('hide')
         this.sampleSection.classList.remove('hide')
         this.effectSection.classList.remove('hide')
+        if (!this.hidePartToggles) {
+            this.partToggles.classList.remove('hide')
+        }
         this.effectKeyboard.classList.add('hide')
-        invoke(this.callbacks.setPartTogglesVisible, true)
         invoke(this.callbacks.highlightEffectDigit, -1)
     }
 

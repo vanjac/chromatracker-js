@@ -71,20 +71,6 @@ const template = $dom.html`
             ${$icons.arrow_collapse_up}
         </button>
     </div>
-    <div id="partToggles" class="hflex">
-        <label class="label-button flex-grow" title="(${$shortcut.alt('P')})">
-            <input id="pitchEnable" type="checkbox" checked="">
-            <span>Pitch</span>
-        </label>
-        <label class="label-button flex-grow" title="(${$shortcut.alt('S')})">
-            <input id="sampleEnable" type="checkbox" checked="">
-            <span>Sample</span>
-        </label>
-        <label class="label-button flex-grow" title="(${$shortcut.alt('E')})">
-            <input id="effectEnable" type="checkbox" checked="">
-            <span>Effect</span>
-        </label>
-    </div>
 </div>
 `
 
@@ -99,7 +85,6 @@ export class PatternEdit {
          * @type {ModuleEditCallbacks & JamCallbacks & {
          *      setMute?: (c: number, mute: boolean) => void
          *      setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
-         *      setEntryParts?: (parts: CellPart) => void
          * }}
          */
         this.callbacks = {}
@@ -109,6 +94,8 @@ export class PatternEdit {
         this.viewPatterns = null
         /** @private */
         this.entryCell = Cell.empty
+        /** @private */
+        this.entryParts = CellPart.all
     }
 
     connectedCallback() {
@@ -132,15 +119,6 @@ export class PatternEdit {
         let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
         /** @private @type {HTMLElement} */
         this.entryCellElem = fragment.querySelector('#entryCell')
-
-        /** @private @type {HTMLElement} */
-        this.partToggles = fragment.querySelector('#partToggles')
-        /** @private @type {HTMLInputElement} */
-        this.pitchEnable = fragment.querySelector('#pitchEnable')
-        /** @private @type {HTMLInputElement} */
-        this.sampleEnable = fragment.querySelector('#sampleEnable')
-        /** @private @type {HTMLInputElement} */
-        this.effectEnable = fragment.querySelector('#effectEnable')
 
         this.selectInput.addEventListener('change', () => this.updateSelectMode())
 
@@ -174,17 +152,6 @@ export class PatternEdit {
             navigator.vibrate?.(1)
         })
 
-        this.pitchEnable.addEventListener('change', this.updateEntryParts.bind(this))
-        this.sampleEnable.addEventListener('change', this.updateEntryParts.bind(this))
-        this.effectEnable.addEventListener('change', this.updateEntryParts.bind(this))
-
-        this.pitchEnable.parentElement.addEventListener('contextmenu',
-            () => this.putCells(this.entryCell, CellPart.pitch))
-        this.sampleEnable.parentElement.addEventListener('contextmenu',
-            () => this.putCells(this.entryCell, CellPart.inst))
-        this.effectEnable.parentElement.addEventListener('contextmenu',
-            () => this.putCells(this.entryCell, CellPart.effect | CellPart.param))
-
         this.view.addEventListener('contextmenu', () => {
             $cli.addSelProp('seqpos', 'number', this.selPos(), pos => this.setSelPos(pos))
         })
@@ -201,8 +168,8 @@ export class PatternEdit {
             onChange: (pattern) => this.changePattern(_ => pattern),
             setMute: (...args) => invoke(this.callbacks.setMute, ...args),
         }
-        $cell.toggleParts(this.entryCellElem, this.getCellParts())
-        this.patternTable.controller.setEntryParts(this.getCellParts())
+        $cell.toggleParts(this.entryCellElem, this.entryParts)
+        this.patternTable.controller.setEntryParts(this.entryParts)
     }
 
     /**
@@ -257,18 +224,6 @@ export class PatternEdit {
                 return true
             } else if (event.key == 'v' && $shortcut.commandKey(event)) {
                 this.paste()
-                return true
-            } else if (event.key == 'p' && event.altKey) {
-                this.pitchEnable.checked = !this.pitchEnable.checked
-                this.updateEntryParts()
-                return true
-            } else if (event.key == 's' && event.altKey) {
-                this.sampleEnable.checked = !this.sampleEnable.checked
-                this.updateEntryParts()
-                return true
-            } else if (event.key == 'e' && event.altKey) {
-                this.effectEnable.checked = !this.effectEnable.checked
-                this.updateEntryParts()
                 return true
             }
         }
@@ -386,7 +341,7 @@ export class PatternEdit {
      * @param {number|string} jamId
      */
     write(jamId) {
-        this.putCells(this.entryCell, this.getCellParts())
+        this.putCells(this.entryCell, this.entryParts)
         invoke(this.callbacks.jamPlay, jamId, this.selCell())
         this.advance()
     }
@@ -396,7 +351,7 @@ export class PatternEdit {
      * @param {number|string} jamId
      */
     erase(jamId) {
-        this.putCells(Cell.empty, this.getCellParts())
+        this.putCells(Cell.empty, this.entryParts)
         invoke(this.callbacks.jamPlay, jamId, this.selCell())
         this.advance()
     }
@@ -409,7 +364,7 @@ export class PatternEdit {
         if (!this.selectInput.checked) {
             this.patternTable.controller.move(0, -1, false, true)
         }
-        this.putCells(Cell.empty, this.getCellParts())
+        this.putCells(Cell.empty, this.entryParts)
         invoke(this.callbacks.jamPlay, jamId, this.selCell())
     }
 
@@ -419,7 +374,7 @@ export class PatternEdit {
      */
     lift(jamId) {
         let cell = this.selCell()
-        let parts = this.getCellParts()
+        let parts = this.entryParts
         if (cell.pitch < 0) { parts &= ~CellPart.pitch }
         if (!cell.inst) { parts &= ~CellPart.inst }
         invoke(this.callbacks.setEntryCell, cell, parts)
@@ -451,9 +406,8 @@ export class PatternEdit {
         this.copy()
         let [minChannel, maxChannel] = this.patternTable.controller.channelRange()
         let [minRow, maxRow] = this.patternTable.controller.rowRange()
-        let parts = this.getCellParts()
         this.changePattern(pattern => $pattern.fill(
-            pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, Cell.empty, parts))
+            pattern, minChannel, maxChannel + 1, minRow, maxRow + 1, Cell.empty, this.entryParts))
     }
 
     /** @private */
@@ -482,7 +436,7 @@ export class PatternEdit {
             minRow,
             maxRow - minRow + 1,
             global.patternClipboard,
-            this.getCellParts()
+            this.entryParts,
         ))
     }
 
@@ -494,34 +448,12 @@ export class PatternEdit {
         $cell.setPreviewContents(this.entryCellElem, cell)
     }
 
-    getCellParts() {
-        /** @type {CellPart} */
-        let parts = CellPart.none
-        if (this.pitchEnable.checked) {
-            parts |= CellPart.pitch
-        }
-        if (this.sampleEnable.checked) {
-            parts |= CellPart.inst
-        }
-        if (this.effectEnable.checked) {
-            parts |= CellPart.effect | CellPart.param
-        }
-        return parts
-    }
-
-    /** @private */
-    updateEntryParts() {
-        let parts = this.getCellParts()
+    /**
+     * @param {CellPart} parts
+     */
+    setEntryParts(parts) {
         $cell.toggleParts(this.entryCellElem, parts)
         this.patternTable.controller.setEntryParts(parts)
-        invoke(this.callbacks.setEntryParts, parts)
-    }
-
-    /**
-     * @param {boolean} visible
-     */
-    setPartTogglesVisible(visible) {
-        this.partToggles.classList.toggle('hide', !visible)
     }
 
     /**
@@ -531,7 +463,7 @@ export class PatternEdit {
         if (digit >= 0) {
             $cell.toggleParts(this.entryCellElem, CellPart.none)
         } else {
-            $cell.toggleParts(this.entryCellElem, this.getCellParts())
+            $cell.toggleParts(this.entryCellElem, this.entryParts)
         }
         for (let d = 0; d < 3; d++) {
             let elem = this.entryCellElem.querySelector('#effDigit' + d)
