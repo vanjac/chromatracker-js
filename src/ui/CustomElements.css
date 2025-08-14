@@ -10,6 +10,10 @@
     max-width: 44em;
 }
 
+.file-menu-layout #editorContainer {
+    min-width: 0;
+}
+
 /* PatternEdit */
 
 @media (min-width: 35em) {
