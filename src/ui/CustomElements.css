@@ -1,3 +1,14 @@
+/* FileMenu */
+
+.file-menu-layout {
+    flex-direction: row;
+    justify-content: center;
+}
+
+.file-menu-layout #fileMenu {
+    max-width: 44em;
+}
+
 /* PatternEdit */
 
 @media (min-width: 35em) {

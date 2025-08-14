@@ -13,8 +13,8 @@ import {freeze, type} from '../Util.js'
 import appVersion from '../gen/Version.js'
 
 const template = $dom.html`
-<div class="flex-grow">
-    <div id="menu" class="flex-grow hide">
+<div class="flex-grow file-menu-layout">
+    <div id="fileMenu" class="flex-grow hide">
         <div class="hflex">
             <div class="flex-grow"></div>
             <h2>ChromaTracker</h2>
@@ -87,7 +87,7 @@ export class FileMenu {
         }
 
         /** @private @type {HTMLElement} */
-        this.menu = fragment.querySelector('#menu')
+        this.menu = fragment.querySelector('#fileMenu')
         /** @private @type {HTMLElement} */
         this.fileList = fragment.querySelector('#fileList')
         /** @private @type {HTMLElement} */
