@@ -28,7 +28,8 @@ const template = $dom.html`
     <piano-keyboard></piano-keyboard>
 
     <div id="sampleSection" class="hflex">
-        <label class="label-button" title="Scroll Lock">
+        <div class="tap-height"></div>
+        <label class="label-button touch-only" title="Scroll Lock">
             <input id="sampleScrollLock" type="checkbox">
             <span>${$icons.arrow_horizontal_lock}</span>
         </label>

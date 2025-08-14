@@ -92,7 +92,6 @@ const template = $dom.html`
     </form>
     <div id="appTabBody" class="flex-grow">
         <div id="arrange" class="flex-grow">
-            <hr>
             <module-properties></module-properties>
             <div class="placeholder flex-grow">PLACEHOLDER</div>
         </div>

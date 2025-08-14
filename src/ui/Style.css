@@ -93,11 +93,30 @@ output {
     min-height: 100%;
 }
 
+.tap-height,
+button,
+select,
+.label-button span {
+    min-height: 2.5em;
+}
+
+button,
+select,
+.label-button,
+.tab-group {
+    margin: 2px;
+}
+
+.tap-height {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    width: 0;
+}
+
 button,
 select,
 .label-button span {
     min-width: 2.5em;
-    min-height: 2.5em;
     padding: 0 0.4em;
 
     display: inline-flex;
@@ -108,13 +127,6 @@ select,
     border: 1px solid var(--color-fg);
     border-radius: 5px;
     touch-action: manipulation;
-}
-
-button,
-select,
-.label-button,
-.tab-group {
-    margin: 2px;
 }
 
 .tab-group label {

@@ -10,11 +10,13 @@ const template = $dom.html`
 <div class="properties-grid">
     <label for="title">Title:</label>
     <div class="hflex">
+        <div class="tap-height"></div>
         <input id="title" maxlength="20" autocomplete="off" accesskey="t">
     </div>
 
     <label for="channelCount">Channels:</label>
     <div class="hflex">
+        <div class="tap-height"></div>
         <input id="channelCount" type="number" required="" value="4" min="2" max="32" step="2" autocomplete="off" accesskey="c">
         &nbsp;
         <button id="delChannels" class="touch-only" title="Remove">
@@ -29,15 +31,14 @@ const template = $dom.html`
     <output id="sampleCount"></output>
 
     <label for="patternCount">Patterns:</label>
-    <div class="hflex">
-        <output id="patternCount"></output>
-    </div>
+    <output id="patternCount"></output>
 
     <label for="sequenceCount">Length:</label>
     <output id="sequenceCount"></output>
 
     <label for="restart">Restart pos:</label>
     <div class="hflex">
+        <div class="tap-height"></div>
         <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off" accesskey="r">
     </div>
 
