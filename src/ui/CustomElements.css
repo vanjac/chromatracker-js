@@ -272,6 +272,35 @@ pattern-table .sel-cell { /* extra specificity */
     border-color: var(--color-bg);
 }
 
+/* SamplesList */
+
+#samplesListLayout {
+    flex-direction: row;
+}
+
+@media (min-width: 44em) {
+    #samplesListLayout #sampleListPanel {
+        width: 22em;
+    }
+    #samplesListLayout #showList {
+        display: none !important;
+    }
+    #samplesListLayout #addSample2 {
+        display: none !important;
+    }
+}
+@media not (min-width: 44em) {
+    #samplesListLayout #sampleListPanel {
+        flex: 1 0 0;
+    }
+    #samplesListLayout:not(.show-sample-edit) #sampleEditPanel {
+        display: none !important;
+    }
+    #samplesListLayout.show-sample-edit #sampleListPanel {
+        display: none !important;
+    }
+}
+
 /* SampleEdit */
 
 .wave-edit {
