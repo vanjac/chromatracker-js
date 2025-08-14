@@ -46,50 +46,52 @@ const processInterval = 200
 
 const template = $dom.html`
 <div class="flex-grow">
-    <div class="hflex">
-        <button id="close" title="Close">
-            ${$icons.arrow_left}
-        </button>
-        <div class="flex-grow"></div>
-        <button id="playStart" title="Restart (F6)">
-            ${$icons.step_forward}
-        </button>
-        <button id="playPattern" title="Play Pattern (F7)">
-            ${$icons.playlist_play}
-        </button>
-        <label class="label-button hide" title="Loop Pattern (F7)">
-            <input id="patternLoop" type="checkbox">
-            <span>${$icons.repeat_variant}</span>
-        </label>
-        <button id="playRow" title="Play (F5)">
-            ${$icons.play}
-        </button>
-        <button id="pause" class="hide show-checked" title="Pause (F5)">
-            ${$icons.pause}
-        </button>
-        <label class="label-button" title="Follow Playback (ScrLk)">
-            <input id="follow" type="checkbox" checked="">
-            <span>${$icons.format_indent_increase}</span>
-        </label>
-        <div class="flex-grow"></div>
-        <button id="undo" title="Undo (${$shortcut.ctrl('Z')})">
-            ${$icons.undo}
-        </button>
+    <div class="hflex flex-wrap">
+        <div class="hflex flex-grow">
+            <button id="close" title="Close">
+                ${$icons.arrow_left}
+            </button>
+            <div class="flex-grow"></div>
+            <button id="playStart" title="Restart (F6)">
+                ${$icons.step_forward}
+            </button>
+            <button id="playPattern" title="Play Pattern (F7)">
+                ${$icons.playlist_play}
+            </button>
+            <label class="label-button hide" title="Loop Pattern (F7)">
+                <input id="patternLoop" type="checkbox">
+                <span>${$icons.repeat_variant}</span>
+            </label>
+            <button id="playRow" title="Play (F5)">
+                ${$icons.play}
+            </button>
+            <button id="pause" class="hide show-checked" title="Pause (F5)">
+                ${$icons.pause}
+            </button>
+            <label class="label-button" title="Follow Playback (ScrLk)">
+                <input id="follow" type="checkbox" checked="">
+                <span>${$icons.format_indent_increase}</span>
+            </label>
+            <div class="flex-grow"></div>
+            <button id="undo" title="Undo (${$shortcut.ctrl('Z')})">
+                ${$icons.undo}
+            </button>
+        </div>
+        <form id="appTabs" class="hflex flex-grow tab-group" autocomplete="off">
+            <label class="label-button flex-grow" title="(F1)">
+                <input type="radio" name="appTab" value="arrange" checked="">
+                <span>Arrange</span>
+            </label>
+            <label class="label-button flex-grow" title="(F2)">
+                <input type="radio" name="appTab" value="sequence">
+                <span>Sequence</span>
+            </label>
+            <label class="label-button flex-grow" title="(F3)">
+                <input type="radio" name="appTab" value="samples">
+                <span>Samples</span>
+            </label>
+        </form>
     </div>
-    <form id="appTabs" class="hflex tab-group" autocomplete="off">
-        <label class="label-button flex-grow" title="(F1)">
-            <input type="radio" name="appTab" value="arrange" checked="">
-            <span>Arrange</span>
-        </label>
-        <label class="label-button flex-grow" title="(F2)">
-            <input type="radio" name="appTab" value="sequence">
-            <span>Sequence</span>
-        </label>
-        <label class="label-button flex-grow" title="(F3)">
-            <input type="radio" name="appTab" value="samples">
-            <span>Samples</span>
-        </label>
-    </form>
     <div id="appTabBody" class="flex-grow">
         <div id="arrange" class="flex-grow">
             <module-properties></module-properties>

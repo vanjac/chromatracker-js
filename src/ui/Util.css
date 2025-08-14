@@ -43,6 +43,10 @@
     flex-shrink: 0;
 }
 
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
 .shrink-clip-y {
     min-height: 0;
     overflow-y: hidden;
