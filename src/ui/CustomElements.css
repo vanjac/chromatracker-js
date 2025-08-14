@@ -29,6 +29,7 @@
 
 .seq-button,
 .seq-select {
+    flex-shrink: 0;
     width: 2.5em;
     margin-left: 0;
     margin-right: 0;
