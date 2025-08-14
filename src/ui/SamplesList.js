@@ -230,7 +230,7 @@ export class SamplesList {
         if (!this.viewSamples[s]) {
             this.layout.classList.remove('show-sample-edit')
             this.closeSampleEdit()
-        } else if (s != this.viewIndex) {
+        } else if (!this.sampleEdit || s != this.viewIndex) {
             this.openSampleEdit(s)
         } else {
             this.viewIndex = s
