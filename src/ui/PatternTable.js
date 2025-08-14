@@ -180,6 +180,11 @@ export class PatternTable {
                 this.markRow = this.viewNumRows - 1
                 this.updateSelection()
                 return true
+            } else if (event.key == 'r' && $shortcut.commandKey(event)) {
+                this.selChannel = 0
+                this.markChannel = this.viewNumChannels - 1
+                this.updateSelection()
+                return true
             }
         }
         if (event.key == 'm' && $shortcut.commandKey(event)) {
