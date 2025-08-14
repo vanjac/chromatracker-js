@@ -295,29 +295,29 @@ export class ModuleEdit {
                 return true
             }
         }
-        if (event.key == 'F1') {
+        if (event.key == 'F1' && !$shortcut.commandKey(event)) {
             $dom.selectRadioButton(this.tabInput, 'arrange')
             this.updateTab()
             return true
-        } else if (event.key == 'F2') {
+        } else if (event.key == 'F2' && !$shortcut.commandKey(event)) {
             $dom.selectRadioButton(this.tabInput, 'sequence')
             this.updateTab()
             return true
-        } else if (event.key == 'F3') {
+        } else if (event.key == 'F3' && !$shortcut.commandKey(event)) {
             $dom.selectRadioButton(this.tabInput, 'samples')
             this.updateTab()
             return true
-        } else if (event.key == 'F5') {
+        } else if (event.key == 'F5' && !$shortcut.commandKey(event)) {
             if (this.isPlaying()) {
                 this.pause()
             } else {
                 this.playFromHere()
             }
             return true
-        } else if (event.key == 'F6') {
+        } else if (event.key == 'F6' && !$shortcut.commandKey(event)) {
             this.playFromStart()
             return true
-        } else if (event.key == 'F7') {
+        } else if (event.key == 'F7' && !$shortcut.commandKey(event)) {
             if (this.isPlaying()) {
                 this.patternLoopInput.checked = !this.patternLoopInput.checked
                 this.updatePlaySettings()
@@ -325,7 +325,7 @@ export class ModuleEdit {
                 this.playPattern()
             }
             return true
-        } else if (event.key == 'ScrollLock') {
+        } else if (event.key == 'ScrollLock' && !$shortcut.commandKey(event)) {
             this.followInput.checked = !this.followInput.checked
             return true
         } else if (event.key == 'Pause') {
