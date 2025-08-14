@@ -36,7 +36,7 @@ export class SequenceEdit {
          * }}
          */
         this.callbacks = {}
-        /** @public TODO */
+        /** @private */
         this.selPos = 0
         /** @private @type {readonly number[]} */
         this.viewSequence = null
@@ -201,6 +201,10 @@ export class SequenceEdit {
             button.classList.toggle('hide', i == this.selPos)
         }
         this.select.selectedIndex = this.viewSequence[this.selPos]
+    }
+
+    getSelPos() {
+        return this.selPos
     }
 
     /**

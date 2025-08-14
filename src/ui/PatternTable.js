@@ -63,9 +63,9 @@ export class PatternTable {
          * }}
          */
         this.callbacks = {}
-        /** @public TODO */
+        /** @private */
         this.selChannel = 0
-        /** @public TODO */
+        /** @private */
         this.selRow = 0
         /** @private */
         this.markChannel = 0
@@ -339,6 +339,14 @@ export class PatternTable {
             this.spacerRow.style.height = this.tableSpace.clientHeight + 'px'
             this.updateSelectionHandles()
         }
+    }
+
+    getSelChannel() {
+        return this.selChannel
+    }
+
+    getSelRow() {
+        return this.selRow
     }
 
     /**

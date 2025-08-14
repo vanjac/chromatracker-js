@@ -253,15 +253,15 @@ export class PatternEdit {
     }
 
     selChannel() {
-        return this.patternTable.controller.selChannel
+        return this.patternTable.controller.getSelChannel()
     }
 
     selRow() {
-        return this.patternTable.controller.selRow
+        return this.patternTable.controller.getSelRow()
     }
 
     selPos() {
-        return this.sequenceEdit.controller.selPos
+        return this.sequenceEdit.controller.getSelPos()
     }
 
     /** @private */
