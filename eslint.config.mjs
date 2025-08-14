@@ -2,9 +2,11 @@
 
 import {defineConfig} from 'eslint/config'
 import js from '@eslint/js'
+import css from "@eslint/css"
 
 export default defineConfig([
     {
+        files: ["**/*.js", "**/*.mjs"],
         plugins: {js},
         extends: ["js/recommended"],
         languageOptions: {
@@ -61,5 +63,14 @@ export default defineConfig([
         languageOptions: {
             sourceType: "script",
         }
+    },
+    {
+        files: ["**/*.css"],
+        plugins: {css},
+        language: "css/css",
+        rules: {
+            "css/no-invalid-properties": ["error", {"allowUnknownVariables": true}],
+            "css/no-invalid-at-rules": "error",
+        },
     },
 ])
