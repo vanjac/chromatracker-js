@@ -620,7 +620,8 @@ export class ModuleEdit {
     frameUpdate() {
         let curTime = this.context.currentTime
         if (this.context.outputLatency) { // if supported
-            curTime -= this.context.outputLatency
+            // TODO: weird hack for Chrome?
+            curTime -= this.context.outputLatency / 2
         }
         if (!this.queuedStates.length) {
             this.viewState = null
