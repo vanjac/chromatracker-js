@@ -2,11 +2,15 @@
 
 ## Running Locally
 
-ChromaTracker works with any static HTML server. It's written in plain JavaScript without dependencies, so there's no compilation step required for hosting the development version; just navigate to `index.html`.
+ChromaTracker works with any static HTML server. It's written in plain JavaScript without dependencies, so there's no compilation step required for hosting the development version; just navigate to `debug.html`.
 
 ## Development Tools
 
 You must have [npm](https://www.npmjs.com/) and [GNU Make](https://www.gnu.org/software/make/) installed. Run `make` to install development packages, rebuild generated files, and run the type-checker/linter.
+
+## Release Build
+
+Run `make release` to build the release JS/CSS bundles. These are loaded by `index.html`.
 
 ## WEBL
 
