@@ -1,10 +1,17 @@
 debug: src/gen/Commit.js src/gen/Icons.js types lint
+release: debug bundle-js bundle-css
 
 types: node_modules
-	npm run types
+	npx tsc --project ./jsconfig.json --pretty false
 
 lint: node_modules
-	npm run lint
+	npx eslint .
+
+bundle-js: node_modules
+	npx esbuild src/Main.js --bundle --minify --target=es2020 --outfile=build/bundle.js --log-override:empty-import-meta=silent
+
+bundle-css: node_modules
+	npx esbuild src/Main.css --bundle --minify --outfile=build/bundle.css
 
 src/gen/Commit.js src/gen/Icons.js: commit assets/icons scripts/build.mjs
 	node scripts/build.mjs

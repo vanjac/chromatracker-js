@@ -5,11 +5,5 @@
         "esbuild": "^0.25.0",
         "eslint": "^9.32.0",
         "typescript": "^5.9.0"
-    },
-    "scripts": {
-        "types": "tsc --project ./jsconfig.json --pretty false",
-        "lint": "eslint .",
-        "build-js": "esbuild src/Main.js --bundle --minify --target=es2020 --outfile=build/bundle.js --log-override:empty-import-meta=silent",
-        "build-css": "esbuild src/Main.css --bundle --minify --outfile=build/bundle.css"
     }
 }
