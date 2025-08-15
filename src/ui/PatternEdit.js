@@ -98,7 +98,7 @@ export class PatternEdit {
         this.viewPatterns = null
         /** @private */
         this.entryCell = Cell.empty
-        /** @private */
+        /** @private @type {CellPart} */
         this.entryParts = CellPart.all
     }
 
@@ -453,6 +453,7 @@ export class PatternEdit {
      * @param {CellPart} parts
      */
     setEntryParts(parts) {
+        this.entryParts = parts
         $cell.toggleParts(this.entryCellElem, parts)
         this.patternTable.controller.setEntryParts(parts)
     }
