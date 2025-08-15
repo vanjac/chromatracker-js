@@ -17,7 +17,24 @@ async function reloadCSS() {
     let styles = document.querySelectorAll('style')
     for (let style of styles) {
         if (style.dataset.href) {
-            style.textContent = await fetch(style.dataset.href).then(r => r.text())
+            style.textContent = await fetchCSS(style.dataset.href)
         }
     }
+}
+
+/**
+ * @param {string} path
+ */
+async function fetchCSS(path) {
+    let css = await fetch(path).then(r => r.text())
+    let regex = /@import ["']([a-zA-Z./]+)["'];\n/g
+    /** @type {Promise<string>[]} */
+    let promises = []
+    css.replace(regex, (match, importPath) => {
+        promises.push(fetchCSS((new URL(importPath, path).href)))
+        return match
+    })
+    let data = await Promise.all(promises)
+    css = css.replace(regex, match => data.shift())
+    return css
 }
