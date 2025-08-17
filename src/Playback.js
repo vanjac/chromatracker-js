@@ -98,9 +98,12 @@ function channelPlayback() {
  * @param {ChannelPlayback} channel
  */
 export function channelState(channel) {
-    let {sourceSample, sample, volume, scheduledPeriod, samplePredictPos, samplePredictTime}
-        = channel
-    return {sourceSample, sample, volume, scheduledPeriod, samplePredictPos, samplePredictTime}
+    let {
+        sourceSample, sample, volume, scheduledPeriod, samplePredictPos, samplePredictTime, userMute
+    } = channel
+    return {
+        sourceSample, sample, volume, scheduledPeriod, samplePredictPos, samplePredictTime, userMute
+    }
 }
 
 /** @typedef {ReturnType<oscillatorPlayback>} OscillatorPlayback */

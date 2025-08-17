@@ -211,7 +211,7 @@ export class SamplesList {
         if (!this.sampleEdit) { return }
         let positions = []
         for (let channel of channels) {
-            if (channel.volume && channel.sample == this.viewIndex) {
+            if (channel.volume && !channel.userMute && channel.sample == this.viewIndex) {
                 positions.push($play.getSamplePredictedPos(channel, time))
             }
         }
