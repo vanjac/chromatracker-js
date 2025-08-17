@@ -100,6 +100,8 @@ export class PatternEdit {
         this.entryCell = Cell.empty
         /** @private @type {CellPart} */
         this.entryParts = CellPart.all
+        /** @private */
+        this.following = false
     }
 
     connectedCallback() {
@@ -487,7 +489,7 @@ export class PatternEdit {
 
     /** @private */
     advance() {
-        if (!this.selectInput.checked) {
+        if (!this.selectInput.checked && !this.following) {
             this.patternTable.controller.move(0, 1, false, true)
         }
     }
@@ -511,6 +513,7 @@ export class PatternEdit {
      * @param {boolean} following
      */
     setFollowState(following) {
+        this.following = following
         this.patternTable.controller.setVScrollable(!following)
     }
 
