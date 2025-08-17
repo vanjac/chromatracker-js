@@ -5,7 +5,7 @@
 .hide {
     display: none !important;
 }
-@media (pointer: fine) {
+@media (pointer: fine) and (hover: hover) {
     .touch-only {
         display: none !important;
     }

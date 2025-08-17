@@ -82,7 +82,7 @@ export class PatternTable {
         /** @private @type {Readonly<Pattern>} */
         this.viewPattern = null
 
-        this.pointerQuery = window.matchMedia('(pointer: fine)')
+        this.pointerQuery = window.matchMedia('(pointer: fine) and (hover: hover)')
     }
 
     connectedCallback() {
