@@ -11,7 +11,9 @@ import {mod, Pattern} from '../Model.js'
 const template = $dom.html`
 <div class="sequence-edit-layout">
     <form id="seqList" class="seq-list flex-grow" autocomplete="off">
-        <select id="patternSelect" class="seq-select show-checked"></select>
+        <select id="patternSelect" class="seq-select show-checked">
+            <optgroup id="patternGroup" label="Pattern:"></optgroup>
+        </select>
     </form>
     <button id="seqIns" title="Insert (${$shortcut.ctrl('Ins')})">
         ${$icons.plus}
@@ -54,6 +56,8 @@ export class SequenceEdit {
         this.sequenceInput = null
         /** @private @type {HTMLSelectElement} */
         this.select = fragment.querySelector('#patternSelect')
+        /** @private @type {HTMLOptGroupElement} */
+        this.group = fragment.querySelector('#patternGroup')
 
         $dom.disableFormSubmit(this.sequenceList)
         /** @private @type {HTMLButtonElement} */
@@ -166,16 +170,16 @@ export class SequenceEdit {
         console.debug('update num patterns')
         this.viewNumPatterns = patterns.length
 
-        this.select.textContent = ''
+        this.group.textContent = ''
         for (let i = 0; i < patterns.length; i++) {
-            this.select.appendChild($dom.createElem('option', {textContent: i.toString()}))
+            this.group.appendChild($dom.createElem('option', {textContent: i.toString()}))
         }
         if (patterns.length < mod.maxPatterns) {
-            this.select.appendChild($dom.createElem('hr'))
+            this.group.appendChild($dom.createElem('hr'))
             let textContent = `${patterns.length} (blank)`
-            this.select.appendChild($dom.createElem('option', {textContent}))
+            this.group.appendChild($dom.createElem('option', {textContent}))
             textContent = `${patterns.length} (copy)`
-            this.select.appendChild($dom.createElem('option', {textContent, value: 'copy'}))
+            this.group.appendChild($dom.createElem('option', {textContent, value: 'copy'}))
         }
         this.select.selectedIndex = this.viewSequence[this.selPos]
     }
