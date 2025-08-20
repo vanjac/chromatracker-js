@@ -100,7 +100,7 @@ const template = $dom.html`
     <div class="flex-grow"></div>
     <div class="hflex">
         <button id="useOffset" title="Offset Effect (${$shortcut.ctrl('9')})">
-            Offset:&nbsp;<span id="offsetEffect">000</span>
+            Offset:&nbsp;<span id="offsetEffect" class="cell-effect">000</span>
         </button>
     </div>
 </div>
@@ -209,10 +209,12 @@ export class SampleEdit {
         fragment.querySelector('#open').addEventListener('click', () => this.pickAudioFile())
         fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
 
-        /** @type {HTMLElement} */
+        /** @private @type {HTMLElement} */
         this.warningText = fragment.querySelector('#warning')
 
-        makeKeyButton(fragment.querySelector('#useOffset'), id => {
+        /** @private @type {HTMLButtonElement} */
+        this.offsetButton = fragment.querySelector('#useOffset')
+        makeKeyButton(this.offsetButton, id => {
             this.useSampleOffset()
             invoke(this.callbacks.jamPlay, id)
         })
@@ -330,6 +332,7 @@ export class SampleEdit {
         let {effect, param0, param1} = this.getOffsetEffect()
         this.offsetEffectSpan.textContent =
             (effect.toString(16) + param0.toString(16) + param1.toString(16)).toUpperCase()
+        this.offsetButton.classList.toggle('timing-effect', effect != 0)
     }
 
     /**
