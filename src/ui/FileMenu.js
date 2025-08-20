@@ -39,7 +39,8 @@ const template = $dom.html`
             <hr>
             <h3>&nbsp;Demo Files:</h3>
             <div id="demoList" class="button-list">
-                <button value="https://chroma.zone/share/space_debris.mod">space debris</button>
+                <button value="https://chroma.zone/share/space_debris.mod">space_debris</button>
+                <button value="https://chroma.zone/share/GSLINGER.MOD">guitar slinger</button>
                 <button value="https://chroma.zone/share/pixipack1.mod">pixipack 1</button>
             </div>
         </div>
