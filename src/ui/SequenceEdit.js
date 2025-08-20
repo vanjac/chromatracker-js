@@ -211,7 +211,7 @@ export class SequenceEdit {
     }
 
     scrollToSelPos() {
-        this.select.scrollIntoView({inline: 'center', behavior: 'instant'})
+        this.select.scrollIntoView({inline: 'center', block: 'center', behavior: 'instant'})
     }
 
     /**
