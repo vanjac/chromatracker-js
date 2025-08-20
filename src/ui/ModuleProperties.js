@@ -30,9 +30,6 @@ const template = $dom.html`
         </button>
     </div>
 
-    <label for="patternCount">Patterns:</label>
-    <output id="patternCount"></output>
-
     <label for="restart">Restart pos:</label>
     <div class="hflex">
         <div class="tap-height"></div>
@@ -92,8 +89,6 @@ export class ModuleProperties {
             })
 
         /** @private @type {HTMLOutputElement} */
-        this.patternCountOutput = fragment.querySelector('#patternCount')
-        /** @private @type {HTMLOutputElement} */
         this.fileSizeOutput = fragment.querySelector('#fileSize')
         /** @private @type {HTMLButtonElement} */
         this.addChannelsButton = fragment.querySelector('#addChannels')
@@ -142,10 +137,6 @@ export class ModuleProperties {
         if (module.samples != this.viewModule?.samples) {
             console.debug('update sample count')
             this.viewSamplesSize = $mod.calcSamplesSize(module.samples)
-        }
-        if (module.patterns != this.viewModule?.patterns) {
-            console.debug('update pattern count')
-            this.patternCountOutput.value = module.patterns.length.toString()
         }
         if (module.sequence != this.viewModule?.sequence) {
             console.debug('update sequence count')
