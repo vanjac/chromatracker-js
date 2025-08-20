@@ -86,7 +86,7 @@
 
 pattern-table th,
 .pattern-cell {
-    border: 1px solid currentColor;
+    border: 1px solid var(--color-fg);
     white-space: nowrap;
     box-sizing: content-box;
 }
@@ -231,15 +231,17 @@ pattern-table .sel-cell { /* extra specificity */
 
 /* PatternMatrix */
 
-pattern-matrix table {
-    contain: none;
-}
-
 pattern-matrix th,
 pattern-matrix td {
-    border: 1px solid currentColor;
+    border: 1px solid var(--color-fg);
     white-space: nowrap;
     padding: 0 0.5em;
+}
+
+.select-row td,
+.select-row th {
+    background: var(--color-fg-hl);
+    color: var(--color-bg);
 }
 
 /* CellEntry */

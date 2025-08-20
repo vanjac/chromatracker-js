@@ -23,6 +23,8 @@ export class PatternMatrix {
         this.viewSequence = null
         /** @private */
         this.viewNumChannels = 0
+        /** @private */
+        this.selPos = -1
     }
 
     connectedCallback() {
@@ -76,6 +78,16 @@ export class PatternMatrix {
             }
             this.tbody.appendChild(row)
         }
+        this.setSelPos(this.selPos)
+    }
+
+    /**
+     * @param {number} pos
+     */
+    setSelPos(pos) {
+        this.selPos = pos
+        this.tbody.querySelector('.select-row')?.classList.remove('select-row')
+        this.tbody.children[pos]?.classList.add('select-row')
     }
 }
 export const PatternMatrixElement = $dom.defineView('pattern-matrix', PatternMatrix)

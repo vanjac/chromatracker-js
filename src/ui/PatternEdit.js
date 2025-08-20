@@ -89,6 +89,7 @@ export class PatternEdit {
          * @type {ModuleEditCallbacks & JamCallbacks & {
          *      setMute?: (c: number, mute: boolean) => void
          *      setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
+         *      onSelectPos?: () => void
          * }}
          */
         this.callbacks = {}
@@ -247,6 +248,7 @@ export class PatternEdit {
     /** @private */
     refreshPattern() {
         this.patternTable.controller.setPattern(this.selPattern())
+        invoke(this.callbacks.onSelectPos)
     }
 
     selChannel() {

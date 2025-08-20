@@ -216,6 +216,9 @@ export class ModuleEdit {
             jamRelease: this.jamRelease.bind(this),
             setMute: this.setMute.bind(this),
             setEntryCell: this.setEntryCell.bind(this),
+            onSelectPos: () => {
+                this.patternMatrix.controller.setSelPos(this.patternEdit.controller.selPos())
+            },
         }
         this.samplesList.controller.callbacks = {
             jamPlay: this.jamPlay.bind(this),
