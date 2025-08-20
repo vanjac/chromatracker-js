@@ -253,7 +253,12 @@ export class ValidatedNumberInput {
         input.addEventListener('change', () => {
             if (this.updateValue()) {
                 onChange(this.value, true)
-            } else if (!input.reportValidity() && this.value != null) {
+            } else {
+                input.reportValidity() // can't reset value yet since it'll hide the message
+            }
+        })
+        input.addEventListener('blur', () => {
+            if (!input.checkValidity() && this.value != null) {
                 input.valueAsNumber = this.value
                 onChange(this.value, true)
             }
