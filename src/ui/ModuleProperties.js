@@ -33,10 +33,10 @@ const template = $dom.html`
     <label for="patternCount">Patterns:</label>
     <output id="patternCount"></output>
 
-    <label for="sequenceCount">Length:</label>
+    <label for="sequenceCount">Seq. Length:</label>
     <output id="sequenceCount"></output>
 
-    <label for="restart">Restart pos:</label>
+    <label for="restart">Seq. Restart:</label>
     <div class="hflex">
         <div class="tap-height"></div>
         <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off" accesskey="r">
