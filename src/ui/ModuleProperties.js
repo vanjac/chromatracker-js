@@ -163,6 +163,7 @@ export class ModuleProperties {
         if (module.sequence != this.viewModule?.sequence) {
             console.debug('update sequence count')
             this.sequenceCountOutput.value = module.sequence.length.toString()
+            this.restartPosInput.input.max = (module.sequence.length - 1).toString()
         }
         if (module.sequence != this.viewModule?.sequence
                 || module.numChannels != this.viewModule?.numChannels) {
