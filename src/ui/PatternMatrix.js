@@ -8,7 +8,7 @@ import {mod, Module, Pattern} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
-<div class="hscrollable vscrollable flex-grow align-start">
+<div id="scroll" class="hscrollable vscrollable flex-grow align-start">
     <table>
         <thead>
             <tr></tr>
@@ -18,6 +18,7 @@ const template = $dom.html`
     <select id="patternSelect" class="seq-select show-checked custom-select">
         <optgroup id="patternGroup" label="Pattern:"></optgroup>
     </select>
+    <div id="playbackLine" class="hide"></div>
 </div>
 `
 
@@ -46,6 +47,8 @@ export class PatternMatrix {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private @type {HTMLElement} */
+        this.scroll = fragment.querySelector('#scroll')
         /** @private @type {HTMLTableRowElement} */
         this.theadRow = fragment.querySelector('thead tr')
         /** @private */
@@ -54,6 +57,8 @@ export class PatternMatrix {
         this.select = fragment.querySelector('select')
         /** @private */
         this.group = fragment.querySelector('optgroup')
+        /** @private @type {HTMLElement} */
+        this.playbackLine = fragment.querySelector('#playbackLine')
 
         this.select.addEventListener('click', e => e.stopPropagation())
         this.select.addEventListener('input', () => {
@@ -157,6 +162,25 @@ export class PatternMatrix {
         row?.classList.add('select-row')
         row?.querySelector('.pattern-num').after(this.select)
         this.select.selectedIndex = this.viewSequence[this.selPos]
+    }
+
+    /**
+     * @param {number} pos
+     * @param {number} row
+     */
+    setPlaybackPos(pos, row) {
+        let tr = this.tbody.children[pos]
+        if (tr) {
+            let rowRect = tr.getBoundingClientRect()
+            let scrollRect = this.scroll.getBoundingClientRect()
+            let y = rowRect.top + rowRect.height * row / mod.numRows
+            y += this.scroll.scrollTop - scrollRect.top
+            this.playbackLine.style.top = y + 'px'
+            this.playbackLine.style.width = rowRect.width + 'px'
+            this.playbackLine.classList.remove('hide')
+        } else {
+            this.playbackLine.classList.add('hide')
+        }
     }
 
     /**

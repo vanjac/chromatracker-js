@@ -267,6 +267,14 @@ pattern-matrix select {
     text-align-last: center;
 }
 
+pattern-matrix #playbackLine {
+    contain: none;
+    position: absolute;
+    height: 2px;
+    transform: translate(0, -50%);
+    background: var(--color-fg-alt)
+}
+
 /* CellEntry */
 
 .cell-entry-layout {
