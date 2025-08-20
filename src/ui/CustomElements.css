@@ -47,14 +47,26 @@
 .seq-select {
     flex-shrink: 0;
     width: 2.5em;
-    margin-left: 0;
-    margin-right: 0;
 }
 .seq-button span,
 .seq-select {
     min-width: 0;
     padding-left: 0;
     padding-right: 0;
+}
+@media (min-width: 35em) {
+    .seq-button,
+    .seq-select {
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+}
+@media not all and (min-width: 35em) {
+    .seq-button,
+    .seq-select {
+        margin-left: 0;
+        margin-right: 0;
+    }
 }
 
 .seq-select {
