@@ -86,28 +86,28 @@ const colorButtonClasses = freeze({
 })
 
 const effectNames = freeze([
-    'Arpeggio', 'Slide Up', 'Slide Down', 'Note Glide',
+    'Arpeggio', 'Pitch Up', 'Pitch Down', 'Note Glide',
     'Vibrato', 'Glide + Vol Slide', 'Vibrato + Vol Slide', 'Tremolo',
     'Set Panning', 'Sample Offset', 'Volume Slide', 'Position Jump',
     'Set Volume', 'Pattern Break', 'Extended...', 'Speed / Tempo',
 ])
 
 const effectShortNames = freeze([
-    'Arpeggio', 'Slide Up', 'Slide Down', 'Note Glide',
+    'Arpeggio', 'Pitch Up', 'Pitch Down', 'Note Glide',
     'Vibrato', 'Glide + Vol', 'Vibrato + Vol', 'Tremolo',
     'Set Panning', 'Offset', 'Volume Slide', 'Pos. Jump',
     'Set Volume', 'Pat. Break', 'More...', 'Speed',
 ])
 
 const extEffectNames = freeze([
-    '', 'Fine Slide Up', 'Fine Slide Down', '',
+    '', 'Fine Pitch Up', 'Fine Pitch Down', '',
     'Vibrato Waveform', 'Set Finetune', 'Pattern Loop', 'Tremolo Waveform',
     '', 'Retrigger', 'Fine Volume Up', 'Fine Volume Down',
     'Note Cut', 'Note Delay', 'Pattern Delay', '',
 ])
 
 const extEffectShortNames = freeze([
-    '', 'Slide Up', 'Slide Down', '',
+    '', 'Pitch Up', 'Pitch Down', '',
     'Vib. Wave', 'Set Finetune', 'Pat. Loop', 'Trem. Wave',
     '', 'Retrigger', 'Volume Up', 'Volume Down',
     'Note Cut', 'Note Delay', 'Pat. Delay', '',
