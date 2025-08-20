@@ -37,7 +37,7 @@
         overflow-y: auto;
     }
 }
-@media not (min-width: 35em) {
+@media not all and (min-width: 35em) {
     .seq-list {
         overflow-x: auto;
     }
@@ -305,7 +305,7 @@ pattern-table .sel-cell { /* extra specificity */
         display: none !important;
     }
 }
-@media not (min-width: 44em) {
+@media not all and (min-width: 44em) {
     #samplesListLayout #sampleListPanel {
         flex: 1 0 0;
     }
