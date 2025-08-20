@@ -16,11 +16,11 @@ const template = $dom.html`
             <optgroup id="patternGroup" label="Pattern:"></optgroup>
         </select>
     </form>
-    <button id="seqIns" title="Insert (${$shortcut.ctrl('Ins')})">
-        ${$icons.plus}
-    </button>
     <button id="seqDel" title="Delete (${$shortcut.ctrl('Del')})">
         ${$icons.close}
+    </button>
+    <button id="seqIns" title="Insert (${$shortcut.ctrl('Ins')})">
+        ${$icons.plus}
     </button>
 </div>
 `
