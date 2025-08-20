@@ -1,12 +1,9 @@
-import * as $cli from './CLI.js'
-import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
 import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import * as $icons from '../gen/Icons.js'
 import {Undoable} from './Undoable.js'
-import {CLIDialogElement} from './dialogs/CLIDialog.js'
 import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, Sample, Module, CellPart} from '../Model.js'
 import './CellEntry.js'
@@ -188,8 +185,14 @@ export class ModuleEdit {
         this.playPatternButton.addEventListener('click', () => this.playPattern())
         this.playRowButton.addEventListener('click', () => this.playFromHere())
         this.pauseButton.addEventListener('click', () => this.pause())
-        this.playRowButton.addEventListener('contextmenu', () => this.destroyPlayback())
-        this.pauseButton.addEventListener('contextmenu', () => this.destroyPlayback())
+        this.playRowButton.addEventListener('contextmenu', e => {
+            e.preventDefault()
+            this.destroyPlayback()
+        })
+        this.pauseButton.addEventListener('contextmenu', e => {
+            e.preventDefault()
+            this.destroyPlayback()
+        })
         this.patternLoopInput.addEventListener('change', () => this.updatePlaySettings())
         this.followInput.addEventListener('change', () => {
             if (this.isPlaying()) {
@@ -197,23 +200,6 @@ export class ModuleEdit {
             }
         })
         this.undoButton.addEventListener('click', () => this.undo())
-
-        this.view.addEventListener('contextmenu', () => {
-            console.log('Selected:')
-            $cli.resetSel()
-        }, {capture: true})
-        this.view.addEventListener('contextmenu', e => {
-            $cli.addSelProp('module', 'object', this.module.value,
-                module => this.changeModule(_ => freeze(module)))
-            if (!(e.target instanceof HTMLInputElement || e.target instanceof HTMLOutputElement)) {
-                e.preventDefault()
-                if (e.altKey) {
-                    this.pause()
-                    let dialog = $dialog.open(new CLIDialogElement(), {dismissable: true})
-                    $cli.beginSel(() => $dialog.close(dialog))
-                }
-            }
-        })
 
         this.view.appendChild(fragment)
 

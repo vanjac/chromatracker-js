@@ -79,19 +79,6 @@ export function slice(pattern, cStart, cEnd, rStart, rEnd) {
 }
 
 /**
- * @param {Readonly<Pattern>} pattern
- * @param {number} c
- * @param {number} r
- * @param {Readonly<Cell>} cell
- * @param {CellPart} parts
- */
-export function putCell(pattern, c, r, cell, parts) {
-    return changeItem(pattern, c, channel =>
-        changeItem(channel, r, dest =>
-            freeze(cellApply(dest, cell, parts))))
-}
-
-/**
  * @param {Readonly<Pattern>} dest
  * @param {number} cStart
  * @param {number} cSize

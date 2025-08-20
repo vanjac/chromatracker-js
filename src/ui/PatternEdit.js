@@ -1,5 +1,4 @@
 import * as $cell from './Cell.js'
-import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
 import * as $module from '../edit/Module.js'
@@ -157,10 +156,6 @@ export class PatternEdit {
             navigator.vibrate?.(1)
         })
 
-        this.view.addEventListener('contextmenu', () => {
-            $cli.addSelProp('seqpos', 'number', this.selPos(), pos => this.setSelPos(pos))
-        })
-
         this.view.appendChild(fragment)
 
         this.sequenceEdit.controller.callbacks = {
@@ -170,7 +165,6 @@ export class PatternEdit {
         this.patternTable.controller.callbacks = {
             jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
             jamRelease: (...args) => invoke(this.callbacks.jamRelease, ...args),
-            onChange: (pattern) => this.changePattern(_ => pattern),
             setMute: (...args) => invoke(this.callbacks.setMute, ...args),
         }
         $cell.toggleParts(this.entryCellElem, this.entryParts)

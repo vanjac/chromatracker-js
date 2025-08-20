@@ -1,4 +1,3 @@
-import * as $cli from './CLI.js'
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
@@ -217,11 +216,6 @@ export class SampleEdit {
         })
         /** @private @type {HTMLElement} */
         this.offsetEffectSpan = fragment.querySelector('#offsetEffect')
-
-        this.view.addEventListener('contextmenu', () => {
-            $cli.addSelProp('sample', 'object', this.viewSample,
-                sample => invoke(this.callbacks.onChange, freeze(sample), true))
-        })
 
         this.view.appendChild(fragment)
 
@@ -518,7 +512,18 @@ export class SampleEdit {
     /** @private */
     paste() {
         let [start, end] = this.waveEdit.controller.selOrAll()
-        this.waveEdit.controller.replace(start, end, global.audioClipboard)
+        this.replace(start, end, global.audioClipboard)
+    }
+
+    /**
+     * @param {number} start
+     * @param {number} end
+     * @param {Readonly<Int8Array>} wave
+     */
+    replace(start, end, wave) {
+        invoke(this.callbacks.onChange, $sample.splice(this.viewSample, start, end, wave), true)
+        let newEnd = start + wave.length
+        this.waveEdit.controller.setSel(newEnd, newEnd)
     }
 
     /** @private */

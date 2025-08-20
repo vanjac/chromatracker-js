@@ -1,5 +1,4 @@
 import * as $cell from './Cell.js'
-import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
 import * as $pattern from '../edit/Pattern.js'
@@ -59,7 +58,6 @@ export class PatternTable {
         /**
          * @type {JamCallbacks & {
          *      setMute?: (c: number, mute: boolean) => void
-                onChange?: (pattern: Readonly<Pattern>) => void
          * }}
          */
         this.callbacks = {}
@@ -121,15 +119,6 @@ export class PatternTable {
                 this.setSelCell(c, row, extend)
                 invoke(this.callbacks.jamPlay, id, this.viewPattern[c][row])
             }
-        })
-
-        this.view.addEventListener('contextmenu', () => {
-            $cli.addSelProp('row', 'number', this.selRow,
-                row => this.setSelCell(this.selChannel, row, false))
-            $cli.addSelProp('channel', 'number', this.selChannel,
-                channel => this.setSelCell(this.selChannel, channel, false))
-            $cli.addSelProp('pattern', Array, this.viewPattern,
-                pattern => invoke(this.callbacks.onChange, freeze(pattern)))
         })
 
         let resizeObserver = new ResizeObserver(() => this.updateSpaceSize())
@@ -303,12 +292,6 @@ export class PatternTable {
                     td.classList.toggle('dim', muteStates[c])
                     td.dataset.c = c.toString()
                     td.dataset.row = row.toString()
-                    td.addEventListener('contextmenu', () => {
-                        $cli.addSelProp('cell', 'object', this.viewPattern[c][row], cell => {
-                            invoke(this.callbacks.onChange, $pattern.putCell(
-                                this.viewPattern, c, row, cell, CellPart.all))
-                        })
-                    })
 
                     tr.appendChild(cellFrag)
                 }

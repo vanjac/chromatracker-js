@@ -1,4 +1,3 @@
-import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
 import * as $sample from '../edit/Sample.js'
@@ -106,16 +105,6 @@ export class WaveEdit {
                 this.selectB = this.restrictWavePos(this.pointerToWaveCoord(e.clientX))
                 this.updateSelection()
             }
-        })
-        this.waveEditBox.addEventListener('contextmenu', () => {
-            let [start, end] = this.selRangeOrAll()
-            // slice for safety (can't be frozen)
-            $cli.addSelProp('wave', Int8Array, this.viewSample.wave.slice(start, end),
-                wave => this.replace(start, end, wave))
-            $cli.addSelProp('waverange', Array, [start, end], ([start, end]) => {
-                if (start == null) { start = -1 }
-                this.setSel(start, end != null ? end : start)
-            })
         })
 
         this.addHandleEvents(this.selectHandleA, () => this.selectA, value => {
@@ -412,17 +401,6 @@ export class WaveEdit {
             }
         }
         ctx.stroke()
-    }
-
-    /**
-     * @param {number} start
-     * @param {number} end
-     * @param {Readonly<Int8Array>} wave
-     */
-    replace(start, end, wave) {
-        invoke(this.callbacks.onChange, $sample.splice(this.viewSample, start, end, wave), true)
-        let newEnd = start + wave.length
-        this.setSel(newEnd, newEnd)
     }
 }
 export const WaveEditElement = $dom.defineView('wave-edit', WaveEdit)

@@ -1,4 +1,3 @@
-import * as $cli from './CLI.js'
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
 import * as $module from '../edit/Module.js'
@@ -70,11 +69,6 @@ export class SequenceEdit {
             } else {
                 this.seqSet(this.select.selectedIndex)
             }
-        })
-        this.select.addEventListener('contextmenu', () => {
-            $cli.addSelProp('patnum', 'number', this.viewSequence[this.selPos],
-                num => invoke(this.callbacks.changeModule,
-                    module => $sequence.set(module, this.selPos, num)))
         })
 
         this.view.appendChild(fragment)
@@ -152,13 +146,6 @@ export class SequenceEdit {
                 this.selPos = i
                 invoke(this.callbacks.onSelect)
                 this.updateSel()
-            })
-            label.addEventListener('contextmenu', () => {
-                this.setSelPos(i)
-                invoke(this.callbacks.onSelect)
-                $cli.addSelProp('patnum', 'number', this.viewSequence[i],
-                    num => invoke(this.callbacks.changeModule,
-                        module => $sequence.set(module, i, num)))
             })
             this.sequenceButtons.push(label)
         }
