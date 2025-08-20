@@ -21,8 +21,8 @@ const template = $dom.html`
                 <div class="hflex shrink-clip-x">
                     <label for="tempo">BPM</label>
                     <input id="tempo" type="number" required="" value="125" min="32" max="255" autocomplete="off" accesskey="b">
-                    <label for="speed">Speed</label>
-                    <input id="speed" type="number" required="" value="6" min="1" max="31" autocomplete="off" accesskey="s">
+                    <label for="speed">Ticks</label>
+                    <input id="speed" type="number" required="" value="6" min="1" max="31" autocomplete="off" accesskey="t">
                 </div>
                 <div class="flex-grow"></div>
                 <div id="selectTools" class="hide hflex">
