@@ -11,6 +11,7 @@ import {mod, Pattern} from '../Model.js'
 const template = $dom.html`
 <div class="sequence-edit-layout">
     <form id="seqList" class="seq-list flex-grow" autocomplete="off">
+        <label class="seq-label" for="sequence">Seq:</label>
         <select id="patternSelect" class="seq-select show-checked">
             <optgroup id="patternGroup" label="Pattern:"></optgroup>
         </select>

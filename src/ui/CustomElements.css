@@ -28,6 +28,9 @@
 .seq-list {
     flex-direction: row;
 }
+.seq-list {
+    align-items: center;
+}
 @media (min-width: 35em) {
     .sequence-edit-layout,
     .seq-list {
@@ -35,6 +38,9 @@
     }
     .seq-list {
         overflow-y: auto;
+    }
+    .seq-label {
+        padding: 0.33em 0;
     }
 }
 @media not all and (min-width: 35em) {
@@ -248,6 +254,10 @@ pattern-table .sel-cell { /* extra specificity */
     }
 }
 
+.keypad-button {
+    margin-top: 0;
+    margin-bottom: 0;
+}
 .keypad-key {
     width: 2em;
     flex-shrink: 0;
@@ -255,6 +265,10 @@ pattern-table .sel-cell { /* extra specificity */
 }
 .keypad-half-key {
     width: 1em;
+    flex-shrink: 0;
+}
+.octave-space {
+    width: 14em;
     flex-shrink: 0;
 }
 .keypad-key span {
