@@ -30,11 +30,11 @@ const template = $dom.html`
             <div class="flex-grow"></div>
             <strong id="sampleTitle">Sample <span id="sampleIndex"></span></strong>
             <div class="flex-grow"></div>
-            <button id="addSample2" title="Add Sample (${$shortcut.ctrl('Shift+Plus')})">
-                ${$icons.plus}
-            </button>
             <button id="delSample" title="Delete (${$shortcut.ctrl('Shift+Minus')})">
                 ${$icons.delete_outline}
+            </button>
+            <button id="addSample2" title="Add Sample (${$shortcut.ctrl('Shift+Plus')})">
+                ${$icons.plus}
             </button>
         </div>
         <div id="sampleEditContainer" class="flex-grow"></div>
