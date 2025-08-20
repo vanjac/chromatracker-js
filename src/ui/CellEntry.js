@@ -351,6 +351,7 @@ export class CellEntry {
             jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
             jamRelease: (...args) => invoke(this.callbacks.jamRelease, ...args),
             pitchChanged: () => invoke(this.callbacks.updateCell),
+            setExpanded: this.setPianoExpanded.bind(this),
         }
 
         this.updateEffect()
@@ -697,6 +698,15 @@ export class CellEntry {
         } else {
             this.closeEffectKeyboard()
         }
+    }
+
+    /**
+     * @private
+     * @param {boolean} expanded
+     */
+    setPianoExpanded(expanded) {
+        this.sampleSection.classList.toggle('hide', expanded)
+        this.effectSection.classList.toggle('hide', expanded)
     }
 }
 export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)

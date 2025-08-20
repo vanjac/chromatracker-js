@@ -254,6 +254,10 @@ pattern-table .sel-cell { /* extra specificity */
     }
 }
 
+.keypad-button {
+    margin-top: 0;
+    margin-bottom: 0;
+}
 .keypad-key {
     width: 2em;
     flex-shrink: 0;
@@ -261,6 +265,10 @@ pattern-table .sel-cell { /* extra specificity */
 }
 .keypad-half-key {
     width: 1em;
+    flex-shrink: 0;
+}
+.octave-space {
+    width: 14em;
     flex-shrink: 0;
 }
 .keypad-key span {
