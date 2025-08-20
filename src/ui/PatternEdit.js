@@ -241,13 +241,13 @@ export class PatternEdit {
         this.sequenceEdit.controller.setSequence(module.sequence)
         this.sequenceEdit.controller.setPatterns(module.patterns)
 
+        if (module.sequence != this.viewSequence) {
+            invoke(this.callbacks.onSelectPos)
+        }
         if (module.sequence != this.viewSequence || module.patterns != this.viewPatterns) {
             this.viewSequence = module.sequence
             this.viewPatterns = module.patterns
             this.refreshPattern()
-        }
-        if (module.sequence != this.viewSequence) {
-            invoke(this.callbacks.onSelectPos)
         }
     }
 
