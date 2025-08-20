@@ -57,43 +57,45 @@ const template = $dom.html`
 
     <wave-edit></wave-edit>
 
-    <div class="hflex">
-        <button id="selectAll" title="Select All (${$shortcut.ctrl('A')})">
-            ${$icons.select_all}
-        </button>
-        <button id="selectNone" class="hide" title="Select None (Esc)">
-            ${$icons.select_off}
-        </button>
-        <button id="trim" title="Trim (${$shortcut.ctrl('K')})">
-            ${$icons.crop}
-        </button>
-        <button id="cut" title="Cut (${$shortcut.ctrl('X')})">
-            ${$icons.content_cut}
-        </button>
-        <button id="copy" title="Copy (${$shortcut.ctrl('C')})">
-            ${$icons.content_copy}
-        </button>
-        <button id="paste" title="Paste (${$shortcut.ctrl('V')})">
-            ${$icons.content_paste}
-        </button>
-        <button id="effect" title="(${$shortcut.ctrl('E')})">
-            ${$icons.dots_vertical}
-            <span>Effect</span>
-        </button>
-    </div>
-    <hr>
-    <div class="hflex">
-        <label class="label-button" title="(${$shortcut.ctrl('L')})">
-            <input id="loopToggle" type="checkbox">
-            <span>Loop</span>
-        </label>
-        <button id="selectLoop" title="Select Loop (${$shortcut.ctrl('Shift+L')})">
-            ${$icons.select}
-        </button>
-        <span>&nbsp;</span>
-        <input id="loopStart" type="number" required="" class="med-input" min="0" step="2" autocomplete="off" accesskey="l">
-        <span>&nbsp;to&nbsp;</span>
-        <input id="loopEnd" type="number" required="" class="med-input" min="0" step="2" autocomplete="off">
+    <div class="hflex flex-wrap">
+        <div class="hflex">
+            <button id="selectAll" title="Select All (${$shortcut.ctrl('A')})">
+                ${$icons.select_all}
+            </button>
+            <button id="selectNone" class="hide" title="Select None (Esc)">
+                ${$icons.select_off}
+            </button>
+            <button id="trim" title="Trim (${$shortcut.ctrl('K')})">
+                ${$icons.crop}
+            </button>
+            <button id="cut" title="Cut (${$shortcut.ctrl('X')})">
+                ${$icons.content_cut}
+            </button>
+            <button id="copy" title="Copy (${$shortcut.ctrl('C')})">
+                ${$icons.content_copy}
+            </button>
+            <button id="paste" title="Paste (${$shortcut.ctrl('V')})">
+                ${$icons.content_paste}
+            </button>
+            <button id="effect" title="(${$shortcut.ctrl('E')})">
+                ${$icons.dots_vertical}
+                <span>Effect</span>
+            </button>
+            <span>&nbsp;</span>
+        </div>
+        <div class="hflex">
+            <label class="label-button" title="(${$shortcut.ctrl('L')})">
+                <input id="loopToggle" type="checkbox">
+                <span>Loop</span>
+            </label>
+            <button id="selectLoop" title="Select Loop (${$shortcut.ctrl('Shift+L')})">
+                ${$icons.select}
+            </button>
+            <span>&nbsp;</span>
+            <input id="loopStart" type="number" required="" class="med-input" min="0" step="2" autocomplete="off" accesskey="l">
+            <span>&nbsp;to&nbsp;</span>
+            <input id="loopEnd" type="number" required="" class="med-input" min="0" step="2" autocomplete="off">
+        </div>
     </div>
     <div class="flex-grow"></div>
     <div class="hflex">
