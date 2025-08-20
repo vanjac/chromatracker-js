@@ -161,7 +161,10 @@ export class PatternEdit {
 
         this.sequenceEdit.controller.callbacks = {
             changeModule: (...args) => invoke(this.callbacks.changeModule, ...args),
-            onSelect: this.refreshPattern.bind(this)
+            onSelect: () => {
+                this.refreshPattern()
+                invoke(this.callbacks.onSelectPos)
+            },
         }
         this.patternTable.controller.callbacks = {
             jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
@@ -243,12 +246,14 @@ export class PatternEdit {
             this.viewPatterns = module.patterns
             this.refreshPattern()
         }
+        if (module.sequence != this.viewSequence) {
+            invoke(this.callbacks.onSelectPos)
+        }
     }
 
     /** @private */
     refreshPattern() {
         this.patternTable.controller.setPattern(this.selPattern())
-        invoke(this.callbacks.onSelectPos)
     }
 
     selChannel() {

@@ -210,6 +210,11 @@ export class ModuleEdit {
         this.moduleProperties.controller.callbacks = {
             changeModule: this.changeModule.bind(this),
         }
+        this.patternMatrix.controller.callbacks = {
+            onSelectPos: () => {
+                this.patternEdit.controller.setSelPos(this.patternMatrix.controller.getSelPos())
+            },
+        }
         this.patternEdit.controller.callbacks = {
             changeModule: this.changeModule.bind(this),
             jamPlay: this.jamPlay.bind(this),
@@ -637,6 +642,7 @@ export class ModuleEdit {
                     this.patternEdit.controller.selectRow(curState.row)
                     if (this.patternEdit.controller.selPos() != curState.pos) {
                         this.patternEdit.controller.setSelPos(curState.pos, true)
+                        this.patternMatrix.controller.setSelPos(curState.pos)
                     }
                 }
                 this.patternEdit.controller.setPlaybackPos(curState.pos, curState.row)

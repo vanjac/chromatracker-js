@@ -1,5 +1,5 @@
 import * as $dom from './DOMUtil.js'
-import {freeze} from '../Util.js'
+import {callbackDebugObject, freeze, invoke} from '../Util.js'
 
 const template = $dom.html`
 <div class="hscrollable vscrollable flex-grow align-start">
@@ -19,6 +19,12 @@ export class PatternMatrix {
     constructor(view) {
         /** @private */
         this.view = view
+        /**
+         * @type {{
+         *      onSelectPos?: () => void
+         * }}
+         */
+        this.callbacks = {}
         /** @private @type {readonly number[]} */
         this.viewSequence = null
         /** @private */
@@ -76,9 +82,17 @@ export class PatternMatrix {
             for (let c = 0; c < this.viewNumChannels; c++) {
                 row.appendChild($dom.createElem('td'))
             }
+            row.addEventListener('click', () => {
+                this.setSelPos(pos)
+                invoke(this.callbacks.onSelectPos)
+            })
             this.tbody.appendChild(row)
         }
         this.setSelPos(this.selPos)
+    }
+
+    getSelPos() {
+        return this.selPos
     }
 
     /**
@@ -96,6 +110,7 @@ let testElem
 if (import.meta.main) {
     testElem = new PatternMatrixElement()
     $dom.displayMain(testElem)
+    testElem.controller.callbacks = callbackDebugObject()
     testElem.controller.setNumChannels(4)
     testElem.controller.setSequence(freeze([5, 4, 3, 2, 1]))
 }
