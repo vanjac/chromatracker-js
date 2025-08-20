@@ -86,6 +86,10 @@
     justify-content: start;
 }
 
+.align-start {
+    align-items: start;
+}
+
 .overflow-content {
     overflow: hidden;
     text-overflow: ellipsis;

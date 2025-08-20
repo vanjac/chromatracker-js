@@ -4,7 +4,7 @@ import * as $shortcut from './Shortcut.js'
 import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
-import {invoke, minMax, callbackDebugObject, freeze, clamp} from '../Util.js'
+import {invoke, minMax, callbackDebugObject, clamp} from '../Util.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const scrollMargin = 32 // pixels
@@ -88,8 +88,8 @@ export class PatternTable {
 
         /** @private @type {HTMLElement} */
         this.patternScroll = fragment.querySelector('#patternScroll')
-        /** @private */
-        this.theadRow = fragment.querySelector('tr')
+        /** @private @type {HTMLTableRowElement} */
+        this.theadRow = fragment.querySelector('thead tr')
         /** @private */
         this.tbody = fragment.querySelector('tbody')
         /** @private @type {HTMLElement} */
@@ -215,7 +215,7 @@ export class PatternTable {
             input.addEventListener('change', () => this.updateMuteState(c))
             newMuteInputs.push(input)
             let label = th.appendChild($dom.createElem('label', {htmlFor: input.id}))
-            label.textContent = 'Ch ' + (c + 1).toString()
+            label.textContent = `Ch ${c + 1}`
         }
         this.theadRow.appendChild(rowFrag)
         this.muteInputs = newMuteInputs

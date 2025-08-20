@@ -9,6 +9,7 @@ import {Cell, Sample, Module, CellPart} from '../Model.js'
 import './CellEntry.js'
 import './ModuleProperties.js'
 import './PatternEdit.js'
+import './PatternMatrix.js'
 import './SamplesList.js'
 
 const playbackQueueTime = 0.5
@@ -92,7 +93,8 @@ const template = $dom.html`
     <div id="appTabBody" class="flex-grow">
         <div id="arrange" class="flex-grow">
             <module-properties></module-properties>
-            <div class="placeholder flex-grow">PLACEHOLDER</div>
+            <hr>
+            <pattern-matrix></pattern-matrix>
         </div>
         <div id="sequence" class="flex-grow shrink-clip-y hide">
             <pattern-edit></pattern-edit>
@@ -161,6 +163,8 @@ export class ModuleEdit {
 
         /** @private */
         this.moduleProperties = fragment.querySelector('module-properties')
+        /** @private */
+        this.patternMatrix = fragment.querySelector('pattern-matrix')
         /** @private */
         this.patternEdit = fragment.querySelector('pattern-edit')
         /** @private */
@@ -644,6 +648,8 @@ export class ModuleEdit {
     refreshModule() {
         console.debug('=== begin refresh ===')
         this.moduleProperties.controller.setModule(this.module.value)
+        this.patternMatrix.controller.setNumChannels(this.module.value.numChannels)
+        this.patternMatrix.controller.setSequence(this.module.value.sequence)
         this.patternEdit.controller.setModule(this.module.value)
         this.samplesList.controller.setSamples(this.module.value.samples)
         this.cellEntry.controller.setSamples(this.module.value.samples)

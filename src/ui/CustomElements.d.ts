@@ -1,6 +1,7 @@
 import {CellEntryElement} from './CellEntry.js'
 import {ModulePropertiesElement} from './ModuleProperties.js'
 import {PatternEditElement} from './PatternEdit.js'
+import {PatternMatrixElement} from './PatternMatrix.js'
 import {PatternTableElement} from './PatternTable.js'
 import {PianoKeyboardElement} from './PianoKeyboard.js'
 import {SamplesListElement} from './SamplesList.js'
@@ -13,6 +14,7 @@ declare global {
         'cell-entry': InstanceType<typeof CellEntryElement>
         'module-properties': InstanceType<typeof ModulePropertiesElement>
         'pattern-edit': InstanceType<typeof PatternEditElement>
+        'pattern-matrix': InstanceType<typeof PatternMatrixElement>
         'pattern-table': InstanceType<typeof PatternTableElement>
         'piano-keyboard': InstanceType<typeof PianoKeyboardElement>
         'samples-list': InstanceType<typeof SamplesListElement>

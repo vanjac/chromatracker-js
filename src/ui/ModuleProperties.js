@@ -14,6 +14,9 @@ const template = $dom.html`
         <input id="title" maxlength="20" autocomplete="off" accesskey="t">
     </div>
 
+    <label for="fileSize">File size:</label>
+    <output id="fileSize"></output>
+
     <label for="channelCount">Channels:</label>
     <div class="hflex">
         <div class="tap-height"></div>
@@ -27,23 +30,14 @@ const template = $dom.html`
         </button>
     </div>
 
-    <label for="sampleCount">Samples:</label>
-    <output id="sampleCount"></output>
-
     <label for="patternCount">Patterns:</label>
     <output id="patternCount"></output>
 
-    <label for="sequenceCount">Seq. Length:</label>
-    <output id="sequenceCount"></output>
-
-    <label for="restart">Seq. Restart:</label>
+    <label for="restart">Restart pos:</label>
     <div class="hflex">
         <div class="tap-height"></div>
         <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off" accesskey="r">
     </div>
-
-    <label for="fileSize">File size:</label>
-    <output id="fileSize"></output>
 </div>
 `
 
@@ -98,11 +92,7 @@ export class ModuleProperties {
             })
 
         /** @private @type {HTMLOutputElement} */
-        this.sampleCountOutput = fragment.querySelector('#sampleCount')
-        /** @private @type {HTMLOutputElement} */
         this.patternCountOutput = fragment.querySelector('#patternCount')
-        /** @private @type {HTMLOutputElement} */
-        this.sequenceCountOutput = fragment.querySelector('#sequenceCount')
         /** @private @type {HTMLOutputElement} */
         this.fileSizeOutput = fragment.querySelector('#fileSize')
         /** @private @type {HTMLButtonElement} */
@@ -151,9 +141,6 @@ export class ModuleProperties {
         }
         if (module.samples != this.viewModule?.samples) {
             console.debug('update sample count')
-            let sampleCount = module.samples.reduce(
-                (count, item) => (item ? (count + 1) : count), 0)
-            this.sampleCountOutput.value = sampleCount.toString()
             this.viewSamplesSize = $mod.calcSamplesSize(module.samples)
         }
         if (module.patterns != this.viewModule?.patterns) {
@@ -162,7 +149,6 @@ export class ModuleProperties {
         }
         if (module.sequence != this.viewModule?.sequence) {
             console.debug('update sequence count')
-            this.sequenceCountOutput.value = module.sequence.length.toString()
             this.restartPosInput.input.max = (module.sequence.length - 1).toString()
         }
         if (module.sequence != this.viewModule?.sequence

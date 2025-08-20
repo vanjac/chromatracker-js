@@ -101,7 +101,6 @@ pattern-table thead th {
     border-right: none;
 }
 pattern-table table {
-    border-collapse: collapse;
     table-layout: fixed;
     width: 0;
 }
@@ -228,6 +227,19 @@ pattern-table .sel-cell { /* extra specificity */
 .pattern-handle:nth-child(4) {
     border-top-left-radius: 0;
     cursor: nwse-resize;
+}
+
+/* PatternMatrix */
+
+pattern-matrix table {
+    contain: none;
+}
+
+pattern-matrix th,
+pattern-matrix td {
+    border: 1px solid currentColor;
+    white-space: nowrap;
+    padding: 0 0.5em;
 }
 
 /* CellEntry */
