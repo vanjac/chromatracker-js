@@ -25,6 +25,24 @@ const template = $dom.html`
 </div>
 `
 
+/**
+ * @param {HTMLOptGroupElement} group
+   @param {number} numPatterns
+ */
+export function makePatternMenu(group, numPatterns) {
+    group.textContent = ''
+    for (let i = 0; i < numPatterns; i++) {
+        group.appendChild($dom.createElem('option', {textContent: i.toString()}))
+    }
+    if (numPatterns < mod.maxPatterns) {
+        group.appendChild($dom.createElem('hr'))
+        let textContent = `${numPatterns} (blank)`
+        group.appendChild($dom.createElem('option', {textContent}))
+        textContent = `${numPatterns} (copy)`
+        group.appendChild($dom.createElem('option', {textContent, value: 'copy'}))
+    }
+}
+
 export class SequenceEdit {
     /**
      * @param {HTMLElement} view
@@ -171,17 +189,7 @@ export class SequenceEdit {
         console.debug('update num patterns')
         this.viewNumPatterns = patterns.length
 
-        this.group.textContent = ''
-        for (let i = 0; i < patterns.length; i++) {
-            this.group.appendChild($dom.createElem('option', {textContent: i.toString()}))
-        }
-        if (patterns.length < mod.maxPatterns) {
-            this.group.appendChild($dom.createElem('hr'))
-            let textContent = `${patterns.length} (blank)`
-            this.group.appendChild($dom.createElem('option', {textContent}))
-            textContent = `${patterns.length} (copy)`
-            this.group.appendChild($dom.createElem('option', {textContent, value: 'copy'}))
-        }
+        makePatternMenu(this.group, patterns.length)
         this.select.selectedIndex = this.viewSequence[this.selPos]
     }
 

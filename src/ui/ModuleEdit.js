@@ -211,6 +211,7 @@ export class ModuleEdit {
             changeModule: this.changeModule.bind(this),
         }
         this.patternMatrix.controller.callbacks = {
+            changeModule: this.changeModule.bind(this),
             onSelectPos: () => {
                 this.patternEdit.controller.setSelPos(this.patternMatrix.controller.getSelPos())
             },
@@ -657,8 +658,7 @@ export class ModuleEdit {
     refreshModule() {
         console.debug('=== begin refresh ===')
         this.moduleProperties.controller.setModule(this.module.value)
-        this.patternMatrix.controller.setNumChannels(this.module.value.numChannels)
-        this.patternMatrix.controller.setSequence(this.module.value.sequence)
+        this.patternMatrix.controller.setModule(this.module.value)
         this.patternEdit.controller.setModule(this.module.value)
         this.samplesList.controller.setSamples(this.module.value.samples)
         this.cellEntry.controller.setSamples(this.module.value.samples)

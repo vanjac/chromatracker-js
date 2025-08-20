@@ -235,6 +235,8 @@ pattern-matrix th,
 pattern-matrix td {
     border: 1px solid var(--color-fg);
     white-space: nowrap;
+}
+pattern-matrix thead th {
     padding: 0 0.5em;
 }
 
@@ -242,6 +244,27 @@ pattern-matrix td {
 .select-row th {
     background: var(--color-fg-hl);
     color: var(--color-bg);
+}
+
+.select-row .pattern-num {
+    display: none !important;
+}
+
+pattern-matrix select {
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    background: none;
+    color: inherit;
+    vertical-align: top;
+    width: 100%;
+    text-align: center;
+    text-align-last: center;
 }
 
 /* CellEntry */
