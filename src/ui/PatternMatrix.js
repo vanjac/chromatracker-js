@@ -11,17 +11,24 @@ import {mod, Module, Pattern, PatternChannel} from '../Model.js'
 const thumbWidth = 8, thumbHeight = mod.numRows * 2
 
 const template = $dom.html`
-<div id="scroll" class="hscrollable vscrollable flex-grow align-start">
-    <table>
-        <thead>
-            <tr></tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <select id="patternSelect" class="seq-select show-checked custom-select">
-        <optgroup id="patternGroup" label="Pattern:"></optgroup>
-    </select>
-    <div id="playbackLine" class="hide"></div>
+<div class="flex-grow">
+    <div class="hflex">
+        <div class="tap-height"></div>
+        <label for="restart">Restart:</label>
+        <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off" accesskey="r">
+    </div>
+    <div id="scroll" class="hscrollable vscrollable flex-grow align-start">
+        <table>
+            <thead>
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <select id="patternSelect" class="seq-select show-checked custom-select">
+            <optgroup id="patternGroup" label="Pattern:"></optgroup>
+        </select>
+        <div id="playbackLine" class="hide"></div>
+    </div>
 </div>
 `
 
@@ -72,6 +79,13 @@ export class PatternMatrix {
         /** @private @type {HTMLElement} */
         this.playbackLine = fragment.querySelector('#playbackLine')
 
+        /** @private */
+        this.restartPosInput = new $dom.ValidatedNumberInput(fragment.querySelector('#restart'),
+            (restartPos, commit) => {
+                invoke(this.callbacks.changeModule,
+                    module => freeze({...module, restartPos}), commit)
+            })
+
         this.select.addEventListener('click', e => e.stopPropagation())
         this.select.addEventListener('input', () => {
             if (this.select.value == 'copy') {
@@ -94,6 +108,9 @@ export class PatternMatrix {
      * @param {Readonly<Module>} module
      */
     setModule(module) {
+        if (module.restartPos != this.restartPosInput.getValue()) {
+            this.restartPosInput.setValue(module.restartPos)
+        }
         if (module.numChannels != this.viewNumChannels) {
             this.viewNumChannels = module.numChannels
             this.setNumChannels(module.numChannels)
@@ -146,6 +163,7 @@ export class PatternMatrix {
      */
     setSequence(sequence) {
         console.debug('update sequence')
+        this.restartPosInput.input.max = (sequence.length - 1).toString()
 
         this.tbody.textContent = ''
         this.cellImgs = []
@@ -304,4 +322,5 @@ if (import.meta.main) {
         },
     })
     testElem.controller.setModule(module)
+    testElem.controller.setSelPos(0)
 }

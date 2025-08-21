@@ -29,12 +29,6 @@ const template = $dom.html`
             ${$icons.plus}
         </button>
     </div>
-
-    <label for="restart">Restart pos:</label>
-    <div class="hflex">
-        <div class="tap-height"></div>
-        <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off" accesskey="r">
-    </div>
 </div>
 `
 
@@ -74,12 +68,6 @@ export class ModuleProperties {
             invoke(this.callbacks.changeModule,
                 module => freeze({...module, name: this.titleInput.value}), commit)
         })
-        /** @private */
-        this.restartPosInput = new $dom.ValidatedNumberInput(fragment.querySelector('#restart'),
-            (restartPos, commit) => {
-                invoke(this.callbacks.changeModule,
-                    module => freeze({...module, restartPos}), commit)
-            })
         /** @private */
         this.channelCountInput = new $dom.ValidatedNumberInput(
             fragment.querySelector('#channelCount'), (channelCount, commit) => {
@@ -124,10 +112,6 @@ export class ModuleProperties {
             console.debug('update title')
             this.titleInput.value = module.name
         }
-        if (!this.viewModule || module.restartPos != this.restartPosInput.getValue()) {
-            console.debug('update sequence count')
-            this.restartPosInput.setValue(module.restartPos)
-        }
         if (module.numChannels != this.viewModule?.numChannels) {
             console.debug('update channel count')
             this.channelCountInput.setValue(module.numChannels)
@@ -137,10 +121,6 @@ export class ModuleProperties {
         if (module.samples != this.viewModule?.samples) {
             console.debug('update sample count')
             this.viewSamplesSize = $mod.calcSamplesSize(module.samples)
-        }
-        if (module.sequence != this.viewModule?.sequence) {
-            console.debug('update sequence count')
-            this.restartPosInput.input.max = (module.sequence.length - 1).toString()
         }
         if (module.sequence != this.viewModule?.sequence
                 || module.numChannels != this.viewModule?.numChannels) {

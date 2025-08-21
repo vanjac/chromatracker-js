@@ -93,7 +93,6 @@ const template = $dom.html`
     <div id="appTabBody" class="flex-grow">
         <div id="arrange" class="flex-grow">
             <module-properties></module-properties>
-            <hr>
             <pattern-matrix></pattern-matrix>
         </div>
         <div id="sequence" class="flex-grow shrink-clip-y hide">
