@@ -23,6 +23,8 @@ const minPeriod = 15
 function playback() {
     return {
         ctx: type(BaseAudioContext, null),
+        mixer: type(GainNode, null),
+        analyser: type(AnalyserNode, null),
         /** @type {Readonly<Module>} */
         mod: null,
         /** @type {SamplePlayback[]} */
@@ -126,6 +128,10 @@ function oscillatorPlayback() {
 export function init(context, module) {
     let play = playback()
     play.ctx = context
+    play.mixer = context.createGain()
+    play.mixer.connect(context.destination)
+    play.analyser = context.createAnalyser()
+    play.mixer.connect(play.analyser)
     setModule(play, module)
     play.time = context.currentTime
     return play
@@ -195,7 +201,7 @@ function initChannelNodes(playback, channel) {
     let pan = calcPanning(channel.panning)
     channel.panner = playback.ctx.createStereoPanner()
     channel.panner.pan.value = pan
-    channel.panner.connect(playback.ctx.destination)
+    channel.panner.connect(playback.mixer)
     channel.gain = playback.ctx.createGain()
     channel.gain.connect(channel.panner)
     channel.gain.gain.value = 0
@@ -243,6 +249,17 @@ export function setChannelMute(playback, c, mute) {
         channel.gain.connect(channel.panner)
     }
     channel.userMute = mute
+}
+
+/**
+ * @param {Playback} playback
+ */
+export function getPeakAmp(playback) {
+    // https://stackoverflow.com/a/44360729
+    let samples = new Float32Array(playback.analyser.fftSize)
+    playback.analyser.getFloatTimeDomainData(samples)
+    let peak = Math.max(-Math.min(...samples), Math.max(...samples))
+    return peak
 }
 
 /**

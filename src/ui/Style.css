@@ -53,6 +53,13 @@ input:disabled {
     width: 6em;
 }
 
+meter {
+    width: 100%;
+}
+meter::-webkit-meter-optimum-value {
+    background: var(--color-fg-hl);
+}
+
 textarea {
     white-space: pre;
 }

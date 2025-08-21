@@ -91,6 +91,7 @@ const template = $dom.html`
     </div>
     <div id="appTabBody" class="flex-grow">
         <div id="arrange" class="flex-grow">
+            <meter id="peak" min="0" max="1.5" optimum="0" low="1" high="1.4" value="0"></meter>
             <pattern-matrix></pattern-matrix>
         </div>
         <div id="sequence" class="flex-grow shrink-clip-y hide">
@@ -157,6 +158,9 @@ export class ModuleEdit {
         this.followInput = fragment.querySelector('#follow')
         /** @private @type {HTMLButtonElement} */
         this.undoButton = fragment.querySelector('#undo')
+
+        /** @private @type {HTMLMeterElement} */
+        this.peakMeter = fragment.querySelector('#peak')
 
         /** @private */
         this.patternMatrix = fragment.querySelector('pattern-matrix')
@@ -599,6 +603,7 @@ export class ModuleEdit {
             this.frameUpdate() // clear frame
             window.cancelAnimationFrame(this.animHandle)
             this.animHandle = 0
+            this.peakMeter.value = this.peakMeter.min
         }
     }
 
@@ -615,6 +620,8 @@ export class ModuleEdit {
             // TODO: weird hack for Chrome?
             curTime -= this.context.outputLatency / 2
         }
+        let db = $play.getPeakAmp(this.playback)
+        this.peakMeter.value = Math.max(this.peakMeter.min, db)
         if (!this.queuedStates.length) {
             this.viewState = null
             this.patternEdit.controller.setPlaybackPos(-1, -1)
