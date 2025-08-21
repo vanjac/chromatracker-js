@@ -621,8 +621,12 @@ export class ModuleEdit {
             curTime -= this.context.outputLatency / 2
         }
         if (this.selectedTab() == 'arrange') {
-            let db = $play.getPeakAmp(this.playback)
-            this.peakMeter.value = Math.max(this.peakMeter.min, db)
+            let peak = $play.getPeakAmp(this.playback)
+            if (peak > this.peakMeter.value) {
+                this.peakMeter.value = peak
+            } else {
+                this.peakMeter.value = (this.peakMeter.value + peak) / 2
+            }
         }
         if (!this.queuedStates.length) {
             this.viewState = null
