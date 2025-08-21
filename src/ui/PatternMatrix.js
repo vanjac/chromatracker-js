@@ -9,11 +9,13 @@ import {callbackDebugObject, freeze, invoke} from '../Util.js'
 import {makePatternMenu} from './SequenceEdit.js'
 import {mod, Module, Pattern, PatternChannel} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
+import './ModuleProperties.js'
 
 const thumbWidth = 8, thumbHeight = mod.numRows * 2
 
 const template = $dom.html`
 <div class="flex-grow">
+    <module-properties></module-properties>
     <div class="hflex">
         <label>Seq:</label>
         <button id="seqDel" title="Delete (${$shortcut.ctrl('Del')})">
@@ -74,6 +76,9 @@ export class PatternMatrix {
     connectedCallback() {
         let fragment = template.cloneNode(true)
 
+        /** @private */
+        this.moduleProperties = fragment.querySelector('module-properties')
+
         /** @private @type {HTMLElement} */
         this.scroll = fragment.querySelector('#scroll')
         /** @private @type {HTMLTableRowElement} */
@@ -111,6 +116,10 @@ export class PatternMatrix {
         })
 
         this.view.appendChild(fragment)
+
+        this.moduleProperties.controller.callbacks = {
+            changeModule: (...args) => invoke(this.callbacks.changeModule, ...args)
+        }
     }
 
     disconnectedCallback() {
@@ -120,9 +129,20 @@ export class PatternMatrix {
     }
 
     /**
+     * @param {KeyboardEvent} event
+     */
+    keyDown(event) {
+        if (this.moduleProperties.controller.keyDown(event)) {
+            return true
+        }
+        return false
+    }
+
+    /**
      * @param {Readonly<Module>} module
      */
     setModule(module) {
+        this.moduleProperties.controller.setModule(module)
         if (module.restartPos != this.restartPosInput.getValue()) {
             this.restartPosInput.setValue(module.restartPos)
         }

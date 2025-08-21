@@ -7,7 +7,6 @@ import {Undoable} from './Undoable.js'
 import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, Sample, Module, CellPart} from '../Model.js'
 import './CellEntry.js'
-import './ModuleProperties.js'
 import './PatternEdit.js'
 import './PatternMatrix.js'
 import './SamplesList.js'
@@ -92,7 +91,6 @@ const template = $dom.html`
     </div>
     <div id="appTabBody" class="flex-grow">
         <div id="arrange" class="flex-grow">
-            <module-properties></module-properties>
             <pattern-matrix></pattern-matrix>
         </div>
         <div id="sequence" class="flex-grow shrink-clip-y hide">
@@ -161,8 +159,6 @@ export class ModuleEdit {
         this.undoButton = fragment.querySelector('#undo')
 
         /** @private */
-        this.moduleProperties = fragment.querySelector('module-properties')
-        /** @private */
         this.patternMatrix = fragment.querySelector('pattern-matrix')
         /** @private */
         this.patternEdit = fragment.querySelector('pattern-edit')
@@ -206,9 +202,6 @@ export class ModuleEdit {
 
         this.view.appendChild(fragment)
 
-        this.moduleProperties.controller.callbacks = {
-            changeModule: this.changeModule.bind(this),
-        }
         this.patternMatrix.controller.callbacks = {
             changeModule: this.changeModule.bind(this),
             onSelectPos: () => {
@@ -274,7 +267,7 @@ export class ModuleEdit {
         }
         let target = null
         switch (tab) {
-        case 'arrange': target = this.moduleProperties.controller; break
+        case 'arrange': target = this.patternMatrix.controller; break
         case 'sequence': target = this.patternEdit.controller; break
         case 'samples': target = this.samplesList.controller; break
         }
@@ -659,7 +652,6 @@ export class ModuleEdit {
     /** @private */
     refreshModule() {
         console.debug('=== begin refresh ===')
-        this.moduleProperties.controller.setModule(this.module.value)
         this.patternMatrix.controller.setModule(this.module.value)
         this.patternEdit.controller.setModule(this.module.value)
         this.samplesList.controller.setSamples(this.module.value.samples)
