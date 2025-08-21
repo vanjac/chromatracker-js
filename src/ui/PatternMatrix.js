@@ -199,6 +199,8 @@ export class PatternMatrix {
     setSequence(sequence) {
         console.debug('update sequence')
         this.restartPosInput.input.max = (sequence.length - 1).toString()
+        this.insButton.disabled = sequence.length >= mod.numSongPositions
+        this.delButton.disabled = sequence.length <= 1
 
         this.tbody.textContent = ''
         this.cellImgs = []
