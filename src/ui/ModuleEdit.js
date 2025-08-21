@@ -214,6 +214,7 @@ export class ModuleEdit {
             changeModule: this.changeModule.bind(this),
             onSelectPos: () => {
                 this.patternEdit.controller.setSelPos(this.patternMatrix.controller.getSelPos())
+                this.patternEdit.controller.selectRow(0)
             },
         }
         this.patternEdit.controller.callbacks = {
