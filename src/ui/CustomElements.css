@@ -267,6 +267,7 @@ pattern-matrix img {
     top: 0;
     left: 20%;
     image-rendering: pixelated;
+    opacity: 67%;
 }
 
 pattern-matrix select {

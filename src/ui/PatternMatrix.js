@@ -11,7 +11,7 @@ import {mod, Module, Pattern, PatternChannel} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 import './ModuleProperties.js'
 
-const thumbWidth = 8, thumbHeight = mod.numRows * 2
+const thumbWidth = 8, thumbHeight = mod.numRows
 
 const template = $dom.html`
 <div class="flex-grow">
@@ -295,16 +295,16 @@ export class PatternMatrix {
                         let cell = patChan[row]
                         if (cell.pitch >= 0) {
                             this.thumbnailCtx.fillStyle = colorFg
-                            this.thumbnailCtx.fillRect(0, row * 2, 3, 1)
+                            this.thumbnailCtx.fillRect(0, row, 3, 1)
                         }
                         if (cell.inst) {
                             this.thumbnailCtx.fillStyle = colorFg
-                            this.thumbnailCtx.fillRect(3, row * 2, 2, 1)
+                            this.thumbnailCtx.fillRect(3, row, 2, 1)
                         }
                         let effectColor = effectColors[$cell.effectColor(cell)]
                         if (effectColor) {
                             this.thumbnailCtx.fillStyle = effectColor
-                            this.thumbnailCtx.fillRect(5, row * 2, 3, 1)
+                            this.thumbnailCtx.fillRect(5, row, 3, 1)
                         }
                     }
                     promise = new Promise(resolve => {
