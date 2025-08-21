@@ -162,23 +162,26 @@ export function channelDelete(pattern, cStart, cEnd, r, count) {
 
 /**
  * @param {Readonly<Pattern>} pattern
+ * @param {number} row
  * @param {number} speed
  */
-export function applySpeed(pattern, speed) {
+export function applySpeed(pattern, row, speed) {
     let mutPat = [...pattern]
     let foundSpace = false
     for (let c = mutPat.length - 1; c >= 0; c--) {
-        let firstCell = mutPat[c][0]
+        let firstCell = mutPat[c][row]
         let empty = !firstCell.effect && !firstCell.param0 && !firstCell.param1
         let match = firstCell.effect == Effect.Speed && (firstCell.param0 >= 2) == (speed >= 0x20)
         if (!foundSpace && (match || empty)) {
             foundSpace = true
-            mutPat[c] = immSplice(mutPat[c], 0, 1, {
+            mutPat[c] = immSplice(mutPat[c], row, 1, {
                 ...firstCell,
                 effect: Effect.Speed, param0: speed >> 4, param1: speed & 0xf
             })
         } else if (match) {
-            mutPat[c] = immSplice(mutPat[c], 0, 1, {...firstCell, effect: 0, param0: 0, param1: 0})
+            mutPat[c] = immSplice(mutPat[c], row, 1, {
+                ...firstCell, effect: 0, param0: 0, param1: 0
+            })
         }
     }
     if (!foundSpace) {
