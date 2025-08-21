@@ -333,12 +333,14 @@ export class PatternMatrix {
      * @param {number} pos
      */
     setSelPos(pos) {
-        this.selPos = pos
-        this.tbody.querySelector('.select-row')?.classList.remove('select-row')
-        let row = this.tbody.children[pos]
-        row?.classList.add('select-row')
-        row?.querySelector('.pattern-num').after(this.select)
-        this.select.selectedIndex = this.viewSequence[this.selPos]
+        if (this.viewSequence[pos]) {
+            this.selPos = pos
+            this.tbody.querySelector('.select-row')?.classList.remove('select-row')
+            let row = this.tbody.children[pos]
+            row?.classList.add('select-row')
+            row?.querySelector('.pattern-num').after(this.select)
+            this.select.selectedIndex = this.viewSequence[this.selPos]
+        }
     }
 
     /**
