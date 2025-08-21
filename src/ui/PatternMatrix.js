@@ -135,6 +135,44 @@ export class PatternMatrix {
         if (this.moduleProperties.controller.keyDown(event)) {
             return true
         }
+        if (!$dom.needsKeyboardInput(event.target)) {
+            if (event.key == 'ArrowDown' && $shortcut.commandKey(event)) {
+                this.setSelPos(this.selPos + 1)
+                invoke(this.callbacks.onSelectPos)
+                return true
+            } else if (event.key == 'ArrowUp' && $shortcut.commandKey(event)) {
+                this.setSelPos(this.selPos - 1)
+                invoke(this.callbacks.onSelectPos)
+                return true
+            } else if (event.key == 'Home' && $shortcut.commandKey(event)) {
+                this.setSelPos(0)
+                invoke(this.callbacks.onSelectPos)
+                return true
+            } else if (event.key == 'End' && $shortcut.commandKey(event)) {
+                this.setSelPos(this.viewSequence.length - 1)
+                invoke(this.callbacks.onSelectPos)
+                return true
+            } else if (event.key == 'Insert' && $shortcut.commandKey(event)) {
+                this.seqIns()
+                return true
+            } else if (event.key == 'Delete' && $shortcut.commandKey(event)) {
+                this.seqDel()
+                return true
+            } else if (event.key == 'ArrowRight' && $shortcut.commandKey(event)) {
+                this.seqSet(this.viewSequence[this.selPos] + 1)
+                return true
+            } else if (event.key == 'ArrowLeft' && $shortcut.commandKey(event)) {
+                this.seqSet(this.viewSequence[this.selPos] - 1)
+                return true
+            }
+        }
+        if (event.key == 'p' && $shortcut.commandKey(event)) {
+            this.seqSet(this.viewPatterns.length)
+            return true
+        } else if (event.key == 'd' && $shortcut.commandKey(event)) {
+            this.seqClone()
+            return true
+        }
         return false
     }
 
