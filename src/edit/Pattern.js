@@ -1,5 +1,5 @@
-import {changeItem} from './EditUtil.js'
-import {Cell, CellPart, mod, Module, Pattern, PatternChannel} from '../Model.js'
+import {changeItem, immSplice} from './EditUtil.js'
+import {Cell, CellPart, Effect, mod, Module, Pattern, PatternChannel} from '../Model.js'
 import {freeze} from '../Util.js'
 
 /** @type {Readonly<PatternChannel>} */
@@ -156,6 +156,33 @@ export function channelDelete(pattern, cStart, cEnd, r, count) {
         mutChan.copyWithin(r, r + count, mutChan.length)
         mutChan.fill(Cell.empty, mutChan.length - count, mutChan.length)
         mutPat[c] = freeze(mutChan)
+    }
+    return freeze(mutPat)
+}
+
+/**
+ * @param {Readonly<Pattern>} pattern
+ * @param {number} speed
+ */
+export function applySpeed(pattern, speed) {
+    let mutPat = [...pattern]
+    let foundSpace = false
+    for (let c = mutPat.length - 1; c >= 0; c--) {
+        let firstCell = mutPat[c][0]
+        let empty = !firstCell.effect && !firstCell.param0 && !firstCell.param1
+        let match = firstCell.effect == Effect.Speed && (firstCell.param0 >= 2) == (speed >= 0x20)
+        if (!foundSpace && (match || empty)) {
+            foundSpace = true
+            mutPat[c] = immSplice(mutPat[c], 0, 1, {
+                ...firstCell,
+                effect: Effect.Speed, param0: speed >> 4, param1: speed & 0xf
+            })
+        } else if (match) {
+            mutPat[c] = immSplice(mutPat[c], 0, 1, {...firstCell, effect: 0, param0: 0, param1: 0})
+        }
+    }
+    if (!foundSpace) {
+        throw Error()
     }
     return freeze(mutPat)
 }

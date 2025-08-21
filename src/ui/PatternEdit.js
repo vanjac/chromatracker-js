@@ -551,20 +551,23 @@ export class PatternEdit {
 }
 export const PatternEditElement = $dom.defineView('pattern-edit', PatternEdit)
 
+let testSamples = freeze([null, ...Array(30).fill(Sample.empty)])
+let testModule = freeze({...$module.defaultNew, testSamples})
 /** @type {InstanceType<typeof PatternEditElement>} */
 let testElem
 if (import.meta.main) {
-    let samples = freeze([null, ...Array(30).fill(Sample.empty)])
-    let module = freeze({...$module.defaultNew, samples})
     testElem = new PatternEditElement()
     testElem.controller.callbacks = callbackDebugObject({
         changeModule(callback, commit) {
             console.log('Change module', commit)
-            module = callback(module)
-            testElem.controller.setModule(module)
+            testModule = callback(testModule)
+            testElem.controller.setModule(testModule)
         },
+        setEntryCell(cell, parts) {
+            testElem.controller.setEntryCell(cell)
+        }
     })
     $dom.displayMain(testElem)
-    testElem.controller.setModule(module)
-    testElem.controller.setEntryCell({pitch: 36, inst: 1, effect: 1, param0: 2, param1: 3})
+    testElem.controller.setModule(testModule)
+    testElem.controller.setEntryCell(freeze({pitch: 36, inst: 1, effect: 1, param0: 2, param1: 3}))
 }
