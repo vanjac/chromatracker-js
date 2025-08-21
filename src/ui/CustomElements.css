@@ -238,6 +238,14 @@ pattern-matrix td {
 }
 pattern-matrix thead th {
     padding: 0 0.5em;
+    position: sticky;
+    top: 0;
+    background-color: var(--color-bg);
+    z-index: 1;
+    border-top: none;
+}
+pattern-matrix thead {
+    contain: none;
 }
 
 .select-row td,
