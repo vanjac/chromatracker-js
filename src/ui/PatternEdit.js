@@ -16,7 +16,7 @@ const template = $dom.html`
 <div class="flex-grow">
     <div class="flex-grow pattern-edit-layout">
         <sequence-edit></sequence-edit>
-        <div class="flex-grow">
+        <div class="flex-grow min-width-0">
             <div class="hflex">
                 <div class="hflex shrink-clip-x">
                     <label for="tempo">BPM</label>
