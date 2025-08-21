@@ -620,8 +620,10 @@ export class ModuleEdit {
             // TODO: weird hack for Chrome?
             curTime -= this.context.outputLatency / 2
         }
-        let db = $play.getPeakAmp(this.playback)
-        this.peakMeter.value = Math.max(this.peakMeter.min, db)
+        if (this.selectedTab() == 'arrange') {
+            let db = $play.getPeakAmp(this.playback)
+            this.peakMeter.value = Math.max(this.peakMeter.min, db)
+        }
         if (!this.queuedStates.length) {
             this.viewState = null
             this.patternEdit.controller.setPlaybackPos(-1, -1)
