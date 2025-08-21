@@ -338,9 +338,11 @@ export class PatternMatrix {
         if (this.viewSequence.length >= mod.numSongPositions) {
             return
         }
-        this.selPos++
+        let pos = this.selPos
         invoke(this.callbacks.changeModule, module =>
-            $sequence.insert(module, this.selPos, module.sequence[this.selPos - 1]))
+            $sequence.insert(module, pos + 1, module.sequence[pos]))
+        this.setSelPos(pos + 1)
+        invoke(this.callbacks.onSelectPos)
     }
 
     /** @private */
@@ -349,10 +351,11 @@ export class PatternMatrix {
             return
         }
         let pos = this.selPos
-        if (this.selPos >= this.viewSequence.length - 1) {
-            this.selPos--
-        }
         invoke(this.callbacks.changeModule, module => $sequence.del(module, pos))
+        if (pos >= this.viewSequence.length) {
+            this.setSelPos(pos - 1)
+            invoke(this.callbacks.onSelectPos)
+        }
     }
 }
 export const PatternMatrixElement = $dom.defineView('pattern-matrix', PatternMatrix)
