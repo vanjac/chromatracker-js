@@ -2,10 +2,13 @@ import * as $dom from './DOMUtil.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
+import * as $cell from './Cell.js'
 import {callbackDebugObject, freeze, invoke} from '../Util.js'
 import {makePatternMenu} from './SequenceEdit.js'
-import {mod, Module, Pattern} from '../Model.js'
+import {mod, Module, Pattern, PatternChannel} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
+
+const thumbWidth = 12, thumbHeight = mod.numRows * 2
 
 const template = $dom.html`
 <div id="scroll" class="hscrollable vscrollable flex-grow align-start">
@@ -35,13 +38,22 @@ export class PatternMatrix {
          * }}
          */
         this.callbacks = {}
-        this.viewNumPatterns = 0
+        /** @private @type {readonly Readonly<Pattern>[]} */
+        this.viewPatterns = []
         /** @private @type {readonly number[]} */
         this.viewSequence = []
         /** @private */
         this.viewNumChannels = 0
         /** @private */
         this.selPos = -1
+
+        let canvas = $dom.createElem('canvas', {width: thumbWidth, height: thumbHeight})
+        /** @private */
+        this.thumbnailCtx = canvas.getContext('2d')
+        /** @private @type {Map<Readonly<PatternChannel>, ImageData>}*/
+        this.lastThumbCache = new Map()
+        /** @private @type {CanvasRenderingContext2D[][]} */
+        this.cellCtx = []
     }
 
     connectedCallback() {
@@ -76,9 +88,23 @@ export class PatternMatrix {
      * @param {Readonly<Module>} module
      */
     setModule(module) {
-        this.setNumChannels(module.numChannels)
-        this.setPatterns(module.patterns)
-        this.setSequence(module.sequence)
+        if (module.numChannels != this.viewNumChannels) {
+            this.viewNumChannels = module.numChannels
+            this.setNumChannels(module.numChannels)
+        }
+        if (module.patterns.length != this.viewPatterns.length) {
+            this.setNumPatterns(module.patterns.length)
+        }
+        let patternsChanged = module.patterns != this.viewPatterns
+        let sequenceChanged = module.sequence != this.viewSequence
+        this.viewPatterns = module.patterns
+        if (sequenceChanged) {
+            this.viewSequence = module.sequence
+            this.setSequence(module.sequence)
+        }
+        if (sequenceChanged || patternsChanged) {
+            this.updateThumbnails()
+        }
     }
 
     /**
@@ -86,11 +112,7 @@ export class PatternMatrix {
      * @param {number} numChannels
      */
     setNumChannels(numChannels) {
-        if (numChannels == this.viewNumChannels) {
-            return
-        }
         console.debug('update num channels')
-        this.viewNumChannels = numChannels
         this.viewSequence = []
 
         this.theadRow.textContent = ''
@@ -104,16 +126,11 @@ export class PatternMatrix {
 
     /**
      * @private
-     * @param {readonly Readonly<Pattern>[]} patterns
+     * @param {number} numPatterns
      */
-    setPatterns(patterns) {
-        if (patterns.length == this.viewNumPatterns) {
-            return
-        }
+    setNumPatterns(numPatterns) {
         console.debug('update patterns menu')
-        this.viewNumPatterns = patterns.length
-
-        makePatternMenu(this.group, patterns.length)
+        makePatternMenu(this.group, numPatterns)
         this.select.selectedIndex = this.viewSequence[this.selPos]
     }
 
@@ -122,13 +139,10 @@ export class PatternMatrix {
      * @param {readonly number[]} sequence
      */
     setSequence(sequence) {
-        if (sequence == this.viewSequence) {
-            return
-        }
         console.debug('update sequence')
-        this.viewSequence = sequence
 
         this.tbody.textContent = ''
+        this.cellCtx = []
         for (let pos = 0; pos < sequence.length; pos++) {
             let row = $dom.createElem('tr')
             row.appendChild($dom.createElem('th', {textContent: pos.toString()}))
@@ -136,8 +150,12 @@ export class PatternMatrix {
             let patSpan = $dom.createElem('span', {textContent: sequence[pos].toString()})
             patSpan.classList.add('pattern-num')
             patTh.appendChild(patSpan)
+            this.cellCtx[pos] = []
             for (let c = 0; c < this.viewNumChannels; c++) {
-                row.appendChild($dom.createElem('td'))
+                let td = row.appendChild($dom.createElem('td'))
+                let canvas = $dom.createElem('canvas', {width: thumbWidth, height: thumbHeight})
+                this.cellCtx[pos][c] = canvas.getContext('2d')
+                td.appendChild(canvas)
             }
             row.addEventListener('click', () => {
                 this.setSelPos(pos)
@@ -146,6 +164,61 @@ export class PatternMatrix {
             this.tbody.appendChild(row)
         }
         this.setSelPos(this.selPos)
+    }
+
+    /** @private */
+    updateThumbnails() {
+        /** @type {Map<Readonly<PatternChannel>, ImageData>}*/
+        let cache = new Map()
+
+        let colorFg = window.getComputedStyle(this.view).getPropertyValue('--color-fg')
+        let effectColors = {
+            pitch: window.getComputedStyle(this.view).getPropertyValue('--color-fg-pitch'),
+            volume: window.getComputedStyle(this.view).getPropertyValue('--color-fg-volume'),
+            panning: window.getComputedStyle(this.view).getPropertyValue('--color-fg-panning'),
+            timing: window.getComputedStyle(this.view).getPropertyValue('--color-fg-timing'),
+            control: window.getComputedStyle(this.view).getPropertyValue('--color-fg-control'),
+        }
+
+        for (let pos = 0; pos < this.viewSequence.length; pos++) {
+            let pattern = this.viewPatterns[this.viewSequence[pos]]
+            for (let c = 0; c < this.viewNumChannels; c++) {
+                let patChan = pattern[c]
+                let image = cache.get(patChan)
+                if (!image) {
+                    image = this.lastThumbCache.get(patChan)
+                    if (image) {
+                        cache.set(patChan, image)
+                    }
+                }
+                if (!image) {
+                    let {width, height} = this.thumbnailCtx.canvas
+                    this.thumbnailCtx.clearRect(0, 0, width, height)
+                    for (let row = 0; row < patChan.length; row++) {
+                        let cell = patChan[row]
+                        if (cell.pitch >= 0) {
+                            this.thumbnailCtx.fillStyle = colorFg
+                            this.thumbnailCtx.fillRect(1, row * 2, 2, 1)
+                        }
+                        if (cell.inst) {
+                            this.thumbnailCtx.fillStyle = colorFg
+                            this.thumbnailCtx.fillRect(5, row * 2, 2, 1)
+                        }
+                        let effectColor = effectColors[$cell.effectColor(cell)]
+                        if (effectColor) {
+                            this.thumbnailCtx.fillStyle = effectColor
+                            this.thumbnailCtx.fillRect(9, row * 2, 2, 1)
+                        }
+                    }
+                    image = this.thumbnailCtx.getImageData(0, 0, width, height)
+                    cache.set(patChan, image)
+                }
+
+                this.cellCtx[pos][c].putImageData(image, 0, 0)
+            }
+        }
+
+        this.lastThumbCache = cache
     }
 
     getSelPos() {
@@ -193,7 +266,7 @@ export class PatternMatrix {
 
     /** @private */
     seqClone() {
-        if (this.viewNumPatterns >= mod.maxPatterns) { return }
+        if (this.viewPatterns.length >= mod.maxPatterns) { return }
         invoke(this.callbacks.changeModule, module => {
             module = $pattern.clone(module, module.sequence[this.selPos])
             return $sequence.set(module, this.selPos, module.patterns.length - 1)
@@ -208,7 +281,7 @@ if (import.meta.main) {
     let module = {
         ...$module.defaultNew,
         sequence: freeze([5, 4, 3, 2, 1]),
-        patterns: freeze([[], [], [], [], [], []]),
+        patterns: freeze(Array(6).fill($pattern.create(4)))
     }
     testElem = new PatternMatrixElement()
     $dom.displayMain(testElem)
