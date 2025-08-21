@@ -333,7 +333,7 @@ export class PatternMatrix {
      * @param {number} pos
      */
     setSelPos(pos) {
-        if (this.viewSequence[pos]) {
+        if (this.viewSequence[pos] != null) {
             this.selPos = pos
             this.tbody.querySelector('.select-row')?.classList.remove('select-row')
             let row = this.tbody.children[pos]
