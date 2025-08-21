@@ -33,11 +33,8 @@ export function createNew() {
 export function addChannels(module, count) {
     let numChannels = module.numChannels + count
     if (numChannels > mod.maxChannels) { return module }
-    let patterns = module.patterns.map(pattern => {
-        let numRows = pattern[0].length
-        let newChannels = Array(count).fill(freeze(Array(numRows).fill(Cell.empty)))
-        return freeze(pattern.concat(newChannels))
-    })
+    let newChannels = Array(count).fill(freeze(Array(mod.numRows).fill(Cell.empty)))
+    let patterns = module.patterns.map(pattern => freeze(pattern.concat(newChannels)))
     return freeze({...module, numChannels, patterns})
 }
 
