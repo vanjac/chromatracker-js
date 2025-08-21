@@ -1,8 +1,10 @@
 import * as $dom from './DOMUtil.js'
+import * as $shortcut from './Shortcut.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
 import * as $cell from './Cell.js'
+import * as $icons from '../gen/Icons.js'
 import {callbackDebugObject, freeze, invoke} from '../Util.js'
 import {makePatternMenu} from './SequenceEdit.js'
 import {mod, Module, Pattern, PatternChannel} from '../Model.js'
@@ -13,7 +15,13 @@ const thumbWidth = 8, thumbHeight = mod.numRows * 2
 const template = $dom.html`
 <div class="flex-grow">
     <div class="hflex">
-        <div class="tap-height"></div>
+        <label>Seq:</label>
+        <button id="seqDel" title="Delete (${$shortcut.ctrl('Del')})">
+            ${$icons.close}
+        </button>
+        <button id="seqIns" title="Insert (${$shortcut.ctrl('Ins')})">
+            ${$icons.plus}
+        </button>
         <label for="restart">Restart:</label>
         <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off" accesskey="r">
     </div>
@@ -85,6 +93,13 @@ export class PatternMatrix {
                 invoke(this.callbacks.changeModule,
                     module => freeze({...module, restartPos}), commit)
             })
+
+        /** @private @type {HTMLButtonElement} */
+        this.insButton = fragment.querySelector('#seqIns')
+        this.insButton.addEventListener('click', () => this.seqIns())
+        /** @private @type {HTMLButtonElement} */
+        this.delButton = fragment.querySelector('#seqDel')
+        this.delButton.addEventListener('click', () => this.seqDel())
 
         this.select.addEventListener('click', e => e.stopPropagation())
         this.select.addEventListener('input', () => {
@@ -295,11 +310,29 @@ export class PatternMatrix {
 
     /** @private */
     seqClone() {
-        if (this.viewPatterns.length >= mod.maxPatterns) { return }
-        invoke(this.callbacks.changeModule, module => {
-            module = $pattern.clone(module, module.sequence[this.selPos])
-            return $sequence.set(module, this.selPos, module.patterns.length - 1)
-        })
+        invoke(this.callbacks.changeModule, module => $sequence.clonePattern(module, this.selPos))
+    }
+
+    /** @private */
+    seqIns() {
+        if (this.viewSequence.length >= mod.numSongPositions) {
+            return
+        }
+        this.selPos++
+        invoke(this.callbacks.changeModule, module =>
+            $sequence.insert(module, this.selPos, module.sequence[this.selPos - 1]))
+    }
+
+    /** @private */
+    seqDel() {
+        if (this.viewSequence.length <= 1) {
+            return
+        }
+        let pos = this.selPos
+        if (this.selPos >= this.viewSequence.length - 1) {
+            this.selPos--
+        }
+        invoke(this.callbacks.changeModule, module => $sequence.del(module, pos))
     }
 }
 export const PatternMatrixElement = $dom.defineView('pattern-matrix', PatternMatrix)

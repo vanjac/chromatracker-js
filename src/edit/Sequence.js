@@ -31,6 +31,19 @@ export function set(module, pos, pat) {
 /**
  * @param {Readonly<Module>} module
  * @param {number} pos
+ * @returns {Readonly<Module>}
+ */
+export function clonePattern(module, pos) {
+    if (module.patterns.length >= mod.maxPatterns) {
+        return module
+    }
+    module = $pattern.clone(module, module.sequence[pos])
+    return set(module, pos, module.patterns.length - 1)
+}
+
+/**
+ * @param {Readonly<Module>} module
+ * @param {number} pos
  * @param {number} pat
  * @returns {Readonly<Module>}
  */

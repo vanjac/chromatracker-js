@@ -11,7 +11,7 @@ import {mod, Pattern} from '../Model.js'
 const template = $dom.html`
 <div class="sequence-edit-layout">
     <form id="seqList" class="seq-list flex-grow" autocomplete="off">
-        <label class="seq-label" for="sequence">Seq:</label>
+        <label class="seq-label">Seq:</label>
         <select id="patternSelect" class="seq-select show-checked">
             <optgroup id="patternGroup" label="Pattern:"></optgroup>
         </select>
@@ -232,11 +232,7 @@ export class SequenceEdit {
 
     /** @private */
     seqClone() {
-        if (this.viewNumPatterns >= mod.maxPatterns) { return }
-        invoke(this.callbacks.changeModule, module => {
-            module = $pattern.clone(module, module.sequence[this.selPos])
-            return $sequence.set(module, this.selPos, module.patterns.length - 1)
-        })
+        invoke(this.callbacks.changeModule, module => $sequence.clonePattern(module, this.selPos))
     }
 
     /** @private */
