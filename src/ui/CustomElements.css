@@ -255,9 +255,10 @@ pattern-matrix td {
 }
 pattern-matrix canvas {
     position: absolute;
-    width: 100%;
+    width: 60%;
     height: 100%;
     top: 0;
+    left: 20%;
     image-rendering: pixelated;
 }
 

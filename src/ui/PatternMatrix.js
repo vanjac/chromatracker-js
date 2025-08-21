@@ -196,14 +196,18 @@ export class PatternMatrix {
                     this.thumbnailCtx.clearRect(0, 0, width, height)
                     for (let row = 0; row < patChan.length; row++) {
                         let cell = patChan[row]
-                        if (cell.pitch >= 0 || cell.inst) {
+                        if (cell.pitch >= 0) {
                             this.thumbnailCtx.fillStyle = colorFg
-                            this.thumbnailCtx.fillRect(1, row * 2, 3, 1)
+                            this.thumbnailCtx.fillRect(0, row * 2, 3, 1)
+                        }
+                        if (cell.inst) {
+                            this.thumbnailCtx.fillStyle = colorFg
+                            this.thumbnailCtx.fillRect(3, row * 2, 2, 1)
                         }
                         let effectColor = effectColors[$cell.effectColor(cell)]
                         if (effectColor) {
                             this.thumbnailCtx.fillStyle = effectColor
-                            this.thumbnailCtx.fillRect(5, row * 2, 2, 1)
+                            this.thumbnailCtx.fillRect(5, row * 2, 3, 1)
                         }
                     }
                     image = this.thumbnailCtx.getImageData(0, 0, width, height)
