@@ -267,7 +267,10 @@ pattern-matrix img {
     top: 0;
     left: 20%;
     image-rendering: pixelated;
-    opacity: 67%;
+    opacity: 80%;
+}
+pattern-matrix .dim img {
+    opacity: 40%;
 }
 
 pattern-matrix select {

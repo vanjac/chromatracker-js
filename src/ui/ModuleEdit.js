@@ -536,6 +536,7 @@ export class ModuleEdit {
      * @param {boolean} mute
      */
     setMute(c, mute) {
+        this.patternMatrix.controller.setChannelMute(c, mute)
         if (this.playback) {
             $play.setChannelMute(this.playback, c, mute)
         }

@@ -63,6 +63,8 @@ export class PatternMatrix {
         this.viewNumChannels = 0
         /** @private */
         this.selPos = -1
+        /** @private @type {boolean[]} */
+        this.muteStates = []
 
         let canvas = $dom.createElem('canvas', {width: thumbWidth, height: thumbHeight})
         /** @private */
@@ -210,13 +212,15 @@ export class PatternMatrix {
     setNumChannels(numChannels) {
         console.debug('update num channels')
         this.viewSequence = []
+        this.muteStates.length = numChannels
 
         this.theadRow.textContent = ''
         this.theadRow.appendChild($dom.createElem('th', {textContent: 'Pos'}))
         this.theadRow.appendChild($dom.createElem('th', {textContent: 'Pat'}))
         for (let c = 0; c < numChannels; c++) {
             let textContent = `Ch ${c + 1}`
-            this.theadRow.appendChild($dom.createElem('th', {textContent}))
+            let th = this.theadRow.appendChild($dom.createElem('th', {textContent}))
+            th.classList.toggle('dim', this.muteStates[c] ?? false)
         }
     }
 
@@ -252,6 +256,7 @@ export class PatternMatrix {
             this.cellImgs[pos] = []
             for (let c = 0; c < this.viewNumChannels; c++) {
                 let td = row.appendChild($dom.createElem('td'))
+                td.classList.toggle('dim', this.muteStates[c] ?? false)
                 this.cellImgs[pos][c] = td.appendChild($dom.createElem('img'))
             }
             row.addEventListener('click', () => {
@@ -359,6 +364,18 @@ export class PatternMatrix {
             this.playbackLine.classList.remove('hide')
         } else {
             this.playbackLine.classList.add('hide')
+        }
+    }
+
+    /**
+     * @param {number} c
+     * @param {boolean} mute
+     */
+    setChannelMute(c, mute) {
+        this.muteStates[c] = mute
+        this.theadRow.children[c + 2]?.classList.toggle('dim', mute)
+        for (let tr of this.tbody.children) {
+            tr.children[c + 2]?.classList.toggle('dim', mute)
         }
     }
 
