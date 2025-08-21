@@ -1,6 +1,5 @@
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
-import * as $sample from '../edit/Sample.js'
 import {freeze, callbackDebugObject, minMax, clamp, invoke} from '../Util.js'
 import {mod, Sample} from '../Model.js'
 

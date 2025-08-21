@@ -628,6 +628,7 @@ export class ModuleEdit {
             this.viewState = null
             this.patternEdit.controller.setPlaybackPos(-1, -1)
             this.patternMatrix.controller.setPlaybackPos(-1, -1)
+            this.patternEdit.controller.setChannelStates([], curTime)
             this.samplesList.controller.setChannelStates(this.playback, [], curTime)
         } else {
             let i = 0
@@ -652,6 +653,7 @@ export class ModuleEdit {
                 this.patternEdit.controller.setPlaybackPos(curState.pos, curState.row)
                 this.patternMatrix.controller.setPlaybackPos(curState.pos, curState.row)
             }
+            this.patternEdit.controller.setChannelStates(curState.channels, curTime)
             this.samplesList.controller.setChannelStates(
                 this.playback, curState.channels, curTime
             )

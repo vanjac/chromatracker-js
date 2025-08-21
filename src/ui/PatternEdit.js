@@ -1,6 +1,7 @@
 import * as $cell from './Cell.js'
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
+import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
@@ -534,6 +535,14 @@ export class PatternEdit {
     setTempoSpeed(tempo, speed) {
         this.tempoInput.setValue(tempo)
         this.speedInput.setValue(speed)
+    }
+
+    /**
+     * @param {readonly Readonly<$play.ChannelState>[]} channels
+     * @param {number} time
+     */
+    setChannelStates(channels, time) {
+        this.patternTable.controller.setChannelStates(channels, time)
     }
 
     onVisible() {

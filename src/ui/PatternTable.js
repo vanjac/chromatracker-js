@@ -1,6 +1,7 @@
 import * as $cell from './Cell.js'
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
+import * as $play from '../Playback.js'
 import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
@@ -98,6 +99,8 @@ export class PatternTable {
         this.tableSpace = fragment.querySelector('#tableSpace')
         /** @private @type {HTMLInputElement[]} */
         this.muteInputs = []
+        /** @private @type {HTMLMeterElement[]} */
+        this.channelMeters = []
         /** @private @type {HTMLElement} */
         this.selectHandleContainer = fragment.querySelector('#handles')
         /** @private */
@@ -200,6 +203,7 @@ export class PatternTable {
 
         this.theadRow.textContent = ''
         let newMuteInputs = []
+        this.channelMeters = []
         let rowFrag = new DocumentFragment()
 
         let cornerHead = $dom.createElem('th')
@@ -208,14 +212,18 @@ export class PatternTable {
         for (let c = 0; c < numChannels; c++) {
             let th = rowFrag.appendChild($dom.createElem('th'))
             th.classList.add('pattern-col-head')
-            let input = th.appendChild($dom.createElem('input', {type: 'checkbox', id: 'ch' + c}))
+            let div = th.appendChild($dom.createElem('div'))
+            let span = div.appendChild($dom.createElem('span'))
+            let input = span.appendChild($dom.createElem('input', {type: 'checkbox', id: 'ch' + c}))
             if (!this.muteInputs[c] || this.muteInputs[c].checked) {
                 input.checked = true
             }
             input.addEventListener('change', () => this.updateMuteState(c))
             newMuteInputs.push(input)
-            let label = th.appendChild($dom.createElem('label', {htmlFor: input.id}))
+            let label = span.appendChild($dom.createElem('label', {htmlFor: input.id}))
             label.textContent = `Ch ${c + 1}`
+            let meter = div.appendChild($dom.createElem('meter', {min: 0, max: 64}))
+            this.channelMeters.push(meter)
         }
         this.theadRow.appendChild(rowFrag)
         this.muteInputs = newMuteInputs
@@ -612,6 +620,23 @@ export class PatternTable {
 
         for (let row = 0; row < this.viewPattern[c].length; row++) {
             this.getTd(c, row)?.classList.toggle('dim', mute)
+        }
+    }
+
+    /**
+     * @param {readonly Readonly<$play.ChannelState>[]} channels
+     * @param {number} time
+     */
+    setChannelStates(channels, time) {
+        for (let c = 0; c < this.channelMeters.length; c++) {
+            let meter = this.channelMeters[c]
+            let state = channels[c]
+            if (state && state.volume && !state.userMute && state.sourceSample) {
+                let pos = $play.getSamplePredictedPos(state, time)
+                meter.value = pos < state.sourceSample.wave.length ? state.volume : 0
+            } else {
+                meter.value = 0
+            }
         }
     }
 
