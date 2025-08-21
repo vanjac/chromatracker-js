@@ -631,7 +631,7 @@ export class PatternTable {
         for (let c = 0; c < this.channelMeters.length; c++) {
             let meter = this.channelMeters[c]
             let state = channels[c]
-            if (state && state.volume && !state.userMute && state.sourceSample) {
+            if (state && state.volume && state.sourceSample && !this.isChannelMuted(c)) {
                 let pos = $play.getSamplePredictedPos(state, time)
                 meter.value = pos < state.sourceSample.wave.length ? state.volume : 0
             } else {
