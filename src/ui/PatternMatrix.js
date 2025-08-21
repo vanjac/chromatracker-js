@@ -8,7 +8,7 @@ import {makePatternMenu} from './SequenceEdit.js'
 import {mod, Module, Pattern, PatternChannel} from '../Model.js'
 /** @import {ModuleEditCallbacks} from './ModuleEdit.js' */
 
-const thumbWidth = 12, thumbHeight = mod.numRows * 2
+const thumbWidth = 8, thumbHeight = mod.numRows * 2
 
 const template = $dom.html`
 <div id="scroll" class="hscrollable vscrollable flex-grow align-start">
@@ -196,18 +196,14 @@ export class PatternMatrix {
                     this.thumbnailCtx.clearRect(0, 0, width, height)
                     for (let row = 0; row < patChan.length; row++) {
                         let cell = patChan[row]
-                        if (cell.pitch >= 0) {
+                        if (cell.pitch >= 0 || cell.inst) {
                             this.thumbnailCtx.fillStyle = colorFg
-                            this.thumbnailCtx.fillRect(1, row * 2, 2, 1)
-                        }
-                        if (cell.inst) {
-                            this.thumbnailCtx.fillStyle = colorFg
-                            this.thumbnailCtx.fillRect(5, row * 2, 2, 1)
+                            this.thumbnailCtx.fillRect(1, row * 2, 3, 1)
                         }
                         let effectColor = effectColors[$cell.effectColor(cell)]
                         if (effectColor) {
                             this.thumbnailCtx.fillStyle = effectColor
-                            this.thumbnailCtx.fillRect(9, row * 2, 2, 1)
+                            this.thumbnailCtx.fillRect(5, row * 2, 2, 1)
                         }
                     }
                     image = this.thumbnailCtx.getImageData(0, 0, width, height)
