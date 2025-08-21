@@ -50,10 +50,10 @@ export class PatternMatrix {
         let canvas = $dom.createElem('canvas', {width: thumbWidth, height: thumbHeight})
         /** @private */
         this.thumbnailCtx = canvas.getContext('2d')
-        /** @private @type {Map<Readonly<PatternChannel>, ImageData>}*/
+        /** @private @type {Map<Readonly<PatternChannel>, Promise<string>>}*/
         this.lastThumbCache = new Map()
-        /** @private @type {CanvasRenderingContext2D[][]} */
-        this.cellCtx = []
+        /** @private @type {HTMLImageElement[][]} */
+        this.cellImgs = []
     }
 
     connectedCallback() {
@@ -82,6 +82,12 @@ export class PatternMatrix {
         })
 
         this.view.appendChild(fragment)
+    }
+
+    disconnectedCallback() {
+        for (let promise of this.lastThumbCache.values()) {
+            promise.then(url => URL.revokeObjectURL(url))
+        }
     }
 
     /**
@@ -142,7 +148,7 @@ export class PatternMatrix {
         console.debug('update sequence')
 
         this.tbody.textContent = ''
-        this.cellCtx = []
+        this.cellImgs = []
         for (let pos = 0; pos < sequence.length; pos++) {
             let row = $dom.createElem('tr')
             row.appendChild($dom.createElem('th', {textContent: pos.toString()}))
@@ -150,12 +156,10 @@ export class PatternMatrix {
             let patSpan = $dom.createElem('span', {textContent: sequence[pos].toString()})
             patSpan.classList.add('pattern-num')
             patTh.appendChild(patSpan)
-            this.cellCtx[pos] = []
+            this.cellImgs[pos] = []
             for (let c = 0; c < this.viewNumChannels; c++) {
                 let td = row.appendChild($dom.createElem('td'))
-                let canvas = $dom.createElem('canvas', {width: thumbWidth, height: thumbHeight})
-                this.cellCtx[pos][c] = canvas.getContext('2d')
-                td.appendChild(canvas)
+                this.cellImgs[pos][c] = td.appendChild($dom.createElem('img'))
             }
             row.addEventListener('click', () => {
                 this.setSelPos(pos)
@@ -168,7 +172,7 @@ export class PatternMatrix {
 
     /** @private */
     updateThumbnails() {
-        /** @type {Map<Readonly<PatternChannel>, ImageData>}*/
+        /** @type {Map<Readonly<PatternChannel>, Promise<string>>}*/
         let cache = new Map()
 
         let colorFg = window.getComputedStyle(this.view).getPropertyValue('--color-fg')
@@ -184,14 +188,14 @@ export class PatternMatrix {
             let pattern = this.viewPatterns[this.viewSequence[pos]]
             for (let c = 0; c < this.viewNumChannels; c++) {
                 let patChan = pattern[c]
-                let image = cache.get(patChan)
-                if (!image) {
-                    image = this.lastThumbCache.get(patChan)
-                    if (image) {
-                        cache.set(patChan, image)
+                let promise = cache.get(patChan)
+                if (!promise) {
+                    promise = this.lastThumbCache.get(patChan)
+                    if (promise) {
+                        cache.set(patChan, promise)
                     }
                 }
-                if (!image) {
+                if (!promise) {
                     let {width, height} = this.thumbnailCtx.canvas
                     this.thumbnailCtx.clearRect(0, 0, width, height)
                     for (let row = 0; row < patChan.length; row++) {
@@ -210,14 +214,21 @@ export class PatternMatrix {
                             this.thumbnailCtx.fillRect(5, row * 2, 3, 1)
                         }
                     }
-                    image = this.thumbnailCtx.getImageData(0, 0, width, height)
-                    cache.set(patChan, image)
+                    promise = new Promise(resolve => {
+                        this.thumbnailCtx.canvas.toBlob(b => resolve(URL.createObjectURL(b)))
+                    })
+                    cache.set(patChan, promise)
                 }
-
-                this.cellCtx[pos][c].putImageData(image, 0, 0)
+                let cellImg = this.cellImgs[pos][c] // captured
+                promise.then(url => cellImg.src = url)
             }
         }
 
+        for (let [key, promise] of this.lastThumbCache.entries()) {
+            if (!cache.has(key)) {
+                promise.then(url => URL.revokeObjectURL(url))
+            }
+        }
         this.lastThumbCache = cache
     }
 

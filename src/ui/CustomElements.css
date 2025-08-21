@@ -253,7 +253,7 @@ pattern-matrix thead th {
 pattern-matrix td {
     position: relative;
 }
-pattern-matrix canvas {
+pattern-matrix img {
     position: absolute;
     width: 60%;
     height: 100%;
