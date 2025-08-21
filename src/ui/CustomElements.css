@@ -242,8 +242,7 @@ pattern-matrix thead th {
 
 .select-row td,
 .select-row th {
-    background: var(--color-fg-hl);
-    color: var(--color-bg);
+    background: var(--color-bg-hl);
 }
 
 .select-row .pattern-num {
