@@ -196,8 +196,13 @@ export class FileMenu {
      * @param {number} id
      */
     async readLocalFile(id) {
-        let data = await $local.readFile(this.db, id)
-        this.openModuleFile(id, data)
+        let dialog = $dialog.open(new WaitDialogElement())
+        try {
+            let data = await $local.readFile(this.db, id)
+            this.openModuleFile(id, data)
+        } finally {
+            $dialog.close(dialog)
+        }
     }
 
     /**
@@ -205,8 +210,13 @@ export class FileMenu {
      * @param {number} id
      */
     async cloneLocalFile(id) {
-        let data = await $local.readFile(this.db, id)
-        this.openModuleFile(null, data)
+        let dialog = $dialog.open(new WaitDialogElement())
+        try {
+            let data = await $local.readFile(this.db, id)
+            this.openModuleFile(null, data)
+        } finally {
+            $dialog.close(dialog)
+        }
     }
 
     /**
@@ -241,7 +251,9 @@ export class FileMenu {
         let accept = navigator.vendor.startsWith('Apple') ? '' : '.mod,audio/mod,audio/x-mod'
         $ext.pickFiles(accept).then(files => {
             if (files.length == 1) {
+                let dialog = $dialog.open(new WaitDialogElement())
                 files[0].arrayBuffer().then(buf => this.openModuleFile(null, buf))
+                    .finally(() => $dialog.close(dialog))
             }
         }).catch(console.warn)
     }
