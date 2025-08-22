@@ -17,6 +17,7 @@ for (let p = 0; p < periodTable[8].length; p++) {
 }
 
 const genericError = 'Unrecognized file format.'
+const genericErrorInitials = 'Unrecognized file format.\nInitials: '
 
 /**
  * @param {ArrayBuffer} buf
@@ -66,10 +67,12 @@ export function read(buf) {
     } else if (chanStr) {
         numChannels = parseInt(chanStr)
     }
-    if (numChannels > 99) {throw Error(genericError)}
+    if (numChannels > 99) {throw Error(genericErrorInitials + initials)}
 
     let patternSize = numChannels * mod.numRows * 4
-    if (buf.byteLength < headerSize + patternSize * numPatterns) {throw Error(genericError)}
+    if (buf.byteLength < headerSize + patternSize * numPatterns) {
+        throw Error(genericErrorInitials + initials)
+    }
     /** @type {Readonly<Pattern>[]} */
     let patterns = []
     for (let p = 0; p < numPatterns; p++) {
@@ -108,12 +111,12 @@ export function read(buf) {
         let offset = s * 30 - 10
 
         let sampleLength = view.getUint16(offset + 22) * 2
-        if (buf.byteLength < wavePos + sampleLength) {throw Error(genericError)}
+        if (buf.byteLength < wavePos + sampleLength) {throw Error(genericErrorInitials + initials)}
         let name
         try {
             name = textDecode.decode($file.readStringZ(buf, offset, mod.maxSampleNameLength))
         } catch (error) {
-            if (error instanceof TypeError) {throw Error(genericError)}
+            if (error instanceof TypeError) {throw Error(genericErrorInitials + initials)}
         }
         let finetune = view.getUint8(offset + 24) & 0xf
         if (finetune >= 8) {
