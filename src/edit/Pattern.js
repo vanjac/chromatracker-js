@@ -169,19 +169,18 @@ export function applySpeed(pattern, row, speed) {
     let mutPat = [...pattern]
     let foundSpace = false
     for (let c = mutPat.length - 1; c >= 0; c--) {
-        let firstCell = mutPat[c][row]
-        let empty = !firstCell.effect && !firstCell.param0 && !firstCell.param1
-        let match = firstCell.effect == Effect.Speed && (firstCell.param0 >= 2) == (speed >= 0x20)
+        let cell = mutPat[c][row]
+        let empty = !cell.effect && !cell.param0 && !cell.param1
+        let match = cell.effect == Effect.Speed && (cell.param0 >= 2) == (speed >= 0x20)
         if (!foundSpace && (match || empty)) {
             foundSpace = true
-            mutPat[c] = immSplice(mutPat[c], row, 1, {
-                ...firstCell,
-                effect: Effect.Speed, param0: speed >> 4, param1: speed & 0xf
-            })
+            mutPat[c] = immSplice(mutPat[c], row, 1, freeze({
+                ...cell, effect: Effect.Speed, param0: speed >> 4, param1: speed & 0xf
+            }))
         } else if (match) {
-            mutPat[c] = immSplice(mutPat[c], row, 1, {
-                ...firstCell, effect: 0, param0: 0, param1: 0
-            })
+            mutPat[c] = immSplice(mutPat[c], row, 1, freeze({
+                ...cell, effect: 0, param0: 0, param1: 0
+            }))
         }
     }
     if (!foundSpace) {
@@ -202,4 +201,45 @@ export function getLogicalLength(pattern) {
         }
     }
     return pattern[0].length
+}
+
+/**
+ * @param {Readonly<Pattern>} pattern
+ */
+function getBreakRow(pattern) {
+    for (let row = 0; row < pattern[0].length; row++) {
+        for (let c = 0; c < pattern.length; c++) {
+            if (pattern[c][row].effect == Effect.PatternBreak) {
+                return Math.min(Cell.paramDecimal(pattern[c][row]), pattern[c].length - 1)
+            }
+        }
+    }
+    return 0
+}
+
+/**
+ * @param {Readonly<Pattern>} pattern
+ * @param {number} length
+ */
+export function setLogicalLength(pattern, length) {
+    let breakRow = getBreakRow(pattern)
+
+    let mutPat = pattern.map(patChan => freeze(patChan.map(cell => {
+        if (cell.effect == Effect.PatternBreak) {
+            return freeze({...cell, effect: 0, param0: 0, param1: 0})
+        }
+        return cell
+    })))
+
+    for (let c = mutPat.length - 1; c >= 0; c--) {
+        let cell = mutPat[c][length - 1]
+        if (!cell.effect && !cell.param0 && !cell.param1) {
+            mutPat[c] = immSplice(mutPat[c], length - 1, 1, freeze({
+                ...cell, effect: Effect.PatternBreak,
+                param0: Math.floor(breakRow / 10), param1: breakRow % 10
+            }))
+            return freeze(mutPat)
+        }
+    }
+    throw Error()
 }

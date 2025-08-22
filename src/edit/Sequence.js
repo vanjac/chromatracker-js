@@ -5,16 +5,6 @@ import {freeze} from '../Util.js'
 
 /**
  * @param {Readonly<Module>} module
- * @returns {Readonly<Module>}
- */
-export function zap(module) {
-    let sequence = freeze([0])
-    let patterns = freeze([$pattern.create(module.numChannels)])
-    return freeze({...module, sequence, patterns})
-}
-
-/**
- * @param {Readonly<Module>} module
  * @param {number} pos
  * @param {number} pat
  * @returns {Readonly<Module>}
