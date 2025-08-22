@@ -108,10 +108,6 @@ export function read(buf) {
         let offset = s * 30 - 10
 
         let sampleLength = view.getUint16(offset + 22) * 2
-        if (sampleLength <= 2) {
-            samples.push(null)
-            continue
-        }
         if (buf.byteLength < wavePos + sampleLength) {throw Error(genericError)}
         let name
         try {
@@ -136,7 +132,11 @@ export function read(buf) {
         let wave = new Int8Array(buf, wavePos, sampleLength).slice()
         wavePos += sampleLength
 
-        samples.push(freeze({name, wave, loopStart, loopEnd, finetune, volume}))
+        if (sampleLength <= 2 && !name) {
+            samples.push(null)
+        } else {
+            samples.push(freeze({name, wave, loopStart, loopEnd, finetune, volume}))
+        }
     }
 
     return {
