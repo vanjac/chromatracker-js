@@ -135,7 +135,7 @@ export function read(buf) {
         let wave = new Int8Array(buf, wavePos, sampleLength).slice()
         wavePos += sampleLength
 
-        if (sampleLength <= 2 && !name) {
+        if (sampleLength <= 2 && !name.trim()) {
             samples.push(null)
         } else {
             samples.push(freeze({name, wave, loopStart, loopEnd, finetune, volume}))
