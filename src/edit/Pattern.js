@@ -164,16 +164,17 @@ export function channelDelete(pattern, cStart, cEnd, r, count) {
  * @param {Readonly<Pattern>} pattern
  * @param {number} row
  * @param {number} speed
+ * @returns {[Readonly<Pattern>, number]}
  */
 export function applySpeed(pattern, row, speed) {
     let mutPat = [...pattern]
-    let foundSpace = false
+    let foundChannel = -1
     for (let c = mutPat.length - 1; c >= 0; c--) {
         let cell = mutPat[c][row]
         let empty = !cell.effect && !cell.param0 && !cell.param1
         let match = cell.effect == Effect.Speed && (cell.param0 >= 2) == (speed >= 0x20)
-        if (!foundSpace && (match || empty)) {
-            foundSpace = true
+        if (foundChannel < 0 && (match || empty)) {
+            foundChannel = c
             mutPat[c] = immSplice(mutPat[c], row, 1, freeze({
                 ...cell, effect: Effect.Speed, param0: speed >> 4, param1: speed & 0xf
             }))
@@ -183,10 +184,10 @@ export function applySpeed(pattern, row, speed) {
             }))
         }
     }
-    if (!foundSpace) {
+    if (foundChannel < 0) {
         throw Error()
     }
-    return freeze(mutPat)
+    return [freeze(mutPat), foundChannel]
 }
 
 /**
@@ -220,6 +221,7 @@ function getBreakRow(pattern) {
 /**
  * @param {Readonly<Pattern>} pattern
  * @param {number} length
+ * @returns {[Readonly<Pattern>, number]}
  */
 export function setLogicalLength(pattern, length) {
     let breakRow = getBreakRow(pattern)
@@ -238,7 +240,7 @@ export function setLogicalLength(pattern, length) {
                 ...cell, effect: Effect.PatternBreak,
                 param0: Math.floor(breakRow / 10), param1: breakRow % 10
             }))
-            return freeze(mutPat)
+            return [freeze(mutPat), c]
         }
     }
     throw Error()
