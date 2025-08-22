@@ -189,3 +189,17 @@ export function applySpeed(pattern, row, speed) {
     }
     return freeze(mutPat)
 }
+
+/**
+ * @param {Readonly<Pattern>} pattern
+ */
+export function getLogicalLength(pattern) {
+    for (let row = 0; row < pattern[0].length; row++) {
+        for (let c = 0; c < pattern.length; c++) {
+            if (pattern[c][row].effect == Effect.PatternBreak) {
+                return row + 1
+            }
+        }
+    }
+    return pattern[0].length
+}
