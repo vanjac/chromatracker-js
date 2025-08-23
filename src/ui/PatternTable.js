@@ -80,6 +80,7 @@ export class PatternTable {
         this.viewNumRows = 0
         /** @private @type {Readonly<Pattern>} */
         this.viewPattern = null
+        this.viewLogicalLength = 0
 
         this.pointerQuery = window.matchMedia('(pointer: fine) and (hover: hover)')
     }
@@ -237,6 +238,7 @@ export class PatternTable {
             return
         }
         console.debug('update pattern')
+        let logicalLength = $pattern.getLogicalLength(pattern)
 
         if (pattern[0].length == this.viewNumRows) {
             for (let [c, channel] of pattern.entries()) {
@@ -245,6 +247,15 @@ export class PatternTable {
                         if (cell != this.viewPattern[c][row]) {
                             $cell.setContents(this.getTd(c, row), cell)
                         }
+                    }
+                }
+            }
+            if (logicalLength != this.viewLogicalLength) {
+                let muteStates = this.muteInputs.map(input => !input.checked)
+                for (let row = 0; row < this.viewNumRows; row++) {
+                    for (let c = 0; c < this.viewNumChannels; c++) {
+                        this.getTd(c, row).classList.toggle(
+                            'dim', muteStates[c] || row >= logicalLength)
                     }
                 }
             }
@@ -297,7 +308,7 @@ export class PatternTable {
                     $cell.setContents(cellFrag.querySelector('td'), cell)
 
                     let td = cellFrag.querySelector('td')
-                    td.classList.toggle('dim', muteStates[c])
+                    td.classList.toggle('dim', muteStates[c] || row >= logicalLength)
                     td.dataset.c = c.toString()
                     td.dataset.row = row.toString()
 
@@ -308,6 +319,7 @@ export class PatternTable {
             this.updateSelection()
         }
         this.viewPattern = pattern
+        this.viewLogicalLength = logicalLength
     }
 
     /**
@@ -619,7 +631,7 @@ export class PatternTable {
         invoke(this.callbacks.setMute, c, mute)
 
         for (let row = 0; row < this.viewPattern[c].length; row++) {
-            this.getTd(c, row)?.classList.toggle('dim', mute)
+            this.getTd(c, row)?.classList.toggle('dim', mute || row >= this.viewLogicalLength)
         }
     }
 
