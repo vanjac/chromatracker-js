@@ -258,7 +258,7 @@ export class ValidatedNumberInput {
             }
         })
         input.addEventListener('blur', () => {
-            if (!input.checkValidity() && this.value != null) {
+            if (document.activeElement != input && !input.checkValidity() && this.value != null) {
                 input.valueAsNumber = this.value
                 onChange(this.value, true)
             }
