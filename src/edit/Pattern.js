@@ -185,7 +185,7 @@ export function applySpeed(pattern, row, speed) {
         }
     }
     if (foundChannel < 0) {
-        throw Error()
+        throw Error('Not enough space for Speed effect.')
     }
     return [freeze(mutPat), foundChannel]
 }
@@ -233,6 +233,10 @@ export function setLogicalLength(pattern, length) {
         return cell
     })))
 
+    if (length >= mutPat[0].length) {
+        return [freeze(mutPat), -1]
+    }
+
     for (let c = mutPat.length - 1; c >= 0; c--) {
         let cell = mutPat[c][length - 1]
         if (!cell.effect && !cell.param0 && !cell.param1) {
@@ -243,5 +247,5 @@ export function setLogicalLength(pattern, length) {
             return [freeze(mutPat), c]
         }
     }
-    throw Error()
+    throw Error('Not enough space for Pattern Break effect.')
 }

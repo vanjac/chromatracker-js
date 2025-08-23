@@ -170,6 +170,7 @@ export class PatternEdit {
         this.patternTable.controller.callbacks = {
             jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
             jamRelease: (...args) => invoke(this.callbacks.jamRelease, ...args),
+            onChange: pattern => this.changePattern(_ => pattern),
             setMute: (...args) => invoke(this.callbacks.setMute, ...args),
         }
         $cell.toggleParts(this.entryCellElem, this.entryParts)

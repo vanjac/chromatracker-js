@@ -6,6 +6,7 @@ import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
 import {invoke, minMax, callbackDebugObject, clamp} from '../Util.js'
+import {AlertDialog} from './dialogs/UtilDialogs.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const scrollMargin = 32 // pixels
@@ -25,6 +26,11 @@ const template = $dom.html`
         </thead>
         <tbody></tbody>
     </table>
+    <hr>
+    <div class="hflex">
+        <label for="length">Length:</label>
+        <input id="length" type="number" required="" value="64" min="1" max="64" autocomplete="off" accesskey="l">
+    </div>
     <div id="tableSpace" class="pattern-table-space"></div>
 </div>
 `
@@ -58,6 +64,7 @@ export class PatternTable {
         this.view = view
         /**
          * @type {JamCallbacks & {
+         *      onChange?: (pattern: Readonly<Pattern>) => void
          *      setMute?: (c: number, mute: boolean) => void
          * }}
          */
@@ -106,6 +113,13 @@ export class PatternTable {
         this.selectHandleContainer = fragment.querySelector('#handles')
         /** @private */
         this.selectHandles = [...this.selectHandleContainer.querySelectorAll('div')]
+        /** @private */
+        this.lengthInput = new $dom.ValidatedNumberInput(fragment.querySelector('#length'),
+            (value, commit) => {
+                if (commit) {
+                    this.changePatternLength(value)
+                }
+            })
 
         this.addHandleEvents(this.selectHandles[0], false, false)
         this.addHandleEvents(this.selectHandles[1], true, false)
@@ -239,6 +253,7 @@ export class PatternTable {
         }
         console.debug('update pattern')
         let logicalLength = $pattern.getLogicalLength(pattern)
+        this.lengthInput.setValue(logicalLength)
 
         if (pattern[0].length == this.viewNumRows) {
             for (let [c, channel] of pattern.entries()) {
@@ -658,6 +673,24 @@ export class PatternTable {
                 meter.value = (meter.value + targetValue) / 2
             }
         }
+    }
+
+    /**
+     * @private
+     * @param {number} length
+     */
+    changePatternLength(length) {
+        let pattern
+        try {
+            ;[pattern] = $pattern.setLogicalLength(this.viewPattern, length)
+        } catch (err) {
+            if (err instanceof Error) {
+                AlertDialog.open(err.message, "Couldn't resize")
+            }
+            this.lengthInput.setValue(this.viewLogicalLength)
+            return
+        }
+        invoke(this.callbacks.onChange, pattern)
     }
 
     /**
