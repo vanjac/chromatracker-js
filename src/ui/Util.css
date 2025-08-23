@@ -85,6 +85,9 @@
 .button-list button:first-child {
     justify-content: start;
 }
+.justify-end {
+    justify-content: end;
+}
 
 .align-start {
     align-items: start;

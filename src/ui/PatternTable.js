@@ -391,7 +391,6 @@ export class PatternTable {
     }
 
     /**
-     * @private
      * @param {number} channel
      * @param {number} row
      * @param {boolean} extend
@@ -612,7 +611,6 @@ export class PatternTable {
     }
 
     /**
-     * @private
      * @param {boolean} center
      */
     scrollToSelCell(center) {

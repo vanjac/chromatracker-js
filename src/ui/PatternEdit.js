@@ -11,6 +11,7 @@ import {Cell, CellPart, Module, Pattern, Sample} from '../Model.js'
 import global from './GlobalState.js'
 import './PatternTable.js'
 import './SequenceEdit.js'
+import {AlertDialog} from './dialogs/UtilDialogs.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -19,32 +20,39 @@ const template = $dom.html`
         <sequence-edit></sequence-edit>
         <div class="flex-grow min-width-0">
             <div class="hflex">
-                <div class="hflex shrink-clip-x">
+                <div id="speedTools" class="hflex shrink-clip-x">
                     <label for="tempo">BPM</label>
                     <input id="tempo" type="number" inputmode="numeric" required="" value="125" min="32" max="255" autocomplete="off" accesskey="b">
                     <label for="speed">Ticks</label>
                     <input id="speed" type="number" inputmode="numeric" required="" value="6" min="1" max="31" autocomplete="off" accesskey="t">
+                    <div id="applySpeedSection" class="hflex hide">
+                        &nbsp;
+                        <button id="applySpeed" class="control-effect" accesskey="a" title="Speed Effect (${$shortcut.accessKey('A')})">
+                            Apply:&nbsp;<span id="speedEffect" class="cell-effect">F00</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex-grow"></div>
-                <div id="selectTools" class="hide hflex">
-                    <button id="cut" title="Cut (${$shortcut.ctrl('X')})">
-                        ${$icons.content_cut}
+                <div id="patternTools" class="flex-grow hflex justify-end">
+                    <div id="selectTools" class="hide hflex">
+                        <button id="cut" title="Cut (${$shortcut.ctrl('X')})">
+                            ${$icons.content_cut}
+                        </button>
+                        <button id="copy" title="Copy (${$shortcut.ctrl('C')})">
+                            ${$icons.content_copy}
+                        </button>
+                    </div>
+                    <button id="paste" title="Paste (${$shortcut.ctrl('V')})">
+                        ${$icons.content_paste}
                     </button>
-                    <button id="copy" title="Copy (${$shortcut.ctrl('C')})">
-                        ${$icons.content_copy}
-                    </button>
+                    <label class="label-button" title="Select (\\)">
+                        <input id="select" type="checkbox">
+                        <span>${$icons.selection}</span>
+                    </label>
+                    <label class="label-button touch-only" title="Scroll Lock">
+                        <input id="scrollLock" type="checkbox">
+                        <span>${$icons.arrow_vertical_lock}</span>
+                    </label>
                 </div>
-                <button id="paste" title="Paste (${$shortcut.ctrl('V')})">
-                    ${$icons.content_paste}
-                </button>
-                <label class="label-button" title="Select (\\)">
-                    <input id="select" type="checkbox">
-                    <span>${$icons.selection}</span>
-                </label>
-                <label class="label-button touch-only" title="Scroll Lock">
-                    <input id="scrollLock" type="checkbox">
-                    <span>${$icons.arrow_vertical_lock}</span>
-                </label>
             </div>
             <pattern-table></pattern-table>
         </div>
@@ -104,6 +112,8 @@ export class PatternEdit {
         this.entryParts = CellPart.pitch | CellPart.inst
         /** @private */
         this.following = false
+        /** @private */
+        this.selectedSpeedParam = 0
     }
 
     connectedCallback() {
@@ -115,9 +125,19 @@ export class PatternEdit {
         this.patternTable = fragment.querySelector('pattern-table')
 
         /** @private */
-        this.tempoInput = new $dom.ValidatedNumberInput(fragment.querySelector('#tempo'))
+        this.speedTools = fragment.querySelector('#speedTools')
         /** @private */
-        this.speedInput = new $dom.ValidatedNumberInput(fragment.querySelector('#speed'))
+        this.tempoInput = new $dom.ValidatedNumberInput(fragment.querySelector('#tempo'),
+            value => this.updateSpeedEffect(value))
+        /** @private */
+        this.speedInput = new $dom.ValidatedNumberInput(fragment.querySelector('#speed'),
+            value => this.updateSpeedEffect(value))
+        /** @private @type {HTMLElement} */
+        this.applySpeedSection = fragment.querySelector('#applySpeedSection')
+        /** @private @type {HTMLElement} */
+        this.speedEffectSpan = fragment.querySelector('#speedEffect')
+        /** @private */
+        this.patternTools = fragment.querySelector('#patternTools')
         /** @private @type {HTMLInputElement} */
         this.selectInput = fragment.querySelector('#select')
         /** @private @type {HTMLElement} */
@@ -125,6 +145,30 @@ export class PatternEdit {
         let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
         /** @private @type {HTMLElement} */
         this.entryCellElem = fragment.querySelector('#entryCell')
+
+        let applySpeedButton = type(HTMLElement, fragment.querySelector('#applySpeed'))
+        applySpeedButton.addEventListener('click', () => this.applySpeedEffect())
+
+        this.tempoInput.input.addEventListener('focus', () => {
+            this.updateSpeedEffect(this.tempoInput.getValue())
+            this.applySpeedSection.classList.remove('hide')
+            this.setSpeedToolPriority(true)
+        })
+        this.speedInput.input.addEventListener('focus', () => {
+            this.updateSpeedEffect(this.speedInput.getValue())
+            this.applySpeedSection.classList.remove('hide')
+            this.setSpeedToolPriority(true)
+        })
+        let onBlur = async () => {
+            await new Promise(resolve => window.requestAnimationFrame(resolve))
+            if (!this.speedTools.contains(document.activeElement)) {
+                this.applySpeedSection.classList.add('hide')
+                this.setSpeedToolPriority(false)
+            }
+        }
+        this.tempoInput.input.addEventListener('blur', onBlur)
+        this.speedInput.input.addEventListener('blur', onBlur)
+        applySpeedButton.addEventListener('blur', onBlur)
 
         this.selectInput.addEventListener('change', () => this.updateSelectMode())
 
@@ -325,10 +369,20 @@ export class PatternEdit {
     updateSelectMode() {
         this.selectTools.classList.toggle('hide', !this.selectInput.checked)
         if (this.selectInput.checked) {
+            this.setSpeedToolPriority(false)
             this.patternTable.controller.enableSelectMode()
         } else {
             this.patternTable.controller.disableSelectMode()
         }
+    }
+
+    /**
+     * @private
+     * @param {boolean} priority
+     */
+    setSpeedToolPriority(priority) {
+        this.speedTools.classList.toggle('shrink-clip-x', !priority)
+        this.patternTools.classList.toggle('shrink-clip-x', priority)
     }
 
     /**
@@ -539,6 +593,35 @@ export class PatternEdit {
     }
 
     /**
+     * @private
+     * @param {number} value
+     */
+    updateSpeedEffect(value) {
+        this.selectedSpeedParam = value
+        this.speedEffectSpan.textContent = 'F' +
+            ((value >> 4).toString(16) + (value & 0xf).toString(16)).toUpperCase()
+    }
+
+    /** @private */
+    applySpeedEffect() {
+        let c
+        this.changePattern(pattern => {
+            try {
+                ;[pattern, c] = $pattern.applySpeed(pattern, 0, this.selectedSpeedParam)
+            } catch (err) {
+                if (err instanceof Error) {
+                    AlertDialog.open(err.message, "Couldn't apply")
+                }
+            }
+            return pattern
+        })
+        this.patternTable.controller.setSelCell(c, 0, false)
+        this.patternTable.controller.scrollToSelCell(true)
+        this.applySpeedSection.classList.add('hide')
+        this.setSpeedToolPriority(false)
+    }
+
+    /**
      * @param {readonly Readonly<$play.ChannelState>[]} channels
      * @param {number} time
      */
@@ -571,4 +654,5 @@ if (import.meta.main) {
     $dom.displayMain(testElem)
     testElem.controller.setModule(testModule)
     testElem.controller.setEntryCell(freeze({pitch: 36, inst: 1, effect: 1, param0: 2, param1: 3}))
+    testElem.controller.setEntryParts(CellPart.all)
 }
