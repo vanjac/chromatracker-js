@@ -25,7 +25,7 @@ const template = $dom.html`
             ${$icons.plus}
         </button>
         <label for="restart">Restart pos:</label>
-        <input id="restart" type="number" required="" value="0" min="0" max="127" autocomplete="off" accesskey="r">
+        <input id="restart" type="number" inputmode="numeric" required="" value="0" min="0" max="127" autocomplete="off" accesskey="r">
     </div>
     <div id="scroll" class="hscrollable vscrollable flex-grow align-start">
         <table>

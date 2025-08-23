@@ -29,7 +29,7 @@ const template = $dom.html`
     <hr>
     <div class="hflex">
         <label for="length">Length:</label>
-        <input id="length" type="number" required="" value="64" min="1" max="64" autocomplete="off" accesskey="l">
+        <input id="length" type="number" inputmode="numeric" required="" value="64" min="1" max="64" autocomplete="off" accesskey="l">
     </div>
     <div id="tableSpace" class="pattern-table-space"></div>
 </div>

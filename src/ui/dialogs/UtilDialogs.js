@@ -165,6 +165,7 @@ export class InputDialog {
         this.input.step = this.integerOnly ? '1' : 'any'
         if (this.positiveOnly) {
             this.input.min = '0'
+            this.input.inputMode = this.integerOnly ? 'numeric' : 'decimal'
         }
 
         fragment.querySelector('#cancel').addEventListener('click', () => $dialog.cancel(this.view))

@@ -20,7 +20,7 @@ const template = $dom.html`
     <label for="channelCount">Channels:</label>
     <div class="hflex">
         <div class="tap-height"></div>
-        <input id="channelCount" type="number" required="" value="4" min="2" max="32" step="2" autocomplete="off" accesskey="c">
+        <input id="channelCount" type="number" inputmode="numeric" required="" value="4" min="2" max="32" step="2" autocomplete="off" accesskey="c">
         &nbsp;
         <button id="delChannels" class="touch-only" title="Remove">
             ${$icons.minus}
