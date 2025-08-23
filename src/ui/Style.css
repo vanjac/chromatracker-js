@@ -54,10 +54,31 @@ input:disabled {
 }
 
 meter {
+    /* https://css-tricks.com/html5-meter-element/ */
     width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0.25em 0;
+    height: 0.5em;
+}
+meter::-webkit-meter-bar {
+    background: var(--color-bg-btn);
+    border: 1px solid var(--color-fg-dim);
+    border-radius: 4px;
+    height: 0.5em;
 }
 meter::-webkit-meter-optimum-value {
     background: var(--color-fg-hl);
+}
+@supports selector(::-moz-meter-bar) {
+    meter {
+        background: var(--color-bg-btn);
+        border: 1px solid var(--color-fg-dim);
+        border-radius: 4px;
+    }
+    :-moz-meter-optimum::-moz-meter-bar {
+        background: var(--color-fg-hl);
+    }
 }
 
 textarea {
