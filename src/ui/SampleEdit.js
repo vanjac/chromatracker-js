@@ -379,13 +379,27 @@ export class SampleEdit {
      * @param {string} name
      */
     importWav(buffer, name) {
-        try {
-            let newSample = $wav.read(buffer, {channel: 0, dithering: true, normalize: true})
+        let dialog = new AudioImportElement()
+        dialog.controller.enableResample = false
+        $dialog.open(dialog, {dismissable: true})
+        dialog.controller.onComplete = async params => {
+            let waitDialog = $dialog.open(new WaitDialogElement())
+            await $dom.fullRefresh()
+            let newSample
+            try {
+                newSample = $wav.read(buffer, params)
+            } catch (error) {
+                $dialog.close(waitDialog)
+                if (error instanceof Error) {
+                    AlertDialog.open(error.message)
+                }
+                return
+            }
+            $dialog.close(waitDialog)
             newSample.name = name
             invoke(this.callbacks.onChange, newSample, true)
-        } catch (error) {
-            if (error instanceof Error) { AlertDialog.open(error.message) }
         }
+
     }
 
     /**
@@ -400,7 +414,6 @@ export class SampleEdit {
             let wave, volume
             try {
                 ;({wave, volume} = await $audio.read(buffer, params))
-                $dialog.close(waitDialog)
             } catch(error) {
                 $dialog.close(waitDialog)
                 if (error instanceof DOMException) {
@@ -408,6 +421,7 @@ export class SampleEdit {
                 }
                 return
             }
+            $dialog.close(waitDialog)
             this.changeSample(sample => {
                 sample.wave = wave
                 sample.volume = volume

@@ -50,6 +50,7 @@ export class AudioImport {
          * }} params
          */
         this.onComplete = ({sampleRate, channel, dithering, normalize}) => {}
+        this.enableResample = true
     }
 
     connectedCallback() {
@@ -65,6 +66,8 @@ export class AudioImport {
         this.ditherInput = fragment.querySelector('#dither')
         /** @private @type {HTMLInputElement} */
         this.normalizeInput = fragment.querySelector('#normalize')
+
+        this.sampleRateInput.disabled = !this.enableResample
 
         fragment.querySelector('form').addEventListener('submit', () => this.submit())
         $dom.restoreFormData(this.form, inputNames, global.effectFormData)

@@ -290,3 +290,8 @@ export class ValidatedNumberInput {
         return false
     }
 }
+
+export async function fullRefresh() {
+    await new Promise(resolve => window.requestAnimationFrame(resolve))
+    await new Promise(resolve => window.requestAnimationFrame(resolve))
+}
