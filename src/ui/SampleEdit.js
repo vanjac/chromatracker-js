@@ -380,7 +380,7 @@ export class SampleEdit {
      */
     importWav(buffer, name) {
         try {
-            let newSample = $wav.read(buffer)
+            let newSample = $wav.read(buffer, {channel: 0, dithering: true, normalize: true})
             newSample.name = name
             invoke(this.callbacks.onChange, newSample, true)
         } catch (error) {

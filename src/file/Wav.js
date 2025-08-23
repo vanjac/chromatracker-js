@@ -33,9 +33,10 @@ export function identify(buf) {
 
 /**
  * @param {ArrayBuffer} buf
+ * @param {{channel: number, dithering: boolean, normalize: boolean}} params
  * @returns {Sample}
  */
-export function read(buf) {
+export function read(buf, {channel, dithering, normalize}) {
     let view = new DataView(buf)
     let asciiDecode = new TextDecoder('ascii', {fatal: true})
 
@@ -64,9 +65,12 @@ export function read(buf) {
     let fmtChunk = chunks['fmt ']
     if (!fmtChunk || fmtChunk.size < fmtChunkSize) { throw Error('Missing format chunk') }
     let fmtCode = view.getUint16(fmtChunk.pos, true)
+    let numChannels = view.getUint16(fmtChunk.pos + 2, true)
     let frameRate = view.getUint32(fmtChunk.pos + 4, true)
     let frameSize = view.getUint16(fmtChunk.pos + 12, true)
     let sampleSize = Math.ceil(view.getUint16(fmtChunk.pos + 14, true) / 8)
+
+    channel = Math.min(channel, numChannels - 1)
 
     /** @type {number} */
     let volume = mod.maxVolume
@@ -81,40 +85,45 @@ export function read(buf) {
     if (!dataChunk) { throw Error('Missing data chunk') }
     let numFrames = Math.floor(dataChunk.size / frameSize)
     let wave = new Int8Array(numFrames % 2 ? (numFrames + 1) : numFrames)
+    let dataOffset = dataChunk.pos + channel * sampleSize
     if (sampleSize == 1 && fmtCode == formatPCM) {
         console.info('8-bit PCM')
         for (let i = 0; i < numFrames; i++) {
-            wave[i] = view.getUint8(dataChunk.pos + i * frameSize) - 128
+            wave[i] = view.getUint8(dataOffset + i * frameSize) - 128
         }
     } else {
         /** @type {(idx: number) => number} */
         let getSampleValue
         if (sampleSize == 2 && fmtCode == formatPCM) {
             console.info('16-bit PCM')
-            getSampleValue = idx => view.getInt16(dataChunk.pos + idx * frameSize, true) / 256.0
+            getSampleValue = idx => view.getInt16(dataOffset + idx * frameSize, true) / 256.0
         } else if (sampleSize == 3 && fmtCode == formatPCM) {
             console.info('24-bit PCM')
             // ignore lower 8 bits
-            getSampleValue = idx => view.getInt16(dataChunk.pos + idx * frameSize + 1, true) / 256.0
+            getSampleValue = idx => view.getInt16(dataOffset + idx * frameSize + 1, true) / 256.0
         } else if (sampleSize == 4 && fmtCode == formatIEEE) {
             console.info('32-bit float')
-            getSampleValue = idx => view.getFloat32(dataChunk.pos + idx * frameSize, true) * 127.0
+            getSampleValue = idx => view.getFloat32(dataOffset + idx * frameSize, true) * 127.0
         } else {
             throw Error('Unrecognized format')
         }
 
         // normalize
-        let maxAmp = 0
-        for (let i = 0; i < numFrames; i++) {
-            maxAmp = Math.max(maxAmp, Math.abs(getSampleValue(i)))
+        let maxAmp = 1
+        if (normalize) {
+            maxAmp = 0
+            for (let i = 0; i < numFrames; i++) {
+                maxAmp = Math.max(maxAmp, Math.abs(getSampleValue(i)))
+            }
+            maxAmp = Math.min(maxAmp / 127, 1)
+            if (maxAmp == 0) { maxAmp = 1 }
         }
-        maxAmp = Math.min(maxAmp / 127, 1)
-        if (maxAmp == 0) { maxAmp = 1 }
         volume = Math.round(volume * maxAmp)
 
+        let ditherFn = dithering ? $wave.dither : $wave.dontDither
         let error = 0
         for (let i = 0; i < numFrames; i++) {
-            ;[wave[i], error] = $wave.dither(getSampleValue(i) / maxAmp, error)
+            ;[wave[i], error] = ditherFn(getSampleValue(i) / maxAmp, error)
         }
     }
     if (numFrames % 2) {
