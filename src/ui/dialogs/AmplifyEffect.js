@@ -13,7 +13,7 @@ const template = $dom.html`
 
             <label for="dither">Dither:</label>
             <div class="hflex">
-                <input id="dither" name="dither" type="checkbox" checked="" accesskey="d">
+                <input id="dither" name="dither" type="checkbox" accesskey="d">
             </div>
         </div>
         <button formmethod="dialog">Apply</button>
