@@ -26,15 +26,9 @@ const genericErrorInitials = 'Unrecognized file format.\nInitials: '
 export function read(buf) {
     if (buf.byteLength < headerSize + 1024) {throw Error(genericError)}
     let view = new DataView(buf)
-    let textDecode = new TextDecoder('utf-8', {fatal: true}) // TODO: determine encoding from file
-    let asciiDecode = new TextDecoder('ascii', {fatal: true})
+    let asciiDecode = new TextDecoder('ascii')
 
-    let name
-    try {
-        name = textDecode.decode($file.readStringZ(buf, 0, 20))
-    } catch (error) {
-        if (error instanceof TypeError) {throw Error(genericError)}
-    }
+    let name = asciiDecode.decode($file.readStringZ(buf, 0, 20))
     if (name.startsWith('Extended Module: ')) {
         throw Error('XM format is not supported.')
     }
@@ -52,15 +46,10 @@ export function read(buf) {
 
     /** @type {number} */
     let numChannels = mod.defaultChannels
-    let initials
-    try {
-        initials = asciiDecode.decode(new DataView(buf, 1080, 4))
-    } catch (error) {
-        if (error instanceof TypeError) {throw Error(genericError)}
-    }
+    let initials = asciiDecode.decode(new DataView(buf, 1080, 4))
     // TODO: support old 15-sample formats?
     let chanStr = initials.replace(/\D/g, '') // remove non-digits
-    if (initials == 'OCTA' || initials == 'CD81') {
+    if (initials == 'OCTA' || initials == 'OKTA' || initials == 'CD81') {
         numChannels = 8
     } else if (initials == 'CD61') {
         numChannels = 6
@@ -112,12 +101,7 @@ export function read(buf) {
 
         let sampleLength = view.getUint16(offset + 22) * 2
         if (buf.byteLength < wavePos + sampleLength) {throw Error(genericErrorInitials + initials)}
-        let name
-        try {
-            name = textDecode.decode($file.readStringZ(buf, offset, mod.maxSampleNameLength))
-        } catch (error) {
-            if (error instanceof TypeError) {throw Error(genericErrorInitials + initials)}
-        }
+        let name = asciiDecode.decode($file.readStringZ(buf, offset, mod.maxSampleNameLength))
         let finetune = view.getUint8(offset + 24) & 0xf
         if (finetune >= 8) {
             finetune -= 16 // sign-extend nibble
@@ -158,9 +142,8 @@ export function read(buf) {
 export function write(module) {
     let buf = new ArrayBuffer(calcSize(module))
     let view = new DataView(buf)
-    let textEncode = new TextEncoder()
 
-    $file.writeU8Array(buf, 0, 20, textEncode.encode(module.name))
+    $file.writeU8Array(buf, 0, 20, $file.encodeISO8859_1(module.name))
 
     for (let s = 1; s < mod.numSamples; s++) {
         let offset = s * 30 - 10
@@ -171,7 +154,7 @@ export function write(module) {
             continue
         }
         let sample = module.samples[s]
-        $file.writeU8Array(buf, offset, mod.maxSampleNameLength, textEncode.encode(sample.name))
+        $file.writeU8Array(buf, offset, mod.maxSampleNameLength, $file.encodeISO8859_1(sample.name))
         let sampleLength = Math.min(sample.wave.length, mod.maxSampleLength)
         view.setUint16(offset + 22, (sampleLength / 2) | 0)
         view.setUint8(offset + 24, sample.finetune & 0xf)
@@ -210,7 +193,7 @@ export function write(module) {
     } else {
         initials = module.numChannels + 'CH'
     }
-    $file.writeU8Array(buf, 1080, 4, textEncode.encode(initials))
+    $file.writeU8Array(buf, 1080, 4, $file.encodeISO8859_1(initials))
 
     let patternSize = module.numChannels * mod.numRows * 4
     for (let p = 0; p < numPatterns; p++) {
@@ -239,7 +222,7 @@ export function write(module) {
     }
 
     $file.writeU8Array(buf, wavePos + 8, trackerInfoSize - 8,
-        textEncode.encode(`ChromaTracker v${version}`))
+        $file.encodeISO8859_1(`ChromaTracker v${version}`))
 
     return buf
 }

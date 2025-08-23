@@ -274,6 +274,7 @@ export class FileMenu {
             .catch(/** @param {Error} error */ error => {
                 $dialog.close(dialog)
                 AlertDialog.open(error.message)
+                console.log(error.stack)
             })
     }
 
@@ -289,6 +290,7 @@ export class FileMenu {
         } catch (error) {
             if (error instanceof Error) {
                 AlertDialog.open(error.message)
+                console.log(error.stack)
             } else {
                 AlertDialog.open('Unknown error while reading module file.')
             }

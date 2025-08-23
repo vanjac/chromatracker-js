@@ -27,3 +27,23 @@ export function writeU8Array(buf, start, length, src) {
     }
     dest.set(src)
 }
+
+/**
+ * Skips all control characters (including newlines!)
+ * @param {string} str
+ */
+export function encodeISO8859_1(str) {
+    let buf = new Uint8Array(str.length)
+    let bytes = 0
+    for (let i = 0; i < str.length; i++) {
+        let utf16 = str.charCodeAt(i)
+        if ((utf16 >= 0x20 && utf16 <= 0x7E) || (utf16 >= 0xA0 && utf16 <= 0xFF)) {
+            buf[bytes++] = utf16
+        } else if (utf16 < 0xDC00 || utf16 > 0xDFFF) {
+            buf[bytes++] = 0x3F // '?'
+        } else {
+            // low surrogate (skip!)
+        }
+    }
+    return buf.subarray(0, bytes)
+}

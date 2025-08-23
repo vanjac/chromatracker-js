@@ -38,7 +38,7 @@ export function identify(buf) {
  */
 export function read(buf, {channel, dithering, normalize}) {
     let view = new DataView(buf)
-    let asciiDecode = new TextDecoder('ascii', {fatal: true})
+    let asciiDecode = new TextDecoder('ascii')
 
     let riffSize = view.getUint32(4, true)
     let fileEnd = Math.min(riffSize + 8, buf.byteLength)
@@ -51,12 +51,7 @@ export function read(buf, {channel, dithering, normalize}) {
         let size = view.getUint32(chunkPos + 4, true)
         if (chunkPos + size + 8 > fileEnd) { break }
 
-        let chunkId
-        try {
-            chunkId = asciiDecode.decode(new DataView(buf, chunkPos, 4))
-        } catch (e) {
-            throw Error('Unrecognized format')
-        }
+        let chunkId = asciiDecode.decode(new DataView(buf, chunkPos, 4))
         chunkPos = addChunk(chunks, chunkPos, chunkId, size)
     }
 
@@ -167,14 +162,13 @@ export function write(sample) {
 
     let buf = new ArrayBuffer(fileSize)
     let view = new DataView(buf)
-    let textEncode = new TextEncoder()
 
-    $file.writeU8Array(buf, 0, 4, textEncode.encode('RIFF'))
+    $file.writeU8Array(buf, 0, 4, $file.encodeISO8859_1('RIFF'))
     view.setUint32(4, fileSize - 8, true)
-    $file.writeU8Array(buf, 8, 4, textEncode.encode('WAVE'))
+    $file.writeU8Array(buf, 8, 4, $file.encodeISO8859_1('WAVE'))
 
     for (let [id, chunk] of Object.entries(chunks)) {
-        $file.writeU8Array(buf, chunk.pos - 8, 4, textEncode.encode(id))
+        $file.writeU8Array(buf, chunk.pos - 8, 4, $file.encodeISO8859_1(id))
         view.setUint32(chunk.pos - 4, chunk.size, true)
     }
 
