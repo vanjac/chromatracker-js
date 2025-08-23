@@ -231,13 +231,19 @@ pattern-table .sel-cell { /* extra specificity */
 
 /* PatternMatrix */
 
+pattern-matrix table {
+    table-layout: fixed;
+    width: 0;
+}
+
 pattern-matrix th,
 pattern-matrix td {
     border: 1px solid var(--color-fg);
     white-space: nowrap;
 }
 pattern-matrix thead th {
-    padding: 0 0.5em;
+    box-sizing: content-box;
+    width: 5.5ch;
     position: sticky;
     top: 0;
     background-color: var(--color-bg);
