@@ -1,7 +1,7 @@
 import {clamp} from '../Util.js'
 
-const ditherScale = 0.25
-const errorScale = 1
+const ditherScale = 0.5
+const errorScale = 0.8
 
 /**
  * Perform dithering and noise shaping
