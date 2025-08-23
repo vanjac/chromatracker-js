@@ -70,6 +70,12 @@ meter::-webkit-meter-bar {
 meter::-webkit-meter-optimum-value {
     background: var(--color-fg-hl);
 }
+meter::-webkit-meter-suboptimum-value {
+    background: var(--color-fg-warn);
+}
+meter::-webkit-meter-even-less-good-value {
+    background: var(--color-fg-error);
+}
 @supports selector(::-moz-meter-bar) {
     meter {
         background: var(--color-bg-btn);
@@ -78,6 +84,12 @@ meter::-webkit-meter-optimum-value {
     }
     :-moz-meter-optimum::-moz-meter-bar {
         background: var(--color-fg-hl);
+    }
+    :-moz-meter-sub-optimum::-moz-meter-bar {
+        background: var(--color-fg-warn);
+    }
+    :-moz-meter-sub-sub-optimum::-moz-meter-bar {
+        background: var(--color-fg-error);
     }
 }
 
