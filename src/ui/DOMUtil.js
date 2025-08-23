@@ -1,7 +1,7 @@
 import * as $id from '../ID.js'
 import * as $webapp from './WebApp.js'
 
-export const matchISO8859_1 = '[ -~\u00A0-\u00FF]*' // regex for inputs
+export const matchISO8859_1 = '[ -~&nbsp;-\u00FF]*' // regex for HTML inputs
 
 /**
  * @typedef {Object & {
