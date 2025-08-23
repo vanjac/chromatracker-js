@@ -27,7 +27,7 @@ const template = $dom.html`
     <div class="properties-grid">
         <label for="name">Name:</label>
         <div class="hflex">
-            <input id="name" maxlength="22" autocomplete="off" accesskey="n">
+            <input id="name" maxlength="22" autocomplete="off" accesskey="n" pattern="${$dom.matchISO8859_1}">
         </div>
 
         <label for="volume">Volume:</label>
@@ -130,8 +130,11 @@ export class SampleEdit {
 
         /** @private @type {HTMLInputElement} */
         this.nameInput = fragment.querySelector('#name')
-        $dom.addInputListeners(this.nameInput, commit => this.changeSample(
-            sample => {sample.name = this.nameInput.value}, commit))
+        $dom.addInputListeners(this.nameInput, commit => {
+            if (!commit || this.nameInput.reportValidity()) {
+                this.changeSample(sample => {sample.name = this.nameInput.value}, commit)
+            }
+        })
 
         /** @private */
         this.waveEdit = fragment.querySelector('wave-edit')

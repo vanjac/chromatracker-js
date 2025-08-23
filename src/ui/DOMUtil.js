@@ -1,6 +1,8 @@
 import * as $id from '../ID.js'
 import * as $webapp from './WebApp.js'
 
+export const matchISO8859_1 = '[ -~\u00A0-\u00FF]*' // regex for inputs
+
 /**
  * @typedef {Object & {
  *      connectedCallback?: (elem: HTMLElement) => void

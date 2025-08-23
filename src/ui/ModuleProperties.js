@@ -11,7 +11,7 @@ const template = $dom.html`
     <label for="title">Title:</label>
     <div class="hflex">
         <div class="tap-height"></div>
-        <input id="title" maxlength="20" autocomplete="off" accesskey="t">
+        <input id="title" maxlength="20" autocomplete="off" accesskey="t" pattern="${$dom.matchISO8859_1}">
     </div>
 
     <label for="fileSize">File size:</label>
@@ -65,8 +65,10 @@ export class ModuleProperties {
         /** @private @type {HTMLInputElement} */
         this.titleInput = fragment.querySelector('#title')
         $dom.addInputListeners(this.titleInput, commit => {
-            invoke(this.callbacks.changeModule,
-                module => freeze({...module, name: this.titleInput.value}), commit)
+            if (!commit || this.titleInput.reportValidity()) {
+                invoke(this.callbacks.changeModule,
+                    module => freeze({...module, name: this.titleInput.value}), commit)
+            }
         })
         /** @private */
         this.channelCountInput = new $dom.ValidatedNumberInput(
