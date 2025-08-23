@@ -128,7 +128,7 @@ export class PatternTable {
 
         new KeyPad(this.tbody, (id, elem, ev) => {
             let selectEnabled = !this.selectMode
-                || this.patternScroll.classList.contains('scroll-lock')
+                || this.patternScroll.classList.contains('scroll-lock-pattern')
                 || this.pointerQuery.matches
             if (selectEnabled && elem.dataset.c != null) {
                 let c = Number(elem.dataset.c)
@@ -695,7 +695,7 @@ export class PatternTable {
      * @param {boolean} scrollLock
      */
     setScrollLock(scrollLock) {
-        this.patternScroll.classList.toggle('scroll-lock', scrollLock)
+        this.patternScroll.classList.toggle('scroll-lock-pattern', scrollLock)
     }
 
     /**
