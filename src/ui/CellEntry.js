@@ -21,7 +21,7 @@ const template = $dom.html`
                 <span>Sample</span>
             </label>
             <label class="label-button" title="(${$shortcut.alt('E')})">
-                <input id="effectEnable" type="checkbox" checked="">
+                <input id="effectEnable" type="checkbox">
                 <span>Effect</span>
             </label>
         </div>
@@ -355,6 +355,7 @@ export class CellEntry {
         }
 
         this.updateEffect()
+        this.updateSectionDim()
     }
 
     /**

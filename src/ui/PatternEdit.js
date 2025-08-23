@@ -101,7 +101,7 @@ export class PatternEdit {
         /** @private */
         this.entryCell = Cell.empty
         /** @private @type {CellPart} */
-        this.entryParts = CellPart.all
+        this.entryParts = CellPart.pitch | CellPart.inst
         /** @private */
         this.following = false
     }
