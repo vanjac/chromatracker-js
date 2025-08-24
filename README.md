@@ -1,3 +1,5 @@
+# ChromaTracker
+
 This will be a web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) tracker with a touch-friendly interface. Currently it's very unfinished!
 
 This shares a name with [a previous project](https://github.com/vanjac/chromatracker) I attempted -- this new iteration of ChromaTracker is more limited in scope.
@@ -15,7 +17,7 @@ Currently implemented:
 - Persistent local file storage
 - Supports mobile browsers and PWA installation
 
-You can try the current alpha build at [tracker.chroma.zone](https://tracker.chroma.zone/).
+You can try the current alpha build at [tracker.chroma.zone](https://tracker.chroma.zone/). It works best when it's installed as a PWA, see [these instructions](https://www.installpwa.com/from/tracker.chroma.zone).
 
 TODO:
 
