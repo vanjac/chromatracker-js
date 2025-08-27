@@ -42,8 +42,8 @@ const template = $dom.html`
                 <button value="https://chroma.zone/share/pixipack1.mod">pixipack 1</button>
                 <hr>
                 <h3>&nbsp;Demo Files:</h3>
-                <button value="https://chroma.zone/share/space_debris.mod">space_debris</button>
-                <button value="https://chroma.zone/share/GSLINGER.MOD">guitar slinger</button>
+                <button value="https://chroma.zone/share/space_debris.mod">space_debris &nbsp;<em>(Markus Kaarlonen)</em></button>
+                <button value="https://chroma.zone/share/GSLINGER.MOD">guitar slinger &nbsp;<em>(Jogeir Liljedahl)</em></button>
             </div>
         </div>
         <em>Version:&nbsp;<span id="version"></span></em>
