@@ -6,6 +6,7 @@ import * as $sample from '../edit/Sample.js'
 import * as $wave from '../edit/Wave.js'
 import * as $audio from '../file/Audio.js'
 import * as $ext from '../file/External.js'
+import * as $local from '../file/LocalFiles.js'
 import * as $mod from '../file/Mod.js'
 import * as $wav from '../file/Wav.js'
 import * as $icons from '../gen/Icons.js'
@@ -16,7 +17,7 @@ import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
 import {SamplePickerElement} from './dialogs/SamplePicker.js'
-import {invoke, callbackDebugObject, freeze} from '../Util.js'
+import {invoke, callbackDebugObject, freeze, type} from '../Util.js'
 import {Cell, Effect, mod, Sample, Module, CellPart} from '../Model.js'
 import global from './GlobalState.js'
 import './WaveEdit.js'
@@ -44,14 +45,17 @@ const template = $dom.html`
 
         <label class="hflex" for="file">Wave file:</label>
         <div class="hflex">
-            <button id="open" title="Import (${$shortcut.ctrl('O')})">
+            <button id="open" title="Import File (${$shortcut.ctrl('O')})">
                 ${$icons.folder_open}
+            </button>
+            <button id="import" title="Import from Module (${$shortcut.ctrl('I')})">
+                ${$icons.file_import_outline}
             </button>
             <button id="save" title="Save (${$shortcut.ctrl('S')})">
                 ${$icons.download}
             </button>
             &nbsp;
-            <span id="warning" class="warning"></span>
+            <strong id="warning" class="warning"></strong>
         </div>
     </div>
 
@@ -120,6 +124,7 @@ export class SampleEdit {
          * }}
          */
         this.callbacks = {}
+        this.db = type(IDBDatabase, null)
 
         /** @private @type {Readonly<Sample>} */
         this.viewSample = null
@@ -210,6 +215,7 @@ export class SampleEdit {
             () => invoke(this.callbacks.jamRelease, 'finetune'))
 
         fragment.querySelector('#open').addEventListener('click', () => this.pickAudioFile())
+        fragment.querySelector('#import').addEventListener('click', () => this.pickModule())
         fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
 
         /** @private @type {HTMLElement} */
@@ -253,6 +259,9 @@ export class SampleEdit {
         }
         if (event.key == 'o' && $shortcut.commandKey(event)) {
             this.pickAudioFile()
+            return true
+        } else if (event.key == 'i' && $shortcut.commandKey(event)) {
+            this.pickModule()
             return true
         } else if (event.key == 's' && $shortcut.commandKey(event)) {
             this.saveAudioFile()
@@ -309,8 +318,7 @@ export class SampleEdit {
         this.finetuneInput.valueAsNumber = sample.finetune
         this.finetuneOutput.value = sample.finetune.toString()
 
-        this.warningText.textContent = sample.wave.length > mod.maxSampleLength ?
-            'Sample is too long!' : ''
+        this.warningText.textContent = sample.wave.length > mod.maxSampleLength ? 'Too long!' : ''
 
         this.viewSample = sample
     }
@@ -460,6 +468,37 @@ export class SampleEdit {
                 this.readAudioFile(files[0])
             }
         }).catch(console.warn)
+    }
+
+    /** @private */
+    async pickModule() {
+        if (!this.db) { return }
+        let files = await $local.listFiles(this.db)
+        let options = files.map(([id, metadata]) => ({
+            value: id.toString(),
+            title: metadata.name || '(untitled)',
+        }))
+        let selected
+        try {
+            selected = await MenuDialog.open(options, 'Import from:')
+        } catch (e) {
+            console.warn(e)
+            return
+        }
+        let wait = $dialog.open(new WaitDialogElement())
+        let module
+        try {
+            let data = await $local.readFile(this.db, Number(selected))
+            module = freeze($mod.read(data))
+        } catch (err) {
+            if (err instanceof Error) {
+                AlertDialog.open(err.message)
+            }
+            return
+        } finally {
+            $dialog.close(wait)
+        }
+        this.modPickSample(module)
     }
 
     /** @private */
@@ -692,4 +731,5 @@ if (import.meta.main) {
     })
     $dom.displayMain(testElem)
     testElem.controller.setSample(Sample.empty)
+    $local.openDB().then(db => testElem.controller.db = db)
 }

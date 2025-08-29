@@ -311,6 +311,7 @@ export class FileMenu {
         this.fileID = id
         this.editor = new ModuleEditElement()
         this.editor.controller.callbacks = {onSave: this.saveModule.bind(this)}
+        this.editor.controller.db = this.db
         this.editorContainer.textContent = ''
         this.editorContainer.appendChild(this.editor)
         this.editor.controller.setModule(module)

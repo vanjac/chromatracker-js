@@ -121,6 +121,7 @@ export class ModuleEdit {
          * }}
          */
         this.callbacks = {}
+        this.db = type(IDBDatabase, null)
 
         /** @private */
         this.module = new Undoable($module.defaultNew)
@@ -229,6 +230,7 @@ export class ModuleEdit {
             changeModule: this.changeModule.bind(this),
             setEntryCell: this.setEntryCell.bind(this),
         }
+        this.samplesList.controller.db = this.db
         this.cellEntry.controller.callbacks = {
             jamPlay: this.jamPlay.bind(this),
             jamRelease: this.jamRelease.bind(this),
@@ -407,6 +409,7 @@ export class ModuleEdit {
         if (restoreSpeed) {
             this.playback.tempo = this.patternEdit.controller.getTempo()
             this.playback.speed = this.patternEdit.controller.getSpeed()
+            // TODO: restore channel properties (panning, effect memory, ...)
         }
         if (restorePos) {
             this.playback.pos = this.patternEdit.controller.selPos()

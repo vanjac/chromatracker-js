@@ -55,6 +55,7 @@ export class SamplesList {
          * }}
          */
         this.callbacks = {}
+        this.db = type(IDBDatabase, null)
         /** @private @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
         /** @private */
@@ -147,6 +148,7 @@ export class SamplesList {
             },
             setEntryCell: (...args) => invoke(this.callbacks.setEntryCell, ...args),
         }
+        this.sampleEdit.controller.db = this.db
         this.sampleEditContainer.appendChild(this.sampleEdit)
         this.sampleEdit.controller.setSample(this.viewSamples[idx])
         invoke(this.callbacks.setEntryCell, {...Cell.empty, inst: idx}, CellPart.inst)
