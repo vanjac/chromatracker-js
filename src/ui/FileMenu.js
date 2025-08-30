@@ -121,14 +121,14 @@ export class FileMenu {
         this.visibilityChangeListener = this.onVisibilityChange.bind(this)
         document.addEventListener('visibilitychange', this.visibilityChangeListener)
         /** @private */
-        this.beforeUnloadListener = this.autosave.bind(this)
+        this.beforeUnloadListener = this.saveIfNeeded.bind(this)
         window.addEventListener('beforeunload', this.beforeUnloadListener)
     }
 
     disconnectedCallback() {
         document.removeEventListener('visibilitychange', this.visibilityChangeListener)
         window.removeEventListener('beforeunload', this.beforeUnloadListener)
-        this.autosave()
+        this.saveIfNeeded()
         this.db?.close()
         this.db = null
     }
@@ -311,22 +311,26 @@ export class FileMenu {
         this.fileID = id
         this.editor = new ModuleEditElement()
         this.editor.controller.callbacks = {
-            onSave: this.saveModule.bind(this),
+            close: this.closeEditor.bind(this),
             openLocalFilePicker: this.openLocalFilePicker.bind(this)
         }
         this.editorContainer.textContent = ''
         this.editorContainer.appendChild(this.editor)
         this.editor.controller.setModule(module)
+    }
 
-        this.editor.addEventListener('disconnected', () => {
-            this.menu.classList.remove('hide')
-            this.editorContainer.classList.add('hide')
-            this.editor = null
-            this.fileID = null
-            if (this.view.isConnected) {
-                this.listLocalFiles()
-            }
-        })
+    /** @private */
+    closeEditor() {
+        this.saveIfNeeded()
+        this.editor.remove()
+
+        this.menu.classList.remove('hide')
+        this.editorContainer.classList.add('hide')
+        this.editor = null
+        this.fileID = null
+        if (this.view.isConnected) {
+            this.listLocalFiles()
+        }
     }
 
     /**
@@ -346,13 +350,15 @@ export class FileMenu {
     /** @private */
     onVisibilityChange() {
         if (document.visibilityState == 'hidden') {
-            this.autosave()
+            this.saveIfNeeded()
         }
     }
 
     /** @private */
-    autosave() {
-        this.editor?.controller.saveIfNeeded()
+    saveIfNeeded() {
+        if (this.editor?.controller.isUnsaved()) {
+            this.saveModule(this.editor.controller.save())
+        }
     }
 
     /**

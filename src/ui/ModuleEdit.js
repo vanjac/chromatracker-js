@@ -117,7 +117,7 @@ export class ModuleEdit {
 
         /**
          * @type {{
-         *      onSave?: (module: Readonly<Module>) => void
+         *      close?: () => void
          *      openLocalFilePicker?: (callback: (module: Readonly<Module>) => void) => void
          * }}
          */
@@ -373,18 +373,19 @@ export class ModuleEdit {
         this.refreshModule()
     }
 
-    saveIfNeeded() {
-        if (this.module.isUnsaved()) {
-            invoke(this.callbacks.onSave, this.module.value)
-            this.module.saved()
-        }
+    isUnsaved() {
+        return this.module.isUnsaved()
+    }
+
+    save() {
+        this.module.saved()
+        return this.module.value
     }
 
     /** @private */
     close() {
-        this.saveIfNeeded()
         this.destroyPlayback()
-        this.view.remove()
+        invoke(this.callbacks.close)
     }
 
     /**
