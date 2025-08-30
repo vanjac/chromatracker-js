@@ -337,14 +337,16 @@ export class FileMenu {
      * @private
      * @param {Readonly<Module>} module
      */
-    saveModule(module) {
+    async saveModule(module) {
         let buf = $mod.write(module)
-        $local.updateFile(this.db, this.fileID, module.name, buf).then(id => {
-            this.fileID = id
-            console.log('Saved file', id)
-        }).catch(/** @param {Error} e */e => {
-            AlertDialog.open(e.message, 'Error saving file!')
-        })
+        try {
+            this.fileID = await $local.updateFile(this.db, this.fileID, module.name, buf)
+        } catch (e) {
+            if (e instanceof Error) {
+                AlertDialog.open(e.message, 'Error saving file!')
+            }
+        }
+        console.log('Saved file', this.fileID)
     }
 
     /** @private */
@@ -355,9 +357,9 @@ export class FileMenu {
     }
 
     /** @private */
-    saveIfNeeded() {
+    async saveIfNeeded() {
         if (this.editor?.controller.isUnsaved()) {
-            this.saveModule(this.editor.controller.save())
+            await this.saveModule(this.editor.controller.save())
         }
     }
 
@@ -366,7 +368,11 @@ export class FileMenu {
      * @param {(module: Readonly<Module>) => void} callback
      */
     async openLocalFilePicker(callback) {
+        let wait = $dialog.open(new WaitDialogElement())
+        await this.saveIfNeeded()
         let files = await $local.listFiles(this.db)
+        $dialog.close(wait)
+
         let options = files.map(([id, metadata]) => ({
             value: id.toString(),
             title: metadata.name || '(untitled)',
@@ -378,7 +384,7 @@ export class FileMenu {
             console.warn(e)
             return
         }
-        let wait = $dialog.open(new WaitDialogElement())
+        wait = $dialog.open(new WaitDialogElement())
         let module
         try {
             let data = await $local.readFile(this.db, Number(selected))
