@@ -6,7 +6,6 @@ import * as $sample from '../edit/Sample.js'
 import * as $wave from '../edit/Wave.js'
 import * as $audio from '../file/Audio.js'
 import * as $ext from '../file/External.js'
-import * as $local from '../file/LocalFiles.js'
 import * as $mod from '../file/Mod.js'
 import * as $wav from '../file/Wav.js'
 import * as $icons from '../gen/Icons.js'
@@ -121,10 +120,10 @@ export class SampleEdit {
          * @type {JamCallbacks & {
          *      onChange?: (sample: Readonly<Sample>, commit: boolean) => void
                 setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
+         *      openLocalFilePicker?: (callback: (module: Readonly<Module>) => void) => void
          * }}
          */
         this.callbacks = {}
-        this.db = type(IDBDatabase, null)
 
         /** @private @type {Readonly<Sample>} */
         this.viewSample = null
@@ -471,34 +470,8 @@ export class SampleEdit {
     }
 
     /** @private */
-    async pickModule() {
-        if (!this.db) { return }
-        let files = await $local.listFiles(this.db)
-        let options = files.map(([id, metadata]) => ({
-            value: id.toString(),
-            title: metadata.name || '(untitled)',
-        }))
-        let selected
-        try {
-            selected = await MenuDialog.open(options, 'Import from:')
-        } catch (e) {
-            console.warn(e)
-            return
-        }
-        let wait = $dialog.open(new WaitDialogElement())
-        let module
-        try {
-            let data = await $local.readFile(this.db, Number(selected))
-            module = freeze($mod.read(data))
-        } catch (err) {
-            if (err instanceof Error) {
-                AlertDialog.open(err.message)
-            }
-            return
-        } finally {
-            $dialog.close(wait)
-        }
-        this.modPickSample(module)
+    pickModule() {
+        invoke(this.callbacks.openLocalFilePicker, module => this.modPickSample(module))
     }
 
     /** @private */
@@ -731,5 +704,4 @@ if (import.meta.main) {
     })
     $dom.displayMain(testElem)
     testElem.controller.setSample(Sample.empty)
-    $local.openDB().then(db => testElem.controller.db = db)
 }

@@ -118,10 +118,10 @@ export class ModuleEdit {
         /**
          * @type {{
          *      onSave?: (module: Readonly<Module>) => void
+         *      openLocalFilePicker?: (callback: (module: Readonly<Module>) => void) => void
          * }}
          */
         this.callbacks = {}
-        this.db = type(IDBDatabase, null)
 
         /** @private */
         this.module = new Undoable($module.defaultNew)
@@ -229,8 +229,8 @@ export class ModuleEdit {
             jamRelease: this.jamRelease.bind(this),
             changeModule: this.changeModule.bind(this),
             setEntryCell: this.setEntryCell.bind(this),
+            openLocalFilePicker: (...args) => invoke(this.callbacks.openLocalFilePicker, ...args)
         }
-        this.samplesList.controller.db = this.db
         this.cellEntry.controller.callbacks = {
             jamPlay: this.jamPlay.bind(this),
             jamRelease: this.jamRelease.bind(this),

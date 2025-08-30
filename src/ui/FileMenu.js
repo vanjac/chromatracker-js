@@ -310,8 +310,10 @@ export class FileMenu {
 
         this.fileID = id
         this.editor = new ModuleEditElement()
-        this.editor.controller.callbacks = {onSave: this.saveModule.bind(this)}
-        this.editor.controller.db = this.db
+        this.editor.controller.callbacks = {
+            onSave: this.saveModule.bind(this),
+            openLocalFilePicker: this.openLocalFilePicker.bind(this)
+        }
         this.editorContainer.textContent = ''
         this.editorContainer.appendChild(this.editor)
         this.editor.controller.setModule(module)
@@ -351,6 +353,39 @@ export class FileMenu {
     /** @private */
     autosave() {
         this.editor?.controller.saveIfNeeded()
+    }
+
+    /**
+     * @private
+     * @param {(module: Readonly<Module>) => void} callback
+     */
+    async openLocalFilePicker(callback) {
+        let files = await $local.listFiles(this.db)
+        let options = files.map(([id, metadata]) => ({
+            value: id.toString(),
+            title: metadata.name || '(untitled)',
+        }))
+        let selected
+        try {
+            selected = await MenuDialog.open(options, 'Import from:')
+        } catch (e) {
+            console.warn(e)
+            return
+        }
+        let wait = $dialog.open(new WaitDialogElement())
+        let module
+        try {
+            let data = await $local.readFile(this.db, Number(selected))
+            module = freeze($mod.read(data))
+        } catch (err) {
+            if (err instanceof Error) {
+                AlertDialog.open(err.message)
+            }
+            return
+        } finally {
+            $dialog.close(wait)
+        }
+        callback(module)
     }
 }
 export const FileMenuElement = $dom.defineView('file-menu', FileMenu)

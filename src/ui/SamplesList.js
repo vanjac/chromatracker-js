@@ -6,7 +6,7 @@ import * as $sample from '../edit/Sample.js'
 import * as $icons from '../gen/Icons.js'
 import {callbackDebugObject, invoke, type} from '../Util.js'
 import {SampleEditElement} from './SampleEdit.js'
-import {mod, Cell, Sample, CellPart} from '../Model.js'
+import {mod, Cell, Sample, Module, CellPart} from '../Model.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -52,10 +52,10 @@ export class SamplesList {
         /**
          * @type {ModuleEditCallbacks & JamCallbacks & {
          *      setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
+         *      openLocalFilePicker?: (callback: (module: Readonly<Module>) => void) => void
          * }}
          */
         this.callbacks = {}
-        this.db = type(IDBDatabase, null)
         /** @private @type {readonly Readonly<Sample>[]} */
         this.viewSamples = null
         /** @private */
@@ -147,8 +147,8 @@ export class SamplesList {
                     module => $sample.update(module, idx, sample), commit)
             },
             setEntryCell: (...args) => invoke(this.callbacks.setEntryCell, ...args),
+            openLocalFilePicker: (...args) => invoke(this.callbacks.openLocalFilePicker, ...args)
         }
-        this.sampleEdit.controller.db = this.db
         this.sampleEditContainer.appendChild(this.sampleEdit)
         this.sampleEdit.controller.setSample(this.viewSamples[idx])
         invoke(this.callbacks.setEntryCell, {...Cell.empty, inst: idx}, CellPart.inst)
