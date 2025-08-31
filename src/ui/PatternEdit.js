@@ -70,18 +70,17 @@ const template = $dom.html`
             </span>
         </span>
         <div class="flex-grow"></div>
-        <button id="delete" title="Delete (Del)">
-            ${$icons.arrow_collapse_up}
+        <button id="write" title="Write Cell (Enter)">
+            ${$icons.pencil}
+        </button>
+        <button id="clear" title="Erase Cell (Space)">
+            ${$icons.eraser}
         </button>
         <button id="insert" title="Insert (Ins)">
             ${$icons.arrow_expand_down}
         </button>
-        &nbsp;
-        <button id="clear" title="Erase Cell (Space)">
-            ${$icons.eraser}
-        </button>
-        <button id="write" title="Write Cell (Enter)">
-            ${$icons.pencil}
+        <button id="delete" title="Delete (Del)">
+            ${$icons.arrow_collapse_up}
         </button>
     </div>
 </div>
