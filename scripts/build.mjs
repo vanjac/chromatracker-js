@@ -24,8 +24,7 @@ import {html, xhtml} from '../ui/DOMUtil.js'
         if (!file.endsWith('.svg')) { continue }
         let content = fs.readFileSync(path.join('assets/icons', file), {encoding: 'utf8'})
         let var_name = file.replaceAll('-', '_').replaceAll('.svg', '')
-        let q = '`', $ = '$'
-        iconsScript += `export const ${var_name}${' '.repeat(27 - var_name.length)}= html${q}<div class="icon">${$}{xhtml${q}${content.trim()}${q}}</div>${q}
+        iconsScript += `export const ${var_name}${' '.repeat(27 - var_name.length)}= html\`<div class="icon">\${xhtml\`${content.trim()}\`}</div>\`
 `
     }
 

@@ -36,7 +36,7 @@ const template = $dom.html`
                 <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
             </div>
             <div id="effectSection" class="hflex">
-                <button id="resetEffect" disabled="" title="Reset Effect (${'`'})">
+                <button id="resetEffect" disabled="" title="Reset Effect (\`)">
                     ${$icons.close}
                 </button>
                 <button id="effect" class="flex-grow justify-start" title="Effect (${$shortcut.alt('1')})"></button>
