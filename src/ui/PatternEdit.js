@@ -28,6 +28,7 @@ const template = $dom.html`
                     <div id="applySpeedSection" class="hflex hide">
                         &nbsp;
                         <button id="applySpeed" class="control-effect" accesskey="a" title="Speed Effect (${$shortcut.accessKey('A')})">
+                            ${$icons.pencil_plus}
                             Apply:&nbsp;<span id="speedEffect" class="cell-effect">F00</span>
                         </button>
                     </div>
