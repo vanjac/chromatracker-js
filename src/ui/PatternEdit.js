@@ -76,6 +76,7 @@ const template = $dom.html`
         <button id="clear" title="Erase Cell (Space)">
             ${$icons.eraser}
         </button>
+        &nbsp;
         <button id="insert" title="Insert (Ins)">
             ${$icons.arrow_expand_down}
         </button>
