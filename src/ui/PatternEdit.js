@@ -71,7 +71,7 @@ const template = $dom.html`
         </span>
         <div class="flex-grow"></div>
         <button id="write" title="Write Cell (Enter)">
-            ${$icons.pencil}
+            ${$icons.pencil_plus}
         </button>
         <button id="clear" title="Erase Cell (Space)">
             ${$icons.eraser}
