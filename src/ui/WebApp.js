@@ -30,6 +30,14 @@ document.addEventListener('keydown', e => {
     }
 })
 
+// Disable context menu on mobile
+const pointerQuery = window.matchMedia('(pointer: fine) and (hover: hover)')
+document.addEventListener('contextmenu', e => {
+    if (!pointerQuery.matches && !needsKeyboardInput(e.target)) {
+        e.preventDefault()
+    }
+})
+
 // Disable pinch to zoom on iOS
 document.addEventListener('touchmove', e => {
     // @ts-ignore
@@ -77,5 +85,3 @@ window.addEventListener('popstate', e => {
         }
     }
 })
-
-document.addEventListener('contextmenu', e => e.preventDefault())
