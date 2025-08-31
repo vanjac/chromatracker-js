@@ -103,7 +103,8 @@ const template = $dom.html`
     <div class="flex-grow"></div>
     <div class="hflex">
         <button id="useOffset" title="Offset Effect (${$shortcut.ctrl('9')})">
-            Offset:&nbsp;<span id="offsetEffect" class="cell-effect">000</span>
+            ${$icons.pan_right}
+            &nbsp;Offset:&nbsp;<span id="offsetEffect" class="cell-effect">000</span>
         </button>
     </div>
 </div>
