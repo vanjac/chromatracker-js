@@ -77,3 +77,5 @@ window.addEventListener('popstate', e => {
         }
     }
 })
+
+document.addEventListener('contextmenu', e => e.preventDefault())
