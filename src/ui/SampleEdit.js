@@ -180,7 +180,9 @@ export class SampleEdit {
         /** @private @type {HTMLButtonElement} */
         this.trimButton = fragment.querySelector('#trim')
         this.trimButton.addEventListener('click', () => this.trim())
-        fragment.querySelector('#cut').addEventListener('click', () => this.cut())
+        /** @private @type {HTMLButtonElement} */
+        this.cutButton = fragment.querySelector('#cut')
+        this.cutButton.addEventListener('click', () => this.cut())
         fragment.querySelector('#copy').addEventListener('click', () => this.copy())
         fragment.querySelector('#paste').addEventListener('click', () => this.paste())
         fragment.querySelector('#effect').addEventListener('click', () => this.effectMenu())
@@ -334,6 +336,7 @@ export class SampleEdit {
         let rangeSelected = this.waveEdit.controller.rangeSelected()
 
         this.trimButton.disabled = !rangeSelected
+        this.cutButton.disabled = !rangeSelected
 
         let anySelected = this.waveEdit.controller.anySelected()
         this.selectAllButton.classList.toggle('hide', anySelected)
