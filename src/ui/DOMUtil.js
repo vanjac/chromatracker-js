@@ -134,7 +134,12 @@ export function createElem(tagName, properties = {}) {
 export function getElems(root, idTypes) {
     let map = /** @type {{[ID in keyof T]: HTMLElementTagNameMap[T[ID]]}} */({})
     for (let id in idTypes) {
-        map[id] = root.querySelector('#' + id)
+        /** @type {HTMLElementTagNameMap[T[typeof id]]} */
+        let elem = root.querySelector('#' + id)
+        if (elem?.tagName.toLowerCase() != idTypes[id]) {
+            throw Error(`Mismatched tag for ${id}: ${elem?.tagName}`)
+        }
+        map[id] = elem
     }
     return map
 }
