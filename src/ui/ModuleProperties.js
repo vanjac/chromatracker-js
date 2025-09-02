@@ -61,33 +61,32 @@ export class ModuleProperties {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
+        /** @private */
+        this.elems = $dom.getElems(fragment, {
+            title: 'input',
+            channelCount: 'input',
+            fileSize: 'output',
+            addChannels: 'button',
+            delChannels: 'button',
+        })
 
-        /** @private @type {HTMLInputElement} */
-        this.titleInput = fragment.querySelector('#title')
-        $dom.addInputListeners(this.titleInput, commit => {
-            if (!commit || this.titleInput.reportValidity()) {
+        $dom.addInputListeners(this.elems.title, commit => {
+            if (!commit || this.elems.title.reportValidity()) {
                 invoke(this.callbacks.changeModule,
-                    module => freeze({...module, name: this.titleInput.value}), commit)
+                    module => freeze({...module, name: this.elems.title.value}), commit)
             }
         })
         /** @private */
         this.channelCountInput = new $dom.ValidatedNumberInput(
-            fragment.querySelector('#channelCount'), (channelCount, commit) => {
+            this.elems.channelCount, (channelCount, commit) => {
                 if (commit) {
                     this.setNumChannels(channelCount)
                 }
             })
 
-        /** @private @type {HTMLOutputElement} */
-        this.fileSizeOutput = fragment.querySelector('#fileSize')
-        /** @private @type {HTMLButtonElement} */
-        this.addChannelsButton = fragment.querySelector('#addChannels')
-        /** @private @type {HTMLButtonElement} */
-        this.delChannelsButton = fragment.querySelector('#delChannels')
-
-        this.addChannelsButton.addEventListener('click',
+        this.elems.addChannels.addEventListener('click',
             () => invoke(this.callbacks.changeModule, module => $module.addChannels(module, 2)))
-        this.delChannelsButton.addEventListener('click',
+        this.elems.delChannels.addEventListener('click',
             () => invoke(this.callbacks.changeModule,
                 module => $module.delChannels(module, module.numChannels - 2, 2)))
 
@@ -110,15 +109,15 @@ export class ModuleProperties {
             return
         }
 
-        if (!this.viewModule || module.name != this.titleInput.value) {
+        if (!this.viewModule || module.name != this.elems.title.value) {
             console.debug('update title')
-            this.titleInput.value = module.name
+            this.elems.title.value = module.name
         }
         if (module.numChannels != this.viewModule?.numChannels) {
             console.debug('update channel count')
             this.channelCountInput.setValue(module.numChannels)
-            this.delChannelsButton.disabled = module.numChannels <= 2
-            this.addChannelsButton.disabled = module.numChannels >= mod.maxChannels
+            this.elems.delChannels.disabled = module.numChannels <= 2
+            this.elems.addChannels.disabled = module.numChannels >= mod.maxChannels
         }
         if (module.samples != this.viewModule?.samples) {
             console.debug('update sample count')
@@ -129,7 +128,7 @@ export class ModuleProperties {
             this.viewPatternsSize = $mod.calcPatternsSize(module)
         }
         let fileSize = $mod.headerSize + this.viewPatternsSize + this.viewSamplesSize
-        this.fileSizeOutput.value = formatFileSize(fileSize)
+        this.elems.fileSize.value = formatFileSize(fileSize)
 
         this.viewModule = module
     }
