@@ -127,6 +127,19 @@ export function createElem(tagName, properties = {}) {
 }
 
 /**
+ * @template {Record<string, keyof HTMLElementTagNameMap>} T
+ * @param {ParentNode} root
+ * @param {T} idTypes
+ */
+export function getElems(root, idTypes) {
+    let map = /** @type {{[ID in keyof T]: HTMLElementTagNameMap[T[ID]]}} */({})
+    for (let id in idTypes) {
+        map[id] = root.querySelector('#' + id)
+    }
+    return map
+}
+
+/**
  * @param {Element} elem
  */
 export function displayMain(elem) {
