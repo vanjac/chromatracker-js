@@ -53,6 +53,7 @@ export class SamplesList {
          * @type {ModuleEditCallbacks & JamCallbacks & {
          *      setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
          *      openLocalFilePicker?: (callback: (module: Readonly<Module>) => void) => void
+         *      requestAudioContext?: (callback: (context: AudioContext) => void) => void
          * }}
          */
         this.callbacks = {}

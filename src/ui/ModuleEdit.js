@@ -229,7 +229,11 @@ export class ModuleEdit {
             jamRelease: this.jamRelease.bind(this),
             changeModule: this.changeModule.bind(this),
             setEntryCell: this.setEntryCell.bind(this),
-            openLocalFilePicker: (...args) => invoke(this.callbacks.openLocalFilePicker, ...args)
+            openLocalFilePicker: (...args) => invoke(this.callbacks.openLocalFilePicker, ...args),
+            requestAudioContext: callback => {
+                this.initContext()
+                callback(this.context)
+            },
         }
         this.cellEntry.controller.callbacks = {
             jamPlay: this.jamPlay.bind(this),
@@ -392,13 +396,21 @@ export class ModuleEdit {
      * Must be called as result of user interaction
      * @private
      */
-    resetPlayback({restoreSpeed = false, restorePos = false, restoreRow = false} = {}) {
-        this.pause()
+    initContext() {
         if (!this.context) {
             this.context = new AudioContext({latencyHint: 'interactive'})
         } else if (this.context.state != 'running') {
             this.context.resume()
         }
+    }
+
+    /**
+     * Must be called as result of user interaction
+     * @private
+     */
+    resetPlayback({restoreSpeed = false, restorePos = false, restoreRow = false} = {}) {
+        this.pause()
+        this.initContext()
         this.playback = $play.init(this.context, this.module.value)
         this.playback.time += playbackDelay // avoid "catching up"
 
@@ -441,8 +453,8 @@ export class ModuleEdit {
     enablePlayback() {
         if (!this.playback) {
             this.resetPlayback()
-        } else if (this.context.state != 'running') {
-            this.context.resume()
+        } else {
+            this.initContext()
         }
     }
 
