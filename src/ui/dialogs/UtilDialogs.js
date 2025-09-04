@@ -1,11 +1,10 @@
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import * as $shortcut from '../Shortcut.js'
-import {type} from '../../Util.js'
 
 const alertDialogTemplate = $dom.html`
-<dialog class="message-dialog">
-    <form method="dialog">
+<dialog id="dialog" class="message-dialog">
+    <form id="form" method="dialog">
         <h3 id="title"></h3>
         <output id="message" class="message-out"></output>
         <div class="hflex">
@@ -30,12 +29,16 @@ export class AlertDialog {
 
     connectedCallback() {
         let fragment = alertDialogTemplate.cloneNode(true)
-
-        fragment.querySelector('form').addEventListener('submit', () => this.onDismiss())
-        fragment.querySelector('dialog').addEventListener('cancel', () => this.onDismiss())
-        fragment.querySelector('#title').textContent = this.title
-        let messageOut = type(HTMLOutputElement, fragment.querySelector('#message'))
-        messageOut.value = this.message
+        let elems = $dom.getElems(fragment, {
+            form: 'form',
+            dialog: 'dialog',
+            title: 'h3',
+            message: 'output',
+        })
+        elems.form.addEventListener('submit', () => this.onDismiss())
+        elems.dialog.addEventListener('cancel', () => this.onDismiss())
+        elems.title.textContent = this.title
+        elems.message.value = this.message
 
         this.view.appendChild(fragment)
     }
@@ -58,8 +61,8 @@ export class AlertDialog {
 export const AlertDialogElement = $dom.defineView('alert-dialog', AlertDialog)
 
 const confirmDialogTemplate = $dom.html`
-<dialog class="message-dialog">
-    <form method="dialog">
+<dialog id="dialog" class="message-dialog">
+    <form id="form" method="dialog">
         <h3 id="title"></h3>
         <output id="message" class="message-out"></output>
         <div class="hflex">
@@ -86,15 +89,18 @@ export class ConfirmDialog {
 
     connectedCallback() {
         let fragment = confirmDialogTemplate.cloneNode(true)
-
-        fragment.querySelector('form').addEventListener('submit', () => this.onConfirm())
-        fragment.querySelector('dialog').addEventListener('cancel', () => this.onDismiss())
-
-        fragment.querySelector('#title').textContent = this.title
-        let messageOut = type(HTMLOutputElement, fragment.querySelector('#message'))
-        messageOut.value = this.message
-
-        fragment.querySelector('#cancel').addEventListener('click', () => $dialog.cancel(this.view))
+        let elems = $dom.getElems(fragment, {
+            form: 'form',
+            dialog: 'dialog',
+            title: 'h3',
+            message: 'output',
+            cancel: 'button',
+        })
+        elems.form.addEventListener('submit', () => this.onConfirm())
+        elems.dialog.addEventListener('cancel', () => this.onDismiss())
+        elems.title.textContent = this.title
+        elems.message.value = this.message
+        elems.cancel.addEventListener('click', () => $dialog.cancel(this.view))
 
         this.view.appendChild(fragment)
     }
@@ -118,8 +124,8 @@ export class ConfirmDialog {
 export const ConfirmDialogElement = $dom.defineView('confirm-dialog', ConfirmDialog)
 
 const inputDialogTemplate = $dom.html`
-<dialog>
-    <form method="dialog">
+<dialog id="dialog">
+    <form id="form" method="dialog">
         <h3 id="title"></h3>
         <div class="hflex">
             <label id="prompt" for="value"></label>
@@ -153,32 +159,38 @@ export class InputDialog {
 
     connectedCallback() {
         let fragment = inputDialogTemplate.cloneNode(true)
-
-        fragment.querySelector('form').addEventListener('submit', () => this.submit())
-        fragment.querySelector('dialog').addEventListener('cancel', () => this.onDismiss())
-        fragment.querySelector('#title').textContent = this.title
-        fragment.querySelector('#prompt').textContent = this.prompt
-
         /** @private */
-        this.input = fragment.querySelector('input')
-        this.input.valueAsNumber = this.defaultValue
-        this.input.step = this.integerOnly ? '1' : 'any'
+        this.elems = $dom.getElems(fragment, {
+            form: 'form',
+            dialog: 'dialog',
+            title: 'h3',
+            prompt: 'label',
+            value: 'input',
+            cancel: 'button',
+        })
+        this.elems.form.addEventListener('submit', () => this.submit())
+        this.elems.dialog.addEventListener('cancel', () => this.onDismiss())
+        this.elems.title.textContent = this.title
+        this.elems.prompt.textContent = this.prompt
+
+        this.elems.value.valueAsNumber = this.defaultValue
+        this.elems.value.step = this.integerOnly ? '1' : 'any'
         if (this.positiveOnly) {
-            this.input.min = '0'
-            this.input.inputMode = this.integerOnly ? 'numeric' : 'decimal'
+            this.elems.value.min = '0'
+            this.elems.value.inputMode = this.integerOnly ? 'numeric' : 'decimal'
         }
 
-        fragment.querySelector('#cancel').addEventListener('click', () => $dialog.cancel(this.view))
+        this.elems.cancel.addEventListener('click', () => $dialog.cancel(this.view))
 
         this.view.appendChild(fragment)
     }
 
     /** @private */
     submit() {
-        if (Number.isNaN(this.input.valueAsNumber)) {
+        if (Number.isNaN(this.elems.value.valueAsNumber)) {
             this.onDismiss()
         } else {
-            this.onConfirm(this.input.valueAsNumber)
+            this.onConfirm(this.elems.value.valueAsNumber)
         }
     }
 
@@ -233,7 +245,7 @@ export class WaitDialog {
 export const WaitDialogElement = $dom.defineView('wait-dialog', WaitDialog)
 
 const menuDialogTemplate = $dom.html`
-<dialog>
+<dialog id="dialog">
     <h3 id="title"></h3>
     <div id="buttonList" class="button-list vscrollable"></div>
 </dialog>
@@ -260,17 +272,21 @@ export class MenuDialog {
         this.options = []
         this.title = ''
         /** @param {string} value */
-        this.onComplete = (value) => {}
+        this.onComplete = value => {}
         this.onDismiss = () => {}
     }
 
     connectedCallback() {
         let fragment = menuDialogTemplate.cloneNode(true)
+        let elems = $dom.getElems(fragment, {
+            dialog: 'dialog',
+            title: 'h3',
+            buttonList: 'div',
+        })
 
-        fragment.querySelector('dialog').addEventListener('cancel', () => this.onDismiss())
+        elems.dialog.addEventListener('cancel', () => this.onDismiss())
 
-        fragment.querySelector('#title').textContent = this.title
-        let buttonList = fragment.querySelector('#buttonList')
+        elems.title.textContent = this.title
         for (let option of this.options) {
             let button = $dom.createElem('button', {type: 'button', accessKey: option.accessKey})
             button.disabled = option.disabled ?? false
@@ -285,7 +301,7 @@ export class MenuDialog {
             if (!option.disabled) {
                 button.addEventListener('click', () => this.select(option.value))
             }
-            buttonList.appendChild(button)
+            elems.buttonList.appendChild(button)
         }
 
         this.view.appendChild(fragment)

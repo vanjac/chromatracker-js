@@ -8,7 +8,7 @@ import {freeze, invoke, callbackDebugObject} from '../../Util.js'
 /** @import {JamCallbacks} from '../ModuleEdit.js' */
 
 const template = $dom.html`
-<dialog>
+<dialog id="dialog">
     <h3>Import Sample:</h3>
     <div id="buttonList" class="button-list vscrollable"></div>
 </dialog>
@@ -45,11 +45,13 @@ export class SamplePicker {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
+        let elems = $dom.getElems(fragment, {
+            dialog: 'dialog',
+            buttonList: 'div',
+        })
 
-        fragment.querySelector('dialog').addEventListener('cancel',
-            () => invoke(this.callbacks.onDismiss))
+        elems.dialog.addEventListener('cancel', () => invoke(this.callbacks.onDismiss))
 
-        let buttonList = fragment.querySelector('#buttonList')
         for (let [idx, sample] of this.module.samples.entries()) {
             if (!sample) { continue }
             let itemFrag = itemTemplate.cloneNode(true)
@@ -63,7 +65,7 @@ export class SamplePicker {
             makeKeyButton(preview, id => {
                 invoke(this.callbacks.jamPlay, id, Cell.empty, sample)
             })
-            buttonList.appendChild(itemFrag)
+            elems.buttonList.appendChild(itemFrag)
         }
 
         this.view.appendChild(fragment)
