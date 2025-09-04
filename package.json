@@ -5,5 +5,11 @@
         "esbuild": "^0.25.0",
         "eslint": "^9.34.0",
         "typescript": "^5.9.0"
-    }
+    },
+    "browserslist": [
+        "defaults and fully supports es6-module",
+        "iOS >= 15.6",
+        "Firefox >= 102",
+        "Chrome >= 83"
+    ]
 }

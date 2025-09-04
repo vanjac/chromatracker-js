@@ -20,14 +20,16 @@ Some modules include test code designed to be evaluated by Replete. These tests 
 
 ## Compatibility
 
-ChromaTracker is targeting the following browsers:
+ChromaTracker targets browsers from around 2022. See `browserslist` in `package.json` for the list of target browsers.
 
-- Firefox 102+ (ESR)
-    - [Download for Windows](https://portableapps.com/apps/internet/firefox_portable/legacy)
-- Safari iOS 15.6+
-    - [Usage stats](https://iosref.com/ios-usage)
-- Android WebView 83+ (included with Android 11 / API 30)
-    - Same versioning as Chromium
-    - [Android versions list](https://docs.signageos.io/hc/en-us/articles/4405381554578-Browser-WebKit-and-Chromium-versions-by-each-Platform#h_01HABYXXZMDMS644M0BXH43GYD)
-- Firefox Android latest
-- Chrome Android latest
+Info about testing old browsers:
+
+- Firefox ESR:
+  - [Version history](https://en.wikipedia.org/wiki/Firefox_version_history)
+  - [Download portable version for Windows](https://portableapps.com/apps/internet/firefox_portable/legacy)
+- Chrome:
+  - Chrome/WebView 83 is included with Android 11 / API 30 emulator images.
+  - [Android WebView versions list](https://docs.signageos.io/hc/en-us/articles/4405381554578-Browser-WebKit-and-Chromium-versions-by-each-Platform#h_01HABYXXZMDMS644M0BXH43GYD)
+- Safari:
+  - [Usage stats and devices list](https://iosref.com/ios-usage)
+- [Browser market share stats](https://gs.statcounter.com/browser-version-market-share)
