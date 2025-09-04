@@ -74,7 +74,7 @@ const template = $dom.html`
                 ${$icons.undo}
             </button>
         </div>
-        <form id="appTabs" class="hflex flex-grow tab-group" autocomplete="off">
+        <form id="appTabs" method="dialog" class="hflex flex-grow tab-group" autocomplete="off">
             <label class="label-button flex-grow" title="(F1)">
                 <input type="radio" name="appTab" value="arrange" checked="">
                 <span>Arrange</span>
@@ -165,7 +165,6 @@ export class ModuleEdit {
             appTabBody: 'div',
         })
 
-        $dom.disableFormSubmit(this.elems.appTabs)
         this.tabInput = this.elems.appTabs.elements.namedItem('appTab')
         for (let tabButton of this.elems.appTabs.elements) {
             if (tabButton instanceof HTMLInputElement) {

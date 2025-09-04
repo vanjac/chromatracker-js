@@ -9,7 +9,7 @@ import {mod, Pattern} from '../Model.js'
 
 const template = $dom.html`
 <div class="sequence-edit-layout">
-    <form id="seqList" class="seq-list flex-grow" autocomplete="off">
+    <form id="seqList" method="dialog" class="seq-list flex-grow" autocomplete="off">
         <label class="seq-label">Seq:</label>
         <select id="patternSelect" class="seq-select show-checked">
             <optgroup id="patternGroup" label="Pattern:"></optgroup>
@@ -79,7 +79,6 @@ export class SequenceEdit {
         /** @private @type {NamedFormItem} */
         this.sequenceInput = null
 
-        $dom.disableFormSubmit(this.elems.seqList)
         this.elems.seqIns.addEventListener('click', () => this.seqIns())
         this.elems.seqDel.addEventListener('click', () => this.seqDel())
 

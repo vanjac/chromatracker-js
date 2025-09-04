@@ -21,7 +21,7 @@ const template = $dom.html`
             ${$icons.chevron_up}
         </button>
     </div>
-    <form id="piano" class="hflex flex-grow hscrollable scroll-lock" autocomplete="off">
+    <form id="piano" method="dialog" class="hflex flex-grow hscrollable scroll-lock" autocomplete="off">
         <div>
             <div id="octave1">
                 <div id="blackKeys" class="hflex">
@@ -123,7 +123,6 @@ export class PianoKeyboard {
         this.pitchInput0 = this.elems.piano.elements.namedItem('pitch0')
         this.setPitch(36)
 
-        $dom.disableFormSubmit(this.elems.piano)
         new KeyPad(this.elems.piano, (id, elem) => {
             let input = elem.querySelector('input')
             if (input) {

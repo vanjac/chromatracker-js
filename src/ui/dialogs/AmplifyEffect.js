@@ -5,7 +5,7 @@ import global from '../GlobalState.js'
 
 const template = $dom.html`
 <dialog>
-    <form id="form">
+    <form id="form" method="dialog">
         <h3>Amplify</h3>
         <div class="properties-grid">
             <label for="amp">Amount:</label>
@@ -16,7 +16,7 @@ const template = $dom.html`
                 <input id="dither" name="dither" type="checkbox" accesskey="d">
             </div>
         </div>
-        <button formmethod="dialog">Apply</button>
+        <button>Apply</button>
     </form>
 </dialog>
 `

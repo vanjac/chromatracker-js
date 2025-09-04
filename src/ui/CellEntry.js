@@ -33,7 +33,7 @@ const template = $dom.html`
                     <input id="sampleScrollLock" type="checkbox">
                     <span>${$icons.arrow_horizontal_lock}</span>
                 </label>
-                <form id="sampleList" class="hflex flex-grow hscrollable" autocomplete="off"></form>
+                <form id="sampleList" method="dialog" class="hflex flex-grow hscrollable" autocomplete="off"></form>
             </div>
             <div id="effectSection" class="hflex">
                 <button id="resetEffect" disabled="" title="Reset Effect (\`)">
@@ -308,7 +308,6 @@ export class CellEntry {
         this.elems.param0.addEventListener('click', () => this.openEffectKeyboard(1))
         this.elems.param1.addEventListener('click', () => this.openEffectKeyboard(2))
 
-        $dom.disableFormSubmit(this.elems.sampleList)
         new KeyPad(this.elems.sampleList, (id, elem) => {
             let input = elem.querySelector('input')
             if (input) {

@@ -153,13 +153,6 @@ export function displayMain(elem) {
     document.body.append(elem)
 }
 
-/**
- * @param {HTMLFormElement} form
- */
-export function disableFormSubmit(form) {
-    form.addEventListener('submit', e => e.preventDefault())
-}
-
 export const {needsKeyboardInput} = $webapp
 
 const radioButtonTemplate = html`

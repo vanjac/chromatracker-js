@@ -20,7 +20,7 @@ const template = $dom.html`
                 ${$icons.plus}
             </button>
         </div>
-        <form id="sampleList" class="flex-grow vscrollable button-list"></form>
+        <form id="sampleList" method="dialog" class="flex-grow vscrollable button-list"></form>
     </div>
     <div id="sampleEditPanel" class="vflex flex-grow">
         <div id="sampleHeader" class="hflex hide">
@@ -85,8 +85,6 @@ export class SamplesList {
 
         /** @private @type {NamedFormItem} */
         this.sampleInput = null
-
-        $dom.disableFormSubmit(this.elems.sampleList)
 
         this.elems.showList.addEventListener('click', () => {
             this.elems.samplesListLayout.classList.remove('show-sample-edit')

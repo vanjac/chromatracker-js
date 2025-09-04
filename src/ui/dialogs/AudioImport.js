@@ -5,7 +5,7 @@ import global from '../GlobalState.js'
 
 const template = $dom.html`
 <dialog>
-    <form id="form">
+    <form id="form" method="dialog">
         <h3>Import Audio</h3>
         <div class="properties-grid">
             <label for="resample">Resample (Hz):</label>
@@ -27,7 +27,7 @@ const template = $dom.html`
                 <input id="dither" name="dither" type="checkbox" accesskey="d">
             </div>
         </div>
-        <button formmethod="dialog">Import</button>
+        <button>Import</button>
     </form>
 </dialog>
 `

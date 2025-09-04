@@ -29,7 +29,7 @@ const graphFreq = new Float32Array(numGraphFreq)
 
 const template = $dom.html`
 <dialog>
-    <form id="form">
+    <form id="form" method="dialog">
         <h3>Filter / EQ</h3>
         <div class="hflex">
             <canvas class="wave-canvas" id="graph" width="512" height="128"></canvas>
@@ -80,7 +80,7 @@ const template = $dom.html`
                 <input id="dither" name="dither" type="checkbox" accesskey="d">
             </div>
         </div>
-        <button formmethod="dialog">Apply</button>
+        <button>Apply</button>
     </form>
 </dialog>
 `

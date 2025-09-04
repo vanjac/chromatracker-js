@@ -5,12 +5,12 @@ import {type} from '../../Util.js'
 
 const alertDialogTemplate = $dom.html`
 <dialog class="message-dialog">
-    <form>
+    <form method="dialog">
         <h3 id="title"></h3>
         <output id="message" class="message-out"></output>
         <div class="hflex">
             <div class="flex-grow"></div>
-            <button formmethod="dialog" class="show-checked">OK</button>
+            <button class="show-checked">OK</button>
         </div>
     </form>
 </dialog>
@@ -59,12 +59,12 @@ export const AlertDialogElement = $dom.defineView('alert-dialog', AlertDialog)
 
 const confirmDialogTemplate = $dom.html`
 <dialog class="message-dialog">
-    <form>
+    <form method="dialog">
         <h3 id="title"></h3>
         <output id="message" class="message-out"></output>
         <div class="hflex">
             <div class="flex-grow"></div>
-            <button formmethod="dialog" class="show-checked">OK</button>
+            <button class="show-checked">OK</button>
             <button id="cancel" type="button">Cancel</button>
         </div>
     </form>
@@ -119,7 +119,7 @@ export const ConfirmDialogElement = $dom.defineView('confirm-dialog', ConfirmDia
 
 const inputDialogTemplate = $dom.html`
 <dialog>
-    <form>
+    <form method="dialog">
         <h3 id="title"></h3>
         <div class="hflex">
             <label id="prompt" for="value"></label>
@@ -127,7 +127,7 @@ const inputDialogTemplate = $dom.html`
         </div>
         <div class="hflex">
             <div class="flex-grow"></div>
-            <button formmethod="dialog" class="show-checked">OK</button>
+            <button class="show-checked">OK</button>
             <button id="cancel" type="button">Cancel</button>
         </div>
     </form>
