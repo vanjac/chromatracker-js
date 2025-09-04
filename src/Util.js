@@ -1,15 +1,6 @@
 export const {freeze} = Object
 
 /**
- * @template T
- * @param {{ new(...args: any): T }} constructor
- * @param {T} value
- */
-export function type(constructor, value) {
-    return value
-}
-
-/**
  * @param {Record<string | symbol, (...args: any[]) => void>} callbacks
  */
 export function callbackDebugObject(callbacks = {}) {
