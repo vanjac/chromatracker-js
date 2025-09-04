@@ -117,17 +117,13 @@ export class PianoKeyboard {
         /** @private */
         this.pianoKeys = makePianoKeys(this.elems.octave1, 'pitch1')
         makePianoKeys(this.elems.octave0, 'pitch0')
-        /** @private */
-        this.pitchInput1 = this.elems.piano.elements.namedItem('pitch1')
-        /** @private */
-        this.pitchInput0 = this.elems.piano.elements.namedItem('pitch0')
         this.setPitch(36)
 
         new KeyPad(this.elems.piano, (id, elem) => {
             let input = elem.querySelector('input')
             if (input) {
-                $dom.selectRadioButton(this.pitchInput1, input.value)
-                $dom.selectRadioButton(this.pitchInput0, input.value)
+                $dom.selectRadio(this.elems.piano, 'pitch1', input.value)
+                $dom.selectRadio(this.elems.piano, 'pitch0', input.value)
                 invoke(this.callbacks.pitchChanged)
                 invoke(this.callbacks.jamPlay, id)
             }
@@ -172,19 +168,19 @@ export class PianoKeyboard {
     }
 
     getPitch() {
-        return Number($dom.getRadioButtonValue(this.pitchInput1, '36'))
+        return Number($dom.getRadioValue(this.elems.piano, 'pitch1', '36'))
     }
 
     /**
      * @param {number} pitch
      */
     setPitch(pitch) {
-        $dom.selectRadioButton(this.pitchInput1, pitch.toString())
-        $dom.selectRadioButton(this.pitchInput0, pitch.toString())
+        $dom.selectRadio(this.elems.piano, 'pitch1', pitch.toString())
+        $dom.selectRadio(this.elems.piano, 'pitch0', pitch.toString())
     }
 
     scrollToSelOctave() {
-        let pitch = Number($dom.getRadioButtonValue(this.pitchInput1, '0'))
+        let pitch = Number($dom.getRadioValue(this.elems.piano, 'pitch1', '0'))
         pitch -= (pitch % 12)
         this.scrollToPitch(pitch, 'start')
     }
@@ -205,7 +201,8 @@ export class PianoKeyboard {
      */
     keyboardNote(event, pitch) {
         this.setPitch(clamp(pitch, 0, periodTable[0].length - 1))
-        this.scrollToPitch(Number($dom.getRadioButtonValue(this.pitchInput1, '0')), 'nearest')
+        pitch = Number($dom.getRadioValue(this.elems.piano, 'pitch1', '0'))
+        this.scrollToPitch(pitch, 'nearest')
         invoke(this.callbacks.pitchChanged)
         invoke(this.callbacks.jamPlay, event.code)
     }

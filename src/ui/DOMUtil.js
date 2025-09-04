@@ -175,10 +175,12 @@ export function makeRadioButton(group, value, text) {
 }
 
 /**
- * @param {NamedFormItem} namedItem
+ * @param {HTMLFormElement} form
+ * @param {string} name
  * @param {string} value
  */
-export function selectRadioButton(namedItem, value) {
+export function selectRadio(form, name, value) {
+    let namedItem = form.elements.namedItem(name)
     if (namedItem instanceof RadioNodeList) {
         namedItem.value = value
     } else if (namedItem instanceof HTMLInputElement) { // only one radio button
@@ -187,10 +189,12 @@ export function selectRadioButton(namedItem, value) {
 }
 
 /**
- * @param {NamedFormItem} namedItem
+ * @param {HTMLFormElement} form
+ * @param {string} name
  * @param {string} defaultValue
  */
-export function getRadioButtonValue(namedItem, defaultValue) {
+export function getRadioValue(form, name, defaultValue = '') {
+    let namedItem = form.elements.namedItem(name)
     if (namedItem instanceof RadioNodeList) {
         return namedItem.value || defaultValue
     } else if (namedItem instanceof HTMLInputElement) {
@@ -219,7 +223,10 @@ export function saveFormData(form, names, record) {
         let elem = form.elements.namedItem(name)
         if (elem instanceof HTMLInputElement && elem.type == 'checkbox') {
             record[name] = elem.checked ? elem.value : ''
-        } else if (elem) {
+        } else if (
+            (elem instanceof HTMLInputElement) || (elem instanceof HTMLSelectElement)
+                || (elem instanceof HTMLTextAreaElement) || (elem instanceof RadioNodeList)
+        ) {
             record[name] = elem.value
         }
     }
@@ -237,7 +244,10 @@ export function restoreFormData(form, names, record) {
             let elem = form.elements.namedItem(name)
             if (elem instanceof HTMLInputElement && elem.type == 'checkbox') {
                 elem.checked = (elem.value == value)
-            } else {
+            } else if (
+                (elem instanceof HTMLInputElement) || (elem instanceof HTMLSelectElement)
+                    || (elem instanceof HTMLTextAreaElement) || (elem instanceof RadioNodeList)
+            ) {
                 elem.value = value
             }
         }

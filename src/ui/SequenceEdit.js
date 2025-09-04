@@ -76,8 +76,6 @@ export class SequenceEdit {
 
         /** @private @type {Element[]} */
         this.sequenceButtons = []
-        /** @private @type {NamedFormItem} */
-        this.sequenceInput = null
 
         this.elems.seqIns.addEventListener('click', () => this.seqIns())
         this.elems.seqDel.addEventListener('click', () => this.seqDel())
@@ -168,8 +166,7 @@ export class SequenceEdit {
             })
             this.sequenceButtons.push(label)
         }
-        this.sequenceInput = this.elems.seqList.elements.namedItem('sequence')
-        $dom.selectRadioButton(this.sequenceInput, this.selPos.toString())
+        $dom.selectRadio(this.elems.seqList, 'sequence', this.selPos.toString())
         this.elems.seqIns.disabled = sequence.length >= mod.numSongPositions
         this.elems.seqDel.disabled = sequence.length <= 1
         this.updateSel()
@@ -209,7 +206,7 @@ export class SequenceEdit {
     setSelPos(pos) {
         if (pos != this.selPos && pos < this.viewSequence.length && pos >= 0) {
             this.selPos = pos
-            $dom.selectRadioButton(this.sequenceInput, pos.toString())
+            $dom.selectRadio(this.elems.seqList, 'sequence', pos.toString())
             this.updateSel()
         }
     }

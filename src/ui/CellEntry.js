@@ -294,9 +294,6 @@ export class CellEntry {
             closeEffectKeyboard: 'button',
         })
 
-        /** @private @type {NamedFormItem} */
-        this.sampleInput = null
-
         /** @private @type {Element[]} */
         this.sampleKeys = []
 
@@ -487,7 +484,7 @@ export class CellEntry {
         console.debug('update entry samples')
         this.viewSamples = samples
 
-        let selSample = Number($dom.getRadioButtonValue(this.sampleInput, '1'))
+        let selSample = Number($dom.getRadioValue(this.elems.sampleList, 'sample', '1'))
 
         this.elems.sampleList.textContent = ''
         let anySamples = false
@@ -502,7 +499,6 @@ export class CellEntry {
             this.elems.sampleList.appendChild(label)
             this.sampleKeys.push(label)
         }
-        this.sampleInput = this.elems.sampleList.elements.namedItem('sample')
         this.setSelSample(selSample)
         if (!anySamples) {
             this.elems.sampleList.textContent = 'No samples.'
@@ -511,7 +507,7 @@ export class CellEntry {
 
     /** @private */
     selSample() {
-        return Number($dom.getRadioButtonValue(this.sampleInput, '0'))
+        return Number($dom.getRadioValue(this.elems.sampleList, 'sample', '0'))
     }
 
     /**
@@ -520,7 +516,7 @@ export class CellEntry {
      */
     setSelSample(s) {
         if (this.viewSamples[s]) {
-            $dom.selectRadioButton(this.sampleInput, s.toString())
+            $dom.selectRadio(this.elems.sampleList, 'sample', s.toString())
         }
         invoke(this.callbacks.updateCell)
     }
@@ -553,7 +549,7 @@ export class CellEntry {
             this.elems.piano.ctrl.setPitch(cell.pitch)
         }
         if (parts & CellPart.inst) {
-            $dom.selectRadioButton(this.sampleInput, cell.inst.toString())
+            $dom.selectRadio(this.elems.sampleList, 'sample', cell.inst.toString())
         }
         if (parts & CellPart.effect) {
             this.effect = cell.effect

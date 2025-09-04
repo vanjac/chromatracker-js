@@ -83,9 +83,6 @@ export class SamplesList {
             delSample: 'button',
         })
 
-        /** @private @type {NamedFormItem} */
-        this.sampleInput = null
-
         this.elems.showList.addEventListener('click', () => {
             this.elems.samplesListLayout.classList.remove('show-sample-edit')
         })
@@ -126,7 +123,7 @@ export class SamplesList {
     openSampleEdit(idx) {
         this.closeSampleEdit()
         this.viewIndex = idx
-        $dom.selectRadioButton(this.sampleInput, this.viewIndex.toString())
+        $dom.selectRadio(this.elems.sampleList, 'sample', this.viewIndex.toString())
 
         this.elems.sampleHeader.classList.remove('hide')
 
@@ -187,8 +184,7 @@ export class SamplesList {
                 this.openSampleEdit(i)
             })
         }
-        this.sampleInput = this.elems.sampleList.elements.namedItem('sample')
-        $dom.selectRadioButton(this.sampleInput, this.viewIndex.toString())
+        $dom.selectRadio(this.elems.sampleList, 'sample', this.viewIndex.toString())
         this.setSelSample(this.viewIndex)
         let title = `${sampleCount} Sample${(sampleCount != 1) ? 's' : ''}`
         this.elems.sampleListTitle.textContent = title

@@ -165,7 +165,6 @@ export class ModuleEdit {
             appTabBody: 'div',
         })
 
-        this.tabInput = this.elems.appTabs.elements.namedItem('appTab')
         for (let tabButton of this.elems.appTabs.elements) {
             if (tabButton instanceof HTMLInputElement) {
                 tabButton.addEventListener('change', () => this.updateTab())
@@ -287,15 +286,15 @@ export class ModuleEdit {
             }
         }
         if (event.key == 'F1' && !$shortcut.commandKey(event)) {
-            $dom.selectRadioButton(this.tabInput, 'arrange')
+            $dom.selectRadio(this.elems.appTabs, 'appTab', 'arrange')
             this.updateTab()
             return true
         } else if (event.key == 'F2' && !$shortcut.commandKey(event)) {
-            $dom.selectRadioButton(this.tabInput, 'sequence')
+            $dom.selectRadio(this.elems.appTabs, 'appTab', 'sequence')
             this.updateTab()
             return true
         } else if (event.key == 'F3' && !$shortcut.commandKey(event)) {
-            $dom.selectRadioButton(this.tabInput, 'samples')
+            $dom.selectRadio(this.elems.appTabs, 'appTab', 'samples')
             this.updateTab()
             return true
         } else if (event.key == 'F5' && !$shortcut.commandKey(event)) {
@@ -328,7 +327,7 @@ export class ModuleEdit {
 
     /** @private */
     selectedTab() {
-        return $dom.getRadioButtonValue(this.tabInput, '')
+        return $dom.getRadioValue(this.elems.appTabs, 'appTab', '')
     }
 
     /** @private */
