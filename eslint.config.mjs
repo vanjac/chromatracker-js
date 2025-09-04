@@ -2,17 +2,20 @@
 
 import {defineConfig, globalIgnores} from 'eslint/config'
 import js from '@eslint/js'
-import css from "@eslint/css"
+import css from '@eslint/css'
+import globals from 'globals'
+import compat from 'eslint-plugin-compat'
 
 export default defineConfig([
     globalIgnores(['build/']),
     {
         files: ["**/*.js", "**/*.mjs"],
-        plugins: {js},
+        plugins: {js, compat},
         extends: ["js/recommended"],
         languageOptions: {
             ecmaVersion: 2020,
             sourceType: "module",
+            globals: globals.browser,
         },
         rules: {
             "strict": ["error", "global"],
@@ -54,9 +57,10 @@ export default defineConfig([
             ],
             // Deprecated rules (TODO)
             "semi": ["error", "never", {"beforeStatementContinuationChars": "always"}],
-            // TypeScript handles these:
-            "no-undef": "off",
+            // TypeScript handles this:
             "no-unused-vars": "off",
+            // Plugins:
+            "compat/compat": "error",
         },
     },
     {

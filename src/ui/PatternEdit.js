@@ -88,6 +88,10 @@ const template = $dom.html`
 </div>
 `
 
+function vibrate() {
+    navigator.vibrate?.(1) // eslint-disable-line compat/compat
+}
+
 export class PatternEdit {
     /**
      * @param {HTMLElement} view
@@ -184,12 +188,12 @@ export class PatternEdit {
 
         makeKeyButton(this.elems.write, id => {
             this.write(id)
-            navigator.vibrate?.(1)
+            vibrate()
         })
 
         makeKeyButton(this.elems.clear, id => {
             this.erase(id)
-            navigator.vibrate?.(1)
+            vibrate()
         })
 
         makeKeyButton(this.elems.lift, id => this.lift(id))
@@ -199,11 +203,11 @@ export class PatternEdit {
         this.elems.paste.addEventListener('click', () => this.paste())
         this.elems.insert.addEventListener('click', () => {
             this.insert()
-            navigator.vibrate?.(1)
+            vibrate()
         })
         this.elems.delete.addEventListener('click', () => {
             this.delete()
-            navigator.vibrate?.(1)
+            vibrate()
         })
 
         this.view.appendChild(fragment)
