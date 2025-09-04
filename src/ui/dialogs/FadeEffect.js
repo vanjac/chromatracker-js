@@ -7,7 +7,7 @@ import global from '../GlobalState.js'
 
 const template = $dom.html`
 <dialog>
-    <form>
+    <form id="form">
         <h3>Fade</h3>
         <div class="hflex">
             <div class="flex-grow"></div>
@@ -53,27 +53,27 @@ export class FadeEffect {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
-
         /** @private */
-        this.form = fragment.querySelector('form')
-        /** @private @type {HTMLInputElement} */
-        this.startAmpInput = fragment.querySelector('#startAmp')
-        /** @private @type {HTMLInputElement} */
-        this.endAmpInput = fragment.querySelector('#endAmp')
-        /** @private @type {HTMLInputElement} */
-        this.ditherInput = fragment.querySelector('#dither')
-
-        fragment.querySelector('#fadeIn').addEventListener('click', () => {
-            this.startAmpInput.valueAsNumber = 0
-            this.endAmpInput.valueAsNumber = 1
-        })
-        fragment.querySelector('#fadeOut').addEventListener('click', () => {
-            this.startAmpInput.valueAsNumber = 1
-            this.endAmpInput.valueAsNumber = 0
+        this.elems = $dom.getElems(fragment, {
+            form: 'form',
+            startAmp: 'input',
+            endAmp: 'input',
+            dither: 'input',
+            fadeIn: 'button',
+            fadeOut: 'button',
         })
 
-        fragment.querySelector('form').addEventListener('submit', () => this.submit())
-        $dom.restoreFormData(this.form, inputNames, global.effectFormData)
+        this.elems.fadeIn.addEventListener('click', () => {
+            this.elems.startAmp.valueAsNumber = 0
+            this.elems.endAmp.valueAsNumber = 1
+        })
+        this.elems.fadeOut.addEventListener('click', () => {
+            this.elems.startAmp.valueAsNumber = 1
+            this.elems.endAmp.valueAsNumber = 0
+        })
+
+        this.elems.form.addEventListener('submit', () => this.submit())
+        $dom.restoreFormData(this.elems.form, inputNames, global.effectFormData)
 
         this.view.appendChild(fragment)
     }
@@ -81,11 +81,11 @@ export class FadeEffect {
     /** @private */
     submit() {
         this.onComplete({
-            startAmp: this.startAmpInput.valueAsNumber,
-            endAmp: this.endAmpInput.valueAsNumber,
-            dithering: this.ditherInput.checked,
+            startAmp: this.elems.startAmp.valueAsNumber,
+            endAmp: this.elems.endAmp.valueAsNumber,
+            dithering: this.elems.dither.checked,
         })
-        $dom.saveFormData(this.form, inputNames, global.effectFormData)
+        $dom.saveFormData(this.elems.form, inputNames, global.effectFormData)
     }
 }
 export const FadeEffectElement = $dom.defineView('fade-effect', FadeEffect)

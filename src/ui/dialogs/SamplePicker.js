@@ -4,7 +4,7 @@ import * as $mod from '../../edit/Module.js'
 import * as $icons from '../../gen/Icons.js'
 import {makeKeyButton} from '../KeyPad.js'
 import {Cell, Sample, Module} from '../../Model.js'
-import {freeze, type, invoke, callbackDebugObject} from '../../Util.js'
+import {freeze, invoke, callbackDebugObject} from '../../Util.js'
 /** @import {JamCallbacks} from '../ModuleEdit.js' */
 
 const template = $dom.html`
@@ -53,12 +53,14 @@ export class SamplePicker {
         for (let [idx, sample] of this.module.samples.entries()) {
             if (!sample) { continue }
             let itemFrag = itemTemplate.cloneNode(true)
-            let selectButton = type(HTMLButtonElement, itemFrag.querySelector('#select'))
-            let nameSpan = itemFrag.querySelector('#name')
-            let previewButton = type(HTMLButtonElement, itemFrag.querySelector('#preview'))
-            nameSpan.textContent = `${idx.toString().padStart(2, '0')}: ${sample.name}`
-            selectButton.addEventListener('click', () => this.select(sample))
-            makeKeyButton(previewButton, id => {
+            let {select, name, preview} = $dom.getElems(itemFrag, {
+                select: 'button',
+                name: 'span',
+                preview: 'button',
+            })
+            name.textContent = `${idx.toString().padStart(2, '0')}: ${sample.name}`
+            select.addEventListener('click', () => this.select(sample))
+            makeKeyButton(preview, id => {
                 invoke(this.callbacks.jamPlay, id, Cell.empty, sample)
             })
             buttonList.appendChild(itemFrag)

@@ -29,7 +29,7 @@ const graphFreq = new Float32Array(numGraphFreq)
 
 const template = $dom.html`
 <dialog>
-    <form>
+    <form id="form">
         <h3>Filter / EQ</h3>
         <div class="hflex">
             <canvas class="wave-canvas" id="graph" width="512" height="128"></canvas>
@@ -102,28 +102,21 @@ export class FilterEffect {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
-
         /** @private */
-        this.form = fragment.querySelector('form')
-        /** @private @type {HTMLInputElement} */
-        this.typeInput = fragment.querySelector('#filterType')
-        /** @private @type {HTMLInputElement} */
-        this.envelopeEnableInput = fragment.querySelector('#freqEnvelope')
-        /** @private @type {HTMLInputElement} */
-        this.freqStartInput = fragment.querySelector('#frequency')
-        /** @private @type {HTMLInputElement} */
-        this.freqEndInput = fragment.querySelector('#freqEnd')
-        /** @private @type {HTMLInputElement} */
-        this.qInput = fragment.querySelector('#q')
-        /** @private @type {HTMLInputElement} */
-        this.gainInput = fragment.querySelector('#gain')
-        /** @private @type {HTMLInputElement} */
-        this.ditherInput = fragment.querySelector('#dither')
-        /** @private @type {HTMLCanvasElement} */
-        this.graph = fragment.querySelector('#graph')
+        this.elems = $dom.getElems(fragment, {
+            form: 'form',
+            filterType: 'select',
+            freqEnvelope: 'input',
+            frequency: 'input',
+            freqEnd: 'input',
+            q: 'input',
+            gain: 'input',
+            dither: 'input',
+            graph: 'canvas',
+        })
 
-        fragment.querySelector('form').addEventListener('submit', () => this.submit())
-        $dom.restoreFormData(this.form, inputNames, global.effectFormData)
+        this.elems.form.addEventListener('submit', () => this.submit())
+        $dom.restoreFormData(this.elems.form, inputNames, global.effectFormData)
 
         /** @private */
         this.context = new OfflineAudioContext(1, 1, defaultSampleRate)
@@ -134,14 +127,14 @@ export class FilterEffect {
         this.updateEnvelopeEnabled()
         this.updateGraph()
 
-        this.typeInput.addEventListener('input', () => {
+        this.elems.filterType.addEventListener('input', () => {
             this.updateFilterType()
             this.updateGraph()
         })
-        this.envelopeEnableInput.addEventListener('change', () => this.updateEnvelopeEnabled())
-        this.freqStartInput.addEventListener('input', () => this.updateGraph())
-        this.qInput.addEventListener('input', () => this.updateGraph())
-        this.gainInput.addEventListener('input', () => this.updateGraph())
+        this.elems.freqEnvelope.addEventListener('change', () => this.updateEnvelopeEnabled())
+        this.elems.frequency.addEventListener('input', () => this.updateGraph())
+        this.elems.q.addEventListener('input', () => this.updateGraph())
+        this.elems.gain.addEventListener('input', () => this.updateGraph())
 
         this.view.appendChild(fragment)
     }
@@ -157,32 +150,32 @@ export class FilterEffect {
             lowshelf:  [false, true],
             highshelf: [false, true],
             peaking:   [true, true],
-        }[this.typeInput.value]
+        }[this.elems.filterType.value]
 
-        this.qInput.disabled = !useQ
-        this.gainInput.disabled = !useGain
+        this.elems.q.disabled = !useQ
+        this.elems.gain.disabled = !useGain
     }
 
     /** @private */
     updateEnvelopeEnabled() {
-        this.freqEndInput.disabled = !this.envelopeEnableInput.checked
+        this.elems.freqEnd.disabled = !this.elems.freqEnvelope.checked
     }
 
     /** @private */
     updateGraph() {
-        this.filter.type = /** @type {BiquadFilterType} */(this.typeInput.value)
-        this.filter.frequency.value = this.freqStartInput.valueAsNumber || 0
-        this.filter.Q.value = this.qInput.valueAsNumber || 0
-        this.filter.gain.value = this.gainInput.valueAsNumber || 0
+        this.filter.type = /** @type {BiquadFilterType} */(this.elems.filterType.value)
+        this.filter.frequency.value = this.elems.frequency.valueAsNumber || 0
+        this.filter.Q.value = this.elems.q.valueAsNumber || 0
+        this.filter.gain.value = this.elems.gain.valueAsNumber || 0
 
         let magResponse = new Float32Array(numGraphFreq)
         let phaseResponse = new Float32Array(numGraphFreq)
         this.filter.getFrequencyResponse(graphFreq, magResponse, phaseResponse)
 
-        let ctx = this.graph.getContext('2d')
+        let ctx = this.elems.graph.getContext('2d')
         // 'currentColor' doesn't work in Chrome or Safari
         ctx.strokeStyle = window.getComputedStyle(this.view).getPropertyValue('--color-fg')
-        let {width, height} = this.graph
+        let {width, height} = this.elems.graph
         ctx.clearRect(0, 0, width, height)
 
         ctx.beginPath()
@@ -198,14 +191,14 @@ export class FilterEffect {
     /** @private */
     submit() {
         this.onComplete({
-            type: /** @type {BiquadFilterType} */(this.typeInput.value),
-            freqStart: this.freqStartInput.valueAsNumber,
-            freqEnd: this.envelopeEnableInput.checked ? this.freqEndInput.valueAsNumber : null,
-            q: this.qInput.valueAsNumber,
-            gain: this.gainInput.valueAsNumber,
-            dither: this.ditherInput.checked
+            type: /** @type {BiquadFilterType} */(this.elems.filterType.value),
+            freqStart: this.elems.frequency.valueAsNumber,
+            freqEnd: this.elems.freqEnvelope.checked ? this.elems.freqEnd.valueAsNumber : null,
+            q: this.elems.q.valueAsNumber,
+            gain: this.elems.gain.valueAsNumber,
+            dither: this.elems.dither.checked
         })
-        $dom.saveFormData(this.form, inputNames, global.effectFormData)
+        $dom.saveFormData(this.elems.form, inputNames, global.effectFormData)
     }
 }
 export const FilterEffectElement = $dom.defineView('filter-effect', FilterEffect)

@@ -5,7 +5,7 @@ import global from '../GlobalState.js'
 
 const template = $dom.html`
 <dialog>
-    <form>
+    <form id="form">
         <h3>Import Audio</h3>
         <div class="properties-grid">
             <label for="resample">Resample (Hz):</label>
@@ -55,22 +55,19 @@ export class AudioImport {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
-
         /** @private */
-        this.form = fragment.querySelector('form')
-        /** @private @type {HTMLInputElement} */
-        this.sampleRateInput = fragment.querySelector('#sampleRate')
-        /** @private @type {HTMLSelectElement} */
-        this.channelSelect = fragment.querySelector('#channel')
-        /** @private @type {HTMLInputElement} */
-        this.ditherInput = fragment.querySelector('#dither')
-        /** @private @type {HTMLInputElement} */
-        this.normalizeInput = fragment.querySelector('#normalize')
+        this.elems = $dom.getElems(fragment, {
+            form: 'form',
+            sampleRate: 'input',
+            channel: 'select',
+            dither: 'input',
+            normalize: 'input',
+        })
 
-        this.sampleRateInput.disabled = !this.enableResample
+        this.elems.sampleRate.disabled = !this.enableResample
 
-        fragment.querySelector('form').addEventListener('submit', () => this.submit())
-        $dom.restoreFormData(this.form, inputNames, global.effectFormData)
+        this.elems.form.addEventListener('submit', () => this.submit())
+        $dom.restoreFormData(this.elems.form, inputNames, global.effectFormData)
 
         this.view.appendChild(fragment)
     }
@@ -78,12 +75,12 @@ export class AudioImport {
     /** @private */
     submit() {
         this.onComplete({
-            sampleRate: this.sampleRateInput.valueAsNumber,
-            channel: this.channelSelect.selectedIndex,
-            dithering: this.ditherInput.checked,
-            normalize: this.normalizeInput.checked,
+            sampleRate: this.elems.sampleRate.valueAsNumber,
+            channel: this.elems.channel.selectedIndex,
+            dithering: this.elems.dither.checked,
+            normalize: this.elems.normalize.checked,
         })
-        $dom.saveFormData(this.form, inputNames, global.effectFormData)
+        $dom.saveFormData(this.elems.form, inputNames, global.effectFormData)
     }
 }
 export const AudioImportElement = $dom.defineView('audio-import', AudioImport)

@@ -5,7 +5,7 @@ import global from '../GlobalState.js'
 
 const template = $dom.html`
 <dialog>
-    <form>
+    <form id="form">
         <h3>Amplify</h3>
         <div class="properties-grid">
             <label for="amp">Amount:</label>
@@ -36,16 +36,15 @@ export class AmplifyEffect {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
-
         /** @private */
-        this.form = fragment.querySelector('form')
-        /** @private @type {HTMLInputElement} */
-        this.amountInput = fragment.querySelector('#amp')
-        /** @private @type {HTMLInputElement} */
-        this.ditherInput = fragment.querySelector('#dither')
+        this.elems = $dom.getElems(fragment, {
+            form: 'form',
+            amp: 'input',
+            dither: 'input',
+        })
 
-        fragment.querySelector('form').addEventListener('submit', () => this.submit())
-        $dom.restoreFormData(this.form, inputNames, global.effectFormData)
+        this.elems.form.addEventListener('submit', () => this.submit())
+        $dom.restoreFormData(this.elems.form, inputNames, global.effectFormData)
 
         this.view.appendChild(fragment)
     }
@@ -53,10 +52,10 @@ export class AmplifyEffect {
     /** @private */
     submit() {
         this.onComplete({
-            amount: this.amountInput.valueAsNumber,
-            dithering: this.ditherInput.checked,
+            amount: this.elems.amp.valueAsNumber,
+            dithering: this.elems.dither.checked,
         })
-        $dom.saveFormData(this.form, inputNames, global.effectFormData)
+        $dom.saveFormData(this.elems.form, inputNames, global.effectFormData)
     }
 }
 export const AmplifyEffectElement = $dom.defineView('amplify-effect', AmplifyEffect)
