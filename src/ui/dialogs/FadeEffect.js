@@ -93,6 +93,6 @@ export const FadeEffectElement = $dom.defineView('fade-effect', FadeEffect)
 let testElem
 if (import.meta.main) {
     testElem = new FadeEffectElement()
-    testElem.controller.onComplete = console.log
+    testElem.ctrl.onComplete = console.log
     $dialog.open(testElem)
 }

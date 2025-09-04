@@ -81,8 +81,8 @@ export const SamplePickerElement = $dom.defineView('sample-picker', SamplePicker
 let testElem
 if (import.meta.main) {
     testElem = new SamplePickerElement()
-    testElem.controller.callbacks = callbackDebugObject()
+    testElem.ctrl.callbacks = callbackDebugObject()
     let samples = freeze([null, Sample.empty])
-    testElem.controller.module = freeze({...$mod.defaultNew, samples})
+    testElem.ctrl.module = freeze({...$mod.defaultNew, samples})
     $dialog.open(testElem)
 }

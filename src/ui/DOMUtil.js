@@ -17,17 +17,17 @@ export const matchISO8859_1 = '[ -~&nbsp;-\u00FF]*' // regex for HTML inputs
 export class ViewElement extends HTMLElement { // eslint-disable-line no-restricted-syntax
     constructor() {
         super()
-        this.controller = new this._controllerClass(this)
+        this.ctrl = new this._controllerClass(this)
     }
 
     connectedCallback() {
         this.classList.add('custom-element')
-        this.controller.connectedCallback?.(this)
+        this.ctrl.connectedCallback?.(this)
         this.dispatchEvent(new Event('connected'))
     }
 
     disconnectedCallback() {
-        this.controller.disconnectedCallback?.(this)
+        this.ctrl.disconnectedCallback?.(this)
         this.dispatchEvent(new Event('disconnected'))
     }
 }
@@ -260,6 +260,7 @@ export class ValidatedNumberInput {
      * @param {(value: number, commit: boolean) => void} onChange
      */
     constructor(input, onChange=(()=>{})) {
+        /** @private */
         this.input = input
         /** @private @type {number | null} */
         this.value = null

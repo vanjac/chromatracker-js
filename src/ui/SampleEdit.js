@@ -16,7 +16,7 @@ import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
 import {SamplePickerElement} from './dialogs/SamplePicker.js'
-import {invoke, callbackDebugObject, freeze, type} from '../Util.js'
+import {invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, Effect, mod, Sample, Module, CellPart} from '../Model.js'
 import global from './GlobalState.js'
 import './WaveEdit.js'
@@ -58,7 +58,7 @@ const template = $dom.html`
         </div>
     </div>
 
-    <wave-edit></wave-edit>
+    <wave-edit id="waveEdit"></wave-edit>
 
     <div class="hflex flex-wrap">
         <div class="hflex">
@@ -132,109 +132,103 @@ export class SampleEdit {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
+        /** @private */
+        this.elems = $dom.getElems(fragment, {
+            name: 'input',
+            waveEdit: 'wave-edit',
+            loopToggle: 'input',
+            selectLoop: 'button',
+            loopStart: 'input',
+            loopEnd: 'input',
+            selectAll: 'button',
+            selectNone: 'button',
+            trim: 'button',
+            cut: 'button',
+            copy: 'button',
+            paste: 'button',
+            effect: 'button',
+            volume: 'input',
+            volumeOut: 'output',
+            finetune: 'input',
+            finetuneOut: 'output',
+            open: 'button',
+            import: 'button',
+            save: 'button',
+            warning: 'strong',
+            useOffset: 'button',
+            offsetEffect: 'span',
+        })
 
-        /** @private @type {HTMLInputElement} */
-        this.nameInput = fragment.querySelector('#name')
-        $dom.addInputListeners(this.nameInput, commit => {
-            if (!commit || this.nameInput.reportValidity()) {
-                this.changeSample(sample => {sample.name = this.nameInput.value}, commit)
+        $dom.addInputListeners(this.elems.name, commit => {
+            if (!commit || this.elems.name.reportValidity()) {
+                this.changeSample(sample => {sample.name = this.elems.name.value}, commit)
             }
         })
 
-        /** @private */
-        this.waveEdit = fragment.querySelector('wave-edit')
-
-        /** @private @type {HTMLInputElement} */
-        this.loopToggle = fragment.querySelector('#loopToggle')
-        this.loopToggle.addEventListener('change', () => {
-            if (this.loopToggle.checked) {
+        this.elems.loopToggle.addEventListener('change', () => {
+            if (this.elems.loopToggle.checked) {
                 this.loopSelection()
             } else {
                 this.clearLoop()
             }
         })
-        /** @private @type {HTMLButtonElement} */
-        this.selectLoopButton = fragment.querySelector('#selectLoop')
-        this.selectLoopButton.addEventListener('click', () => this.selectLoop())
+        this.elems.selectLoop.addEventListener('click', () => this.selectLoop())
         /** @private */
         this.loopStartInput = new $dom.ValidatedNumberInput(
-            fragment.querySelector('#loopStart'), (value, commit) => {
+            this.elems.loopStart, (value, commit) => {
                 if (commit) {
                     this.changeSample(sample => {sample.loopStart = value}, true, true)
                 }
             })
         /** @private */
         this.loopEndInput = new $dom.ValidatedNumberInput(
-            fragment.querySelector('#loopEnd'), (value, commit) => {
+            this.elems.loopEnd, (value, commit) => {
                 if (commit) {
                     this.changeSample(sample => {sample.loopEnd = value}, true, true)
                 }
             })
 
-        /** @private @type {HTMLButtonElement} */
-        this.selectAllButton = fragment.querySelector('#selectAll')
-        this.selectAllButton.addEventListener('click', () => this.waveEdit.controller.selectAll())
-        /** @private @type {HTMLButtonElement} */
-        this.selectNoneButton = fragment.querySelector('#selectNone')
-        this.selectNoneButton.addEventListener('click', () => this.waveEdit.controller.selectNone())
+        this.elems.selectAll.addEventListener('click', () => this.elems.waveEdit.ctrl.selectAll())
+        this.elems.selectNone.addEventListener('click', () => this.elems.waveEdit.ctrl.selectNone())
 
-        /** @private @type {HTMLButtonElement} */
-        this.trimButton = fragment.querySelector('#trim')
-        this.trimButton.addEventListener('click', () => this.trim())
-        /** @private @type {HTMLButtonElement} */
-        this.cutButton = fragment.querySelector('#cut')
-        this.cutButton.addEventListener('click', () => this.cut())
-        fragment.querySelector('#copy').addEventListener('click', () => this.copy())
-        fragment.querySelector('#paste').addEventListener('click', () => this.paste())
-        fragment.querySelector('#effect').addEventListener('click', () => this.effectMenu())
+        this.elems.trim.addEventListener('click', () => this.trim())
+        this.elems.cut.addEventListener('click', () => this.cut())
+        this.elems.copy.addEventListener('click', () => this.copy())
+        this.elems.paste.addEventListener('click', () => this.paste())
+        this.elems.effect.addEventListener('click', () => this.effectMenu())
 
-        /** @private @type {HTMLInputElement} */
-        this.volumeInput = fragment.querySelector('#volume')
-        /** @private @type {HTMLOutputElement} */
-        this.volumeOutput = fragment.querySelector('#volumeOut')
-        $dom.addInputListeners(this.volumeInput, commit => {
-            this.changeSample(sample => {sample.volume = this.volumeInput.valueAsNumber}, commit)
-            this.volumeOutput.value = this.volumeInput.value
+        $dom.addInputListeners(this.elems.volume, commit => {
+            this.changeSample(sample => {sample.volume = this.elems.volume.valueAsNumber}, commit)
+            this.elems.volumeOut.value = this.elems.volume.value
         })
 
-        /** @private @type {HTMLInputElement} */
-        this.finetuneInput = fragment.querySelector('#finetune')
-        /** @private @type {HTMLOutputElement} */
-        this.finetuneOutput = fragment.querySelector('#finetuneOut')
-        $dom.addInputListeners(this.finetuneInput, commit => {
-            this.changeSample(sample => {sample.finetune = this.finetuneInput.valueAsNumber},
+        $dom.addInputListeners(this.elems.finetune, commit => {
+            this.changeSample(sample => {sample.finetune = this.elems.finetune.valueAsNumber},
                 commit)
-            this.finetuneOutput.value = this.finetuneInput.value
+            this.elems.finetuneOut.value = this.elems.finetune.value
             if (!commit) {
                 invoke(this.callbacks.jamPlay, 'finetune')
             } else {
                 invoke(this.callbacks.jamRelease, 'finetune')
             }
         })
-        this.finetuneInput.addEventListener('pointerup',
+        this.elems.finetune.addEventListener('pointerup',
             () => invoke(this.callbacks.jamRelease, 'finetune'))
-        this.finetuneInput.addEventListener('pointerleave',
+        this.elems.finetune.addEventListener('pointerleave',
             () => invoke(this.callbacks.jamRelease, 'finetune'))
 
-        fragment.querySelector('#open').addEventListener('click', () => this.pickAudioFile())
-        fragment.querySelector('#import').addEventListener('click', () => this.pickModule())
-        fragment.querySelector('#save').addEventListener('click', () => this.saveAudioFile())
+        this.elems.open.addEventListener('click', () => this.pickAudioFile())
+        this.elems.import.addEventListener('click', () => this.pickModule())
+        this.elems.save.addEventListener('click', () => this.saveAudioFile())
 
-        /** @private @type {HTMLElement} */
-        this.warningText = fragment.querySelector('#warning')
-
-        /** @private @type {HTMLButtonElement} */
-        this.offsetButton = fragment.querySelector('#useOffset')
-        makeKeyButton(this.offsetButton, id => {
+        makeKeyButton(this.elems.useOffset, id => {
             this.useSampleOffset()
             invoke(this.callbacks.jamPlay, id)
         })
-        /** @private @type {HTMLElement} */
-        this.offsetEffectSpan = fragment.querySelector('#offsetEffect')
 
         this.view.appendChild(fragment)
 
-        this.waveEdit.controller.callbacks = {
+        this.elems.waveEdit.ctrl.callbacks = {
             onChange: (...args) => invoke(this.callbacks.onChange, ...args),
             updateSelection: this.updateSelection.bind(this),
         }
@@ -244,7 +238,7 @@ export class SampleEdit {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
-        if (this.waveEdit.controller.keyDown(event)) {
+        if (this.elems.waveEdit.ctrl.keyDown(event)) {
             return true
         }
         if (!$dom.needsKeyboardInput(event.target)) {
@@ -302,25 +296,25 @@ export class SampleEdit {
             return
         }
 
-        this.waveEdit.controller.setSample(sample)
+        this.elems.waveEdit.ctrl.setSample(sample)
 
-        this.nameInput.value = sample.name
+        this.elems.name.value = sample.name
 
-        this.loopStartInput.input.max = this.loopEndInput.input.max = sample.wave.length.toString()
+        this.elems.loopStart.max = this.elems.loopEnd.max = sample.wave.length.toString()
         this.loopStartInput.setValue(sample.loopStart)
         this.loopEndInput.setValue(sample.loopEnd)
         let showLoop = sample.wave.length && Sample.hasLoop(sample)
-        this.loopToggle.checked = showLoop
-        this.selectLoopButton.disabled = !showLoop
-        this.loopStartInput.input.disabled = !showLoop
-        this.loopEndInput.input.disabled = !showLoop
+        this.elems.loopToggle.checked = showLoop
+        this.elems.selectLoop.disabled = !showLoop
+        this.elems.loopStart.disabled = !showLoop
+        this.elems.loopEnd.disabled = !showLoop
 
-        this.volumeInput.valueAsNumber = sample.volume
-        this.volumeOutput.value = sample.volume.toString()
-        this.finetuneInput.valueAsNumber = sample.finetune
-        this.finetuneOutput.value = sample.finetune.toString()
+        this.elems.volume.valueAsNumber = sample.volume
+        this.elems.volumeOut.value = sample.volume.toString()
+        this.elems.finetune.valueAsNumber = sample.finetune
+        this.elems.finetuneOut.value = sample.finetune.toString()
 
-        this.warningText.textContent = sample.wave.length > mod.maxSampleLength ? 'Too long!' : ''
+        this.elems.warning.textContent = sample.wave.length > mod.maxSampleLength ? 'Too long!' : ''
 
         this.viewSample = sample
     }
@@ -329,24 +323,24 @@ export class SampleEdit {
      * @param {number[]} positions
      */
     setPlayPos(positions) {
-        this.waveEdit.controller.setPlayPos(positions)
+        this.elems.waveEdit.ctrl.setPlayPos(positions)
     }
 
     /** @private */
     updateSelection() {
-        let rangeSelected = this.waveEdit.controller.rangeSelected()
+        let rangeSelected = this.elems.waveEdit.ctrl.rangeSelected()
 
-        this.trimButton.disabled = !rangeSelected
-        this.cutButton.disabled = !rangeSelected
+        this.elems.trim.disabled = !rangeSelected
+        this.elems.cut.disabled = !rangeSelected
 
-        let anySelected = this.waveEdit.controller.anySelected()
-        this.selectAllButton.classList.toggle('hide', anySelected)
-        this.selectNoneButton.classList.toggle('hide', !anySelected)
+        let anySelected = this.elems.waveEdit.ctrl.anySelected()
+        this.elems.selectAll.classList.toggle('hide', anySelected)
+        this.elems.selectNone.classList.toggle('hide', !anySelected)
 
         let {effect, param0, param1} = this.getOffsetEffect()
-        this.offsetEffectSpan.textContent =
+        this.elems.offsetEffect.textContent =
             (effect.toString(16) + param0.toString(16) + param1.toString(16)).toUpperCase()
-        this.offsetButton.classList.toggle('timing-effect', effect != 0)
+        this.elems.useOffset.classList.toggle('timing-effect', effect != 0)
     }
 
     /**
@@ -394,9 +388,9 @@ export class SampleEdit {
      */
     importWav(buffer, name) {
         let dialog = new AudioImportElement()
-        dialog.controller.enableResample = false
+        dialog.ctrl.enableResample = false
         $dialog.open(dialog, {dismissable: true})
-        dialog.controller.onComplete = async params => {
+        dialog.ctrl.onComplete = async params => {
             let waitDialog = $dialog.open(new WaitDialogElement())
             await $dom.fullRefresh()
             let newSample
@@ -423,7 +417,7 @@ export class SampleEdit {
      */
     importAudio(buffer, name) {
         let dialog = $dialog.open(new AudioImportElement(), {dismissable: true})
-        dialog.controller.onComplete = async params => {
+        dialog.ctrl.onComplete = async params => {
             let waitDialog = $dialog.open(new WaitDialogElement())
             let wave, volume
             try {
@@ -451,8 +445,8 @@ export class SampleEdit {
      */
     modPickSample(mod) {
         let dialog = new SamplePickerElement()
-        dialog.controller.module = mod
-        dialog.controller.callbacks = {
+        dialog.ctrl.module = mod
+        dialog.ctrl.callbacks = {
             jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
             jamRelease: (...args) => invoke(this.callbacks.jamRelease, ...args),
             onDismiss() {},
@@ -494,8 +488,8 @@ export class SampleEdit {
     /** @private */
     getOffsetEffect() {
         let effect = 0, param0 = 0, param1 = 0
-        if (this.waveEdit.controller.anySelected()) {
-            let offset = Math.min(255, Math.round(this.waveEdit.controller.selMin() / 256))
+        if (this.elems.waveEdit.ctrl.anySelected()) {
+            let offset = Math.min(255, Math.round(this.elems.waveEdit.ctrl.selMin() / 256))
             if (offset > 0) {
                 effect = Effect.SampleOffset
                 param0 = offset >> 4
@@ -508,7 +502,7 @@ export class SampleEdit {
     /** @private */
     loopSelection() {
         this.changeSample(sample => {
-            [sample.loopStart, sample.loopEnd] = this.waveEdit.controller.selRangeOrAll()
+            [sample.loopStart, sample.loopEnd] = this.elems.waveEdit.ctrl.selRangeOrAll()
         }, true, true)
     }
 
@@ -520,36 +514,36 @@ export class SampleEdit {
     /** @private */
     selectLoop() {
         if (Sample.hasLoop(this.viewSample)) {
-            this.waveEdit.controller.setSel(this.viewSample.loopStart, this.viewSample.loopEnd)
+            this.elems.waveEdit.ctrl.setSel(this.viewSample.loopStart, this.viewSample.loopEnd)
         }
     }
 
     /** @private */
     trim() {
-        if (this.waveEdit.controller.rangeSelected()) {
-            let [start, end] = this.waveEdit.controller.sel()
+        if (this.elems.waveEdit.ctrl.rangeSelected()) {
+            let [start, end] = this.elems.waveEdit.ctrl.sel()
             invoke(this.callbacks.onChange, $sample.trim(this.viewSample, start, end), true)
-            this.waveEdit.controller.selectNone()
+            this.elems.waveEdit.ctrl.selectNone()
         }
     }
 
     /** @private */
     copy() {
-        let [start, end] = this.waveEdit.controller.selRangeOrAll()
+        let [start, end] = this.elems.waveEdit.ctrl.selRangeOrAll()
         global.audioClipboard = this.viewSample.wave.subarray(start, end)
     }
 
     /** @private */
     cut() {
         this.copy()
-        let [start, end] = this.waveEdit.controller.selRangeOrAll()
+        let [start, end] = this.elems.waveEdit.ctrl.selRangeOrAll()
         invoke(this.callbacks.onChange, $sample.del(this.viewSample, start, end), true)
-        this.waveEdit.controller.setSel(start, start)
+        this.elems.waveEdit.ctrl.setSel(start, start)
     }
 
     /** @private */
     paste() {
-        let [start, end] = this.waveEdit.controller.selOrAll()
+        let [start, end] = this.elems.waveEdit.ctrl.selOrAll()
         this.replace(start, end, global.audioClipboard)
     }
 
@@ -561,7 +555,7 @@ export class SampleEdit {
     replace(start, end, wave) {
         invoke(this.callbacks.onChange, $sample.splice(this.viewSample, start, end, wave), true)
         let newEnd = start + wave.length
-        this.waveEdit.controller.setSel(newEnd, newEnd)
+        this.elems.waveEdit.ctrl.setSel(newEnd, newEnd)
     }
 
     /** @private */
@@ -633,7 +627,7 @@ export class SampleEdit {
      * @param {(src: Readonly<Int8Array>, dst: Int8Array) => void} effect
      */
     applyEffect(effect) {
-        let [start, end] = this.waveEdit.controller.selRangeOrAll()
+        let [start, end] = this.elems.waveEdit.ctrl.selRangeOrAll()
         invoke(this.callbacks.onChange,
             $sample.applyEffect(this.viewSample, start, end, effect), true)
     }
@@ -641,7 +635,7 @@ export class SampleEdit {
     /** @private */
     amplify() {
         let dialog = $dialog.open(new AmplifyEffectElement(), {dismissable: true})
-        dialog.controller.onComplete = params => {
+        dialog.ctrl.onComplete = params => {
             this.applyEffect($wave.amplify.bind(null, params))
         }
     }
@@ -649,7 +643,7 @@ export class SampleEdit {
     /** @private */
     fade() {
         let dialog = $dialog.open(new FadeEffectElement(), {dismissable: true})
-        dialog.controller.onComplete = params => {
+        dialog.ctrl.onComplete = params => {
             this.applyEffect($wave.fade.bind(null, {...params, exp: 2}))
         }
     }
@@ -658,12 +652,12 @@ export class SampleEdit {
     resample() {
         let defaultValue = global.lastResampleSemitones
         InputDialog.open('Semitones:', 'Resample', defaultValue).then(semitones => {
-            let [start, end] = this.waveEdit.controller.selRangeOrAll()
+            let [start, end] = this.elems.waveEdit.ctrl.selRangeOrAll()
             let length = Sample.roundToNearest((end - start) * (2 ** (-semitones / 12)))
             let newWave = $sample.spliceEffect(this.viewSample, start, end, length, $wave.resample)
             invoke(this.callbacks.onChange, newWave, true)
-            if (this.waveEdit.controller.rangeSelected()) {
-                this.waveEdit.controller.setSel(start, start + length)
+            if (this.elems.waveEdit.ctrl.rangeSelected()) {
+                this.elems.waveEdit.ctrl.setSel(start, start + length)
             }
             global.lastResampleSemitones = semitones
         }).catch(console.warn)
@@ -672,8 +666,8 @@ export class SampleEdit {
     /** @private */
     filter() {
         let dialog = $dialog.open(new FilterEffectElement(), {dismissable: true})
-        dialog.controller.onComplete = params => {
-            let [start, end] = this.waveEdit.controller.selRangeOrAll()
+        dialog.ctrl.onComplete = params => {
+            let [start, end] = this.elems.waveEdit.ctrl.selRangeOrAll()
             let waitDialog = $dialog.open(new WaitDialogElement())
             $sample.applyNode(this.viewSample, start, end, params.dither,
                 ctx => {
@@ -700,12 +694,12 @@ export const SampleEditElement = $dom.defineView('sample-edit', SampleEdit)
 let testElem
 if (import.meta.main) {
     testElem = new SampleEditElement()
-    testElem.controller.callbacks = callbackDebugObject({
+    testElem.ctrl.callbacks = callbackDebugObject({
         onChange(sample, commit) {
             console.log('Change', commit)
-            testElem.controller.setSample(sample)
+            testElem.ctrl.setSample(sample)
         },
     })
     $dom.displayMain(testElem)
-    testElem.controller.setSample(Sample.empty)
+    testElem.ctrl.setSample(Sample.empty)
 }

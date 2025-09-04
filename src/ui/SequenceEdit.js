@@ -1,7 +1,6 @@
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
 import * as $module from '../edit/Module.js'
-import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $icons from '../gen/Icons.js'
 import {invoke, callbackDebugObject} from '../Util.js'
@@ -66,31 +65,29 @@ export class SequenceEdit {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
+        /** @private */
+        this.elems = $dom.getElems(fragment, {
+            seqList: 'form',
+            patternSelect: 'select',
+            patternGroup: 'optgroup',
+            seqIns: 'button',
+            seqDel: 'button',
+        })
 
-        /** @private @type {HTMLFormElement} */
-        this.sequenceList = fragment.querySelector('#seqList')
         /** @private @type {Element[]} */
         this.sequenceButtons = []
         /** @private @type {NamedFormItem} */
         this.sequenceInput = null
-        /** @private @type {HTMLSelectElement} */
-        this.select = fragment.querySelector('#patternSelect')
-        /** @private @type {HTMLOptGroupElement} */
-        this.group = fragment.querySelector('#patternGroup')
 
-        $dom.disableFormSubmit(this.sequenceList)
-        /** @private @type {HTMLButtonElement} */
-        this.insButton = fragment.querySelector('#seqIns')
-        this.insButton.addEventListener('click', () => this.seqIns())
-        /** @private @type {HTMLButtonElement} */
-        this.delButton = fragment.querySelector('#seqDel')
-        this.delButton.addEventListener('click', () => this.seqDel())
+        $dom.disableFormSubmit(this.elems.seqList)
+        this.elems.seqIns.addEventListener('click', () => this.seqIns())
+        this.elems.seqDel.addEventListener('click', () => this.seqDel())
 
-        this.select.addEventListener('input', () => {
-            if (this.select.value == 'copy') {
+        this.elems.patternSelect.addEventListener('input', () => {
+            if (this.elems.patternSelect.value == 'copy') {
                 this.seqClone()
             } else {
-                this.seqSet(this.select.selectedIndex)
+                this.seqSet(this.elems.patternSelect.selectedIndex)
             }
         })
 
@@ -164,7 +161,7 @@ export class SequenceEdit {
         for (let [i, num] of sequence.entries()) {
             let label = $dom.makeRadioButton('sequence', i.toString(), num.toString())
             label.classList.add('seq-button')
-            this.sequenceList.appendChild(label)
+            this.elems.seqList.appendChild(label)
             label.addEventListener('change', () => {
                 this.selPos = i
                 invoke(this.callbacks.onSelect)
@@ -172,10 +169,10 @@ export class SequenceEdit {
             })
             this.sequenceButtons.push(label)
         }
-        this.sequenceInput = this.sequenceList.elements.namedItem('sequence')
+        this.sequenceInput = this.elems.seqList.elements.namedItem('sequence')
         $dom.selectRadioButton(this.sequenceInput, this.selPos.toString())
-        this.insButton.disabled = sequence.length >= mod.numSongPositions
-        this.delButton.disabled = sequence.length <= 1
+        this.elems.seqIns.disabled = sequence.length >= mod.numSongPositions
+        this.elems.seqDel.disabled = sequence.length <= 1
         this.updateSel()
     }
 
@@ -189,18 +186,18 @@ export class SequenceEdit {
         console.debug('update num patterns')
         this.viewNumPatterns = patterns.length
 
-        makePatternMenu(this.group, patterns.length)
-        this.select.selectedIndex = this.viewSequence[this.selPos]
+        makePatternMenu(this.elems.patternGroup, patterns.length)
+        this.elems.patternSelect.selectedIndex = this.viewSequence[this.selPos]
     }
 
     /** @private */
     updateSel() {
         let button = this.sequenceButtons[this.selPos]
-        button.after(this.select)
+        button.after(this.elems.patternSelect)
         for (let [i, button] of this.sequenceButtons.entries()) {
             button.classList.toggle('hide', i == this.selPos)
         }
-        this.select.selectedIndex = this.viewSequence[this.selPos]
+        this.elems.patternSelect.selectedIndex = this.viewSequence[this.selPos]
     }
 
     getSelPos() {
@@ -219,7 +216,8 @@ export class SequenceEdit {
     }
 
     scrollToSelPos() {
-        this.select.scrollIntoView({inline: 'center', block: 'center', behavior: 'instant'})
+        this.elems.patternSelect.scrollIntoView(
+            {inline: 'center', block: 'center', behavior: 'instant'})
     }
 
     /**
@@ -244,8 +242,8 @@ export class SequenceEdit {
         invoke(this.callbacks.changeModule, module =>
             $sequence.insert(module, this.selPos, module.sequence[this.selPos - 1]))
         this.scrollToSelPos()
-        this.select.focus() // this opens the dropdown on Safari
-        this.select.showPicker?.() // TODO: works on newer versions of Firefox/Chrome
+        this.elems.patternSelect.focus() // this opens the dropdown on Safari
+        this.elems.patternSelect.showPicker?.() // TODO: works on newer versions of Firefox/Chrome
     }
 
     /** @private */
@@ -267,15 +265,15 @@ let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new SequenceEditElement()
-    testElem.controller.callbacks = callbackDebugObject({
+    testElem.ctrl.callbacks = callbackDebugObject({
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
-            testElem.controller.setSequence(module.sequence)
-            testElem.controller.setPatterns(module.patterns)
+            testElem.ctrl.setSequence(module.sequence)
+            testElem.ctrl.setPatterns(module.patterns)
         },
     })
     $dom.displayMain(testElem)
-    testElem.controller.setSequence(module.sequence)
-    testElem.controller.setPatterns(module.patterns)
+    testElem.ctrl.setSequence(module.sequence)
+    testElem.ctrl.setPatterns(module.patterns)
 }

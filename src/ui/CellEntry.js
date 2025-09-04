@@ -3,7 +3,7 @@ import * as $shortcut from './Shortcut.js'
 import * as $cell from './Cell.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
-import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
+import {invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, CellPart, Sample, Effect, ExtEffect, mod} from '../Model.js'
 import './PianoKeyboard.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
@@ -26,7 +26,7 @@ const template = $dom.html`
             </label>
         </div>
         <div id="entrySections" class="min-width-0">
-            <piano-keyboard></piano-keyboard>
+            <piano-keyboard id="piano"></piano-keyboard>
             <div id="sampleSection" class="hflex">
                 <div class="tap-height"></div>
                 <label class="label-button touch-only" title="Scroll Lock">
@@ -272,55 +272,44 @@ export class CellEntry {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
-
-        /** @private @type {HTMLElement} */
-        this.partToggles = fragment.querySelector('#partToggles')
-        /** @private @type {HTMLInputElement} */
-        this.pitchEnable = fragment.querySelector('#pitchEnable')
-        /** @private @type {HTMLInputElement} */
-        this.sampleEnable = fragment.querySelector('#sampleEnable')
-        /** @private @type {HTMLInputElement} */
-        this.effectEnable = fragment.querySelector('#effectEnable')
-        /** @private @type {HTMLElement} */
-        this.entrySections = fragment.querySelector('#entrySections')
         /** @private */
-        this.piano = fragment.querySelector('piano-keyboard')
-        /** @private @type {HTMLElement} */
-        this.sampleSection = fragment.querySelector('#sampleSection')
-        /** @private @type {HTMLFormElement} */
-        this.sampleList = fragment.querySelector('#sampleList')
+        this.elems = $dom.getElems(fragment, {
+            partToggles: 'div',
+            pitchEnable: 'input',
+            sampleEnable: 'input',
+            effectEnable: 'input',
+            entrySections: 'div',
+            piano: 'piano-keyboard',
+            sampleSection: 'div',
+            sampleList: 'form',
+            effectSection: 'div',
+            resetEffect: 'button',
+            effect: 'button',
+            param0: 'button',
+            param1: 'button',
+            effectKeyboard: 'div',
+            effectKeyboardTitle: 'strong',
+            effectGrid: 'div',
+            sampleScrollLock: 'input',
+            closeEffectKeyboard: 'button',
+        })
+
         /** @private @type {NamedFormItem} */
         this.sampleInput = null
-        /** @private @type {HTMLElement} */
-        this.effectSection = fragment.querySelector('#effectSection')
-        /** @private @type {HTMLButtonElement} */
-        this.resetEffectButton = fragment.querySelector('#resetEffect')
-        /** @private @type {HTMLButtonElement} */
-        this.effectButton = fragment.querySelector('#effect')
-        /** @private @type {HTMLButtonElement} */
-        this.param0Button = fragment.querySelector('#param0')
-        /** @private @type {HTMLButtonElement} */
-        this.param1Button = fragment.querySelector('#param1')
-        /** @private @type {HTMLElement} */
-        this.effectKeyboard = fragment.querySelector('#effectKeyboard')
-        /** @private @type {HTMLElement} */
-        this.effectKeyboardTitle = fragment.querySelector('#effectKeyboardTitle')
-        /** @private @type {HTMLElement} */
-        this.effectGrid = fragment.querySelector('#effectGrid')
 
         /** @private @type {Element[]} */
         this.sampleKeys = []
 
-        this.pitchEnable.addEventListener('change', this.updateEntryParts.bind(this))
-        this.sampleEnable.addEventListener('change', this.updateEntryParts.bind(this))
-        this.effectEnable.addEventListener('change', this.updateEntryParts.bind(this))
+        this.elems.pitchEnable.addEventListener('change', this.updateEntryParts.bind(this))
+        this.elems.sampleEnable.addEventListener('change', this.updateEntryParts.bind(this))
+        this.elems.effectEnable.addEventListener('change', this.updateEntryParts.bind(this))
 
-        this.effectButton.addEventListener('click', () => this.openEffectKeyboard(0))
-        this.param0Button.addEventListener('click', () => this.openEffectKeyboard(1))
-        this.param1Button.addEventListener('click', () => this.openEffectKeyboard(2))
+        this.elems.effect.addEventListener('click', () => this.openEffectKeyboard(0))
+        this.elems.param0.addEventListener('click', () => this.openEffectKeyboard(1))
+        this.elems.param1.addEventListener('click', () => this.openEffectKeyboard(2))
 
-        $dom.disableFormSubmit(this.sampleList)
-        new KeyPad(this.sampleList, (id, elem) => {
+        $dom.disableFormSubmit(this.elems.sampleList)
+        new KeyPad(this.elems.sampleList, (id, elem) => {
             let input = elem.querySelector('input')
             if (input) {
                 this.setSelSample(Number(input.value))
@@ -328,26 +317,25 @@ export class CellEntry {
             }
         })
 
-        let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#sampleScrollLock'))
-        scrollLockCheck.addEventListener('change', () => {
-            this.sampleList.classList.toggle('scroll-lock', scrollLockCheck.checked)
+        this.elems.sampleScrollLock.addEventListener('change', () => {
+            this.elems.sampleList.classList.toggle(
+                'scroll-lock', this.elems.sampleScrollLock.checked)
         })
 
-        makeKeyButton(this.resetEffectButton, id => {
+        makeKeyButton(this.elems.resetEffect, id => {
             this.setCell(Cell.empty, CellPart.effect | CellPart.param)
             invoke(this.callbacks.jamPlay, id)
         })
 
-        fragment.querySelector('#closeEffectKeyboard').addEventListener('click',
-            () => this.closeEffectKeyboard())
-        for (let i = 0; i < this.effectGrid.children.length; i++) {
-            let button = this.effectGrid.children[i]
+        this.elems.closeEffectKeyboard.addEventListener('click', () => this.closeEffectKeyboard())
+        for (let i = 0; i < this.elems.effectGrid.children.length; i++) {
+            let button = this.elems.effectGrid.children[i]
             button.addEventListener('click', () => this.effectKeyboardButton(i))
         }
 
         this.view.appendChild(fragment)
 
-        this.piano.controller.callbacks = {
+        this.elems.piano.ctrl.callbacks = {
             jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
             jamRelease: (...args) => invoke(this.callbacks.jamRelease, ...args),
             pitchChanged: () => invoke(this.callbacks.updateCell),
@@ -367,7 +355,7 @@ export class CellEntry {
                 this.closeEffectKeyboard()
                 return true
             }
-        } else if (this.piano.controller.keyDown(event)) {
+        } else if (this.elems.piano.ctrl.keyDown(event)) {
             return true
         }
         if (!$dom.needsKeyboardInput(event.target)) {
@@ -379,15 +367,15 @@ export class CellEntry {
                 }
             }
             if (event.key == 'p' && event.altKey) {
-                this.pitchEnable.checked = !this.pitchEnable.checked
+                this.elems.pitchEnable.checked = !this.elems.pitchEnable.checked
                 this.updateEntryParts()
                 return true
             } else if (event.key == 's' && event.altKey) {
-                this.sampleEnable.checked = !this.sampleEnable.checked
+                this.elems.sampleEnable.checked = !this.elems.sampleEnable.checked
                 this.updateEntryParts()
                 return true
             } else if (event.key == 'e' && event.altKey) {
-                this.effectEnable.checked = !this.effectEnable.checked
+                this.elems.effectEnable.checked = !this.elems.effectEnable.checked
                 this.updateEntryParts()
                 return true
             } else if (event.key == '1' && event.altKey) {
@@ -461,14 +449,14 @@ export class CellEntry {
     }
 
     onVisible() {
-        this.piano.controller.scrollToSelOctave()
+        this.elems.piano.ctrl.scrollToSelOctave()
     }
 
     /**
      * @returns {Cell}
      */
     getCell() {
-        let pitch = this.piano.controller.getPitch()
+        let pitch = this.elems.piano.ctrl.getPitch()
         let inst = this.selSample()
         let {effect, param0, param1} = this
         return {pitch, inst, effect, param0, param1}
@@ -478,13 +466,13 @@ export class CellEntry {
     getCellParts() {
         /** @type {CellPart} */
         let parts = CellPart.none
-        if (this.pitchEnable.checked) {
+        if (this.elems.pitchEnable.checked) {
             parts |= CellPart.pitch
         }
-        if (this.sampleEnable.checked) {
+        if (this.elems.sampleEnable.checked) {
             parts |= CellPart.inst
         }
-        if (this.effectEnable.checked) {
+        if (this.elems.effectEnable.checked) {
             parts |= CellPart.effect | CellPart.param
         }
         return parts
@@ -502,7 +490,7 @@ export class CellEntry {
 
         let selSample = Number($dom.getRadioButtonValue(this.sampleInput, '1'))
 
-        this.sampleList.textContent = ''
+        this.elems.sampleList.textContent = ''
         let anySamples = false
         for (let [i, sample] of samples.entries()) {
             if (!sample) {
@@ -512,13 +500,13 @@ export class CellEntry {
             anySamples = true
             let label = $dom.makeRadioButton('sample', i.toString(), i.toString())
             label.classList.add('keypad-key', 'keypad-target')
-            this.sampleList.appendChild(label)
+            this.elems.sampleList.appendChild(label)
             this.sampleKeys.push(label)
         }
-        this.sampleInput = this.sampleList.elements.namedItem('sample')
+        this.sampleInput = this.elems.sampleList.elements.namedItem('sample')
         this.setSelSample(selSample)
         if (!anySamples) {
-            this.sampleList.textContent = 'No samples.'
+            this.elems.sampleList.textContent = 'No samples.'
         }
     }
 
@@ -563,7 +551,7 @@ export class CellEntry {
      */
     setCell(cell, parts) {
         if (parts & CellPart.pitch) {
-            this.piano.controller.setPitch(cell.pitch)
+            this.elems.piano.ctrl.setPitch(cell.pitch)
         }
         if (parts & CellPart.inst) {
             $dom.selectRadioButton(this.sampleInput, cell.inst.toString())
@@ -589,9 +577,9 @@ export class CellEntry {
     updateSectionDim() {
         let parts = this.getCellParts()
         let hide = this.hidePartToggles
-        this.piano.classList.toggle('dim', !hide && !(parts & CellPart.pitch))
-        this.sampleSection.classList.toggle('dim', !hide && !(parts & CellPart.inst))
-        this.effectSection.classList.toggle('dim', !hide && !(parts & CellPart.effect))
+        this.elems.piano.classList.toggle('dim', !hide && !(parts & CellPart.pitch))
+        this.elems.sampleSection.classList.toggle('dim', !hide && !(parts & CellPart.inst))
+        this.elems.effectSection.classList.toggle('dim', !hide && !(parts & CellPart.effect))
     }
 
     /**
@@ -600,21 +588,21 @@ export class CellEntry {
     setHidePartToggles(hide) {
         this.hidePartToggles = hide
         if (this.editDigit < 0) {
-            this.partToggles.classList.toggle('hide', hide)
+            this.elems.partToggles.classList.toggle('hide', hide)
         }
         this.updateSectionDim()
     }
 
     /** @private */
     updateEffect() {
-        this.effectButton.textContent = this.getEffectTitle()
-        this.param0Button.textContent = this.param0.toString(16).toUpperCase()
-        this.param1Button.textContent = this.param1.toString(16).toUpperCase()
+        this.elems.effect.textContent = this.getEffectTitle()
+        this.elems.param0.textContent = this.param0.toString(16).toUpperCase()
+        this.elems.param1.textContent = this.param1.toString(16).toUpperCase()
         let color = $cell.effectColor(this.getCell())
-        setEffectButtonColor(this.effectButton, color)
-        setEffectButtonColor(this.param0Button, color)
-        setEffectButtonColor(this.param1Button, color)
-        this.resetEffectButton.disabled = this.effect == 0 && this.param0 == 0 && this.param1 == 0
+        setEffectButtonColor(this.elems.effect, color)
+        setEffectButtonColor(this.elems.param0, color)
+        setEffectButtonColor(this.elems.param1, color)
+        this.elems.resetEffect.disabled = this.effect == 0 && this.param0 == 0 && this.param1 == 0
     }
 
     /** @private */
@@ -633,9 +621,9 @@ export class CellEntry {
      */
     openEffectKeyboard(digit) {
         this.editDigit = digit
-        this.entrySections.classList.add('hide')
-        this.partToggles.classList.add('hide')
-        this.effectKeyboard.classList.remove('hide')
+        this.elems.entrySections.classList.add('hide')
+        this.elems.partToggles.classList.add('hide')
+        this.elems.effectKeyboard.classList.remove('hide')
 
         let title = ''
         let value = 0
@@ -661,9 +649,9 @@ export class CellEntry {
             desc = getParam1Descriptions(this.effect, this.param0)
             break
         }
-        this.effectKeyboardTitle.textContent = title
-        for (let i = 0; i < this.effectGrid.children.length; i++) {
-            let button = this.effectGrid.children[i]
+        this.elems.effectKeyboardTitle.textContent = title
+        for (let i = 0; i < this.elems.effectGrid.children.length; i++) {
+            let button = this.elems.effectGrid.children[i]
             button.classList.toggle('show-checked', i == value)
             button.querySelector('#desc').textContent = desc[i]
             setEffectButtonColor(button, colors[i])
@@ -674,11 +662,11 @@ export class CellEntry {
     /** @private */
     closeEffectKeyboard() {
         this.editDigit = -1
-        this.entrySections.classList.remove('hide')
+        this.elems.entrySections.classList.remove('hide')
         if (!this.hidePartToggles) {
-            this.partToggles.classList.remove('hide')
+            this.elems.partToggles.classList.remove('hide')
         }
-        this.effectKeyboard.classList.add('hide')
+        this.elems.effectKeyboard.classList.add('hide')
         invoke(this.callbacks.highlightEffectDigit, -1)
     }
 
@@ -706,8 +694,8 @@ export class CellEntry {
      * @param {boolean} expanded
      */
     setPianoExpanded(expanded) {
-        this.sampleSection.classList.toggle('hide', expanded)
-        this.effectSection.classList.toggle('hide', expanded)
+        this.elems.sampleSection.classList.toggle('hide', expanded)
+        this.elems.effectSection.classList.toggle('hide', expanded)
     }
 }
 export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)
@@ -716,12 +704,12 @@ export const CellEntryElement = $dom.defineView('cell-entry', CellEntry)
 let testElem
 if (import.meta.main) {
     testElem = new CellEntryElement()
-    testElem.controller.callbacks = callbackDebugObject({
+    testElem.ctrl.callbacks = callbackDebugObject({
         updateCell() {
-            console.log('Update cell', testElem.controller.getCell())
+            console.log('Update cell', testElem.ctrl.getCell())
         },
     })
     $dom.displayMain(testElem)
-    testElem.controller.setSamples(freeze([null, ...Array(30).fill(Sample.empty)]))
-    testElem.controller.onVisible()
+    testElem.ctrl.setSamples(freeze([null, ...Array(30).fill(Sample.empty)]))
+    testElem.ctrl.onVisible()
 }

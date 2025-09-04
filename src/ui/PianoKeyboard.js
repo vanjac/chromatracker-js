@@ -3,7 +3,7 @@ import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad} from './KeyPad.js'
-import {type, invoke, callbackDebugObject, freeze, clamp} from '../Util.js'
+import {invoke, callbackDebugObject, freeze, clamp} from '../Util.js'
 import periodTable from '../PeriodTable.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
@@ -104,23 +104,27 @@ export class PianoKeyboard {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
+        /** @private */
+        this.elems = $dom.getElems(fragment, {
+            piano: 'form',
+            octave1: 'div',
+            octave0: 'div',
+            scrollLock: 'input',
+            expand: 'button',
+            collapse: 'button',
+        })
 
-        /** @private @type {HTMLFormElement} */
-        this.piano = fragment.querySelector('#piano')
-
         /** @private */
-        this.pianoKeys = makePianoKeys(fragment.querySelector('#octave1'), 'pitch1')
-        /** @private @type {HTMLElement} */
-        this.octave0 = fragment.querySelector('#octave0')
-        makePianoKeys(this.octave0, 'pitch0')
+        this.pianoKeys = makePianoKeys(this.elems.octave1, 'pitch1')
+        makePianoKeys(this.elems.octave0, 'pitch0')
         /** @private */
-        this.pitchInput1 = this.piano.elements.namedItem('pitch1')
+        this.pitchInput1 = this.elems.piano.elements.namedItem('pitch1')
         /** @private */
-        this.pitchInput0 = this.piano.elements.namedItem('pitch0')
+        this.pitchInput0 = this.elems.piano.elements.namedItem('pitch0')
         this.setPitch(36)
 
-        $dom.disableFormSubmit(this.piano)
-        new KeyPad(this.piano, (id, elem) => {
+        $dom.disableFormSubmit(this.elems.piano)
+        new KeyPad(this.elems.piano, (id, elem) => {
             let input = elem.querySelector('input')
             if (input) {
                 $dom.selectRadioButton(this.pitchInput1, input.value)
@@ -130,17 +134,12 @@ export class PianoKeyboard {
             }
         })
 
-        let scrollLockCheck = type(HTMLInputElement, fragment.querySelector('#scrollLock'))
-        scrollLockCheck.addEventListener('change', () => {
-            this.piano.classList.toggle('scroll-lock', scrollLockCheck.checked)
+        this.elems.scrollLock.addEventListener('change', () => {
+            this.elems.piano.classList.toggle('scroll-lock', this.elems.scrollLock.checked)
         })
 
-        /** @private @type {HTMLButtonElement} */
-        this.expandButton = fragment.querySelector('#expand')
-        this.expandButton.addEventListener('click', () => this.setExpanded(true))
-        /** @private @type {HTMLButtonElement} */
-        this.collapseButton = fragment.querySelector('#collapse')
-        this.collapseButton.addEventListener('click', () => this.setExpanded(false))
+        this.elems.expand.addEventListener('click', () => this.setExpanded(true))
+        this.elems.collapse.addEventListener('click', () => this.setExpanded(false))
 
         this.view.appendChild(fragment)
     }
@@ -217,9 +216,9 @@ export class PianoKeyboard {
      * @param {boolean} expanded
      */
     setExpanded(expanded) {
-        this.octave0.classList.toggle('hide', !expanded)
-        this.expandButton.classList.toggle('hide', expanded)
-        this.collapseButton.classList.toggle('hide', !expanded)
+        this.elems.octave0.classList.toggle('hide', !expanded)
+        this.elems.expand.classList.toggle('hide', expanded)
+        this.elems.collapse.classList.toggle('hide', !expanded)
         invoke(this.callbacks.setExpanded, expanded)
     }
 }
@@ -229,11 +228,11 @@ export const PianoKeyboardElement = $dom.defineView('piano-keyboard', PianoKeybo
 let testElem
 if (import.meta.main) {
     testElem = new PianoKeyboardElement()
-    testElem.controller.callbacks = callbackDebugObject({
+    testElem.ctrl.callbacks = callbackDebugObject({
         pitchChanged() {
-            console.log('Pitch:', testElem.controller.getPitch())
+            console.log('Pitch:', testElem.ctrl.getPitch())
         }
     })
     $dom.displayMain(testElem)
-    testElem.controller.scrollToSelOctave()
+    testElem.ctrl.scrollToSelOctave()
 }

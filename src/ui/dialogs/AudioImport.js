@@ -91,6 +91,6 @@ export const AudioImportElement = $dom.defineView('audio-import', AudioImport)
 let testElem
 if (import.meta.main) {
     testElem = new AudioImportElement()
-    testElem.controller.onComplete = console.log
+    testElem.ctrl.onComplete = console.log
     $dialog.open(testElem)
 }

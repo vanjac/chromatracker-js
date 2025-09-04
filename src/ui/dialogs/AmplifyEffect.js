@@ -64,6 +64,6 @@ export const AmplifyEffectElement = $dom.defineView('amplify-effect', AmplifyEff
 let testElem
 if (import.meta.main) {
     testElem = new AmplifyEffectElement()
-    testElem.controller.onComplete = console.log
+    testElem.ctrl.onComplete = console.log
     $dialog.open(testElem)
 }

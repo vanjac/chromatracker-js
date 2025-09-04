@@ -48,9 +48,9 @@ export class AlertDialog {
     static open(message, title = 'Error') {
         return new Promise((resolve) => {
             let dialog = new AlertDialogElement()
-            dialog.controller.message = message
-            dialog.controller.title = title
-            dialog.controller.onDismiss = resolve
+            dialog.ctrl.message = message
+            dialog.ctrl.title = title
+            dialog.ctrl.onDismiss = resolve
             $dialog.open(dialog)
         })
     }
@@ -107,10 +107,10 @@ export class ConfirmDialog {
     static open(message, title = '', {dismissable = false} = {}) {
         return new Promise((resolve, reject) => {
             let dialog = new ConfirmDialogElement()
-            dialog.controller.message = message
-            dialog.controller.title = title
-            dialog.controller.onConfirm = resolve
-            dialog.controller.onDismiss = reject
+            dialog.ctrl.message = message
+            dialog.ctrl.title = title
+            dialog.ctrl.onConfirm = resolve
+            dialog.ctrl.onDismiss = reject
             $dialog.open(dialog, {dismissable})
         })
     }
@@ -193,13 +193,13 @@ export class InputDialog {
     ) {
         return new Promise((resolve, reject) => {
             let dialog = new InputDialogElement()
-            dialog.controller.prompt = prompt
-            dialog.controller.title = title
-            dialog.controller.defaultValue = defaultValue
-            dialog.controller.integerOnly = integerOnly
-            dialog.controller.positiveOnly = positiveOnly
-            dialog.controller.onConfirm = resolve
-            dialog.controller.onDismiss = reject
+            dialog.ctrl.prompt = prompt
+            dialog.ctrl.title = title
+            dialog.ctrl.defaultValue = defaultValue
+            dialog.ctrl.integerOnly = integerOnly
+            dialog.ctrl.positiveOnly = positiveOnly
+            dialog.ctrl.onConfirm = resolve
+            dialog.ctrl.onDismiss = reject
             $dialog.open(dialog, {dismissable: true})
         })
     }
@@ -308,10 +308,10 @@ export class MenuDialog {
     static open(options, title = '') {
         return new Promise((resolve, reject) => {
             let dialog = new MenuDialogElement()
-            dialog.controller.options = options
-            dialog.controller.title = title
-            dialog.controller.onComplete = resolve
-            dialog.controller.onDismiss = reject
+            dialog.ctrl.options = options
+            dialog.ctrl.title = title
+            dialog.ctrl.onComplete = resolve
+            dialog.ctrl.onDismiss = reject
             $dialog.open(dialog, {dismissable: true})
         })
     }

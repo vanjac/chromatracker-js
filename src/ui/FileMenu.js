@@ -9,7 +9,7 @@ import * as $mod from '../file/Mod.js'
 import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
 import {AlertDialog, ConfirmDialog, WaitDialogElement, MenuDialog} from './dialogs/UtilDialogs.js'
-import {freeze, type} from '../Util.js'
+import {freeze} from '../Util.js'
 import appVersion from '../Version.js'
 import appCommit from '../gen/Commit.js'
 
@@ -80,38 +80,41 @@ export class FileMenu {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
+        /** @private */
+        this.elems = $dom.getElems(fragment, {
+            newModule: 'button',
+            fileOpen: 'button',
+            fileMenu: 'div',
+            fileList: 'div',
+            editorContainer: 'div',
+            version: 'span',
+            storageWarning: 'strong',
+        })
 
-        fragment.querySelector('#newModule').addEventListener('click',
+        this.elems.newModule.addEventListener('click',
             () => this.openEditor(null, $module.createNew()))
-        fragment.querySelector('#fileOpen').addEventListener('click', () => this.importFile())
+        this.elems.fileOpen.addEventListener('click', () => this.importFile())
         /** @type {NodeListOf<HTMLButtonElement>} */
         let demoButtons = fragment.querySelectorAll('#demoList button')
         for (let button of demoButtons) {
             button.addEventListener('click', () => this.importFromUrl(button.value))
         }
 
-        /** @private @type {HTMLElement} */
-        this.menu = fragment.querySelector('#fileMenu')
-        /** @private @type {HTMLElement} */
-        this.fileList = fragment.querySelector('#fileList')
-        /** @private @type {HTMLElement} */
-        this.editorContainer = fragment.querySelector('#editorContainer')
-
-        fragment.querySelector('#version').textContent = `${appVersion} (${appCommit.slice(0, 7)})`
+        this.elems.version.textContent = `${appVersion} (${appCommit.slice(0, 7)})`
 
         this.view.appendChild(fragment)
 
         $local.requestPersistentStorage().catch(/** @param {Error} e */e => {
             let message = 'Warning: Persistent storage is not available in this browser!'
                 + '\nReason: ' + e.message
-            this.view.querySelector('#storageWarning').textContent = message
+            this.elems.storageWarning.textContent = message
         })
         let waitDialog = $dialog.open(new WaitDialogElement())
         $local.openDB().then(db => {
             if (this.view.isConnected) {
                 this.db = db
                 this.listLocalFiles().then(() => {
-                    this.menu.classList.remove('hide')
+                    this.elems.fileMenu.classList.remove('hide')
                     $dialog.close(waitDialog)
                 })
             }
@@ -137,7 +140,7 @@ export class FileMenu {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
-        if (this.editor?.controller.keyDown(event)) {
+        if (this.editor?.ctrl.keyDown(event)) {
             return true
         }
         if (!this.editor) {
@@ -155,17 +158,19 @@ export class FileMenu {
     /** @private */
     async listLocalFiles() {
         let files = await $local.listFiles(this.db)
-        this.fileList.textContent = ''
+        this.elems.fileList.textContent = ''
         for (let [id, metadata] of files) {
             let itemFrag = itemTemplate.cloneNode(true)
-            let openButton = type(HTMLButtonElement, itemFrag.querySelector('#open'))
-            let nameSpan = itemFrag.querySelector('#name')
-            let optionsButton = type(HTMLButtonElement, itemFrag.querySelector('#options'))
-            let name = metadata.name || '(untitled)'
-            nameSpan.textContent = name
-            openButton.addEventListener('click', () => this.readLocalFile(id))
-            optionsButton.addEventListener('click', () => this.fileOptions(id, name))
-            this.fileList.appendChild(itemFrag)
+            let {open, name, options} = $dom.getElems(itemFrag, {
+                open: 'button',
+                name: 'span',
+                options: 'button',
+            })
+            let fileName = metadata.name || '(untitled)'
+            name.textContent = fileName
+            open.addEventListener('click', () => this.readLocalFile(id))
+            options.addEventListener('click', () => this.fileOptions(id, fileName))
+            this.elems.fileList.appendChild(itemFrag)
         }
     }
 
@@ -305,18 +310,18 @@ export class FileMenu {
      * @param {Readonly<Module>} module
      */
     openEditor(id, module) {
-        this.menu.classList.add('hide')
-        this.editorContainer.classList.remove('hide')
+        this.elems.fileMenu.classList.add('hide')
+        this.elems.editorContainer.classList.remove('hide')
 
         this.fileID = id
         this.editor = new ModuleEditElement()
-        this.editor.controller.callbacks = {
+        this.editor.ctrl.callbacks = {
             close: this.closeEditor.bind(this),
             openLocalFilePicker: this.openLocalFilePicker.bind(this)
         }
-        this.editorContainer.textContent = ''
-        this.editorContainer.appendChild(this.editor)
-        this.editor.controller.setModule(module)
+        this.elems.editorContainer.textContent = ''
+        this.elems.editorContainer.appendChild(this.editor)
+        this.editor.ctrl.setModule(module)
     }
 
     /** @private */
@@ -324,8 +329,8 @@ export class FileMenu {
         this.saveIfNeeded()
         this.editor.remove()
 
-        this.menu.classList.remove('hide')
-        this.editorContainer.classList.add('hide')
+        this.elems.fileMenu.classList.remove('hide')
+        this.elems.editorContainer.classList.add('hide')
         this.editor = null
         this.fileID = null
         if (this.view.isConnected) {
@@ -358,8 +363,8 @@ export class FileMenu {
 
     /** @private */
     async saveIfNeeded() {
-        if (this.editor?.controller.isUnsaved()) {
-            await this.saveModule(this.editor.controller.save())
+        if (this.editor?.ctrl.isUnsaved()) {
+            await this.saveModule(this.editor.ctrl.save())
         }
     }
 

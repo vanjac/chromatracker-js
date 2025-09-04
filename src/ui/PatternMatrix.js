@@ -15,7 +15,7 @@ const thumbWidth = 8, thumbHeight = mod.numRows
 
 const template = $dom.html`
 <div class="flex-grow">
-    <module-properties></module-properties>
+    <module-properties id="moduleProperties"></module-properties>
     <div class="hflex">
         <label>Seq:</label>
         <button id="seqDel" title="Delete (${$shortcut.ctrl('Del')})">
@@ -30,9 +30,9 @@ const template = $dom.html`
     <div id="scroll" class="hscrollable vscrollable flex-grow align-start">
         <table>
             <thead>
-                <tr></tr>
+                <tr id="theadRow"></tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="tbody"></tbody>
         </table>
         <select id="patternSelect" class="seq-select show-checked custom-select">
             <optgroup id="patternGroup" label="Pattern:"></optgroup>
@@ -77,49 +77,42 @@ export class PatternMatrix {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
+        /** @private */
+        this.elems = $dom.getElems(fragment, {
+            moduleProperties: 'module-properties',
+            scroll: 'div',
+            theadRow: 'tr',
+            tbody: 'tbody',
+            patternSelect: 'select',
+            patternGroup: 'optgroup',
+            playbackLine: 'div',
+            restart: 'input',
+            seqIns: 'button',
+            seqDel: 'button',
+        })
 
         /** @private */
-        this.moduleProperties = fragment.querySelector('module-properties')
-
-        /** @private @type {HTMLElement} */
-        this.scroll = fragment.querySelector('#scroll')
-        /** @private @type {HTMLTableRowElement} */
-        this.theadRow = fragment.querySelector('thead tr')
-        /** @private */
-        this.tbody = fragment.querySelector('tbody')
-        /** @private */
-        this.select = fragment.querySelector('select')
-        /** @private */
-        this.group = fragment.querySelector('optgroup')
-        /** @private @type {HTMLElement} */
-        this.playbackLine = fragment.querySelector('#playbackLine')
-
-        /** @private */
-        this.restartPosInput = new $dom.ValidatedNumberInput(fragment.querySelector('#restart'),
+        this.restartPosInput = new $dom.ValidatedNumberInput(this.elems.restart,
             (restartPos, commit) => {
                 invoke(this.callbacks.changeModule,
                     module => freeze({...module, restartPos}), commit)
             })
 
-        /** @private @type {HTMLButtonElement} */
-        this.insButton = fragment.querySelector('#seqIns')
-        this.insButton.addEventListener('click', () => this.seqIns())
-        /** @private @type {HTMLButtonElement} */
-        this.delButton = fragment.querySelector('#seqDel')
-        this.delButton.addEventListener('click', () => this.seqDel())
+        this.elems.seqIns.addEventListener('click', () => this.seqIns())
+        this.elems.seqDel.addEventListener('click', () => this.seqDel())
 
-        this.select.addEventListener('click', e => e.stopPropagation())
-        this.select.addEventListener('input', () => {
-            if (this.select.value == 'copy') {
+        this.elems.patternSelect.addEventListener('click', e => e.stopPropagation())
+        this.elems.patternSelect.addEventListener('input', () => {
+            if (this.elems.patternSelect.value == 'copy') {
                 this.seqClone()
             } else {
-                this.seqSet(this.select.selectedIndex)
+                this.seqSet(this.elems.patternSelect.selectedIndex)
             }
         })
 
         this.view.appendChild(fragment)
 
-        this.moduleProperties.controller.callbacks = {
+        this.elems.moduleProperties.ctrl.callbacks = {
             changeModule: (...args) => invoke(this.callbacks.changeModule, ...args)
         }
     }
@@ -134,7 +127,7 @@ export class PatternMatrix {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
-        if (this.moduleProperties.controller.keyDown(event)) {
+        if (this.elems.moduleProperties.ctrl.keyDown(event)) {
             return true
         }
         if (!$dom.needsKeyboardInput(event.target)) {
@@ -182,7 +175,7 @@ export class PatternMatrix {
      * @param {Readonly<Module>} module
      */
     setModule(module) {
-        this.moduleProperties.controller.setModule(module)
+        this.elems.moduleProperties.ctrl.setModule(module)
         if (module.restartPos != this.restartPosInput.getValue()) {
             this.restartPosInput.setValue(module.restartPos)
         }
@@ -214,12 +207,12 @@ export class PatternMatrix {
         this.viewSequence = []
         this.muteStates.length = numChannels
 
-        this.theadRow.textContent = ''
-        this.theadRow.appendChild($dom.createElem('th', {textContent: 'Pos'}))
-        this.theadRow.appendChild($dom.createElem('th', {textContent: 'Pat'}))
+        this.elems.theadRow.textContent = ''
+        this.elems.theadRow.appendChild($dom.createElem('th', {textContent: 'Pos'}))
+        this.elems.theadRow.appendChild($dom.createElem('th', {textContent: 'Pat'}))
         for (let c = 0; c < numChannels; c++) {
             let textContent = `Ch ${c + 1}`
-            let th = this.theadRow.appendChild($dom.createElem('th', {textContent}))
+            let th = this.elems.theadRow.appendChild($dom.createElem('th', {textContent}))
             th.classList.toggle('dim', this.muteStates[c] ?? false)
         }
     }
@@ -230,8 +223,8 @@ export class PatternMatrix {
      */
     setNumPatterns(numPatterns) {
         console.debug('update patterns menu')
-        makePatternMenu(this.group, numPatterns)
-        this.select.selectedIndex = this.viewSequence[this.selPos]
+        makePatternMenu(this.elems.patternGroup, numPatterns)
+        this.elems.patternSelect.selectedIndex = this.viewSequence[this.selPos]
     }
 
     /**
@@ -240,11 +233,11 @@ export class PatternMatrix {
      */
     setSequence(sequence) {
         console.debug('update sequence')
-        this.restartPosInput.input.max = (sequence.length - 1).toString()
-        this.insButton.disabled = sequence.length >= mod.numSongPositions
-        this.delButton.disabled = sequence.length <= 1
+        this.elems.restart.max = (sequence.length - 1).toString()
+        this.elems.seqIns.disabled = sequence.length >= mod.numSongPositions
+        this.elems.seqDel.disabled = sequence.length <= 1
 
-        this.tbody.textContent = ''
+        this.elems.tbody.textContent = ''
         this.cellImgs = []
         for (let pos = 0; pos < sequence.length; pos++) {
             let row = $dom.createElem('tr')
@@ -263,7 +256,7 @@ export class PatternMatrix {
                 this.setSelPos(pos)
                 invoke(this.callbacks.onSelectPos)
             })
-            this.tbody.appendChild(row)
+            this.elems.tbody.appendChild(row)
         }
         this.setSelPos(this.selPos)
     }
@@ -340,11 +333,11 @@ export class PatternMatrix {
     setSelPos(pos) {
         if (this.viewSequence[pos] != null) {
             this.selPos = pos
-            this.tbody.querySelector('.select-row')?.classList.remove('select-row')
-            let row = this.tbody.children[pos]
+            this.elems.tbody.querySelector('.select-row')?.classList.remove('select-row')
+            let row = this.elems.tbody.children[pos]
             row?.classList.add('select-row')
-            row?.querySelector('.pattern-num').after(this.select)
-            this.select.selectedIndex = this.viewSequence[this.selPos]
+            row?.querySelector('.pattern-num').after(this.elems.patternSelect)
+            this.elems.patternSelect.selectedIndex = this.viewSequence[this.selPos]
         }
     }
 
@@ -353,17 +346,17 @@ export class PatternMatrix {
      * @param {number} row
      */
     setPlaybackPos(pos, row) {
-        let tr = this.tbody.children[pos]
+        let tr = this.elems.tbody.children[pos]
         if (tr) {
             let rowRect = tr.getBoundingClientRect()
-            let scrollRect = this.scroll.getBoundingClientRect()
+            let scrollRect = this.elems.scroll.getBoundingClientRect()
             let y = rowRect.top + rowRect.height * row / mod.numRows
-            y += this.scroll.scrollTop - scrollRect.top
-            this.playbackLine.style.top = y + 'px'
-            this.playbackLine.style.width = rowRect.width + 'px'
-            this.playbackLine.classList.remove('hide')
+            y += this.elems.scroll.scrollTop - scrollRect.top
+            this.elems.playbackLine.style.top = y + 'px'
+            this.elems.playbackLine.style.width = rowRect.width + 'px'
+            this.elems.playbackLine.classList.remove('hide')
         } else {
-            this.playbackLine.classList.add('hide')
+            this.elems.playbackLine.classList.add('hide')
         }
     }
 
@@ -373,8 +366,8 @@ export class PatternMatrix {
      */
     setChannelMute(c, mute) {
         this.muteStates[c] = mute
-        this.theadRow.children[c + 2]?.classList.toggle('dim', mute)
-        for (let tr of this.tbody.children) {
+        this.elems.theadRow.children[c + 2]?.classList.toggle('dim', mute)
+        for (let tr of this.elems.tbody.children) {
             tr.children[c + 2]?.classList.toggle('dim', mute)
         }
     }
@@ -429,13 +422,13 @@ if (import.meta.main) {
     }
     testElem = new PatternMatrixElement()
     $dom.displayMain(testElem)
-    testElem.controller.callbacks = callbackDebugObject({
+    testElem.ctrl.callbacks = callbackDebugObject({
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
-            testElem.controller.setModule(module)
+            testElem.ctrl.setModule(module)
         },
     })
-    testElem.controller.setModule(module)
-    testElem.controller.setSelPos(0)
+    testElem.ctrl.setModule(module)
+    testElem.ctrl.setSelPos(0)
 }

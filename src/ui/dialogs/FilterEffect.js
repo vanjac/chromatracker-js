@@ -213,6 +213,6 @@ export const FilterEffectElement = $dom.defineView('filter-effect', FilterEffect
 let testElem
 if (import.meta.main) {
     testElem = new FilterEffectElement()
-    testElem.controller.onComplete = console.log
+    testElem.ctrl.onComplete = console.log
     $dialog.open(testElem)
 }

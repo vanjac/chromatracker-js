@@ -4,7 +4,7 @@ import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import * as $icons from '../gen/Icons.js'
 import {Undoable} from './Undoable.js'
-import {type, invoke, callbackDebugObject, freeze} from '../Util.js'
+import {invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, Sample, Module, CellPart} from '../Model.js'
 import './CellEntry.js'
 import './PatternEdit.js'
@@ -92,17 +92,17 @@ const template = $dom.html`
     <div id="appTabBody" class="flex-grow">
         <div id="arrange" class="flex-grow">
             <meter id="peak" min="0" max="1.5" optimum="0" low="1" high="1.4" value="0"></meter>
-            <pattern-matrix></pattern-matrix>
+            <pattern-matrix id="patternMatrix"></pattern-matrix>
         </div>
         <div id="sequence" class="flex-grow shrink-clip-y hide">
-            <pattern-edit></pattern-edit>
+            <pattern-edit id="patternEdit"></pattern-edit>
         </div>
         <div id="samples" class="flex-grow shrink-clip-y hide">
-            <samples-list></samples-list>
+            <samples-list id="samplesList"></samples-list>
         </div>
     </div>
     <div class="hide">
-        <cell-entry></cell-entry>
+        <cell-entry id="cellEntry"></cell-entry>
     </div>
 </div>
 `
@@ -146,85 +146,75 @@ export class ModuleEdit {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
-
-        /** @private @type {HTMLElement} */
-        this.playPatternButton = fragment.querySelector('#playPattern')
-        /** @private @type {HTMLElement} */
-        this.playRowButton = fragment.querySelector('#playRow')
-        /** @private @type {HTMLElement} */
-        this.pauseButton = fragment.querySelector('#pause')
-        /** @private @type {HTMLInputElement} */
-        this.patternLoopInput = fragment.querySelector('#patternLoop')
-        /** @private @type {HTMLInputElement} */
-        this.followInput = fragment.querySelector('#follow')
-        /** @private @type {HTMLButtonElement} */
-        this.undoButton = fragment.querySelector('#undo')
-
-        /** @private @type {HTMLMeterElement} */
-        this.peakMeter = fragment.querySelector('#peak')
-
         /** @private */
-        this.patternMatrix = fragment.querySelector('pattern-matrix')
-        /** @private */
-        this.patternEdit = fragment.querySelector('pattern-edit')
-        /** @private */
-        this.samplesList = fragment.querySelector('samples-list')
-        /** @private */
-        this.cellEntry = fragment.querySelector('cell-entry')
+        this.elems = $dom.getElems(fragment, {
+            close: 'button',
+            playStart: 'button',
+            playPattern: 'button',
+            playRow: 'button',
+            pause: 'button',
+            patternLoop: 'input',
+            follow: 'input',
+            undo: 'button',
+            peak: 'meter',
+            patternMatrix: 'pattern-matrix',
+            patternEdit: 'pattern-edit',
+            samplesList: 'samples-list',
+            cellEntry: 'cell-entry',
+            appTabs: 'form',
+            appTabBody: 'div',
+        })
 
-        let tabForm = type(HTMLFormElement, fragment.querySelector('#appTabs'))
-        $dom.disableFormSubmit(tabForm)
-        this.tabInput = tabForm.elements.namedItem('appTab')
-        /** @private @type {HTMLElement} */
-        this.tabBody = fragment.querySelector('#appTabBody')
-        for (let tabButton of tabForm.elements) {
+        $dom.disableFormSubmit(this.elems.appTabs)
+        this.tabInput = this.elems.appTabs.elements.namedItem('appTab')
+        for (let tabButton of this.elems.appTabs.elements) {
             if (tabButton instanceof HTMLInputElement) {
                 tabButton.addEventListener('change', () => this.updateTab())
             }
         }
 
-        fragment.querySelector('#close').addEventListener('click', () => this.close())
+        this.elems.close.addEventListener('click', () => this.close())
 
-        fragment.querySelector('#playStart').addEventListener('click', () => this.playFromStart())
-        this.playPatternButton.addEventListener('click', () => this.playPattern())
-        this.playRowButton.addEventListener('click', () => this.playFromHere())
-        this.pauseButton.addEventListener('click', () => this.pause())
-        this.playRowButton.addEventListener('contextmenu', e => {
+        this.elems.playStart.addEventListener('click', () => this.playFromStart())
+        this.elems.playPattern.addEventListener('click', () => this.playPattern())
+        this.elems.playRow.addEventListener('click', () => this.playFromHere())
+        this.elems.pause.addEventListener('click', () => this.pause())
+        this.elems.playRow.addEventListener('contextmenu', e => {
             e.preventDefault()
             this.destroyPlayback()
         })
-        this.pauseButton.addEventListener('contextmenu', e => {
+        this.elems.pause.addEventListener('contextmenu', e => {
             e.preventDefault()
             this.destroyPlayback()
         })
-        this.patternLoopInput.addEventListener('change', () => this.updatePlaySettings())
-        this.followInput.addEventListener('change', () => {
+        this.elems.patternLoop.addEventListener('change', () => this.updatePlaySettings())
+        this.elems.follow.addEventListener('change', () => {
             if (this.isPlaying()) {
-                this.patternEdit.controller.setFollowState(this.followInput.checked)
+                this.elems.patternEdit.ctrl.setFollowState(this.elems.follow.checked)
             }
         })
-        this.undoButton.addEventListener('click', () => this.undo())
+        this.elems.undo.addEventListener('click', () => this.undo())
 
         this.view.appendChild(fragment)
 
-        this.patternMatrix.controller.callbacks = {
+        this.elems.patternMatrix.ctrl.callbacks = {
             changeModule: this.changeModule.bind(this),
             onSelectPos: () => {
-                this.patternEdit.controller.setSelPos(this.patternMatrix.controller.getSelPos())
-                this.patternEdit.controller.selectRow(0)
+                this.elems.patternEdit.ctrl.setSelPos(this.elems.patternMatrix.ctrl.getSelPos())
+                this.elems.patternEdit.ctrl.selectRow(0)
             },
         }
-        this.patternEdit.controller.callbacks = {
+        this.elems.patternEdit.ctrl.callbacks = {
             changeModule: this.changeModule.bind(this),
             jamPlay: this.jamPlay.bind(this),
             jamRelease: this.jamRelease.bind(this),
             setMute: this.setMute.bind(this),
             setEntryCell: this.setEntryCell.bind(this),
             onSelectPos: () => {
-                this.patternMatrix.controller.setSelPos(this.patternEdit.controller.selPos())
+                this.elems.patternMatrix.ctrl.setSelPos(this.elems.patternEdit.ctrl.selPos())
             },
         }
-        this.samplesList.controller.callbacks = {
+        this.elems.samplesList.ctrl.callbacks = {
             jamPlay: this.jamPlay.bind(this),
             jamRelease: this.jamRelease.bind(this),
             changeModule: this.changeModule.bind(this),
@@ -235,18 +225,18 @@ export class ModuleEdit {
                 callback(this.context)
             },
         }
-        this.cellEntry.controller.callbacks = {
+        this.elems.cellEntry.ctrl.callbacks = {
             jamPlay: this.jamPlay.bind(this),
             jamRelease: this.jamRelease.bind(this),
             updateCell: () => {
                 let cell = this.getEntryCell()
-                this.patternEdit.controller.setEntryCell(cell)
-                this.samplesList.controller.setSelSample(cell.inst)
+                this.elems.patternEdit.ctrl.setEntryCell(cell)
+                this.elems.samplesList.ctrl.setSelSample(cell.inst)
             },
-            highlightEffectDigit: digit => this.patternEdit.controller.highlightEffectDigit(digit),
-            setEntryParts: parts => this.patternEdit.controller.setEntryParts(parts),
+            highlightEffectDigit: digit => this.elems.patternEdit.ctrl.highlightEffectDigit(digit),
+            setEntryParts: parts => this.elems.patternEdit.ctrl.setEntryParts(parts),
         }
-        this.patternEdit.controller.setEntryCell(this.getEntryCell())
+        this.elems.patternEdit.ctrl.setEntryCell(this.getEntryCell())
 
         /** @param {PointerEvent} e */
         this.pointerUpListener = e => {
@@ -272,14 +262,14 @@ export class ModuleEdit {
      */
     keyDown(event) {
         let tab = this.selectedTab()
-        if ((tab == 'sequence' || tab == 'samples') && this.cellEntry.controller.keyDown(event)) {
+        if ((tab == 'sequence' || tab == 'samples') && this.elems.cellEntry.ctrl.keyDown(event)) {
             return true
         }
         let target = null
         switch (tab) {
-        case 'arrange': target = this.patternMatrix.controller; break
-        case 'sequence': target = this.patternEdit.controller; break
-        case 'samples': target = this.samplesList.controller; break
+        case 'arrange': target = this.elems.patternMatrix.ctrl; break
+        case 'sequence': target = this.elems.patternEdit.ctrl; break
+        case 'samples': target = this.elems.samplesList.ctrl; break
         }
         if (target?.keyDown(event)) {
             return true
@@ -321,14 +311,14 @@ export class ModuleEdit {
             return true
         } else if (event.key == 'F7' && !$shortcut.commandKey(event)) {
             if (this.isPlaying()) {
-                this.patternLoopInput.checked = !this.patternLoopInput.checked
+                this.elems.patternLoop.checked = !this.elems.patternLoop.checked
                 this.updatePlaySettings()
             } else {
                 this.playPattern()
             }
             return true
         } else if (event.key == 'ScrollLock' && !$shortcut.commandKey(event)) {
-            this.followInput.checked = !this.followInput.checked
+            this.elems.follow.checked = !this.elems.follow.checked
             return true
         } else if (event.key == 'Pause') {
             this.destroyPlayback()
@@ -345,22 +335,22 @@ export class ModuleEdit {
     /** @private */
     updateTab() {
         let tabName = this.selectedTab()
-        for (let element of this.tabBody.children) {
+        for (let element of this.elems.appTabBody.children) {
             element.classList.toggle('hide', element.id != tabName)
         }
         if (tabName == 'sequence') {
-            this.cellEntry.controller.setHidePartToggles(false)
+            this.elems.cellEntry.ctrl.setHidePartToggles(false)
         } else {
-            this.cellEntry.controller.setHidePartToggles(true)
+            this.elems.cellEntry.ctrl.setHidePartToggles(true)
         }
         if (tabName == 'sequence' || tabName == 'samples') {
-            this.patternEdit.controller.onVisible()
-            if (this.cellEntry.parentElement.classList.contains('hide')) {
-                this.cellEntry.parentElement.classList.remove('hide')
-                this.cellEntry.controller.onVisible()
+            this.elems.patternEdit.ctrl.onVisible()
+            if (this.elems.cellEntry.parentElement.classList.contains('hide')) {
+                this.elems.cellEntry.parentElement.classList.remove('hide')
+                this.elems.cellEntry.ctrl.onVisible()
             }
         } else {
-            this.cellEntry.parentElement.classList.add('hide')
+            this.elems.cellEntry.parentElement.classList.add('hide')
         }
     }
 
@@ -415,20 +405,20 @@ export class ModuleEdit {
         this.playback.time += playbackDelay // avoid "catching up"
 
         for (let c = 0; c < this.module.value.numChannels; c++) {
-            if (this.patternEdit.controller.isChannelMuted(c)) {
+            if (this.elems.patternEdit.ctrl.isChannelMuted(c)) {
                 $play.setChannelMute(this.playback, c, true)
             }
         }
         if (restoreSpeed) {
-            this.playback.tempo = this.patternEdit.controller.getTempo()
-            this.playback.speed = this.patternEdit.controller.getSpeed()
+            this.playback.tempo = this.elems.patternEdit.ctrl.getTempo()
+            this.playback.speed = this.elems.patternEdit.ctrl.getSpeed()
             // TODO: restore channel properties (panning, effect memory, ...)
         }
         if (restorePos) {
-            this.playback.pos = this.patternEdit.controller.selPos()
+            this.playback.pos = this.elems.patternEdit.ctrl.selPos()
         }
         if (restoreRow) {
-            this.playback.row = this.patternEdit.controller.selRow()
+            this.playback.row = this.elems.patternEdit.ctrl.selRow()
         }
 
         this.updatePlaySettings()
@@ -467,7 +457,7 @@ export class ModuleEdit {
         this.intervalHandle = window.setInterval(() => this.processPlayback(), processInterval)
         this.enableAnimation()
         this.setPlayState(true)
-        this.patternEdit.controller.setFollowState(this.followInput.checked)
+        this.elems.patternEdit.ctrl.setFollowState(this.elems.follow.checked)
     }
 
     /** @private */
@@ -482,7 +472,7 @@ export class ModuleEdit {
             }
             this.intervalHandle = 0
             this.setPlayState(false)
-            this.patternEdit.controller.setFollowState(false)
+            this.elems.patternEdit.ctrl.setFollowState(false)
         }
     }
 
@@ -491,11 +481,11 @@ export class ModuleEdit {
      * @param {boolean} playing
      */
     setPlayState(playing) {
-        this.playPatternButton.classList.toggle('hide', playing)
-        this.playRowButton.classList.toggle('hide', playing)
-        this.pauseButton.classList.toggle('hide', !playing)
-        this.patternLoopInput.parentElement.classList.toggle('hide', !playing)
-        this.patternEdit.controller.setPlayState(playing)
+        this.elems.playPattern.classList.toggle('hide', playing)
+        this.elems.playRow.classList.toggle('hide', playing)
+        this.elems.pause.classList.toggle('hide', !playing)
+        this.elems.patternLoop.parentElement.classList.toggle('hide', !playing)
+        this.elems.patternEdit.ctrl.setPlayState(playing)
     }
 
     /** @private */
@@ -505,14 +495,14 @@ export class ModuleEdit {
 
     /** @private */
     playFromStart() {
-        this.patternLoopInput.checked = false
+        this.elems.patternLoop.checked = false
         this.resetPlayback()
         this.play()
     }
 
     /** @private */
     playPattern() {
-        this.patternLoopInput.checked = true
+        this.elems.patternLoop.checked = true
         this.resetPlayback({restoreSpeed: true, restorePos: true})
         this.play()
     }
@@ -542,7 +532,7 @@ export class ModuleEdit {
     /** @private */
     updatePlaySettings() {
         if (this.playback) {
-            this.playback.userPatternLoop = this.patternLoopInput.checked
+            this.playback.userPatternLoop = this.elems.patternLoop.checked
         }
     }
 
@@ -552,7 +542,7 @@ export class ModuleEdit {
      * @param {boolean} mute
      */
     setMute(c, mute) {
-        this.patternMatrix.controller.setChannelMute(c, mute)
+        this.elems.patternMatrix.ctrl.setChannelMute(c, mute)
         if (this.playback) {
             $play.setChannelMute(this.playback, c, mute)
         }
@@ -568,7 +558,7 @@ export class ModuleEdit {
         this.enablePlayback()
         this.enableAnimation()
         let useChannel = this.selectedTab() == 'sequence'
-        let channel = useChannel ? this.patternEdit.controller.selChannel() : -1
+        let channel = useChannel ? this.elems.patternEdit.ctrl.selChannel() : -1
         if (!cell) {
             cell = this.getEntryCell()
         } else if (cell.pitch < 0) {
@@ -593,7 +583,7 @@ export class ModuleEdit {
 
     /** @private */
     getEntryCell() {
-        return this.cellEntry.controller.getCell()
+        return this.elems.cellEntry.ctrl.getCell()
     }
 
     /**
@@ -602,7 +592,7 @@ export class ModuleEdit {
      * @param {CellPart} parts
      */
     setEntryCell(cell, parts) {
-        this.cellEntry.controller.setCell(cell, parts)
+        this.elems.cellEntry.ctrl.setCell(cell, parts)
     }
 
     /** @private */
@@ -620,7 +610,7 @@ export class ModuleEdit {
             this.frameUpdate() // clear frame
             window.cancelAnimationFrame(this.animHandle)
             this.animHandle = 0
-            this.peakMeter.value = this.peakMeter.min
+            this.elems.peak.value = this.elems.peak.min
         }
     }
 
@@ -639,18 +629,18 @@ export class ModuleEdit {
         }
         if (this.selectedTab() == 'arrange') {
             let peak = $play.getPeakAmp(this.playback)
-            if (peak > this.peakMeter.value) {
-                this.peakMeter.value = peak
+            if (peak > this.elems.peak.value) {
+                this.elems.peak.value = peak
             } else {
-                this.peakMeter.value = (this.peakMeter.value + peak) / 2
+                this.elems.peak.value = (this.elems.peak.value + peak) / 2
             }
         }
         if (!this.queuedStates.length) {
             this.viewState = null
-            this.patternEdit.controller.setPlaybackPos(-1, -1)
-            this.patternMatrix.controller.setPlaybackPos(-1, -1)
-            this.patternEdit.controller.setChannelStates([], curTime)
-            this.samplesList.controller.setChannelStates(this.playback, [], curTime)
+            this.elems.patternEdit.ctrl.setPlaybackPos(-1, -1)
+            this.elems.patternMatrix.ctrl.setPlaybackPos(-1, -1)
+            this.elems.patternEdit.ctrl.setChannelStates([], curTime)
+            this.elems.samplesList.ctrl.setChannelStates(this.playback, [], curTime)
         } else {
             let i = 0
             while (i < (this.queuedStates.length - 1)
@@ -663,19 +653,19 @@ export class ModuleEdit {
             if (curState != this.viewState) {
                 this.viewState = curState
 
-                this.patternEdit.controller.setTempoSpeed(curState.tempo, curState.speed)
-                if (this.followInput.checked) {
-                    this.patternEdit.controller.selectRow(curState.row)
-                    if (this.patternEdit.controller.selPos() != curState.pos) {
-                        this.patternEdit.controller.setSelPos(curState.pos, true)
-                        this.patternMatrix.controller.setSelPos(curState.pos)
+                this.elems.patternEdit.ctrl.setTempoSpeed(curState.tempo, curState.speed)
+                if (this.elems.follow.checked) {
+                    this.elems.patternEdit.ctrl.selectRow(curState.row)
+                    if (this.elems.patternEdit.ctrl.selPos() != curState.pos) {
+                        this.elems.patternEdit.ctrl.setSelPos(curState.pos, true)
+                        this.elems.patternMatrix.ctrl.setSelPos(curState.pos)
                     }
                 }
-                this.patternEdit.controller.setPlaybackPos(curState.pos, curState.row)
-                this.patternMatrix.controller.setPlaybackPos(curState.pos, curState.row)
+                this.elems.patternEdit.ctrl.setPlaybackPos(curState.pos, curState.row)
+                this.elems.patternMatrix.ctrl.setPlaybackPos(curState.pos, curState.row)
             }
-            this.patternEdit.controller.setChannelStates(curState.channels, curTime)
-            this.samplesList.controller.setChannelStates(
+            this.elems.patternEdit.ctrl.setChannelStates(curState.channels, curTime)
+            this.elems.samplesList.ctrl.setChannelStates(
                 this.playback, curState.channels, curTime
             )
         }
@@ -684,14 +674,14 @@ export class ModuleEdit {
     /** @private */
     refreshModule() {
         console.debug('=== begin refresh ===')
-        this.patternMatrix.controller.setModule(this.module.value)
-        this.patternEdit.controller.setModule(this.module.value)
-        this.samplesList.controller.setSamples(this.module.value.samples)
-        this.cellEntry.controller.setSamples(this.module.value.samples)
+        this.elems.patternMatrix.ctrl.setModule(this.module.value)
+        this.elems.patternEdit.ctrl.setModule(this.module.value)
+        this.elems.samplesList.ctrl.setSamples(this.module.value.samples)
+        this.elems.cellEntry.ctrl.setSamples(this.module.value.samples)
         if (this.playback) {
             $play.setModule(this.playback, this.module.value)
         }
-        this.undoButton.disabled = !this.module.canUndo()
+        this.elems.undo.disabled = !this.module.canUndo()
         console.debug('===  end refresh  ===')
     }
 
@@ -724,7 +714,7 @@ export const ModuleEditElement = $dom.defineView('module-edit', ModuleEdit)
 let testElem
 if (import.meta.main) {
     testElem = new ModuleEditElement()
-    testElem.controller.callbacks = callbackDebugObject()
+    testElem.ctrl.callbacks = callbackDebugObject()
     $dom.displayMain(testElem)
-    testElem.controller.setModule($module.createNew())
+    testElem.ctrl.setModule($module.createNew())
 }

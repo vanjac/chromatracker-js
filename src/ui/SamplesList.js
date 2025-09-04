@@ -4,7 +4,7 @@ import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import * as $sample from '../edit/Sample.js'
 import * as $icons from '../gen/Icons.js'
-import {callbackDebugObject, invoke, type} from '../Util.js'
+import {callbackDebugObject, invoke} from '../Util.js'
 import {SampleEditElement} from './SampleEdit.js'
 import {mod, Cell, Sample, Module, CellPart} from '../Model.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
@@ -69,40 +69,31 @@ export class SamplesList {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
+        /** @private */
+        this.elems = $dom.getElems(fragment, {
+            samplesListLayout: 'div',
+            sampleListTitle: 'strong',
+            sampleIndex: 'span',
+            sampleList: 'form',
+            sampleEditContainer: 'div',
+            sampleHeader: 'div',
+            showList: 'button',
+            addSample1: 'button',
+            addSample2: 'button',
+            delSample: 'button',
+        })
 
-        /** @private @type {HTMLElement} */
-        this.layout = fragment.querySelector('#samplesListLayout')
-
-        /** @private @type {HTMLElement} */
-        this.sampleListTitle = fragment.querySelector('#sampleListTitle')
-        /** @private @type {HTMLElement} */
-        this.sampleIndexElem = fragment.querySelector('#sampleIndex')
-
-        /** @private @type {HTMLFormElement} */
-        this.sampleList = fragment.querySelector('#sampleList')
         /** @private @type {NamedFormItem} */
         this.sampleInput = null
-        /** @private @type {HTMLElement} */
-        this.sampleEditContainer = fragment.querySelector('#sampleEditContainer')
 
-        $dom.disableFormSubmit(this.sampleList)
+        $dom.disableFormSubmit(this.elems.sampleList)
 
-        /** @private @type {HTMLElement} */
-        this.sampleHeader = fragment.querySelector('#sampleHeader')
-
-        let showListButton = type(HTMLButtonElement, fragment.querySelector('#showList'))
-        showListButton.addEventListener('click', () => {
-            this.layout.classList.remove('show-sample-edit')
+        this.elems.showList.addEventListener('click', () => {
+            this.elems.samplesListLayout.classList.remove('show-sample-edit')
         })
-        /** @private @type {HTMLButtonElement} */
-        this.addButton1 = fragment.querySelector('#addSample1')
-        this.addButton1.addEventListener('click', () => this.addSample())
-        /** @private @type {HTMLButtonElement} */
-        this.addButton2 = fragment.querySelector('#addSample2')
-        this.addButton2.addEventListener('click', () => this.addSample())
-
-        let deleteButton = type(HTMLButtonElement, fragment.querySelector('#delSample'))
-        deleteButton.addEventListener('click', () => this.deleteSample())
+        this.elems.addSample1.addEventListener('click', () => this.addSample())
+        this.elems.addSample2.addEventListener('click', () => this.addSample())
+        this.elems.delSample.addEventListener('click', () => this.deleteSample())
 
         this.view.appendChild(fragment)
     }
@@ -111,12 +102,14 @@ export class SamplesList {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
-        if (this.sampleEdit?.controller.keyDown(event)) {
+        if (this.sampleEdit?.ctrl.keyDown(event)) {
             return true
         }
-        if (event.key == 'Escape' && this.layout.classList.contains('show-sample-edit')) {
-            this.layout.classList.remove('show-sample-edit')
-            return true
+        if (event.key == 'Escape') {
+            if (this.elems.samplesListLayout.classList.contains('show-sample-edit')) {
+                this.elems.samplesListLayout.classList.remove('show-sample-edit')
+                return true
+            }
         }
         if (event.key == '+' && $shortcut.commandKey(event)) {
             this.addSample()
@@ -137,10 +130,10 @@ export class SamplesList {
         this.viewIndex = idx
         $dom.selectRadioButton(this.sampleInput, this.viewIndex.toString())
 
-        this.sampleHeader.classList.remove('hide')
+        this.elems.sampleHeader.classList.remove('hide')
 
         this.sampleEdit = new SampleEditElement()
-        this.sampleEdit.controller.callbacks = {
+        this.sampleEdit.ctrl.callbacks = {
             jamPlay: (...args) => invoke(this.callbacks.jamPlay, ...args),
             jamRelease: (...args) => invoke(this.callbacks.jamRelease, ...args),
             onChange: (sample, commit) => {
@@ -150,8 +143,8 @@ export class SamplesList {
             setEntryCell: (...args) => invoke(this.callbacks.setEntryCell, ...args),
             openLocalFilePicker: (...args) => invoke(this.callbacks.openLocalFilePicker, ...args)
         }
-        this.sampleEditContainer.appendChild(this.sampleEdit)
-        this.sampleEdit.controller.setSample(this.viewSamples[idx])
+        this.elems.sampleEditContainer.appendChild(this.sampleEdit)
+        this.sampleEdit.ctrl.setSample(this.viewSamples[idx])
         invoke(this.callbacks.setEntryCell, {...Cell.empty, inst: idx}, CellPart.inst)
 
         this.updateSampleTitle()
@@ -160,15 +153,15 @@ export class SamplesList {
     /** @private */
     closeSampleEdit() {
         this.viewIndex = -1
-        this.sampleEditContainer.textContent = ''
+        this.elems.sampleEditContainer.textContent = ''
         this.sampleEdit = null
-        this.sampleHeader.classList.add('hide')
+        this.elems.sampleHeader.classList.add('hide')
         this.updateSampleTitle()
     }
 
     /** @private */
     updateSampleTitle() {
-        this.sampleIndexElem.textContent = this.viewIndex.toString()
+        this.elems.sampleIndex.textContent = this.viewIndex.toString()
     }
 
     /**
@@ -181,7 +174,7 @@ export class SamplesList {
         console.debug('update samples list')
         this.viewSamples = samples
 
-        this.sampleList.textContent = ''
+        this.elems.sampleList.textContent = ''
         let sampleCount = 0
         for (let [i, sample] of samples.entries()) {
             if (!sample) {
@@ -190,18 +183,19 @@ export class SamplesList {
             sampleCount++
             let text = `${i.toString().padStart(2, '0')}: ${sample.name}`
             let label = $dom.makeRadioButton('sample', i.toString(), text)
-            this.sampleList.appendChild(label)
+            this.elems.sampleList.appendChild(label)
             label.addEventListener('click', () => {
-                this.layout.classList.add('show-sample-edit')
+                this.elems.samplesListLayout.classList.add('show-sample-edit')
                 this.openSampleEdit(i)
             })
         }
-        this.sampleInput = this.sampleList.elements.namedItem('sample')
+        this.sampleInput = this.elems.sampleList.elements.namedItem('sample')
         $dom.selectRadioButton(this.sampleInput, this.viewIndex.toString())
         this.setSelSample(this.viewIndex)
-        this.sampleListTitle.textContent = `${sampleCount} Sample${(sampleCount != 1) ? 's' : ''}`
+        let title = `${sampleCount} Sample${(sampleCount != 1) ? 's' : ''}`
+        this.elems.sampleListTitle.textContent = title
         let canAdd = sampleCount < mod.numSamples - 1
-        this.addButton1.disabled = this.addButton2.disabled = !canAdd
+        this.elems.addSample1.disabled = this.elems.addSample2.disabled = !canAdd
         this.updateSampleTitle()
     }
 
@@ -223,7 +217,7 @@ export class SamplesList {
                 positions.push($play.getSamplePredictedPos(channel, time))
             }
         }
-        this.sampleEdit.controller.setPlayPos(positions)
+        this.sampleEdit.ctrl.setPlayPos(positions)
     }
 
     /**
@@ -231,13 +225,13 @@ export class SamplesList {
      */
     setSelSample(s) {
         if (!this.viewSamples[s]) {
-            this.layout.classList.remove('show-sample-edit')
+            this.elems.samplesListLayout.classList.remove('show-sample-edit')
             this.closeSampleEdit()
         } else if (!this.sampleEdit || s != this.viewIndex) {
             this.openSampleEdit(s)
         } else {
             this.viewIndex = s
-            this.sampleEdit.controller.setSample(this.viewSamples[s])
+            this.sampleEdit.ctrl.setSample(this.viewSamples[s])
         }
     }
 
@@ -250,7 +244,7 @@ export class SamplesList {
             return newMod
         })
         if (selSample != -1) {
-            this.layout.classList.add('show-sample-edit')
+            this.elems.samplesListLayout.classList.add('show-sample-edit')
             this.openSampleEdit(selSample)
         }
     }
@@ -281,13 +275,13 @@ let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new SamplesListElement()
-    testElem.controller.callbacks = callbackDebugObject({
+    testElem.ctrl.callbacks = callbackDebugObject({
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
-            testElem.controller.setSamples(module.samples)
+            testElem.ctrl.setSamples(module.samples)
         },
     })
     $dom.displayMain(testElem)
-    testElem.controller.setSamples(module.samples)
+    testElem.ctrl.setSamples(module.samples)
 }

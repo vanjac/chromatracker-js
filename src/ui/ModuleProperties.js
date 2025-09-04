@@ -154,13 +154,13 @@ let testElem
 if (import.meta.main) {
     let module = $module.defaultNew
     testElem = new ModulePropertiesElement()
-    testElem.controller.callbacks = callbackDebugObject({
+    testElem.ctrl.callbacks = callbackDebugObject({
         changeModule(callback, commit) {
             console.log('Change module', commit)
             module = callback(module)
-            testElem.controller.setModule(module)
+            testElem.ctrl.setModule(module)
         },
     })
     $dom.displayMain(testElem)
-    testElem.controller.setModule(module)
+    testElem.ctrl.setModule(module)
 }

@@ -14,7 +14,7 @@ const scrollRate = 480 // pixels per second
 
 const template = $dom.html`
 <div id="patternScroll" class="hscrollable vscrollable flex-grow">
-    <div id="handles" class="nocontain hide">
+    <div id="handleContainer" class="nocontain hide">
         <div class="pattern-handle"></div>
         <div class="pattern-handle"></div>
         <div class="pattern-handle"></div>
@@ -22,9 +22,9 @@ const template = $dom.html`
     </div>
     <table>
         <thead>
-            <tr></tr>
+            <tr id="theadRow"></tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="tbody"></tbody>
     </table>
     <hr>
     <div class="hflex">
@@ -94,41 +94,39 @@ export class PatternTable {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
+        /** @private */
+        this.elems = $dom.getElems(fragment, {
+            patternScroll: 'div',
+            theadRow: 'tr',
+            tbody: 'tbody',
+            tableSpace: 'div',
+            handleContainer: 'div',
+            length: 'input',
+        })
 
         /** @private @type {HTMLElement} */
-        this.patternScroll = fragment.querySelector('#patternScroll')
-        /** @private @type {HTMLTableRowElement} */
-        this.theadRow = fragment.querySelector('thead tr')
-        /** @private */
-        this.tbody = fragment.querySelector('tbody')
-        /** @private @type {HTMLElement} */
         this.spacerRow = null
-        /** @private @type {HTMLElement} */
-        this.tableSpace = fragment.querySelector('#tableSpace')
         /** @private @type {HTMLInputElement[]} */
         this.muteInputs = []
         /** @private @type {HTMLMeterElement[]} */
         this.channelMeters = []
-        /** @private @type {HTMLElement} */
-        this.selectHandleContainer = fragment.querySelector('#handles')
         /** @private */
-        this.selectHandles = [...this.selectHandleContainer.querySelectorAll('div')]
+        this.selectHandles = [...this.elems.handleContainer.querySelectorAll('div')]
         /** @private */
-        this.lengthInput = new $dom.ValidatedNumberInput(fragment.querySelector('#length'),
-            (value, commit) => {
-                if (commit) {
-                    this.changePatternLength(value)
-                }
-            })
+        this.lengthInput = new $dom.ValidatedNumberInput(this.elems.length, (value, commit) => {
+            if (commit) {
+                this.changePatternLength(value)
+            }
+        })
 
         this.addHandleEvents(this.selectHandles[0], false, false)
         this.addHandleEvents(this.selectHandles[1], true, false)
         this.addHandleEvents(this.selectHandles[2], false, true)
         this.addHandleEvents(this.selectHandles[3], true, true)
 
-        new KeyPad(this.tbody, (id, elem, ev) => {
+        new KeyPad(this.elems.tbody, (id, elem, ev) => {
             let selectEnabled = !this.selectMode
-                || this.patternScroll.classList.contains('scroll-lock-pattern')
+                || this.elems.patternScroll.classList.contains('scroll-lock-pattern')
                 || this.pointerQuery.matches
             if (selectEnabled && elem.dataset.c != null) {
                 let c = Number(elem.dataset.c)
@@ -140,7 +138,7 @@ export class PatternTable {
         })
 
         let resizeObserver = new ResizeObserver(() => this.updateSpaceSize())
-        resizeObserver.observe(this.tableSpace)
+        resizeObserver.observe(this.elems.tableSpace)
 
         this.view.appendChild(fragment)
     }
@@ -216,7 +214,7 @@ export class PatternTable {
         this.viewNumChannels = numChannels
         this.viewNumRows = 0
 
-        this.theadRow.textContent = ''
+        this.elems.theadRow.textContent = ''
         let newMuteInputs = []
         this.channelMeters = []
         let rowFrag = new DocumentFragment()
@@ -240,7 +238,7 @@ export class PatternTable {
             let meter = div.appendChild($dom.createElem('meter', {min: 0, max: 64}))
             this.channelMeters.push(meter)
         }
-        this.theadRow.appendChild(rowFrag)
+        this.elems.theadRow.appendChild(rowFrag)
         this.muteInputs = newMuteInputs
     }
 
@@ -276,7 +274,7 @@ export class PatternTable {
             }
         } else {
             this.viewNumRows = pattern[0].length
-            this.tbody.textContent = ''
+            this.elems.tbody.textContent = ''
             let tableFrag = new DocumentFragment()
 
             this.spacerRow = tableFrag.appendChild($dom.createElem('tr'))
@@ -330,7 +328,7 @@ export class PatternTable {
                     tr.appendChild(cellFrag)
                 }
             }
-            this.tbody.appendChild(tableFrag)
+            this.elems.tbody.appendChild(tableFrag)
             this.updateSelection()
         }
         this.viewPattern = pattern
@@ -343,7 +341,7 @@ export class PatternTable {
      */
     getTr(row) {
         if (row < 0) { return null }
-        return /** @type {HTMLTableRowElement}*/(this.tbody.children[row + 1])
+        return /** @type {HTMLTableRowElement}*/(this.elems.tbody.children[row + 1])
     }
 
     /**
@@ -359,7 +357,7 @@ export class PatternTable {
     /** @private */
     updateSpaceSize() {
         if (this.spacerRow) {
-            this.spacerRow.style.height = this.tableSpace.clientHeight + 'px'
+            this.spacerRow.style.height = this.elems.tableSpace.clientHeight + 'px'
             this.updateSelectionHandles()
         }
     }
@@ -466,7 +464,7 @@ export class PatternTable {
             if (e.pointerType != 'mouse' || e.button == 0) {
                 handle.setPointerCapture(e.pointerId)
                 e.stopPropagation()
-                ;[startX, startY] = scrollCoords(this.patternScroll, e.clientX, e.clientY)
+                ;[startX, startY] = scrollCoords(this.elems.patternScroll, e.clientX, e.clientY)
                 // prefer to move mark
                 isMarkChannel = maxChannel ?
                     (this.markChannel >= this.selChannel) : (this.markChannel <= this.selChannel)
@@ -487,7 +485,7 @@ export class PatternTable {
                 let lastTime = window.performance.now() // captured
                 /** @param {number} time */
                 let updateDrag = time => {
-                    let [x, y] = scrollCoords(this.patternScroll, dragX, dragY)
+                    let [x, y] = scrollCoords(this.elems.patternScroll, dragX, dragY)
                     let channel = startChannel + (x - startX) / cellRect.width
                     channel = clamp(Math.round(channel), 0, this.viewNumChannels - 1)
                     let row = Math.round(startRow + (y - startY) / cellRect.height)
@@ -504,7 +502,7 @@ export class PatternTable {
                         this.updateSelection()
                     }
 
-                    let scrollRect = this.patternScroll.getBoundingClientRect()
+                    let scrollRect = this.elems.patternScroll.getBoundingClientRect()
                     let autoScrollX = 0, autoScrollY = 0
                     if (dragX > scrollRect.right - scrollMargin) {
                         autoScrollX = 1
@@ -519,7 +517,7 @@ export class PatternTable {
                     if (autoScrollX || autoScrollY) {
                         let vel = (time - lastTime) / 1000 * scrollRate
                         lastTime = time
-                        this.patternScroll.scrollBy(
+                        this.elems.patternScroll.scrollBy(
                             {left: autoScrollX * vel, top: autoScrollY * vel, behavior: 'instant'
                         })
                         animHandle = window.requestAnimationFrame(updateDrag)
@@ -540,7 +538,7 @@ export class PatternTable {
 
     /** @private */
     updateSelection() {
-        for (let cell of this.tbody.querySelectorAll('.sel-cell')) {
+        for (let cell of this.elems.tbody.querySelectorAll('.sel-cell')) {
             cell.classList.remove('sel-cell')
             cell.classList.remove('sel-pitch')
             cell.classList.remove('sel-inst')
@@ -564,7 +562,7 @@ export class PatternTable {
 
     /** @private */
     updateSelectionHandles() {
-        this.selectHandleContainer.classList.toggle('hide', !this.selectMode)
+        this.elems.handleContainer.classList.toggle('hide', !this.selectMode)
         if (this.selectMode) {
             let [minChannel, maxChannel] = minMax(this.selChannel, this.markChannel)
             let [minRow, maxRow] = minMax(this.selRow, this.markRow)
@@ -576,8 +574,8 @@ export class PatternTable {
             let selBottom = maxTr ? maxTr.getBoundingClientRect().bottom : 0
             let selLeft = minTd ? minTd.getBoundingClientRect().left : 0
             let selRight = maxTd ? maxTd.getBoundingClientRect().right : 0
-            ;[selLeft, selTop] = scrollCoords(this.patternScroll, selLeft, selTop)
-            ;[selRight, selBottom] = scrollCoords(this.patternScroll, selRight, selBottom)
+            ;[selLeft, selTop] = scrollCoords(this.elems.patternScroll, selLeft, selTop)
+            ;[selRight, selBottom] = scrollCoords(this.elems.patternScroll, selRight, selBottom)
 
             this.selectHandles[0].style.top = selTop + 'px'
             this.selectHandles[1].style.top = selTop + 'px'
@@ -606,7 +604,7 @@ export class PatternTable {
      * @param {number} row
      */
     setPlaybackRow(row) {
-        this.tbody.querySelector('.hilite-row')?.classList.remove('hilite-row')
+        this.elems.tbody.querySelector('.hilite-row')?.classList.remove('hilite-row')
         this.getTr(row)?.classList.add('hilite-row')
     }
 
@@ -695,15 +693,15 @@ export class PatternTable {
      * @param {boolean} scrollLock
      */
     setScrollLock(scrollLock) {
-        this.patternScroll.classList.toggle('scroll-lock-pattern', scrollLock)
+        this.elems.patternScroll.classList.toggle('scroll-lock-pattern', scrollLock)
     }
 
     /**
      * @param {boolean} scrollable
      */
     setVScrollable(scrollable) {
-        this.patternScroll.classList.toggle('vscrollable', scrollable)
-        this.patternScroll.classList.toggle('vnoscroll', !scrollable)
+        this.elems.patternScroll.classList.toggle('vscrollable', scrollable)
+        this.elems.patternScroll.classList.toggle('vnoscroll', !scrollable)
     }
 
     onVisible() {
@@ -715,10 +713,10 @@ export const PatternTableElement = $dom.defineView('pattern-table', PatternTable
 let testElem
 if (import.meta.main) {
     testElem = new PatternTableElement()
-    testElem.controller.callbacks = callbackDebugObject()
+    testElem.ctrl.callbacks = callbackDebugObject()
     $dom.displayMain(testElem)
-    testElem.controller.setNumChannels(4)
-    testElem.controller.setPattern($pattern.create(4))
-    testElem.controller.setEntryParts(CellPart.all)
-    testElem.controller.onVisible()
+    testElem.ctrl.setNumChannels(4)
+    testElem.ctrl.setPattern($pattern.create(4))
+    testElem.ctrl.setEntryParts(CellPart.all)
+    testElem.ctrl.onVisible()
 }

@@ -14,7 +14,7 @@ export function needsKeyboardInput(target) {
 function dispatchKeyDown(event) {
     /** @type {ViewElement<Controller>} */
     let mainElem = document.querySelector('#main')
-    return mainElem?.controller?.keyDown?.(event) ?? false
+    return mainElem?.ctrl?.keyDown?.(event) ?? false
 }
 
 document.addEventListener('keydown', e => {
