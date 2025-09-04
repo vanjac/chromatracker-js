@@ -11,7 +11,7 @@ body {
 
     background: var(--color-bg);
     color: var(--color-fg);
-    accent-color: var(--color-fg-hl);
+    accent-color: var(--color-fg-hl); /* eslint-disable-line css/use-baseline */
 }
 
 .dim {
@@ -254,7 +254,7 @@ dialog {
 .message-out {
     white-space: pre-wrap;
     -webkit-user-select: text;
-    user-select: text;
+    user-select: text; /* eslint-disable-line css/use-baseline */
 }
 
 .properties-grid {
@@ -273,7 +273,7 @@ dialog {
 .warning {
     color: var(--color-fg-error);
     -webkit-user-select: text;
-    user-select: text;
+    user-select: text; /* eslint-disable-line css/use-baseline */
 }
 
 table {

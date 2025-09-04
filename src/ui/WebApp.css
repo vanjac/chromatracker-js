@@ -43,7 +43,7 @@ body {
 
 body, dialog, select {
     -webkit-user-select: none;
-    user-select: none;
+    user-select: none; /* eslint-disable-line css/use-baseline */
 }
 
 img {
