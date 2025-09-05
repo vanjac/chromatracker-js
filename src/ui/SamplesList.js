@@ -136,7 +136,8 @@ export class SamplesList {
                     module => $sample.update(module, idx, sample), commit)
             },
             setEntryCell: (...args) => invoke(this.callbacks.setEntryCell, ...args),
-            openLocalFilePicker: (...args) => invoke(this.callbacks.openLocalFilePicker, ...args)
+            openLocalFilePicker: (...args) => invoke(this.callbacks.openLocalFilePicker, ...args),
+            requestAudioContext: (...args) => invoke(this.callbacks.requestAudioContext, ...args),
         }
         this.elems.sampleEditContainer.appendChild(this.sampleEdit)
         this.sampleEdit.ctrl.setSample(this.viewSamples[idx])

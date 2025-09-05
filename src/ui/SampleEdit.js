@@ -15,6 +15,7 @@ import {AmplifyEffectElement} from './dialogs/AmplifyEffect.js'
 import {AudioImportElement} from './dialogs/AudioImport.js'
 import {FadeEffectElement} from './dialogs/FadeEffect.js'
 import {FilterEffectElement} from './dialogs/FilterEffect.js'
+import {RecordDialogElement} from './dialogs/RecordDialog.js'
 import {SamplePickerElement} from './dialogs/SamplePicker.js'
 import {invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, Effect, mod, Sample, Module, CellPart} from '../Model.js'
@@ -49,6 +50,9 @@ const template = $dom.html`
             </button>
             <button id="import" title="Import from Module (${$shortcut.ctrl('I')})">
                 ${$icons.file_import_outline}
+            </button>
+            <button id="record" title="Record Audio (${$shortcut.ctrl('R')})">
+                ${$icons.record}
             </button>
             <button id="save" title="Save (${$shortcut.ctrl('S')})">
                 ${$icons.download}
@@ -120,8 +124,9 @@ export class SampleEdit {
         /**
          * @type {JamCallbacks & {
          *      onChange?: (sample: Readonly<Sample>, commit: boolean) => void
-                setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
+         *      setEntryCell?: (cell: Readonly<Cell>, parts: CellPart) => void
          *      openLocalFilePicker?: (callback: (module: Readonly<Module>) => void) => void
+         *      requestAudioContext?: (callback: (context: AudioContext) => void) => void
          * }}
          */
         this.callbacks = {}
@@ -153,6 +158,7 @@ export class SampleEdit {
             finetuneOut: 'output',
             open: 'button',
             import: 'button',
+            record: 'button',
             save: 'button',
             warning: 'strong',
             useOffset: 'button',
@@ -219,6 +225,7 @@ export class SampleEdit {
 
         this.elems.open.addEventListener('click', () => this.pickAudioFile())
         this.elems.import.addEventListener('click', () => this.pickModule())
+        this.elems.record.addEventListener('click', () => this.recordAudio())
         this.elems.save.addEventListener('click', () => this.saveAudioFile())
 
         makeKeyButton(this.elems.useOffset, id => {
@@ -258,6 +265,9 @@ export class SampleEdit {
             return true
         } else if (event.key == 'i' && $shortcut.commandKey(event)) {
             this.pickModule()
+            return true
+        } else if (event.key == 'r' && $shortcut.commandKey(event)) {
+            this.recordAudio()
             return true
         } else if (event.key == 's' && $shortcut.commandKey(event)) {
             this.saveAudioFile()
@@ -470,6 +480,35 @@ export class SampleEdit {
     /** @private */
     pickModule() {
         invoke(this.callbacks.openLocalFilePicker, module => this.modPickSample(module))
+    }
+
+    /** @private */
+    recordAudio() {
+        invoke(this.callbacks.requestAudioContext, context => {
+            let dialog = new RecordDialogElement()
+            dialog.ctrl.context = context
+            dialog.ctrl.onComplete = async (blob, params) => {
+                let waitDialog = $dialog.open(new WaitDialogElement())
+                let buffer = await blob.arrayBuffer()
+                let wave, volume
+                try {
+                    ;({wave, volume} = await $audio.read(buffer, {...params, channel: 0}))
+                } catch(error) {
+                    $dialog.close(waitDialog)
+                    if (error instanceof DOMException) {
+                        AlertDialog.open(`Error reading audio file.\n${error.message}`)
+                    }
+                    return
+                }
+                $dialog.close(waitDialog)
+                this.changeSample(sample => {
+                    sample.wave = wave
+                    sample.volume = volume
+                    sample.loopStart = sample.loopEnd = 0
+                }, true, true)
+            }
+            $dialog.open(dialog, {dismissable: true})
+        })
     }
 
     /** @private */

@@ -490,3 +490,9 @@ pattern-matrix #playbackLine {
 .wave-play-mark {
     background: var(--color-fg-alt);
 }
+
+/* RecordDialog */
+
+record-dialog dialog {
+    width: 15em;
+}
