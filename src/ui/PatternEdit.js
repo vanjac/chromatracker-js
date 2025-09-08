@@ -311,11 +311,11 @@ export class PatternEdit {
     }
 
     selChannel() {
-        return this.elems.patternTable.ctrl.getSelChannel()
+        return this.elems.patternTable.ctrl.selChannel()
     }
 
     selRow() {
-        return this.elems.patternTable.ctrl.getSelRow()
+        return this.elems.patternTable.ctrl.selRow()
     }
 
     selPos() {
@@ -431,7 +431,7 @@ export class PatternEdit {
      */
     backErase(jamId) {
         if (!this.elems.select.checked) {
-            this.elems.patternTable.ctrl.move(0, -1, false, true)
+            this.elems.patternTable.ctrl.retreat()
         }
         this.putCells(Cell.empty, this.entryParts)
         invoke(this.callbacks.jamPlay, jamId, this.selCell())
@@ -556,7 +556,7 @@ export class PatternEdit {
     /** @private */
     advance() {
         if (!this.elems.select.checked && !this.following) {
-            this.elems.patternTable.ctrl.move(0, 1, false, true)
+            this.elems.patternTable.ctrl.advance()
         }
     }
 
@@ -624,7 +624,7 @@ export class PatternEdit {
             return pattern
         })
         this.elems.patternTable.ctrl.setSelCell(c, 0, false)
-        this.elems.patternTable.ctrl.scrollToSelCell(true)
+        this.elems.patternTable.ctrl.scrollToSelB(true)
         this.elems.applySpeedSection.classList.add('hide')
         this.setSpeedToolPriority(false)
     }

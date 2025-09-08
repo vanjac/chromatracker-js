@@ -70,13 +70,13 @@ export class PatternTable {
          */
         this.callbacks = {}
         /** @private */
-        this.selChannel = 0
+        this.selChannelA = 0
         /** @private */
-        this.selRow = 0
+        this.selRowA = 0
         /** @private */
-        this.markChannel = 0
+        this.selChannelB = 0
         /** @private */
-        this.markRow = 0
+        this.selRowB = 0
         /** @private */
         this.selectMode = false
         /** @private @type {CellPart} */
@@ -149,45 +149,45 @@ export class PatternTable {
     keyDown(event) {
         if (!$dom.needsKeyboardInput(event.target)) {
             if (event.key == 'ArrowDown' && !$shortcut.commandKey(event)) {
-                this.move(0, 1, event.shiftKey, false)
+                this.keyboardMove(0, 1, event.shiftKey)
                 return true
             } else if (event.key == 'ArrowUp' && !$shortcut.commandKey(event)) {
-                this.move(0, -1, event.shiftKey, false)
+                this.keyboardMove(0, -1, event.shiftKey)
                 return true
             } else if (event.key == 'ArrowRight' && !$shortcut.commandKey(event)) {
-                this.move(1, 0, event.shiftKey, false)
+                this.keyboardMove(1, 0, event.shiftKey)
                 return true
             } else if (event.key == 'ArrowLeft' && !$shortcut.commandKey(event)) {
-                this.move(-1, 0, event.shiftKey, false)
+                this.keyboardMove(-1, 0, event.shiftKey)
                 return true
             } else if (event.key == 'PageDown' && !$shortcut.commandKey(event)) {
-                this.move(0, 16, event.shiftKey, false)
+                this.keyboardMove(0, 16, event.shiftKey)
                 return true
             } else if (event.key == 'PageUp' && !$shortcut.commandKey(event)) {
-                this.move(0, -16, event.shiftKey, false)
+                this.keyboardMove(0, -16, event.shiftKey)
                 return true
             } else if (event.key == 'Home' && !$shortcut.commandKey(event)) {
-                this.setSelCell(this.selChannel, 0, event.shiftKey)
-                this.scrollToSelCell(true)
+                this.setSelCell(this.selChannelB, 0, event.shiftKey)
+                this.scrollToSelB(true)
                 return true
             } else if (event.key == 'End' && !$shortcut.commandKey(event)) {
-                this.setSelCell(this.selChannel, this.viewNumRows - 1, event.shiftKey)
-                this.scrollToSelCell(true)
+                this.setSelCell(this.selChannelB, this.viewNumRows - 1, event.shiftKey)
+                this.scrollToSelB(true)
                 return true
             } else if (event.key == 'a' && $shortcut.commandKey(event)) {
-                this.selChannel = this.selRow = 0
-                this.markChannel = this.viewNumChannels - 1
-                this.markRow = this.viewNumRows - 1
+                this.selChannelA = this.selRowA = 0
+                this.selChannelB = this.viewNumChannels - 1
+                this.selRowB = this.viewNumRows - 1
                 this.updateSelection()
                 return true
             } else if (event.key == 'l' && $shortcut.commandKey(event)) {
-                this.selRow = 0
-                this.markRow = this.viewNumRows - 1
+                this.selRowA = 0
+                this.selRowB = this.viewNumRows - 1
                 this.updateSelection()
                 return true
             } else if (event.key == 'r' && $shortcut.commandKey(event)) {
-                this.selChannel = 0
-                this.markChannel = this.viewNumChannels - 1
+                this.selChannelA = 0
+                this.selChannelB = this.viewNumChannels - 1
                 this.updateSelection()
                 return true
             }
@@ -282,9 +282,9 @@ export class PatternTable {
             let spacerHead = this.spacerRow.appendChild($dom.createElem('th'))
             spacerHead.classList.add('pattern-row-head')
             spacerHead.addEventListener('click', () => {
-                this.selChannel = this.selRow = 0
-                this.markChannel = this.selectMode ? this.viewNumChannels - 1 : 0
-                this.markRow = this.selectMode ? this.viewNumRows - 1 : 0
+                this.selChannelA = this.selRowA = 0
+                this.selChannelB = this.selectMode ? this.viewNumChannels - 1 : 0
+                this.selRowB = this.selectMode ? this.viewNumRows - 1 : 0
                 this.updateSelection()
             })
             for (let c = 0; c < pattern.length; c++) {
@@ -293,10 +293,10 @@ export class PatternTable {
                 spacerData.addEventListener('click', () => {
                     // TODO: a Firefox bug can cause this to trigger when resizing selection
                     // https://stackoverflow.com/q/79171111
-                    this.selChannel = c
-                    this.selRow = 0
-                    this.markChannel = c
-                    this.markRow = this.selectMode ? this.viewNumRows - 1 : 0
+                    this.selChannelA = c
+                    this.selRowA = 0
+                    this.selChannelB = c
+                    this.selRowB = this.selectMode ? this.viewNumRows - 1 : 0
                     this.updateSelection()
                 })
             }
@@ -307,10 +307,10 @@ export class PatternTable {
                 let th = $dom.createElem('th', {textContent: row.toString()})
                 th.classList.add('pattern-row-head')
                 th.addEventListener('click', () => {
-                    this.selChannel = 0
-                    this.selRow = row
-                    this.markChannel = this.selectMode ? this.viewNumChannels - 1 : 0
-                    this.markRow = row
+                    this.selChannelA = 0
+                    this.selRowA = row
+                    this.selChannelB = this.selectMode ? this.viewNumChannels - 1 : 0
+                    this.selRowB = row
                     this.updateSelection()
                 })
                 tr.appendChild(th)
@@ -362,30 +362,30 @@ export class PatternTable {
         }
     }
 
-    getSelChannel() {
-        return this.selChannel
+    selChannel() {
+        return Math.min(this.selChannelA, this.selChannelB)
     }
 
-    getSelRow() {
-        return this.selRow
+    selRow() {
+        return Math.min(this.selRowA, this.selRowB)
     }
 
     /**
      * @returns {[number, number]}
      */
     channelRange() {
-        return minMax(this.selChannel, this.markChannel)
+        return minMax(this.selChannelA, this.selChannelB)
     }
 
     /**
      * @returns {[number, number]}
      */
     rowRange() {
-        return minMax(this.selRow, this.markRow)
+        return minMax(this.selRowA, this.selRowB)
     }
 
     rangeSelected() {
-        return this.selChannel != this.markChannel || this.selRow != this.markRow
+        return this.selChannelA != this.selChannelB || this.selRowA != this.selRowB
     }
 
     /**
@@ -394,11 +394,11 @@ export class PatternTable {
      * @param {boolean} extend
      */
     setSelCell(channel, row, extend) {
-        this.selChannel = channel
-        this.selRow = row
+        this.selChannelB = channel
+        this.selRowB = row
         if (!extend) {
-            this.markChannel = channel
-            this.markRow = row
+            this.selChannelA = channel
+            this.selRowA = row
         }
         this.updateSelection()
     }
@@ -407,28 +407,42 @@ export class PatternTable {
      * @param {number} row
      */
     setSelRow(row) {
-        this.selRow = this.markRow = row
+        this.selRowB = this.selRowA = row
         this.updateSelection()
     }
 
+    advance() {
+        let row = Math.max(this.selRowA, this.selRowB)
+        row = (row + 1) % this.viewNumRows
+        this.setSelCell(this.selChannel(), row, false)
+        this.scrollToSelB(true)
+    }
+
+    retreat() {
+        let row = (this.selRow() + this.viewNumRows - 1) % this.viewNumRows
+        this.setSelCell(this.selChannel(), row, false)
+        this.scrollToSelB(true)
+    }
+
     /**
+     * @private
      * @param {number} channels
      * @param {number} rows
-     * @param {boolean} drag
-     * @param {boolean} center
+     * @param {boolean} shift
      */
-    move(channels, rows, drag, center) {
-        let selChannel = (this.selChannel + channels + this.viewNumChannels) % this.viewNumChannels
-        let selRow = this.selRow + rows
-        if (selRow >= this.viewNumRows) {
+    keyboardMove(channels, rows, shift) {
+        let channelB = (this.selChannelB + channels + this.viewNumChannels) % this.viewNumChannels
+        let rowB = this.selRowB + rows
+        let center = false
+        if (rowB >= this.viewNumRows) {
             center = true
-            selRow %= this.viewNumRows
-        } else if (selRow < 0) {
+            rowB %= this.viewNumRows
+        } else if (rowB < 0) {
             center = true
-            selRow += this.viewNumRows
+            rowB += this.viewNumRows
         }
-        this.setSelCell(selChannel, selRow, drag)
-        this.scrollToSelCell(center)
+        this.setSelCell(channelB, rowB, shift)
+        this.scrollToSelB(center)
     }
 
     enableSelectMode() {
@@ -438,8 +452,8 @@ export class PatternTable {
 
     disableSelectMode() {
         this.selectMode = false
-        this.markChannel = this.selChannel
-        this.markRow = this.selRow
+        this.selChannelA = this.selChannelB = this.selChannel()
+        this.selRowA = this.selRowB = this.selRow()
         this.updateSelection()
     }
 
@@ -454,7 +468,7 @@ export class PatternTable {
         // captured variables:
         let startX = 0, startY = 0
         let startChannel = 0, startRow = 0
-        let isMarkChannel = false, isMarkRow = false
+        let isChannelB = false, isRowB = false
         let dragX = 0, dragY = 0
         let animHandle = 0
         /** @type {DOMRect} */
@@ -465,12 +479,12 @@ export class PatternTable {
                 handle.setPointerCapture(e.pointerId)
                 e.stopPropagation()
                 ;[startX, startY] = scrollCoords(this.elems.patternScroll, e.clientX, e.clientY)
-                // prefer to move mark
-                isMarkChannel = maxChannel ?
-                    (this.markChannel >= this.selChannel) : (this.markChannel <= this.selChannel)
-                isMarkRow = maxRow ? (this.markRow >= this.selRow) : (this.markRow <= this.selRow)
-                startChannel = isMarkChannel ? this.markChannel : this.selChannel
-                startRow = isMarkRow ? this.markRow : this.selRow
+                // prefer to move B
+                isChannelB = maxChannel ?
+                    (this.selChannelB >= this.selChannelA) : (this.selChannelB <= this.selChannelA)
+                isRowB = maxRow ? (this.selRowB >= this.selRowA) : (this.selRowB <= this.selRowA)
+                startChannel = isChannelB ? this.selChannelB : this.selChannelA
+                startRow = isRowB ? this.selRowB : this.selRowA
                 cellRect = this.getTd(0, 0).getBoundingClientRect()
             }
         })
@@ -490,15 +504,15 @@ export class PatternTable {
                     channel = clamp(Math.round(channel), 0, this.viewNumChannels - 1)
                     let row = Math.round(startRow + (y - startY) / cellRect.height)
                     row = clamp(Math.round(row), 0, this.viewNumRows - 1)
-                    let curChannel = isMarkChannel ? this.markChannel : this.selChannel
-                    let curRow = isMarkRow ? this.markRow : this.selRow
+                    let curChannel = isChannelB ? this.selChannelB : this.selChannelA
+                    let curRow = isRowB ? this.selRowB : this.selRowA
                     if (channel != curChannel || row != curRow) {
-                        if (isMarkChannel) {
-                            this.markChannel = channel
+                        if (isChannelB) {
+                            this.selChannelB = channel
                         } else {
-                            this.selChannel = channel
+                            this.selChannelA = channel
                         }
-                        if (isMarkRow) {this.markRow = row} else {this.selRow = row}
+                        if (isRowB) {this.selRowB = row} else {this.selRowA = row}
                         this.updateSelection()
                     }
 
@@ -544,11 +558,11 @@ export class PatternTable {
             cell.classList.remove('sel-inst')
             cell.classList.remove('sel-effect')
         }
-        let selCell = this.getTd(this.selChannel, this.selRow)
+        let selCell = this.getTd(this.selChannel(), this.selRow())
         if (selCell) { $cell.toggleParts(selCell, this.viewEntryParts) }
 
-        let [minChannel, maxChannel] = minMax(this.selChannel, this.markChannel)
-        let [minRow, maxRow] = minMax(this.selRow, this.markRow)
+        let [minChannel, maxChannel] = this.channelRange()
+        let [minRow, maxRow] = this.rowRange()
 
         for (let row = minRow; row <= maxRow; row++) {
             let tr = this.getTr(row)
@@ -564,8 +578,8 @@ export class PatternTable {
     updateSelectionHandles() {
         this.elems.handleContainer.classList.toggle('hide', !this.selectMode)
         if (this.selectMode) {
-            let [minChannel, maxChannel] = minMax(this.selChannel, this.markChannel)
-            let [minRow, maxRow] = minMax(this.selRow, this.markRow)
+            let [minChannel, maxChannel] = this.channelRange()
+            let [minRow, maxRow] = this.rowRange()
             let minTr = this.getTr(minRow)
             let maxTr = this.getTr(maxRow)
             let minTd = minTr?.children[minChannel + 1]
@@ -589,7 +603,7 @@ export class PatternTable {
     }
 
     selCell() {
-        return this.viewPattern[this.selChannel][this.selRow]
+        return this.viewPattern[this.selChannel()][this.selRow()]
     }
 
     /**
@@ -611,16 +625,16 @@ export class PatternTable {
     /**
      * @param {boolean} center
      */
-    scrollToSelCell(center) {
+    scrollToSelB(center) {
         this.updateSpaceSize()
-        this.getTd(this.selChannel, this.selRow)?.scrollIntoView({
+        this.getTd(this.selChannelB, this.selRowB)?.scrollIntoView({
             block: center ? 'center' : 'nearest',
             behavior: 'instant',
         })
     }
 
     scrollToSelRow() {
-        this.getTr(this.selRow)?.scrollIntoView({block: 'center', behavior: 'instant'})
+        this.getTr(this.selRow())?.scrollIntoView({block: 'center', behavior: 'instant'})
     }
 
     /**
@@ -705,7 +719,7 @@ export class PatternTable {
     }
 
     onVisible() {
-        window.requestAnimationFrame(() => this.scrollToSelCell(true)) // TODO: jank
+        window.requestAnimationFrame(() => this.scrollToSelB(true)) // TODO: jank
     }
 }
 export const PatternTableElement = $dom.defineView('pattern-table', PatternTable)
