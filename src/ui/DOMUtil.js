@@ -1,7 +1,7 @@
-import * as $id from '../ID.js'
 import * as $webapp from './WebApp.js'
 
 export const matchISO8859_1 = '[ -~&nbsp;-\u00FF]*' // regex for HTML inputs
+const prefix = '__placeholder'
 
 /**
  * @typedef {Object & {
@@ -63,16 +63,15 @@ export function defineView(tag, controllerClass) {
 export function html(parts, ...values) {
     // https://stackoverflow.com/a/78768252/11525734
     let str = ''
-    /** @type {Record<$id.ID, Node>} */
-    let placeholders = Object.create(null)
+    /** @type {Node[]} */
+    let placeholders = []
     for (let [i, part] of parts.entries()) {
         str += part
         if (i < values.length) {
             let v = values[i]
             if (v instanceof Node) {
-                let id = $id.unique()
-                str += `<div id="${id}"></div>`
-                placeholders[id] = v
+                str += `<div id="${prefix + placeholders.length}"></div>`
+                placeholders.push(v)
             } else {
                 str += String(v)
             }
@@ -87,11 +86,11 @@ export function html(parts, ...values) {
     }
     let fragment = template.content
 
-    for (let [id, node] of Object.entries(placeholders)) {
+    for (let [i, node] of placeholders.entries()) {
         if (node instanceof DocumentFragment) {
             node = node.cloneNode(true)
         }
-        fragment.getElementById(id).replaceWith(node)
+        fragment.getElementById(prefix + i).replaceWith(node)
     }
     return fragment
 }
