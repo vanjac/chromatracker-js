@@ -1,6 +1,14 @@
 export const {freeze} = Object
 
 /**
+ * @template {any[]} T
+ * @param {T} args
+ */
+export function tuple(...args) {
+    return freeze(args)
+}
+
+/**
  * @param {Record<string | symbol, (...args: any[]) => void>} callbacks
  */
 export function callbackDebugObject(callbacks = {}) {
@@ -36,8 +44,7 @@ export function clamp(value, min, max) {
 /**
  * @param {number} a
  * @param {number} b
- * @returns {[number, number]}
  */
 export function minMax(a, b) {
-    return (a < b) ? [a, b] : [b, a]
+    return (a < b) ? tuple(a, b) : tuple(b, a)
 }

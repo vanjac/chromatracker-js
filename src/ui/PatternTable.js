@@ -5,7 +5,7 @@ import * as $play from '../Playback.js'
 import * as $pattern from '../edit/Pattern.js'
 import {KeyPad} from './KeyPad.js'
 import {CellPart, Pattern} from '../Model.js'
-import {invoke, minMax, callbackDebugObject, clamp} from '../Util.js'
+import {invoke, minMax, callbackDebugObject, clamp, tuple} from '../Util.js'
 import {AlertDialog} from './dialogs/UtilDialogs.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
@@ -47,12 +47,11 @@ const cellTemplate = $dom.html`
  * @param {Element} scrollElem
  * @param {number} clientX
  * @param {number} clientY
- * @returns {[number, number]}
  */
 function scrollCoords(scrollElem, clientX, clientY) {
     let scrollRect = scrollElem.getBoundingClientRect()
     let {scrollTop, scrollLeft} = scrollElem
-    return [clientX - scrollRect.left + scrollLeft, clientY - scrollRect.top + scrollTop]
+    return tuple(clientX - scrollRect.left + scrollLeft, clientY - scrollRect.top + scrollTop)
 }
 
 export class PatternTable {
@@ -370,16 +369,10 @@ export class PatternTable {
         return Math.min(this.selRowA, this.selRowB)
     }
 
-    /**
-     * @returns {[number, number]}
-     */
     channelRange() {
         return minMax(this.selChannelA, this.selChannelB)
     }
 
-    /**
-     * @returns {[number, number]}
-     */
     rowRange() {
         return minMax(this.selRowA, this.selRowB)
     }

@@ -1,6 +1,6 @@
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
-import {freeze, callbackDebugObject, minMax, clamp, invoke} from '../Util.js'
+import {freeze, callbackDebugObject, minMax, clamp, invoke, tuple} from '../Util.js'
 import {mod, Sample} from '../Model.js'
 
 const template = $dom.html`
@@ -226,25 +226,19 @@ export class WaveEdit {
         return minMax(this.selectA, this.selectB)
     }
 
-    /**
-     * @returns {[number, number]}
-     */
     selOrAll() {
         if (this.anySelected()) {
             return this.sel()
         } else {
-            return [0, this.viewSample.wave.length]
+            return tuple(0, this.viewSample.wave.length)
         }
     }
 
-    /**
-     * @returns {[number, number]}
-     */
     selRangeOrAll() {
         if (this.rangeSelected()) {
             return this.sel()
         } else {
-            return [0, this.viewSample.wave.length]
+            return tuple(0, this.viewSample.wave.length)
         }
     }
 

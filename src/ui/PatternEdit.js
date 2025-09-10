@@ -7,7 +7,7 @@ import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
 import {makeKeyButton} from './KeyPad.js'
-import {invoke, callbackDebugObject, freeze} from '../Util.js'
+import {invoke, callbackDebugObject, freeze, tuple} from '../Util.js'
 import {Cell, CellPart, Module, Pattern, Sample} from '../Model.js'
 import global from './GlobalState.js'
 import './PatternTable.js'
@@ -343,10 +343,9 @@ export class PatternEdit {
 
     /**
      * @private
-     * @returns {[number, number]}
      */
     selCellPos() {
-        return [this.selChannel(), this.selRow()]
+        return tuple(this.selChannel(), this.selRow())
     }
 
     /**
