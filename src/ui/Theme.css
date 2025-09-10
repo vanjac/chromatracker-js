@@ -1,10 +1,10 @@
 body {
-    --color-bg: #000;
+    --color-bg: #001;
     --color-fg: #fff;
     --color-fg-dim: #bbb;
 
-    --color-bg-btn: #333;
-    --color-bg-btn-press: #666;
+    --color-bg-btn: #334;
+    --color-bg-btn-press: #667;
 
     --color-bg-hl: #60a;
     --color-fg-hl: #b4f;
