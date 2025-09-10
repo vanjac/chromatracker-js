@@ -1,16 +1,16 @@
-import {changeItem, immSplice} from './EditUtil.js'
+import * as $arr from './ImmArray.js'
 import {Cell, CellPart, Effect, mod, Module, Pattern, PatternChannel} from '../Model.js'
 import {freeze} from '../Util.js'
 
 /** @type {Readonly<PatternChannel>} */
-const defaultNewChannel = freeze(Array(mod.numRows).fill(Cell.empty))
+const defaultNewChannel = $arr.repeat(mod.numRows, Cell.empty)
 
 /**
  * @param {number} numChannels
  * @returns {Readonly<Pattern>}
  */
 export function create(numChannels) {
-    return freeze(Array(numChannels).fill(defaultNewChannel))
+    return $arr.repeat(numChannels, defaultNewChannel)
 }
 
 /**
@@ -37,7 +37,7 @@ export function createMissing(module, idx) {
  * @returns {Readonly<Module>}
  */
 export function change(module, p, callback) {
-    let patterns = changeItem(module.patterns, p, callback)
+    let patterns = $arr.change(module.patterns, p, callback)
     return freeze({...module, patterns})
 }
 
@@ -175,11 +175,11 @@ export function applySpeed(pattern, row, speed) {
         let match = cell.effect == Effect.Speed && (cell.param0 >= 2) == (speed >= 0x20)
         if (foundChannel < 0 && (match || empty)) {
             foundChannel = c
-            mutPat[c] = immSplice(mutPat[c], row, 1, freeze({
+            mutPat[c] = $arr.spliced(mutPat[c], row, 1, freeze({
                 ...cell, effect: Effect.Speed, param0: speed >> 4, param1: speed & 0xf
             }))
         } else if (match) {
-            mutPat[c] = immSplice(mutPat[c], row, 1, freeze({
+            mutPat[c] = $arr.spliced(mutPat[c], row, 1, freeze({
                 ...cell, effect: 0, param0: 0, param1: 0
             }))
         }
@@ -240,7 +240,7 @@ export function setLogicalLength(pattern, length) {
     for (let c = mutPat.length - 1; c >= 0; c--) {
         let cell = mutPat[c][length - 1]
         if (!cell.effect && !cell.param0 && !cell.param1) {
-            mutPat[c] = immSplice(mutPat[c], length - 1, 1, freeze({
+            mutPat[c] = $arr.spliced(mutPat[c], length - 1, 1, freeze({
                 ...cell, effect: Effect.PatternBreak,
                 param0: Math.floor(breakRow / 10), param1: breakRow % 10
             }))

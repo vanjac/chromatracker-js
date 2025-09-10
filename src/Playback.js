@@ -4,8 +4,9 @@
 // https://github.com/libxmp/libxmp/blob/master/docs/tracker_notes.txt
 // https://padenot.github.io/web-audio-perf/
 
+import * as $arr from './edit/ImmArray.js'
 import {clamp, freeze} from './Util.js'
-import {Cell, Effect, emptyArray, ExtEffect, mod, Module, Sample} from './Model.js'
+import {Cell, Effect, ExtEffect, mod, Module, Sample} from './Model.js'
 import periodTable from './PeriodTable.js'
 
 const masterGain = 0.5
@@ -33,7 +34,7 @@ function playback() {
         /** @type {SamplePlayback[]} */
         samples: [],
         /** @type {readonly Readonly<Sample>[]} */
-        modSamples: emptyArray,
+        modSamples: $arr.empty,
         /** @type {ChannelPlayback[]} */
         channels: [],
         /** @type {Set<AudioBufferSourceNode>} */

@@ -1,5 +1,6 @@
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
+import * as $arr from '../edit/ImmArray.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $sequence from '../edit/Sequence.js'
 import * as $module from '../edit/Module.js'
@@ -418,7 +419,7 @@ if (import.meta.main) {
     let module = {
         ...$module.defaultNew,
         sequence: freeze([5, 4, 3, 2, 1]),
-        patterns: freeze(Array(6).fill($pattern.create(4)))
+        patterns: $arr.repeat(6, $pattern.create(4)),
     }
     testElem = new PatternMatrixElement()
     $dom.displayMain(testElem)

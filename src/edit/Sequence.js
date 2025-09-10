@@ -1,5 +1,5 @@
 import * as $pattern from './Pattern.js'
-import {immSplice} from './EditUtil.js'
+import * as $arr from './ImmArray.js'
 import {mod, Module} from '../Model.js'
 import {freeze} from '../Util.js'
 
@@ -13,7 +13,7 @@ export function set(module, pos, pat) {
     if (pat < 0 || pat >= mod.maxPatterns) {
         return module
     }
-    let sequence = immSplice(module.sequence, pos, 1, pat)
+    let sequence = $arr.spliced(module.sequence, pos, 1, pat)
     let patterns = $pattern.createMissing(module, pat)
     return freeze({...module, sequence, patterns})
 }
@@ -41,7 +41,7 @@ export function insert(module, pos, pat) {
     if (pat < 0) {
         return module
     }
-    let sequence = immSplice(module.sequence, pos, 0, pat)
+    let sequence = $arr.spliced(module.sequence, pos, 0, pat)
     let patterns = $pattern.createMissing(module, pat)
     return freeze({...module, sequence, patterns})
 }
@@ -52,5 +52,5 @@ export function insert(module, pos, pat) {
  * @returns {Readonly<Module>}
  */
 export function del(module, pos) {
-    return freeze({...module, sequence: immSplice(module.sequence, pos, 1)})
+    return freeze({...module, sequence: $arr.spliced(module.sequence, pos, 1)})
 }

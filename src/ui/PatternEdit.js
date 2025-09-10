@@ -2,6 +2,7 @@ import * as $cell from './Cell.js'
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
 import * as $play from '../Playback.js'
+import * as $arr from '../edit/ImmArray.js'
 import * as $module from '../edit/Module.js'
 import * as $pattern from '../edit/Pattern.js'
 import * as $icons from '../gen/Icons.js'
@@ -643,7 +644,7 @@ export class PatternEdit {
 }
 export const PatternEditElement = $dom.defineView('pattern-edit', PatternEdit)
 
-let testSamples = freeze([null, ...Array(30).fill(Sample.empty)])
+let testSamples = freeze([null, ...$arr.repeat(30, Sample.empty)])
 let testModule = freeze({...$module.defaultNew, testSamples})
 /** @type {InstanceType<typeof PatternEditElement>} */
 let testElem

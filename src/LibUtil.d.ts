@@ -6,11 +6,6 @@ interface ImportMeta {
     main: boolean
 }
 
-interface Array<T> {
-    // https://github.com/microsoft/TypeScript/issues/31785#issuecomment-948012321
-    fill<U>(value: U): Array<U>;
-}
-
 interface DocumentFragment {
     // Overrides Node.cloneNode()
     cloneNode(deep?: boolean): DocumentFragment

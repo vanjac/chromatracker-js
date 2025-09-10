@@ -2,6 +2,7 @@ import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
 import * as $cell from './Cell.js'
 import * as $icons from '../gen/Icons.js'
+import * as $arr from '../edit/ImmArray.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
 import {invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, CellPart, Sample, Effect, ExtEffect, mod} from '../Model.js'
@@ -622,9 +623,9 @@ export class CellEntry {
 
         let title = ''
         let value = 0
-        let desc = freeze(Array(16).fill(''))
+        let desc = $arr.repeat(16, '')
         /** @type {readonly $cell.Color[]}*/
-        let colors = freeze(Array(16).fill(null))
+        let colors = $arr.repeat(16, null)
         switch (this.editDigit) {
         case 0:
             title = 'Effect'
@@ -705,6 +706,6 @@ if (import.meta.main) {
         },
     })
     $dom.displayMain(testElem)
-    testElem.ctrl.setSamples(freeze([null, ...Array(30).fill(Sample.empty)]))
+    testElem.ctrl.setSamples(freeze([null, ...$arr.repeat(30, Sample.empty)]))
     testElem.ctrl.onVisible()
 }

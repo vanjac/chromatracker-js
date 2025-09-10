@@ -16,8 +16,6 @@ export const mod = freeze({
     defaultChannels: 4,
 })
 
-export const emptyArray = freeze([])
-
 /**
  * @typedef {{
  *      name: string

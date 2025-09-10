@@ -1,5 +1,5 @@
 import * as $wave from '../edit/Wave.js'
-import {immSplice} from './EditUtil.js'
+import * as $arr from './ImmArray.js'
 import {clamp, freeze} from '../Util.js'
 import {defaultSampleRate, mod, Module, Sample} from '../Model.js'
 
@@ -14,7 +14,7 @@ export function create(module) {
         return [module, -1]
     }
     let sample = freeze({...Sample.empty, name: 'untitled'})
-    let samples = immSplice(module.samples, emptyIndex, 1, sample)
+    let samples = $arr.spliced(module.samples, emptyIndex, 1, sample)
     return [freeze({...module, samples}), emptyIndex]
 }
 
@@ -25,7 +25,7 @@ export function create(module) {
  * @returns {Readonly<Module>}
  */
 export function update(module, idx, sample) {
-    return freeze({...module, samples: immSplice(module.samples, idx, 1, sample)})
+    return freeze({...module, samples: $arr.spliced(module.samples, idx, 1, sample)})
 }
 
 /**

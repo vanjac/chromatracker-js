@@ -1,5 +1,5 @@
 import * as $pattern from './Pattern.js'
-import {immSplice} from './EditUtil.js'
+import * as $arr from './ImmArray.js'
 import {Cell, mod, Module} from '../Model.js'
 import {freeze} from '../Util.js'
 
@@ -33,7 +33,7 @@ export function createNew() {
 export function addChannels(module, count) {
     let numChannels = module.numChannels + count
     if (numChannels > mod.maxChannels) { return module }
-    let newChannels = Array(count).fill(freeze(Array(mod.numRows).fill(Cell.empty)))
+    let newChannels = $arr.repeat(count, $arr.repeat(mod.numRows, Cell.empty))
     let patterns = module.patterns.map(pattern => freeze(pattern.concat(newChannels)))
     return freeze({...module, numChannels, patterns})
 }
@@ -47,6 +47,6 @@ export function addChannels(module, count) {
 export function delChannels(module, index, count) {
     let numChannels = module.numChannels - count
     if (numChannels <= 0) { return module }
-    let patterns = module.patterns.map(pattern => immSplice(pattern, index, count))
+    let patterns = module.patterns.map(pattern => $arr.spliced(pattern, index, count))
     return freeze({...module, numChannels, patterns})
 }
