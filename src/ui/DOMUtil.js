@@ -215,18 +215,18 @@ export function addInputListeners(input, listener) {
 /**
  * @param {HTMLFormElement} form
  * @param {readonly string[]} names
- * @param {Record<string, string>} record
+ * @param {Map<string, string>} map
  */
-export function saveFormData(form, names, record) {
+export function saveFormData(form, names, map) {
     for (let name of names) {
         let elem = form.elements.namedItem(name)
         if (elem instanceof HTMLInputElement && elem.type == 'checkbox') {
-            record[name] = elem.checked ? elem.value : ''
+            map.set(name, elem.checked ? elem.value : '')
         } else if (
             (elem instanceof HTMLInputElement) || (elem instanceof HTMLSelectElement)
                 || (elem instanceof HTMLTextAreaElement) || (elem instanceof RadioNodeList)
         ) {
-            record[name] = elem.value
+            map.set(name, elem.value)
         }
     }
 }
@@ -234,11 +234,11 @@ export function saveFormData(form, names, record) {
 /**
  * @param {HTMLFormElement} form
  * @param {readonly string[]} names
- * @param {Record<string, string>} record
+ * @param {Map<string, string>} map
  */
-export function restoreFormData(form, names, record) {
+export function restoreFormData(form, names, map) {
     for (let name of names) {
-        let value = record[name]
+        let value = map.get(name)
         if (value != null) {
             let elem = form.elements.namedItem(name)
             if (elem instanceof HTMLInputElement && elem.type == 'checkbox') {

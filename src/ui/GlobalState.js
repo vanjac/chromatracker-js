@@ -6,8 +6,8 @@ export default {
     audioClipboard: new Int8Array(),
     /** @type {Readonly<Pattern>} */
     patternClipboard: freeze([emptyArray]),
-    /** @type {Record<string, string>} */
-    effectFormData: Object.create(null),
+    /** @type {Map<string, string>} */
+    effectFormData: new Map(),
     // Effect parameters
     lastResampleSemitones: 12,
     lastLoopRepeat: 2,
