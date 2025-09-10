@@ -27,3 +27,35 @@ body {
     --color-bg-control: #305;
     --color-fg-control: #caf;
 }
+
+@media (prefers-color-scheme: light) {
+    body {
+        --color-bg: #eee;
+        --color-fg: #000;
+        --color-fg-dim: #777;
+
+        --color-bg-btn: #dde;
+        --color-bg-btn-press: #bbc;
+
+        --color-bg-hl: #dbf;
+        --color-fg-hl: #a4e;
+        --color-fg-hl-dim: #96c;
+
+        --color-bg-alt: #f8b;
+        --color-fg-alt: #d28;
+
+        --color-fg-warn: #ec0;
+        --color-fg-error: #d00;
+
+        --color-bg-pitch: #eac;
+        --color-fg-pitch: #703;
+        --color-bg-volume: #aec;
+        --color-fg-volume: #073;
+        --color-bg-panning: #eca;
+        --color-fg-panning: #730;
+        --color-bg-timing: #ace;
+        --color-fg-timing: #037;
+        --color-bg-control: #cae;
+        --color-fg-control: #307;
+    }
+}
