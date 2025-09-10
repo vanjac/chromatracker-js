@@ -43,8 +43,8 @@ export function read(buf, {channel, dithering, normalize}) {
     let riffSize = view.getUint32(4, true)
     let fileEnd = Math.min(riffSize + 8, buf.byteLength)
 
-    /** @type {Record<string, RIFFChunk>} */
-    let chunks = Object.create(null)
+    /** @type {Map<string, RIFFChunk>} */
+    let chunks = new Map()
 
     let chunkPos = 12
     while (chunkPos + 8 <= fileEnd) {
@@ -57,7 +57,7 @@ export function read(buf, {channel, dithering, normalize}) {
 
     console.info(chunks)
 
-    let fmtChunk = chunks['fmt ']
+    let fmtChunk = chunks.get('fmt ')
     if (!fmtChunk || fmtChunk.size < fmtChunkSize) { throw Error('Missing format chunk') }
     let fmtCode = view.getUint16(fmtChunk.pos, true)
     let numChannels = view.getUint16(fmtChunk.pos + 2, true)
@@ -70,13 +70,13 @@ export function read(buf, {channel, dithering, normalize}) {
     /** @type {number} */
     let volume = mod.maxVolume
 
-    let xtraChunk = chunks['xtra']
+    let xtraChunk = chunks.get('xtra')
     if (xtraChunk && xtraChunk.size >= xtraChunkSize) {
         // https://wiki.openmpt.org/Development:_OpenMPT_Format_Extensions#RIFF_WAVE
        volume = (view.getUint16(xtraChunk.pos + 6, true) / 4) | 0
     }
 
-    let dataChunk = chunks['data']
+    let dataChunk = chunks.get('data')
     if (!dataChunk) { throw Error('Missing data chunk') }
     let numFrames = Math.floor(dataChunk.size / frameSize)
     let wave = new Int8Array(numFrames % 2 ? (numFrames + 1) : numFrames)
@@ -130,7 +130,7 @@ export function read(buf, {channel, dithering, normalize}) {
     let loopStart = 0
     let loopEnd = 0
 
-    let smplChunk = chunks['smpl']
+    let smplChunk = chunks.get('smpl')
     if (smplChunk && smplChunk.size >= smplChunkBaseSize) {
         let pitchFraction = view.getUint32(smplChunk.pos + 16)
         finetune = -Math.round(pitchFraction / 0x20000000) // TODO: not used by OpenMPT!
@@ -151,8 +151,8 @@ export function read(buf, {channel, dithering, normalize}) {
  * @param {Readonly<Sample>} sample
  */
 export function write(sample) {
-    /** @type {Record<string, RIFFChunk>} */
-    let chunks = Object.create(null)
+    /** @type {Map<string, RIFFChunk>} */
+    let chunks = new Map()
 
     let fileSize = 12
     fileSize = addChunk(chunks, fileSize, 'fmt ', fmtChunkSize)
@@ -167,28 +167,28 @@ export function write(sample) {
     view.setUint32(4, fileSize - 8, true)
     $file.writeU8Array(buf, 8, 4, $file.encodeISO8859_1('WAVE'))
 
-    for (let [id, chunk] of Object.entries(chunks)) {
+    for (let [id, chunk] of chunks.entries()) {
         $file.writeU8Array(buf, chunk.pos - 8, 4, $file.encodeISO8859_1(id))
         view.setUint32(chunk.pos - 4, chunk.size, true)
     }
 
-    writeFmtChunk(chunkDataView(buf, chunks['fmt ']), sample)
-    writeDataChunk(chunkDataView(buf, chunks['data']), sample)
-    writeSmplChunk(chunkDataView(buf, chunks['smpl']), sample)
-    writeXtraChunk(chunkDataView(buf, chunks['xtra']), sample)
+    writeFmtChunk(chunkDataView(buf, chunks.get('fmt ')), sample)
+    writeDataChunk(chunkDataView(buf, chunks.get('data')), sample)
+    writeSmplChunk(chunkDataView(buf, chunks.get('smpl')), sample)
+    writeXtraChunk(chunkDataView(buf, chunks.get('xtra')), sample)
 
     return buf
 }
 
 /**
  *
- * @param {Record<string, RIFFChunk>} chunks
+ * @param {Map<string, RIFFChunk>} chunks
  * @param {number} pos
  * @param {string} name
  * @param {number} size
  */
 function addChunk(chunks, pos, name, size) {
-    chunks[name] = {pos: pos + 8, size}
+    chunks.set(name, {pos: pos + 8, size})
     let endPos = pos + size + 8
     if (endPos % 2 == 1) { endPos++ } // word-aligned
     return endPos
