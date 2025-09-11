@@ -24,13 +24,13 @@ const template = $dom.html`
     <form id="piano" method="dialog" class="hflex flex-grow hscrollable scroll-lock" autocomplete="off">
         <div>
             <div id="octave1">
-                <div id="blackKeys" class="hflex">
+                <div id="blackKeys" class="hflex black-keys">
                     <div class="keypad-half-key"></div>
                 </div>
                 <div id="whiteKeys" class="hflex white-keys"></div>
             </div>
             <div id="octave0" class="hide">
-                <div id="blackKeys" class="hflex">
+                <div id="blackKeys" class="hflex black-keys">
                     <div class="octave-space"></div>
                     <div class="keypad-half-key"></div>
                 </div>

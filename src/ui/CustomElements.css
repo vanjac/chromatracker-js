@@ -391,6 +391,19 @@ pattern-matrix #playbackLine {
     border-color: var(--color-bg);
 }
 
+@media (prefers-color-scheme: light) {
+    .white-keys :not(:checked) + span {
+        background: var(--color-bg-btn);
+        color: var(--color-fg);
+        border-color: var(--color-fg);
+    }
+    .black-keys :not(:checked) + span {
+        background: var(--color-fg);
+        color: var(--color-bg);
+        border-color: var(--color-bg);
+    }
+}
+
 /* SamplesList */
 
 #samplesListLayout {
