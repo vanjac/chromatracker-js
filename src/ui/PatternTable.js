@@ -234,6 +234,10 @@ export class PatternTable {
             newMuteInputs.push(input)
             let label = span.appendChild($dom.createElem('label', {htmlFor: input.id}))
             label.textContent = `Ch ${c + 1}`
+            span.addEventListener('contextmenu', e => {
+                this.toggleSolo(c)
+                e.preventDefault()
+            })
             let meter = div.appendChild($dom.createElem('meter', {min: 0, max: 64}))
             this.channelMeters.push(meter)
         }
@@ -650,6 +654,20 @@ export class PatternTable {
 
         for (let row = 0; row < this.viewPattern[c].length; row++) {
             this.getTd(c, row)?.classList.toggle('dim', mute || row >= this.viewLogicalLength)
+        }
+    }
+
+    /**
+     * @private
+     * @param {number} c
+     */
+    toggleSolo(c) {
+        let anyUnmuted = this.muteInputs.some((input, i) => (i != c && input.checked))
+        for (let i = 0; i < this.viewNumChannels; i++) {
+            if (i != c) {
+                this.muteInputs[i].checked = !anyUnmuted
+                this.updateMuteState(i)
+            }
         }
     }
 
