@@ -180,37 +180,79 @@ export const extHelp = freeze([
     html`
 <h3>E1x: Fine Pitch Up</h3>
 
-<p>TODO</p>
+<p>Increase note pitch by <em>x</em> periods on the first tick of the row only.</p>
 `,
     html`
 <h3>E2x: Fine Pitch Down</h3>
 
-<p>TODO</p>
+<p>Decrease note pitch by <em>x</em> periods on the first tick of the row only.</p>
 `,
     html`
 <h3>E3x: Glissando Control</h3>
 
-<p>This effect is <strong>not supported</strong> in ChromaTracker.</p>
+<p>This effect is currently <strong>not supported</strong> in ChromaTracker.</p>
 `,
     html`
 <h3>E4x: Vibrato Waveform</h3>
 
-<p>TODO</p>
+<p>Set the waveform of future <strong>4xy (Vibrato)</strong> effects.</p>
+
+<p>Waveforms 0 through 3 will <strong>retrigger</strong> on each new note.</p>
+
+<ul>
+    <li>0 = Sine</li>
+    <li>1 = Sawtooth</li>
+    <li>2 = Square</li>
+    <li>3 = Random</li>
+</ul>
+
+<p>Waveforms 4 through 7 will <strong>continue</strong> when a new note is played.</p>
+
+<ul>
+    <li>4 = Sine</li>
+    <li>5 = Sawtooth</li>
+    <li>6 = Square</li>
+    <li>7 = Random</li>
+</ul>
 `,
     html`
 <h3>E5x: Set Finetune</h3>
 
-<p>TODO</p>
+<p>Change the Finetune value of the note.
+This temporarily overrides the Finetune setting of the current sample.
+Requires a pitch in the same cell.</p>
 `,
     html`
 <h3>E6x: Pattern Loop</h3>
 
-<p>TODO</p>
+<p><strong>E60:</strong> Marks the current row as the start of a loop.</p>
+
+<p><strong>E6x:</strong> Loop back to the start row <em>x</em> times before continuing.</p>
+
+<em>Note: Loop start and end effects must be in the same channel.</em>
 `,
     html`
 <h3>E7x: Tremolo Waveform</h3>
 
-<p>TODO</p>
+<p>Set the waveform of future <strong>7xy (Tremolo)</strong> effects.</p>
+
+<p>Waveforms 0 through 3 will <strong>retrigger</strong> on each new note.</p>
+
+<ul>
+    <li>0 = Sine</li>
+    <li>1 = Sawtooth</li>
+    <li>2 = Square</li>
+    <li>3 = Random</li>
+</ul>
+
+<p>Waveforms 4 through 7 will <strong>continue</strong> when a new note is played.</p>
+
+<ul>
+    <li>4 = Sine</li>
+    <li>5 = Sawtooth</li>
+    <li>6 = Square</li>
+    <li>7 = Random</li>
+</ul>
 `,
     html`
 <h3>E8x: Set Panning</h3>
@@ -221,32 +263,32 @@ It is not as precise and not as widely supported.</p>
     html`
 <h3>E9x: Retrigger</h3>
 
-<p>TODO</p>
+<p>Retrigger the current note every <em>x</em> ticks.</p>
 `,
     html`
 <h3>EAx: Fine Volume Up</h3>
 
-<p>TODO</p>
+<p>Increase note volume by <em>x</em> units on the first tick of the row only.</p>
 `,
     html`
 <h3>EBx: Fine Volume Down</h3>
 
-<p>TODO</p>
+<p>Decrease note volume by <em>x</em> units on the first tick of the row only.</p>
 `,
     html`
 <h3>ECx: Note Cut</h3>
 
-<p>TODO</p>
+<p>Set note volume to 0 after <em>x</em> ticks.</p>
 `,
     html`
 <h3>EDx: Note Delay</h3>
 
-<p>TODO</p>
+<p>Delay the note in this cell by <em>x</em> ticks.</p>
 `,
     html`
 <h3>EEx: Pattern Delay</h3>
 
-<p>TODO</p>
+<p>Repeat this row <em>x</em> times. Notes are not retriggered.</p>
 `,
     html`
 <h3>EFx: Invert Loop</h3>
