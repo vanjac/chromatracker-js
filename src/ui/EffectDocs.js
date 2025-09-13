@@ -16,10 +16,10 @@ export const shortNames = freeze([
 ])
 
 export const extNames = freeze([
-    '', 'Fine Pitch Up', 'Fine Pitch Down', '',
+    'Not Supported', 'Fine Pitch Up', 'Fine Pitch Down', 'Not Supported',
     'Vibrato Waveform', 'Set Finetune', 'Pattern Loop', 'Tremolo Waveform',
-    '', 'Retrigger', 'Fine Volume Up', 'Fine Volume Down',
-    'Note Cut', 'Note Delay', 'Pattern Delay', '',
+    'Set Panning', 'Retrigger', 'Fine Volume Up', 'Fine Volume Down',
+    'Note Cut', 'Note Delay', 'Pattern Delay', 'Not Supported',
 ])
 
 export const extShortNames = freeze([
@@ -122,7 +122,7 @@ Requires a pitch in the same cell.</p>
 
 <p>Use <em>900</em> to repeat previous sample offset.</p>
 
-<em>Tip: The Sample Editor has a button to calculate sample offset effects for you.</em>
+<em>Tip: The Sample Editor has a button to calculate Sample Offset effects for you.</em>
 `,
     html`
 <h3>Axy: Volume Slide</h3>
