@@ -1,12 +1,11 @@
 import * as $dom from './DOMUtil.js'
-import * as $dialog from './Dialog.js'
 import * as $shortcut from './Shortcut.js'
 import * as $cell from './Cell.js'
 import * as $docs from './EffectDocs.js'
 import * as $icons from '../gen/Icons.js'
 import * as $arr from '../edit/ImmArray.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
-import {InfoDialogElement} from './dialogs/UtilDialogs.js'
+import {InfoDialog} from './dialogs/UtilDialogs.js'
 import {invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, CellPart, Sample, Effect, ExtEffect, mod} from '../Model.js'
 import './PianoKeyboard.js'
@@ -670,23 +669,23 @@ export class CellEntry {
 
     /** @private */
     showEffectHelp() {
-        let dialog = new InfoDialogElement()
+        let template
         switch (this.editDigit) {
         case 0:
-            dialog.ctrl.template = $docs.generalHelp
+            template = $docs.generalHelp
             break
         case 1:
-            dialog.ctrl.template = $docs.help[this.effect]
+            template = $docs.help[this.effect]
             break
         case 2:
             if (this.effect == Effect.Extended) {
-                dialog.ctrl.template = $docs.extHelp[this.param0]
+                template = $docs.extHelp[this.param0]
             } else {
-                dialog.ctrl.template = $docs.help[this.effect]
+                template = $docs.help[this.effect]
             }
             break
         }
-        $dialog.open(dialog, {dismissable: true})
+        InfoDialog.open(template)
     }
 
     /**

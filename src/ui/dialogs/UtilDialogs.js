@@ -28,6 +28,15 @@ export class InfoDialog {
         container.appendChild(this.template.cloneNode(true))
         this.view.appendChild(fragment)
     }
+
+    /**
+     * @param {DocumentFragment} template
+     */
+    static open(template) {
+        let dialog = new InfoDialogElement()
+        dialog.ctrl.template = template
+        $dialog.open(dialog, {dismissable: true})
+    }
 }
 export const InfoDialogElement = $dom.defineView('info-dialog', InfoDialog)
 
