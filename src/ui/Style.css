@@ -14,6 +14,11 @@ body {
     accent-color: var(--color-fg-hl); /* eslint-disable-line css/use-baseline */
 }
 
+p {
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
 .dim {
     color: var(--color-fg-dim);
     --color-fg: var(--color-fg-dim);

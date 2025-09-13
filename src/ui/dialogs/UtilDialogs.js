@@ -2,6 +2,35 @@ import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import * as $shortcut from '../Shortcut.js'
 
+const infoDialogTemplate = $dom.html`
+<dialog class="message-dialog">
+    <form method="dialog" class="shrink-clip-y">
+        <article id="container" class="vscrollable"></article>
+        <button>Close</button>
+    </form>
+</dialog>
+`
+
+export class InfoDialog {
+    /**
+     * @param {HTMLElement} view
+     */
+    constructor(view) {
+        /** @private */
+        this.view = view
+        /** @type {DocumentFragment} */
+        this.template = null
+    }
+
+    connectedCallback() {
+        let fragment = infoDialogTemplate.cloneNode(true)
+        let container = fragment.querySelector('#container')
+        container.appendChild(this.template.cloneNode(true))
+        this.view.appendChild(fragment)
+    }
+}
+export const InfoDialogElement = $dom.defineView('info-dialog', InfoDialog)
+
 const alertDialogTemplate = $dom.html`
 <dialog id="dialog" class="message-dialog">
     <form id="form" method="dialog">

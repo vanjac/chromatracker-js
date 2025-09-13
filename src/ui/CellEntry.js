@@ -1,10 +1,12 @@
 import * as $dom from './DOMUtil.js'
+import * as $dialog from './Dialog.js'
 import * as $shortcut from './Shortcut.js'
 import * as $cell from './Cell.js'
 import * as $docs from './EffectDocs.js'
 import * as $icons from '../gen/Icons.js'
 import * as $arr from '../edit/ImmArray.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
+import {InfoDialogElement} from './dialogs/UtilDialogs.js'
 import {invoke, callbackDebugObject, freeze} from '../Util.js'
 import {Cell, CellPart, Sample, Effect, ExtEffect, mod} from '../Model.js'
 import './PianoKeyboard.js'
@@ -56,6 +58,9 @@ const template = $dom.html`
             <div class="flex-grow"></div>
             <strong id="effectKeyboardTitle"></strong>
             <div class="flex-grow"></div>
+            <button id="effectHelp" title="Help (?)">
+                ${$icons.help}
+            </button>
         </div>
         <div id="effectGrid" class="hex-grid flex-grow">
             <button class="vflex">0<span id="desc" class="effect-desc"></span></button>
@@ -266,6 +271,7 @@ export class CellEntry {
             effectGrid: 'div',
             sampleScrollLock: 'input',
             closeEffectKeyboard: 'button',
+            effectHelp: 'button',
         })
 
         /** @private @type {Element[]} */
@@ -302,6 +308,7 @@ export class CellEntry {
             let button = this.elems.effectGrid.children[i]
             button.addEventListener('click', () => this.effectKeyboardButton(i))
         }
+        this.elems.effectHelp.addEventListener('click', () => this.showEffectHelp())
 
         this.view.appendChild(fragment)
 
@@ -336,7 +343,10 @@ export class CellEntry {
                     return true
                 }
             }
-            if (event.key == 'p' && event.altKey) {
+            if (this.editDigit >= 0 && event.key == '?' && !$shortcut.commandKey(event)) {
+                this.showEffectHelp()
+                return true
+            } else if (event.key == 'p' && event.altKey) {
                 this.elems.pitchEnable.checked = !this.elems.pitchEnable.checked
                 this.updateEntryParts()
                 return true
@@ -656,6 +666,27 @@ export class CellEntry {
         } else {
             this.closeEffectKeyboard()
         }
+    }
+
+    /** @private */
+    showEffectHelp() {
+        let dialog = new InfoDialogElement()
+        switch (this.editDigit) {
+        case 0:
+            dialog.ctrl.template = $docs.generalHelp
+            break
+        case 1:
+            dialog.ctrl.template = $docs.help[this.effect]
+            break
+        case 2:
+            if (this.effect == Effect.Extended) {
+                dialog.ctrl.template = $docs.extHelp[this.param0]
+            } else {
+                dialog.ctrl.template = $docs.help[this.effect]
+            }
+            break
+        }
+        $dialog.open(dialog, {dismissable: true})
     }
 
     /**

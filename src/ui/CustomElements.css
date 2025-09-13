@@ -179,19 +179,19 @@ pattern-table .sel-cell { /* extra specificity */
     background: var(--color-bg-hl) !important;
 }
 
-.pitch-effect:not(.sel-effect) .cell-effect {
+.pitch-effect:not(.sel-effect) .cell-effect, .hl-pitch {
     color: var(--color-fg-pitch);
 }
-.volume-effect:not(.sel-effect) .cell-effect {
+.volume-effect:not(.sel-effect) .cell-effect, .hl-volume {
     color: var(--color-fg-volume);
 }
-.panning-effect:not(.sel-effect) .cell-effect {
+.panning-effect:not(.sel-effect) .cell-effect, .hl-panning {
     color: var(--color-fg-panning);
 }
-.timing-effect:not(.sel-effect) .cell-effect {
+.timing-effect:not(.sel-effect) .cell-effect, .hl-timing {
     color: var(--color-fg-timing);
 }
-.control-effect:not(.sel-effect) .cell-effect {
+.control-effect:not(.sel-effect) .cell-effect, .hl-control {
     color: var(--color-fg-control);
 }
 
