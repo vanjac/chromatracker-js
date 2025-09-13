@@ -55,10 +55,6 @@ input[type="range"] {
     border: none;
 }
 
-input:disabled {
-    background: var(--color-bg-btn);
-}
-
 .small-input {
     width: 4em;
 }
@@ -209,7 +205,8 @@ select.active,
 .label-button.active span,
 button:disabled,
 select:disabled,
-.label-button :disabled + span {
+.label-button :disabled + span,
+input:disabled {
     background: var(--color-bg-btn-press);
 }
 
