@@ -234,12 +234,12 @@ export class PatternTable {
             newMuteInputs.push(input)
             let label = span.appendChild($dom.createElem('label', {htmlFor: input.id}))
             label.textContent = `Ch ${c + 1}`
-            span.addEventListener('contextmenu', e => {
+            let meter = div.appendChild($dom.createElem('meter', {min: 0, max: 64}))
+            this.channelMeters.push(meter)
+            th.addEventListener('contextmenu', e => {
                 this.toggleSolo(c)
                 e.preventDefault()
             })
-            let meter = div.appendChild($dom.createElem('meter', {min: 0, max: 64}))
-            this.channelMeters.push(meter)
         }
         this.elems.theadRow.appendChild(rowFrag)
         this.muteInputs = newMuteInputs
