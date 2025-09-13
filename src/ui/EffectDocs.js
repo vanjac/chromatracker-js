@@ -52,72 +52,105 @@ export const help = freeze([
     html`
 <h3>0xy: Arpeggio</h3>
 
-<p>TODO</p>
+<p>Rapidly cycle between three notes:
+the current note, current note + <em>x</em> semitones, and current note + <em>y</em> semitones.</p>
 `,
     html`
 <h3>1xx: Pitch Slide Up</h3>
 
-<p>TODO</p>
+<p>Increase note pitch at rate <em>xx</em> (hexadecimal).</p>
 `,
     html`
 <h3>2xx: Pitch Slide Down</h3>
 
-<p>TODO</p>
+<p>Decrease note pitch at rate <em>xx</em> (hexadecimal).</p>
 `,
     html`
 <h3>3xx: Node Glide</h3>
 
-<p>TODO</p>
+<p>Slide the pitch of the previous note toward the current note,
+at rate <em>xx</em> (hexadecimal).</p>
+
+<p>Use <em>300</em> to continue at previous rate.</p>
 `,
     html`
 <h3>4xy: Vibrato</h3>
 
-<p>TODO</p>
+<p>Modulate pitch with speed <em>x</em> and depth <em>y.</em></p>
+
+<p>Use <em>400</em> to continue at previous speed/depth.</p>
+
+<p>Modulation waveform can be changed using <strong>E4x (Vibrato Waveform)</strong>.</p>
 `,
     html`
 <h3>5xy: Node Glide + Volume Slide</h3>
 
-<p>TODO</p>
+<p>Continue previous <strong>3xx (Note Glide)</strong> effect
+while also sliding volume up <em>x</em> or down <em>y</em>.</p>
 `,
     html`
 <h3>6xy: Vibrato + Volume Slide</h3>
 
-<p>TODO</p>
+<p>Continue previous <strong>4xy (Vibrato)</strong> effect
+while also sliding volume up <em>x</em> or down <em>y</em>.</p>
 `,
     html`
 <h3>7xy: Tremolo</h3>
 
-<p>TODO</p>
+<p>Modulate volume with speed <em>x</em> and depth <em>y.</em></p>
+
+<p>Use <em>700</em> to continue at previous speed/depth.</p>
+
+<p>Modulation waveform can be changed using <strong>E7x (Tremolo Waveform)</strong>.</p>
 `,
     html`
 <h3>8xx: Set Panning</h3>
 
-<p>TODO</p>
+<p>Set channel's panning position to <em>xx</em> (hexadecimal).</p>
+<ul>
+    <li>00 = Left</li>
+    <li>80 = Center</li>
+    <li>FF = Right</li>
+</ul>
 `,
     html`
 <h3>9xx: Sample Offset</h3>
 
-<p>TODO</p>
+<p>Play the current sample from the middle of the waveform instead of the beginning.
+<em>xx</em> is in units of 256 sample frames (hexadecimal).
+Requires a pitch in the same cell.</p>
+
+<p>Use <em>900</em> to repeat previous sample offset.</p>
+
+<em>Tip: The Sample Editor has a button to calculate sample offset effects for you.</em>
 `,
     html`
 <h3>Axy: Volume Slide</h3>
 
-<p>TODO</p>
+<p>Slide the note volume up or down.
+Use <em>Ax0</em> to slide up at rate <em>x</em>,
+and <em>A0y</em> to slide down at rate <em>y</em>.</p>
 `,
     html`
 <h3>Bxx: Position Jump</h3>
 
-<p>TODO</p>
+<p>Jump to pattern position <em>xx</em> (hexadecimal) in the sequence.
+For example, <em>B00</em> restarts the song from the beginning.</p>
 `,
     html`
 <h3>Cxx: Set Volume</h3>
 
-<p>TODO</p>
+<p>Set note volume to <em>xx</em> (hexadecimal).
+Ranges from <strong>C00</strong> to <strong>C40</strong> (= 64).</p>
 `,
     html`
 <h3>Dxx: Pattern Break</h3>
 
-<p>TODO</p>
+<p>Jump to row <em>xx</em> (decimal!) in the next pattern.
+Can be used to shorten pattern length.</p>
+
+<p>If <em>Bxx</em> is in the same row,
+jump to row <em>xx</em> in the pattern specified by <em>Bxx</em> instead.</p>
 `,
     html`
 <h3>Extended Effects</h3>
@@ -128,7 +161,13 @@ Select an extended effect and tap Help (<strong>?</strong>) to learn more.</p>
     html`
 <h3>Fxx: Speed / Tempo</h3>
 
-<p>TODO</p>
+<p>If <em>xx</em> is less than <em>20</em>,
+set playback <strong>speed</strong> to <em>xx</em> ticks per row (hexadecimal).</p>
+
+<p>If <em>xx</em> is at least <em>20</em>,
+set playback <strong>tempo</strong> to <em>xx</em> beats per minute (hexadecimal).</p>
+
+<p>Both may be specified on the same row.</p>
 `,
 ])
 
@@ -176,7 +215,7 @@ export const extHelp = freeze([
     html`
 <h3>E8x: Set Panning</h3>
 
-<p>This is an alternate version of the <strong>8xx: Set Panning</strong> effect.
+<p>This is an alternate version of the <strong>8xx (Set Panning)</strong> effect.
 It is not as precise and not as widely supported.</p>
 `,
     html`
