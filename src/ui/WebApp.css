@@ -45,6 +45,10 @@ body, dialog, select {
     -webkit-user-select: none;
     user-select: none; /* eslint-disable-line css/use-baseline */
 }
+article {
+    -webkit-user-select: text;
+    user-select: text; /* eslint-disable-line css/use-baseline */
+}
 
 img {
     /* no drag-and-drop, long tap, right click... */
