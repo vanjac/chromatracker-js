@@ -49,8 +49,8 @@ export const audioImport = html`
 <h3>Audio Import Help</h3>
 
 <ul>
-    <li><strong>Resample:</strong> Change the pitch of the imported audio. Can be used to tune sample to a specific note.</li>
-    <li><strong>Channel:</strong> Which channel of the original audio file to import.</li>
+    <li><strong>Resample:</strong> Change the pitch of the imported audio. Can be used to tune sample to a specific note. Not available for WAV files.</li>
+    <li><strong>Channel:</strong> Which channel of the original audio file to import. Samples must be mono.</li>
     <li><strong>Normalize:</strong> Amplify the audio as much as possible without distorting. Sample volume will be adjusted to compensate.</li>
     <li><strong>Dither:</strong> Adds quiet noise to reduce 8-bit distortion.</li>
 </ul>
