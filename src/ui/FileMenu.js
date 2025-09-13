@@ -170,6 +170,10 @@ export class FileMenu {
             name.textContent = fileName
             open.addEventListener('click', () => this.readLocalFile(id))
             options.addEventListener('click', () => this.fileOptions(id, fileName))
+            open.addEventListener('contextmenu', e => {
+                this.fileOptions(id, fileName)
+                e.preventDefault()
+            })
             this.elems.fileList.appendChild(itemFrag)
         }
     }
