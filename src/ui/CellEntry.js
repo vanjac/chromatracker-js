@@ -1,6 +1,7 @@
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
 import * as $cell from './Cell.js'
+import * as $docs from './EffectDocs.js'
 import * as $icons from '../gen/Icons.js'
 import * as $arr from '../edit/ImmArray.js'
 import {KeyPad, makeKeyButton} from './KeyPad.js'
@@ -86,34 +87,6 @@ const colorButtonClasses = freeze({
     control: 'control-effect-btn',
 })
 
-const effectNames = freeze([
-    'Arpeggio', 'Pitch Up', 'Pitch Down', 'Note Glide',
-    'Vibrato', 'Glide + Vol Slide', 'Vibrato + Vol Slide', 'Tremolo',
-    'Set Panning', 'Sample Offset', 'Volume Slide', 'Position Jump',
-    'Set Volume', 'Pattern Break', 'Extended...', 'Speed / Tempo',
-])
-
-const effectShortNames = freeze([
-    'Arpeggio', 'Pitch Up', 'Pitch Down', 'Note Glide',
-    'Vibrato', 'Glide + Vol', 'Vibrato + Vol', 'Tremolo',
-    'Set Panning', 'Offset', 'Volume Slide', 'Pos. Jump',
-    'Set Volume', 'Pat. Break', 'More...', 'Speed',
-])
-
-const extEffectNames = freeze([
-    '', 'Fine Pitch Up', 'Fine Pitch Down', '',
-    'Vibrato Waveform', 'Set Finetune', 'Pattern Loop', 'Tremolo Waveform',
-    '', 'Retrigger', 'Fine Volume Up', 'Fine Volume Down',
-    'Note Cut', 'Note Delay', 'Pattern Delay', '',
-])
-
-const extEffectShortNames = freeze([
-    '', 'Pitch Up', 'Pitch Down', '',
-    'Vib. Wave', 'Set Finetune', 'Pat. Loop', 'Trem. Wave',
-    '', 'Retrigger', 'Volume Up', 'Volume Down',
-    'Note Cut', 'Note Delay', 'Pat. Delay', '',
-])
-
 /**
  * @param {Effect} effect
  * @returns {readonly string[]}
@@ -147,7 +120,7 @@ function getParam0Descriptions(effect) {
     case Effect.Speed:
         return keys.map(d => (d < 2) ? `${d * 16} ticks...` : `${d * 16} BPM...`)
     case Effect.Extended:
-        return extEffectShortNames
+        return $docs.extShortNames
     default:
         return keys.map(d => `${d * 16}...`)
     }
@@ -603,11 +576,11 @@ export class CellEntry {
 
     /** @private */
     getEffectTitle() {
-        if (this.effect == Effect.Extended && extEffectNames[this.param0]) {
+        if (this.effect == Effect.Extended && $docs.extNames[this.param0]) {
             return (this.effect.toString(16) + this.param0.toString(16)).toUpperCase()
-                + ': ' + extEffectNames[this.param0]
+                + ': ' + $docs.extNames[this.param0]
         } else {
-            return this.effect.toString(16).toUpperCase() + ': ' + effectNames[this.effect]
+            return this.effect.toString(16).toUpperCase() + ': ' + $docs.names[this.effect]
         }
     }
 
@@ -630,11 +603,11 @@ export class CellEntry {
         case 0:
             title = 'Effect'
             value = this.effect
-            desc = effectShortNames
+            desc = $docs.shortNames
             colors = $cell.effectColors
             break
         case 1:
-            title = this.effect.toString(16).toUpperCase() + ': ' + effectNames[this.effect]
+            title = this.effect.toString(16).toUpperCase() + ': ' + $docs.names[this.effect]
             value = this.param0
             desc = getParam0Descriptions(this.effect)
             if (this.effect == Effect.Extended) { colors = $cell.extEffectColors }
