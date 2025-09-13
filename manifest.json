@@ -8,5 +8,7 @@
             "src": "https://chroma.zone/share/icon256.png",
             "sizes": "256x256"
         }
-    ]
+    ],
+    "background_color": "#001",
+    "theme_color": "#001"
 }
