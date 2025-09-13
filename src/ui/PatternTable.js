@@ -662,6 +662,10 @@ export class PatternTable {
      * @param {number} c
      */
     toggleSolo(c) {
+        if (this.isChannelMuted(c)) {
+            this.muteInputs[c].checked = true
+            this.updateMuteState(c)
+        }
         let anyUnmuted = this.muteInputs.some((input, i) => (i != c && input.checked))
         for (let i = 0; i < this.viewNumChannels; i++) {
             if (i != c) {
