@@ -1,6 +1,9 @@
+import * as $docs from './DialogDocs.js'
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
+import * as $icons from '../../gen/Icons.js'
 import {freeze} from '../../Util.js'
+import {InfoDialog} from './UtilDialogs.js'
 import {defaultSampleRate} from '../../Model.js'
 import global from '../GlobalState.js'
 
@@ -80,7 +83,12 @@ const template = $dom.html`
                 <input id="dither" name="dither" type="checkbox" accesskey="d">
             </div>
         </div>
-        <button>Apply</button>
+        <div class="hflex">
+            <button id="help" type="button">
+                ${$icons.help}
+            </button>
+            <button class="flex-grow">Apply</button>
+        </div>
     </form>
 </dialog>
 `
@@ -113,6 +121,7 @@ export class FilterEffect {
             gain: 'input',
             dither: 'input',
             graph: 'canvas',
+            help: 'button',
         })
 
         this.elems.form.addEventListener('submit', () => this.submit())
@@ -135,6 +144,8 @@ export class FilterEffect {
         this.elems.frequency.addEventListener('input', () => this.updateGraph())
         this.elems.q.addEventListener('input', () => this.updateGraph())
         this.elems.gain.addEventListener('input', () => this.updateGraph())
+
+        this.elems.help.addEventListener('click', () => InfoDialog.open($docs.filter))
 
         this.view.appendChild(fragment)
     }

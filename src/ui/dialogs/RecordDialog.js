@@ -1,7 +1,10 @@
+import * as $docs from './DialogDocs.js'
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import * as $shortcut from '../Shortcut.js'
+import * as $icons from '../../gen/Icons.js'
 import {freeze} from '../../Util.js'
+import {InfoDialog} from './UtilDialogs.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -23,10 +26,15 @@ const template = $dom.html`
                 <input id="dither" name="dither" type="checkbox" accesskey="d">
             </div>
         </div>
-        <button id="start" type="button" disabled="" accesskey="s" title="(${$shortcut.accessKey('s')})">
-            Start
-        </button>
-        <button id="stop" class="hide show-checked">Stop</button>
+        <div class="hflex">
+            <button id="help" type="button">
+                ${$icons.help}
+            </button>
+            <button id="start" type="button" class="flex-grow" disabled="" accesskey="s" title="(${$shortcut.accessKey('s')})">
+                Start
+            </button>
+            <button id="stop" class="hide show-checked flex-grow">Stop</button>
+        </div>
     </form>
 </dialog>
 `
@@ -78,12 +86,14 @@ export class RecordDialog {
             normalize: 'input',
             start: 'button',
             stop: 'button',
+            help: 'button',
         })
 
         $dom.restoreFormData(this.elems.form, inputNames, global.effectFormData)
         this.elems.start.addEventListener('click', () => this.start())
         this.elems.form.addEventListener('submit', () => this.stop())
         this.elems.dialog.addEventListener('cancel', () => this.dismiss())
+        this.elems.help.addEventListener('click', () => InfoDialog.open($docs.record))
 
         this.view.appendChild(fragment)
 

@@ -41,7 +41,7 @@ body {
              env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
 }
 
-body, dialog, select {
+body, dialog, select, summary {
     -webkit-user-select: none;
     user-select: none; /* eslint-disable-line css/use-baseline */
 }

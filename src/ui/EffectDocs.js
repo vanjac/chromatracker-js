@@ -48,6 +48,7 @@ use the Help (<strong>?</strong>) button to learn more about each effect.</p>
 and have a single digit parameter.</p>
 `
 
+// Based on OpenMPT docs: https://wiki.openmpt.org/Manual:_Effect_Reference
 export const help = freeze([
     html`
 <h3>0xy: Arpeggio</h3>

@@ -1,8 +1,10 @@
+import * as $docs from './DialogDocs.js'
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import * as $shortcut from '../Shortcut.js'
 import * as $icons from '../../gen/Icons.js'
 import {freeze} from '../../Util.js'
+import {InfoDialog} from './UtilDialogs.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -33,7 +35,12 @@ const template = $dom.html`
                 <input id="dither" name="dither" type="checkbox" accesskey="d">
             </div>
         </div>
-        <button>Apply</button>
+        <div class="hflex">
+            <button id="help" type="button">
+                ${$icons.help}
+            </button>
+            <button class="flex-grow">Apply</button>
+        </div>
     </form>
 </dialog>
 `
@@ -61,6 +68,7 @@ export class FadeEffect {
             dither: 'input',
             fadeIn: 'button',
             fadeOut: 'button',
+            help: 'button',
         })
 
         this.elems.fadeIn.addEventListener('click', () => {
@@ -74,6 +82,7 @@ export class FadeEffect {
 
         this.elems.form.addEventListener('submit', () => this.submit())
         $dom.restoreFormData(this.elems.form, inputNames, global.effectFormData)
+        this.elems.help.addEventListener('click', () => InfoDialog.open($docs.fade))
 
         this.view.appendChild(fragment)
     }
