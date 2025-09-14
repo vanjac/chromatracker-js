@@ -39,7 +39,8 @@ document.addEventListener('keydown', e => {
 
 // Disable context menu on mobile
 document.addEventListener('contextmenu', e => {
-    if (!pointerQuery.matches && !needsKeyboardInput(e.target)) {
+    let blockMenu = !needsKeyboardInput(e.target) && !(e.target instanceof HTMLAnchorElement)
+    if (!pointerQuery.matches && blockMenu) {
         e.preventDefault()
     }
 })
