@@ -1,6 +1,7 @@
 import * as $docs from './DialogDocs.js'
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
+import * as $shortcut from '../Shortcut.js'
 import * as $icons from '../../gen/Icons.js'
 import {freeze} from '../../Util.js'
 import {InfoDialog} from './UtilDialogs.js'
@@ -84,7 +85,7 @@ const template = $dom.html`
             </div>
         </div>
         <div class="hflex">
-            <button id="help" type="button">
+            <button id="help" type="button" accesskey="?" title="Help (${$shortcut.accessKey('?')})">
                 ${$icons.help}
             </button>
             <button class="flex-grow">Apply</button>

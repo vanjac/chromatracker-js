@@ -36,7 +36,7 @@ const template = $dom.html`
             </div>
         </div>
         <div class="hflex">
-            <button id="help" type="button">
+            <button id="help" type="button" accesskey="?" title="Help (${$shortcut.accessKey('?')})">
                 ${$icons.help}
             </button>
             <button class="flex-grow">Apply</button>
