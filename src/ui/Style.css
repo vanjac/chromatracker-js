@@ -289,3 +289,25 @@ dialog {
 table {
     border-collapse: collapse;
 }
+
+div[role="tooltip"] {
+    position: fixed;
+    transform: translate(-50%, -100%);
+	width: max-content;
+    z-index: 10;
+    visibility: visible;
+
+    background: var(--color-bg);
+    padding: 0 4px;
+    border: 1px solid var(--color-fg-dim);
+    border-radius: 6px;
+    opacity: 1;
+}
+div[role="tooltip"].tooltip-bottom {
+    transform: translate(-50%, 0);
+}
+div[role="tooltip"].tooltip-hide {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 0.2s, opacity 0.2s linear;
+}

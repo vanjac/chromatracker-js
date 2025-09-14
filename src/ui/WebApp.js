@@ -1,5 +1,12 @@
 /** @import {ViewElement, Controller} from './DOMUtil.js' */
 
+const pointerQuery = window.matchMedia('(pointer: fine) and (hover: hover)')
+const tooltipMargin = 4
+/** @type {HTMLElement} */
+let tooltipTarget = null
+/** @type {HTMLElement} */
+let tooltipElem = null
+
 /**
  * @param {EventTarget} target
  */
@@ -31,7 +38,6 @@ document.addEventListener('keydown', e => {
 })
 
 // Disable context menu on mobile
-const pointerQuery = window.matchMedia('(pointer: fine) and (hover: hover)')
 document.addEventListener('contextmenu', e => {
     if (!pointerQuery.matches && !needsKeyboardInput(e.target)) {
         e.preventDefault()
@@ -50,10 +56,25 @@ document.addEventListener('touchmove', e => {
  * @param {PointerEvent} e
  */
 function onPointerDown(e) {
+    let titleElem = null
     // Some browsers have delays on :active state
     if (e.target instanceof Element) {
         for (let elem = e.target; elem; elem = elem.parentElement) {
             elem.classList.add('active')
+            if (!titleElem && elem instanceof HTMLElement && elem.title) {
+                titleElem = elem
+            }
+        }
+    }
+    if (titleElem && e.pointerType == 'touch') {
+        let text = titleElem.title
+        let endIdx = text.indexOf('(')
+        if (endIdx >= 0) {
+            text = text.slice(0, endIdx)
+        }
+        text = text.trim()
+        if (text) {
+            showTooltip(titleElem, text)
         }
     }
 }
@@ -65,6 +86,10 @@ function onPointerUp(e) {
     if (e.target instanceof Element) {
         for (let elem = e.target; elem; elem = elem.parentElement) {
             elem.classList.remove('active')
+            if (elem == tooltipTarget) {
+                tooltipElem.classList.add('tooltip-hide')
+                tooltipTarget = null
+            }
         }
     }
 }
@@ -72,6 +97,39 @@ function onPointerUp(e) {
 document.addEventListener('pointerdown', onPointerDown)
 document.addEventListener('pointerup', onPointerUp)
 document.addEventListener('pointerout', onPointerUp)
+
+/**
+ * @param {HTMLElement} target
+ * @param {string} text
+ */
+function showTooltip(target, text) {
+    if (tooltipElem) {
+        tooltipElem.remove()
+    }
+    tooltipTarget = target
+    let targetRect = target.getBoundingClientRect()
+    tooltipElem = document.createElement('div')
+    tooltipElem.role = 'tooltip'
+    tooltipElem.textContent = text
+    let left = (targetRect.left + targetRect.right) / 2
+    tooltipElem.style.left = `${left}px`
+    document.body.append(tooltipElem)
+    let tooltipRect = tooltipElem.getBoundingClientRect()
+    if (tooltipRect.left < 0) {
+        left -= tooltipRect.left
+        tooltipElem.style.left = `${left}px`
+    } else if (tooltipRect.right >= document.documentElement.clientWidth) {
+        left -= tooltipRect.right - document.documentElement.clientWidth
+        tooltipElem.style.left = `${left}px`
+    }
+    let top = targetRect.top - tooltipMargin
+    if (top - tooltipRect.height < 0) {
+        tooltipElem.style.top = `${targetRect.bottom + tooltipMargin}px`
+        tooltipElem.classList.add('tooltip-bottom')
+    } else {
+        tooltipElem.style.top = `${top}px`
+    }
+}
 
 window.history.replaceState('back', null)
 window.history.pushState('app', null)

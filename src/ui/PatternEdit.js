@@ -46,7 +46,7 @@ const template = $dom.html`
                     <button id="paste" title="Paste (${$shortcut.ctrl('V')})">
                         ${$icons.content_paste}
                     </button>
-                    <label class="label-button" title="Select (\\)">
+                    <label class="label-button" title="Select Mode (\\)">
                         <input id="select" type="checkbox">
                         <span>${$icons.selection}</span>
                     </label>

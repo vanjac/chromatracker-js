@@ -14,10 +14,10 @@ const template = $dom.html`
             <input id="scrollLock" type="checkbox" checked="">
             <span>${$icons.arrow_horizontal_lock}</span>
         </label>
-        <button class="keypad-button touch-only" id="expand">
+        <button class="keypad-button touch-only" id="expand" title="Expand">
             ${$icons.chevron_down}
         </button>
-        <button class="keypad-button hide" id="collapse">
+        <button class="keypad-button hide" id="collapse" title="Collapse">
             ${$icons.chevron_up}
         </button>
     </div>

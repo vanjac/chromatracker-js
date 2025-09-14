@@ -3,8 +3,7 @@
  * @param {T} dialogParent
  */
 export function open(dialogParent, {dismissable = false} = {}) {
-    let body = document.querySelector('body')
-    body.appendChild(dialogParent)
+    document.body.appendChild(dialogParent)
     dialogParent.classList.remove('custom-element') // TODO: 'display: contents' breaks dialogs
     let dialog = dialogParent.querySelector('dialog')
     dialog.showModal()
