@@ -1,29 +1,49 @@
 import * as $dialog from '../Dialog.js'
+import * as $cell from '../Cell.js'
 import * as $dom from '../DOMUtil.js'
 import * as $mod from '../../edit/Module.js'
 import * as $icons from '../../gen/Icons.js'
 import {makeKeyButton} from '../KeyPad.js'
-import {Cell, Sample, Module} from '../../Model.js'
+import {mod, Cell, Sample, Module} from '../../Model.js'
 import {freeze, invoke, callbackDebugObject} from '../../Util.js'
+import global from '../GlobalState.js'
 /** @import {JamCallbacks} from '../ModuleEdit.js' */
 
 const template = $dom.html`
 <dialog id="dialog">
-    <h3>Import Sample:</h3>
-    <div id="buttonList" class="button-list vscrollable"></div>
+    <form id="form" method="dialog" class="shrink-clip-y">
+        <h3>Import Sample:</h3>
+        <div class="hflex">
+            <label>
+                Preview note:&nbsp;
+                <select id="previewPitch" value="36">
+                    ${
+                        [...Array(mod.numPitches)].map((_, i) => `
+                            <option value="${i}"${i == 36 ? ` selected=""` : ``}>
+                                ${$cell.pitchString(i)}
+                            </option>
+                        `).join('')
+                    }
+                </select>
+            </label>
+        </div>
+        <div id="buttonList" class="button-list vscrollable"></div>
+    </form>
 </dialog>
 `
 
 const itemTemplate = $dom.html`
 <div class="hflex">
-    <button id="select" class="flex-grow min-width-0">
+    <button id="select" type="button" class="flex-grow min-width-0">
         <span id="name" class="overflow-content"></span>
     </button>
-    <button id="preview" title="Hold to Preview">
+    <button id="preview" type="button" title="Hold to Preview">
         ${$icons.play}
     </button>
 </div>
 `
+
+const inputNames = freeze(['previewPitch'])
 
 export class SamplePicker {
     /**
@@ -45,12 +65,19 @@ export class SamplePicker {
 
     connectedCallback() {
         let fragment = template.cloneNode(true)
-        let elems = $dom.getElems(fragment, {
+        /** @private */
+        this.elems = $dom.getElems(fragment, {
+            form: 'form',
             dialog: 'dialog',
+            previewPitch: 'select',
             buttonList: 'div',
         })
 
-        elems.dialog.addEventListener('cancel', () => invoke(this.callbacks.onDismiss))
+        $dom.restoreFormData(this.elems.form, inputNames, global.effectFormData)
+        this.elems.dialog.addEventListener('cancel', () => {
+            $dom.saveFormData(this.elems.form, inputNames, global.effectFormData)
+            invoke(this.callbacks.onDismiss)
+        })
 
         for (let [idx, sample] of this.module.samples.entries()) {
             if (!sample) { continue }
@@ -63,9 +90,10 @@ export class SamplePicker {
             name.textContent = `${idx.toString().padStart(2, '0')}: ${sample.name}`
             select.addEventListener('click', () => this.select(sample))
             makeKeyButton(preview, id => {
-                invoke(this.callbacks.jamPlay, id, Cell.empty, sample)
+                let cell = {...Cell.empty, pitch: Number(this.elems.previewPitch.value)}
+                invoke(this.callbacks.jamPlay, id, cell, sample)
             })
-            elems.buttonList.appendChild(itemFrag)
+            this.elems.buttonList.appendChild(itemFrag)
         }
 
         this.view.appendChild(fragment)
@@ -77,6 +105,7 @@ export class SamplePicker {
      */
     select(sample) {
         invoke(this.callbacks.onComplete, sample)
+        $dom.saveFormData(this.elems.form, inputNames, global.effectFormData)
         $dialog.close(this.view)
     }
 }
@@ -86,7 +115,7 @@ let testElem
 if (import.meta.main) {
     testElem = new SamplePickerElement()
     testElem.ctrl.callbacks = callbackDebugObject()
-    let samples = freeze([null, Sample.empty])
+    let samples = freeze([null, Sample.empty, Sample.empty, Sample.empty, Sample.empty])
     testElem.ctrl.module = freeze({...$mod.defaultNew, samples})
     $dialog.open(testElem)
 }
