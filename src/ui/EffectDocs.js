@@ -121,7 +121,7 @@ while also sliding volume up <em>x</em> or down <em>y</em>.</p>
     html`
 <h3>9xx: Sample Offset</h3>
 
-<p>Play the current sample from the middle of the waveform instead of the beginning.
+<p>Play the sample from the middle of the waveform instead of the beginning.
 <em>xx</em> is in units of 256 sample frames (hexadecimal).
 Requires a pitch in the same cell.</p>
 
@@ -223,8 +223,8 @@ export const extHelp = freeze([
     html`
 <h3>E5x: Set Finetune</h3>
 
-<p>Change the Finetune value of the note.
-This temporarily overrides the Finetune setting of the current sample.
+<p>Change the tuning of the note.
+This temporarily overrides the Finetune setting of the sample.
 Requires a pitch in the same cell.</p>
 `,
     html`
