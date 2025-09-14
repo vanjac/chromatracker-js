@@ -88,12 +88,16 @@ at rate <em>xx</em> (hexadecimal).</p>
 
 <p>Continue previous <strong>3xx (Note Glide)</strong> effect
 while also sliding volume up <em>x</em> or down <em>y</em>.</p>
+
+<p>Parameters are the same as <strong>Axy (Volume Slide)</strong>.</p>
 `,
     html`
 <h3>6xy: Vibrato + Volume Slide</h3>
 
 <p>Continue previous <strong>4xy (Vibrato)</strong> effect
 while also sliding volume up <em>x</em> or down <em>y</em>.</p>
+
+<p>Parameters are the same as <strong>Axy (Volume Slide)</strong>.</p>
 `,
     html`
 <h3>7xy: Tremolo</h3>
