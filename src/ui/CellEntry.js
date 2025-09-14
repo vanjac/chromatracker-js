@@ -279,6 +279,21 @@ export class CellEntry {
         this.elems.pitchEnable.addEventListener('change', this.updateEntryParts.bind(this))
         this.elems.sampleEnable.addEventListener('change', this.updateEntryParts.bind(this))
         this.elems.effectEnable.addEventListener('change', this.updateEntryParts.bind(this))
+        this.elems.pitchEnable.parentElement.addEventListener('contextmenu', e => {
+            e.preventDefault()
+            this.toggleSinglePart(
+                this.elems.pitchEnable, [this.elems.sampleEnable, this.elems.effectEnable])
+        })
+        this.elems.sampleEnable.parentElement.addEventListener('contextmenu', e => {
+            e.preventDefault()
+            this.toggleSinglePart(
+                this.elems.sampleEnable, [this.elems.pitchEnable, this.elems.effectEnable])
+        })
+        this.elems.effectEnable.parentElement.addEventListener('contextmenu', e => {
+            e.preventDefault()
+            this.toggleSinglePart(
+                this.elems.effectEnable, [this.elems.pitchEnable, this.elems.sampleEnable])
+        })
 
         this.elems.effect.addEventListener('click', () => this.openEffectKeyboard(0))
         this.elems.param0.addEventListener('click', () => this.openEffectKeyboard(1))
@@ -558,6 +573,18 @@ export class CellEntry {
         this.elems.piano.classList.toggle('dim', !hide && !(parts & CellPart.pitch))
         this.elems.sampleSection.classList.toggle('dim', !hide && !(parts & CellPart.inst))
         this.elems.effectSection.classList.toggle('dim', !hide && !(parts & CellPart.effect))
+    }
+
+    /**
+     * @private
+     * @param {HTMLInputElement} partToggle
+     * @param {HTMLInputElement[]} otherParts
+     */
+    toggleSinglePart(partToggle, otherParts) {
+        partToggle.checked = true
+        let othersEnabled = otherParts.some(e => e.checked)
+        otherParts.forEach(e => e.checked = !othersEnabled)
+        this.updateEntryParts()
     }
 
     /**
