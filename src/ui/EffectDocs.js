@@ -1,5 +1,5 @@
 import {freeze} from '../Util.js'
-import {html} from './DOMUtil.js'
+import * as $dom from './DOMUtil.js'
 
 export const names = freeze([
     'Arpeggio', 'Pitch Up', 'Pitch Down', 'Note Glide',
@@ -29,7 +29,7 @@ export const extShortNames = freeze([
     'Note Cut', 'Note Delay', 'Pat. Delay', '',
 ])
 
-export const generalHelp = html`
+export const generalHelp = $dom.html`
 <h3>Effects</h3>
 
 <p>Effects can be applied to a note to modify sample playback.
@@ -50,23 +50,23 @@ and have a single digit parameter.</p>
 
 // Based on OpenMPT docs: https://wiki.openmpt.org/Manual:_Effect_Reference
 export const help = freeze([
-    html`
+    $dom.html`
 <h3>0xy: Arpeggio</h3>
 
 <p>Rapidly cycle between three notes:
 the current note, current note + <em>x</em> semitones, and current note + <em>y</em> semitones.</p>
 `,
-    html`
+    $dom.html`
 <h3>1xx: Pitch Slide Up</h3>
 
 <p>Increase note pitch at rate <em>xx</em> (hexadecimal).</p>
 `,
-    html`
+    $dom.html`
 <h3>2xx: Pitch Slide Down</h3>
 
 <p>Decrease note pitch at rate <em>xx</em> (hexadecimal).</p>
 `,
-    html`
+    $dom.html`
 <h3>3xx: Node Glide</h3>
 
 <p>Slide the pitch of the previous note toward the current note,
@@ -74,7 +74,7 @@ at rate <em>xx</em> (hexadecimal).</p>
 
 <p>Use <em>300</em> to continue at previous rate.</p>
 `,
-    html`
+    $dom.html`
 <h3>4xy: Vibrato</h3>
 
 <p>Modulate pitch with speed <em>x</em> and depth <em>y.</em></p>
@@ -83,7 +83,7 @@ at rate <em>xx</em> (hexadecimal).</p>
 
 <p>Modulation waveform can be changed using <strong>E4x (Vibrato Waveform)</strong>.</p>
 `,
-    html`
+    $dom.html`
 <h3>5xy: Node Glide + Volume Slide</h3>
 
 <p>Continue previous <strong>3xx (Note Glide)</strong> effect
@@ -91,7 +91,7 @@ while also sliding volume up <em>x</em> or down <em>y</em>.</p>
 
 <p>Parameters are the same as <strong>Axy (Volume Slide)</strong>.</p>
 `,
-    html`
+    $dom.html`
 <h3>6xy: Vibrato + Volume Slide</h3>
 
 <p>Continue previous <strong>4xy (Vibrato)</strong> effect
@@ -99,7 +99,7 @@ while also sliding volume up <em>x</em> or down <em>y</em>.</p>
 
 <p>Parameters are the same as <strong>Axy (Volume Slide)</strong>.</p>
 `,
-    html`
+    $dom.html`
 <h3>7xy: Tremolo</h3>
 
 <p>Modulate volume with speed <em>x</em> and depth <em>y.</em></p>
@@ -108,7 +108,7 @@ while also sliding volume up <em>x</em> or down <em>y</em>.</p>
 
 <p>Modulation waveform can be changed using <strong>E7x (Tremolo Waveform)</strong>.</p>
 `,
-    html`
+    $dom.html`
 <h3>8xx: Set Panning</h3>
 
 <p>Set channel's panning position to <em>xx</em> (hexadecimal).</p>
@@ -118,7 +118,7 @@ while also sliding volume up <em>x</em> or down <em>y</em>.</p>
     <li>FF = Right</li>
 </ul>
 `,
-    html`
+    $dom.html`
 <h3>9xx: Sample Offset</h3>
 
 <p>Play the sample from the middle of the waveform instead of the beginning.
@@ -129,26 +129,26 @@ Requires a pitch in the same cell.</p>
 
 <em>Tip: The Sample Editor has a button to calculate Sample Offset effects for you.</em>
 `,
-    html`
+    $dom.html`
 <h3>Axy: Volume Slide</h3>
 
 <p>Slide the note volume up or down.
 Use <em>Ax0</em> to slide up at rate <em>x</em>,
 and <em>A0y</em> to slide down at rate <em>y</em>.</p>
 `,
-    html`
+    $dom.html`
 <h3>Bxx: Position Jump</h3>
 
 <p>Jump to pattern position <em>xx</em> (hexadecimal) in the sequence.
 For example, <em>B00</em> restarts the song from the beginning.</p>
 `,
-    html`
+    $dom.html`
 <h3>Cxx: Set Volume</h3>
 
 <p>Set note volume to <em>xx</em> (hexadecimal).
 Ranges from <strong>C00</strong> to <strong>C40</strong> (= 64).</p>
 `,
-    html`
+    $dom.html`
 <h3>Dxx: Pattern Break</h3>
 
 <p>Jump to row <em>xx</em> (decimal!) in the next pattern.
@@ -157,13 +157,13 @@ Can be used to shorten pattern length.</p>
 <p>If <em>Bxx</em> is in the same row,
 jump to row <em>xx</em> in the pattern specified by <em>Bxx</em> instead.</p>
 `,
-    html`
+    $dom.html`
 <h3>Extended Effects</h3>
 
 <p>Extended effects start with the letter <strong>E</strong> and take a single digit parameter.
 Select an extended effect and tap Help (<strong>?</strong>) to learn more.</p>
 `,
-    html`
+    $dom.html`
 <h3>Fxx: Speed / Tempo</h3>
 
 <p>If <em>xx</em> is less than <em>20</em>,
@@ -177,27 +177,27 @@ set playback <strong>tempo</strong> to <em>xx</em> beats per minute (hexadecimal
 ])
 
 export const extHelp = freeze([
-    html`
+    $dom.html`
 <h3>E0x: Set Filter</h3>
 
 <p>This effect is <strong>not supported</strong> in ChromaTracker.</p>
 `,
-    html`
+    $dom.html`
 <h3>E1x: Fine Pitch Up</h3>
 
 <p>Increase note pitch by <em>x</em> periods on the first tick of the row only.</p>
 `,
-    html`
+    $dom.html`
 <h3>E2x: Fine Pitch Down</h3>
 
 <p>Decrease note pitch by <em>x</em> periods on the first tick of the row only.</p>
 `,
-    html`
+    $dom.html`
 <h3>E3x: Glissando Control</h3>
 
 <p>This effect is currently <strong>not supported</strong> in ChromaTracker.</p>
 `,
-    html`
+    $dom.html`
 <h3>E4x: Vibrato Waveform</h3>
 
 <p>Set the waveform of future <strong>4xy (Vibrato)</strong> effects.</p>
@@ -220,14 +220,14 @@ export const extHelp = freeze([
     <li>7 = Random</li>
 </ul>
 `,
-    html`
+    $dom.html`
 <h3>E5x: Set Finetune</h3>
 
 <p>Change the tuning of the note.
 This temporarily overrides the Finetune setting of the sample.
 Requires a pitch in the same cell.</p>
 `,
-    html`
+    $dom.html`
 <h3>E6x: Pattern Loop</h3>
 
 <p><strong>E60:</strong> Marks the current row as the start of a loop.</p>
@@ -236,7 +236,7 @@ Requires a pitch in the same cell.</p>
 
 <em>Note: Loop start and end effects must be in the same channel.</em>
 `,
-    html`
+    $dom.html`
 <h3>E7x: Tremolo Waveform</h3>
 
 <p>Set the waveform of future <strong>7xy (Tremolo)</strong> effects.</p>
@@ -259,43 +259,43 @@ Requires a pitch in the same cell.</p>
     <li>7 = Random</li>
 </ul>
 `,
-    html`
+    $dom.html`
 <h3>E8x: Set Panning</h3>
 
 <p>This is an alternate version of the <strong>8xx (Set Panning)</strong> effect.
 It is not as precise and not as widely supported.</p>
 `,
-    html`
+    $dom.html`
 <h3>E9x: Retrigger</h3>
 
 <p>Retrigger the current note every <em>x</em> ticks.</p>
 `,
-    html`
+    $dom.html`
 <h3>EAx: Fine Volume Up</h3>
 
 <p>Increase note volume by <em>x</em> units on the first tick of the row only.</p>
 `,
-    html`
+    $dom.html`
 <h3>EBx: Fine Volume Down</h3>
 
 <p>Decrease note volume by <em>x</em> units on the first tick of the row only.</p>
 `,
-    html`
+    $dom.html`
 <h3>ECx: Note Cut</h3>
 
 <p>Set note volume to 0 after <em>x</em> ticks.</p>
 `,
-    html`
+    $dom.html`
 <h3>EDx: Note Delay</h3>
 
 <p>Delay the note in this cell by <em>x</em> ticks.</p>
 `,
-    html`
+    $dom.html`
 <h3>EEx: Pattern Delay</h3>
 
 <p>Repeat this row <em>x</em> times. Notes are not retriggered.</p>
 `,
-    html`
+    $dom.html`
 <h3>EFx: Invert Loop</h3>
 
 <p>This effect is <strong>not supported</strong> in ChromaTracker.</p>

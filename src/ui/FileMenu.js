@@ -8,8 +8,9 @@ import * as $local from '../file/LocalFiles.js'
 import * as $mod from '../file/Mod.js'
 import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
-import {AlertDialog, ConfirmDialog, WaitDialogElement, MenuDialog} from './dialogs/UtilDialogs.js'
+import {AlertDialog, ConfirmDialog, WaitDialogElement, MenuDialog, InfoDialog} from './dialogs/UtilDialogs.js'
 import {freeze} from '../Util.js'
+import aboutTemplate from './About.js'
 import appVersion from '../Version.js'
 import appCommit from '../gen/Commit.js'
 
@@ -40,6 +41,10 @@ const template = $dom.html`
                 <span>&nbsp;Import</span>
             </button>
             <div class="flex-grow"></div>
+            <button id="about">
+                ${$icons.information_outline}
+                <span>&nbsp;About</span>
+            </button>
         </div>
         <strong id="storageWarning" class="message-out warning"></strong>
         <div class="flex-grow vscrollable">
@@ -97,6 +102,7 @@ export class FileMenu {
         this.elems = $dom.getElems(fragment, {
             newModule: 'button',
             fileOpen: 'button',
+            about: 'button',
             fileMenu: 'div',
             fileList: 'div',
             samplePackList: 'div',
@@ -109,6 +115,7 @@ export class FileMenu {
         this.elems.newModule.addEventListener('click',
             () => this.openEditor(null, $module.createNew()))
         this.elems.fileOpen.addEventListener('click', () => this.importFile())
+        this.elems.about.addEventListener('click', () => InfoDialog.open(aboutTemplate))
 
         for (let info of samplePackFiles) {
             this.elems.samplePackList.appendChild(this.makeDemoButton(info))

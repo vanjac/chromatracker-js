@@ -1,6 +1,6 @@
-import {html} from '../DOMUtil.js'
+import * as $dom from '../DOMUtil.js'
 
-export const amplify = html`
+export const amplify = $dom.html`
 <h3>Amplify Effect Help</h3>
 
 <ul>
@@ -9,7 +9,7 @@ export const amplify = html`
 </ul>
 `
 
-export const fade = html`
+export const fade = $dom.html`
 <h3>Fade Effect Help</h3>
 
 <ul>
@@ -20,7 +20,7 @@ export const fade = html`
 `
 
 // Based on MDN docs: https://developer.mozilla.org/en-US/docs/Web/API/BiquadFilterNode
-export const filter = html`
+export const filter = $dom.html`
 <h3>Filter / EQ Effect Help</h3>
 
 <ul>
@@ -45,7 +45,7 @@ Filter/EQ types:
 </ul>
 `
 
-export const audioImport = html`
+export const audioImport = $dom.html`
 <h3>Audio Import Help</h3>
 
 <ul>
@@ -56,7 +56,7 @@ export const audioImport = html`
 </ul>
 `
 
-export const record = html`
+export const record = $dom.html`
 <h3>Record Help</h3>
 
 <p>To record samples, ChromaTracker requires permission to access your microphone.</p>

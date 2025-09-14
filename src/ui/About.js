@@ -1,0 +1,18 @@
+import * as $dom from './DOMUtil.js'
+
+export default $dom.html`
+<h3>About ChromaTracker</h3>
+
+<p>ChromaTracker is written by <a target="_blank" href="https://chroma.zone/">J. van't Hoog</a>.</p>
+
+<p>Its <a target="_blank" href="https://github.com/vanjac/chromatracker-js/">source code</a>
+is available under the terms of the
+<a target="_blank" href="https://github.com/vanjac/chromatracker-js/blob/main/LICENSE">AGPLv3 license</a>.</p>
+
+<h4>Assets Used</h4>
+
+<ul>
+    <li><a target="_blank" href="https://pictogrammers.com/library/mdi/">Material Design Icons</a> (Apache License 2.0)</li>
+    <li><a target="_blank" href="https://github.com/be5invis/Iosevka">Iosevka Aile</a> (SIL Open Font License v1.1)</li>
+</ul>
+`
