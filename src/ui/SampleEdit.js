@@ -24,7 +24,7 @@ import './WaveEdit.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
-<div class="flex-grow">
+<div id="dropTarget" class="flex-grow">
     <div class="properties-grid">
         <label for="name">Name:</label>
         <div class="hflex">
@@ -139,6 +139,7 @@ export class SampleEdit {
         let fragment = template.cloneNode(true)
         /** @private */
         this.elems = $dom.getElems(fragment, {
+            dropTarget: 'div',
             name: 'input',
             waveEdit: 'wave-edit',
             loopToggle: 'input',
@@ -231,6 +232,16 @@ export class SampleEdit {
         makeKeyButton(this.elems.useOffset, id => {
             this.useSampleOffset()
             invoke(this.callbacks.jamPlay, id)
+        })
+
+        this.elems.dropTarget.addEventListener('dragover', e => {
+            e.preventDefault()
+        })
+        this.elems.dropTarget.addEventListener('drop', e => {
+            e.preventDefault()
+            if (e.dataTransfer.files.length) {
+                this.readAudioFile(e.dataTransfer.files[0])
+            }
         })
 
         this.view.appendChild(fragment)
