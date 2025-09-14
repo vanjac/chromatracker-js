@@ -15,7 +15,7 @@ const template = $dom.html`
         <meter id="peak" min="0" max="1" optimum="0" low="0.9" high="0.99" value="0"></meter>
         <div class="properties-grid">
             <label for="resample">Rate (Hz):</label>
-            <input id="sampleRate" name="sampleRate" type="number" inputmode="decimal" required="" min="8000" max="96000" step="any" value="16574.27" accesskey="r">
+            <input id="sampleRate" name="sampleRate" type="number" inputmode="decimal" required="" min="8000" max="96000" step="0.01" value="16574.27" accesskey="r">
 
             <label for="normalize">Normalize:</label>
             <div class="hflex">

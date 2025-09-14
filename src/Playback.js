@@ -674,7 +674,7 @@ function calcPanning(panning) {
  * @param {number} pitch
  * @param {number} finetune
  */
-export function pitchToPeriod(pitch, finetune) {
+function pitchToPeriod(pitch, finetune) {
     let period = periodTable[finetune + 8][pitch]
     if (!period) { throw Error('Invalid pitch') }
     return period
@@ -683,8 +683,16 @@ export function pitchToPeriod(pitch, finetune) {
 /**
  * @param {number} period
  */
-export function periodToRate(period) {
+function periodToRate(period) {
     return basePeriod / period
+}
+
+/**
+ * @param {number} pitch
+ * @param {number} finetune
+ */
+export function pitchToFrequency(pitch, finetune) {
+    return baseRate * periodToRate(pitchToPeriod(pitch, finetune))
 }
 
 /**

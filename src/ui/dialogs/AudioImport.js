@@ -7,8 +7,8 @@ import * as $play from '../../Playback.js'
 import * as $icons from '../../gen/Icons.js'
 import {freeze} from '../../Util.js'
 import {InfoDialog} from './UtilDialogs.js'
+import {mod} from '../../Model.js'
 import global from '../GlobalState.js'
-import periodTable from '../../PeriodTable.js'
 
 const template = $dom.html`
 <dialog>
@@ -90,18 +90,18 @@ export class AudioImport {
         $dom.restoreFormData(this.elems.form, inputNames, global.effectFormData)
         this.elems.help.addEventListener('click', () => InfoDialog.open($docs.audioImport))
 
-        for (let i = 0; i < periodTable[8].length; i++) {
+        for (let i = 0; i < mod.numPitches; i++) {
             let noteName = $cell.pitchString(i)
             let option = $dom.createElem('option', {textContent: noteName})
             this.elems.tuneNote.appendChild(option)
-            let freq = $play.baseRate * $play.periodToRate($play.pitchToPeriod(i, 0))
+            let freq = $play.pitchToFrequency(i, 0)
             if (freq.toFixed(2) == this.elems.sampleRate.value) {
                 this.elems.tuneNote.selectedIndex = i + 1
             }
         }
         this.elems.tuneNote.addEventListener('change', () => {
             let pitch = this.elems.tuneNote.selectedIndex - 1
-            let freq = $play.baseRate * $play.periodToRate($play.pitchToPeriod(pitch, 0))
+            let freq = $play.pitchToFrequency(pitch, 0)
             this.elems.sampleRate.value = freq.toFixed(2)
         })
 

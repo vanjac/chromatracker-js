@@ -4,7 +4,7 @@ import * as $shortcut from './Shortcut.js'
 import * as $icons from '../gen/Icons.js'
 import {KeyPad} from './KeyPad.js'
 import {invoke, callbackDebugObject, freeze, clamp} from '../Util.js'
-import periodTable from '../PeriodTable.js'
+import {mod} from '../Model.js'
 /** @import {JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -63,7 +63,7 @@ function makePianoKeys(container, group) {
     let blackKeys = container.querySelector('#blackKeys')
     let whiteKeys = container.querySelector('#whiteKeys')
     let labels = []
-    for (let i = 0; i < periodTable[0].length; i++) {
+    for (let i = 0; i < mod.numPitches; i++) {
         let note = i % 12
         let noteStr = $cell.noteNamesShort[note]
         if (note == 0) {
@@ -200,7 +200,7 @@ export class PianoKeyboard {
      * @param {number} pitch
      */
     keyboardNote(event, pitch) {
-        this.setPitch(clamp(pitch, 0, periodTable[0].length - 1))
+        this.setPitch(clamp(pitch, 0, mod.numPitches - 1))
         pitch = Number($dom.getRadioValue(this.elems.piano, 'pitch1', '0'))
         this.scrollToPitch(pitch, 'nearest')
         invoke(this.callbacks.pitchChanged)

@@ -4,6 +4,7 @@ export const defaultSampleRate = 44100
 
 export const mod = freeze({
     numSamples: 32, // 0th sample is empty!
+    numPitches: 60,
     numSongPositions: 128,
     maxPatterns: 128,
     maxChannels: 32,
