@@ -15,7 +15,7 @@ import appVersion from '../Version.js'
 import appCommit from '../gen/Commit.js'
 
 const samplePackFiles = freeze([
-    {name: 'pixipack 1', url: 'https://chroma.zone/share/pixipack1.mod'},
+    {name: 'ST-01', url: 'https://chroma.zone/share/ST-01.mod'},
     {name: 'nespack', url: 'https://chroma.zone/share/nespack.mod'}
 ])
 const demoFiles = freeze([
