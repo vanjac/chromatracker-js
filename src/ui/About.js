@@ -15,4 +15,12 @@ is available under the terms of the
     <li><a target="_blank" href="https://pictogrammers.com/library/mdi/">Material Design Icons</a> (Apache License 2.0)</li>
     <li><a target="_blank" href="https://github.com/be5invis/Iosevka">Iosevka Aile</a> (SIL Open Font License v1.1)</li>
 </ul>
+
+<h4>Demo Files</h4>
+
+<ul>
+    <li><em>space_debris</em> was composed by Markus Kaarlonen.</li>
+    <li><em>guitar slinger</em> was composed by Jogeir Liljedahl.</li>
+    <li><em>pixipack 1</em> uses samples by Alexander Zolotov.</li>
+</ul>
 `
