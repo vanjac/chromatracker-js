@@ -1,11 +1,14 @@
 import * as $docs from './DialogDocs.js'
+import * as $cell from '../Cell.js'
 import * as $dialog from '../Dialog.js'
 import * as $dom from '../DOMUtil.js'
 import * as $shortcut from '../Shortcut.js'
+import * as $play from '../../Playback.js'
 import * as $icons from '../../gen/Icons.js'
 import {freeze} from '../../Util.js'
 import {InfoDialog} from './UtilDialogs.js'
 import global from '../GlobalState.js'
+import periodTable from '../../PeriodTable.js'
 
 const template = $dom.html`
 <dialog>
@@ -13,7 +16,12 @@ const template = $dom.html`
         <h3>Import Audio</h3>
         <div class="properties-grid">
             <label for="resample">Resample (Hz):</label>
-            <input id="sampleRate" name="sampleRate" type="number" inputmode="decimal" required="" min="8000" max="96000" step="any" value="16574.27" accesskey="r">
+            <div class="hflex">
+                <input id="sampleRate" name="sampleRate" type="number" inputmode="decimal" required="" min="8000" max="96000" step="0.01" value="16574.27" accesskey="r">
+                <select id="tuneNote">
+                    <option selected="" disabled="" hidden="">---</option>
+                </select>
+            </div>
 
             <label for="channel">Channel(s):</label>
             <select id="channel" name="channel" accesskey="c">
@@ -68,6 +76,7 @@ export class AudioImport {
         this.elems = $dom.getElems(fragment, {
             form: 'form',
             sampleRate: 'input',
+            tuneNote: 'select',
             channel: 'select',
             dither: 'input',
             normalize: 'input',
@@ -75,10 +84,26 @@ export class AudioImport {
         })
 
         this.elems.sampleRate.disabled = !this.enableResample
+        this.elems.tuneNote.disabled = !this.enableResample
 
         this.elems.form.addEventListener('submit', () => this.submit())
         $dom.restoreFormData(this.elems.form, inputNames, global.effectFormData)
         this.elems.help.addEventListener('click', () => InfoDialog.open($docs.audioImport))
+
+        for (let i = 0; i < periodTable[8].length; i++) {
+            let noteName = $cell.pitchString(i)
+            let option = $dom.createElem('option', {textContent: noteName})
+            this.elems.tuneNote.appendChild(option)
+            let freq = $play.baseRate * $play.periodToRate($play.pitchToPeriod(i, 0))
+            if (freq.toFixed(2) == this.elems.sampleRate.value) {
+                this.elems.tuneNote.selectedIndex = i + 1
+            }
+        }
+        this.elems.tuneNote.addEventListener('change', () => {
+            let pitch = this.elems.tuneNote.selectedIndex - 1
+            let freq = $play.baseRate * $play.periodToRate($play.pitchToPeriod(pitch, 0))
+            this.elems.sampleRate.value = freq.toFixed(2)
+        })
 
         this.view.appendChild(fragment)
     }
