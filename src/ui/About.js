@@ -22,5 +22,6 @@ is available under the terms of the
     <li><em>space_debris</em> was composed by Markus Kaarlonen.</li>
     <li><em>guitar slinger</em> was composed by Jogeir Liljedahl.</li>
     <li><em>pixipack 1</em> uses samples by Alexander Zolotov.</li>
+    <li><em>nespack</em> based on s3m2nsf tool by Juan Linietsky.</li>
 </ul>
 `
