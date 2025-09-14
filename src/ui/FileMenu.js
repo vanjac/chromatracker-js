@@ -13,6 +13,14 @@ import {freeze} from '../Util.js'
 import appVersion from '../Version.js'
 import appCommit from '../gen/Commit.js'
 
+const samplePackFiles = freeze([
+    {name: 'pixipack 1', url: 'https://chroma.zone/share/pixipack1.mod'},
+])
+const demoFiles = freeze([
+    {name: 'space_debris', url: 'https://chroma.zone/share/space_debris.mod'},
+    {name: 'guitar slinger', url: 'https://chroma.zone/share/GSLINGER.MOD'}
+])
+
 const template = $dom.html`
 <div class="flex-grow file-menu-layout">
     <div id="fileMenu" class="flex-grow hide">
@@ -36,15 +44,11 @@ const template = $dom.html`
         <strong id="storageWarning" class="message-out warning"></strong>
         <div class="flex-grow vscrollable">
             <div id="fileList" class="button-list"></div>
-            <div id="demoList" class="button-list">
-                <hr>
-                <h3>&nbsp;Sample Packs:</h3>
-                <button value="https://chroma.zone/share/pixipack1.mod">pixipack 1</button>
-                <hr>
-                <h3>&nbsp;Demo Files:</h3>
-                <button value="https://chroma.zone/share/space_debris.mod">space_debris &nbsp;<em>(Markus Kaarlonen)</em></button>
-                <button value="https://chroma.zone/share/GSLINGER.MOD">guitar slinger &nbsp;<em>(Jogeir Liljedahl)</em></button>
-            </div>
+            <hr>
+            <h3>&nbsp;Sample Packs:</h3>
+            <div id="samplePackList" class="button-list"></div>
+            <h3>&nbsp;Demo Files:</h3>
+            <div id="demoList" class="button-list"></div>
         </div>
         <em>Version:&nbsp;<span id="version"></span></em>
     </div>
@@ -62,6 +66,15 @@ const itemTemplate = $dom.html`
     </button>
 </div>
 `
+
+/**
+ * @param {string} url
+ */
+function fetchFile(url) {
+    return window.fetch(url)
+        .then(r => r.blob())
+        .then(b => b.arrayBuffer())
+}
 
 export class FileMenu {
     /**
@@ -86,6 +99,8 @@ export class FileMenu {
             fileOpen: 'button',
             fileMenu: 'div',
             fileList: 'div',
+            samplePackList: 'div',
+            demoList: 'div',
             editorContainer: 'div',
             version: 'span',
             storageWarning: 'strong',
@@ -94,10 +109,12 @@ export class FileMenu {
         this.elems.newModule.addEventListener('click',
             () => this.openEditor(null, $module.createNew()))
         this.elems.fileOpen.addEventListener('click', () => this.importFile())
-        /** @type {NodeListOf<HTMLButtonElement>} */
-        let demoButtons = fragment.querySelectorAll('#demoList button')
-        for (let button of demoButtons) {
-            button.addEventListener('click', () => this.importFromUrl(button.value))
+
+        for (let info of samplePackFiles) {
+            this.elems.samplePackList.appendChild(this.makeDemoButton(info))
+        }
+        for (let info of demoFiles) {
+            this.elems.demoList.appendChild(this.makeDemoButton(info))
         }
 
         this.elems.version.textContent = `${appVersion} (${appCommit.slice(0, 7)})`
@@ -153,6 +170,16 @@ export class FileMenu {
             }
         }
         return false
+    }
+
+    /**
+     * @private
+     * @param {{name: string, url: string}} info
+     */
+    makeDemoButton(info) {
+        let button = $dom.createElem('button', {textContent: info.name})
+        button.addEventListener('click', () => this.importFromUrl(info.url))
+        return button
     }
 
     /** @private */
@@ -275,9 +302,7 @@ export class FileMenu {
      */
     importFromUrl(url) {
         let dialog = $dialog.open(new WaitDialogElement())
-        window.fetch(url)
-            .then(r => r.blob())
-            .then(b => b.arrayBuffer())
+        fetchFile(url)
             .then(buf => this.openModuleFile(null, buf))
             .then(() => $dialog.close(dialog))
             .catch(/** @param {Error} error */ error => {
@@ -385,7 +410,13 @@ export class FileMenu {
         let options = files.map(([id, metadata]) => ({
             value: id.toString(),
             title: metadata.name || '(untitled)',
-        }))
+        })).concat(samplePackFiles.map(info => ({
+            value: info.url,
+            title: info.name,
+        }))).concat(demoFiles.map(info => ({
+            value: info.url,
+            title: info.name,
+        })))
         let selected
         try {
             selected = await MenuDialog.open(options, 'Import from:')
@@ -394,9 +425,15 @@ export class FileMenu {
             return
         }
         wait = $dialog.open(new WaitDialogElement())
+        let id = Number(selected)
         let module
         try {
-            let data = await $local.readFile(this.db, Number(selected))
+            let data
+            if (Number.isNaN(id)) {
+                data = await fetchFile(selected)
+            } else {
+                data = await $local.readFile(this.db, Number(selected))
+            }
             module = freeze($mod.read(data))
         } catch (err) {
             if (err instanceof Error) {
