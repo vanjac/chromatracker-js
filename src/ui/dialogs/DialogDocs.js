@@ -41,7 +41,7 @@ Filter/EQ types:
     <li><strong>Allpass:</strong> Lets all frequencies through, but changes the phase-relationship between them.</li>
     <li><strong>Lowshelf:</strong> Frequencies below the cutoff get a boost/attenuation; frequencies above it are unchanged.</li>
     <li><strong>Highshelf:</strong> Frequencies above the cutoff get a boost/attenuation; frequencies below it are unchanged.</li>
-    <li><strong>Peaking:</strong> Frequencies inside a given range get a boost/attenuation; frequencies outside it are unchanged.</li>
+    <li><strong>Peaking:</strong> Frequencies inside a range get a boost/attenuation; frequencies outside it are unchanged.</li>
 </ul>
 `
 
