@@ -50,6 +50,30 @@ const template = $dom.html`
 `
 
 const inputNames = freeze(['sampleRate', 'channel', 'dither', 'normalize'])
+const basePitch = 24
+
+/**
+ * @param {HTMLInputElement} spinner
+ * @param {HTMLSelectElement} select
+ */
+export function initSampleRateInput(spinner, select) {
+    for (let i = basePitch; i < mod.numPitches; i++) {
+        let noteName = $cell.pitchString(i)
+        let option = $dom.createElem('option', {textContent: noteName, value: i.toString()})
+        select.appendChild(option)
+        let freq = $play.pitchToFrequency(i, 0)
+        if (freq.toFixed(2) == spinner.value) {
+            select.value = i.toString()
+        }
+    }
+    select.addEventListener('change', () => {
+        let freq = $play.pitchToFrequency(Number(select.value), 0)
+        spinner.value = freq.toFixed(2)
+    })
+    spinner.addEventListener('change', () => {
+        select.selectedIndex = 0
+    })
+}
 
 export class AudioImport {
     /**
@@ -90,20 +114,7 @@ export class AudioImport {
         $dom.restoreFormData(this.elems.form, inputNames, global.effectFormData)
         this.elems.help.addEventListener('click', () => InfoDialog.open($docs.audioImport))
 
-        for (let i = 0; i < mod.numPitches; i++) {
-            let noteName = $cell.pitchString(i)
-            let option = $dom.createElem('option', {textContent: noteName})
-            this.elems.tuneNote.appendChild(option)
-            let freq = $play.pitchToFrequency(i, 0)
-            if (freq.toFixed(2) == this.elems.sampleRate.value) {
-                this.elems.tuneNote.selectedIndex = i + 1
-            }
-        }
-        this.elems.tuneNote.addEventListener('change', () => {
-            let pitch = this.elems.tuneNote.selectedIndex - 1
-            let freq = $play.pitchToFrequency(pitch, 0)
-            this.elems.sampleRate.value = freq.toFixed(2)
-        })
+        initSampleRateInput(this.elems.sampleRate, this.elems.tuneNote)
 
         this.view.appendChild(fragment)
     }

@@ -5,6 +5,7 @@ import * as $shortcut from '../Shortcut.js'
 import * as $icons from '../../gen/Icons.js'
 import {freeze} from '../../Util.js'
 import {InfoDialog} from './UtilDialogs.js'
+import {initSampleRateInput} from './AudioImport.js'
 import global from '../GlobalState.js'
 
 const template = $dom.html`
@@ -15,7 +16,12 @@ const template = $dom.html`
         <meter id="peak" min="0" max="1" optimum="0" low="0.9" high="0.99" value="0"></meter>
         <div class="properties-grid">
             <label for="resample">Rate (Hz):</label>
-            <input id="sampleRate" name="sampleRate" type="number" inputmode="decimal" required="" min="8000" max="96000" step="0.01" value="16574.27" accesskey="r">
+            <div class="hflex">
+                <input id="sampleRate" name="sampleRate" type="number" inputmode="decimal" required="" min="8000" max="96000" step="0.01" value="16574.27" accesskey="r">
+                <select id="tuneNote">
+                    <option selected="" disabled="" hidden="">---</option>
+                </select>
+            </div>
 
             <label for="normalize">Normalize:</label>
             <div class="hflex">
@@ -82,6 +88,7 @@ export class RecordDialog {
             peak: 'meter',
             status: 'em',
             sampleRate: 'input',
+            tuneNote: 'select',
             dither: 'input',
             normalize: 'input',
             start: 'button',
@@ -94,6 +101,8 @@ export class RecordDialog {
         this.elems.form.addEventListener('submit', () => this.stop())
         this.elems.dialog.addEventListener('cancel', () => this.dismiss())
         this.elems.help.addEventListener('click', () => InfoDialog.open($docs.record))
+
+        initSampleRateInput(this.elems.sampleRate, this.elems.tuneNote)
 
         this.view.appendChild(fragment)
 
