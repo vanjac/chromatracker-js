@@ -54,7 +54,7 @@ const template = $dom.html`
             <button id="record" title="Record Audio (${$shortcut.ctrl('R')})">
                 ${$icons.record}
             </button>
-            <button id="save" title="Save (${$shortcut.ctrl('S')})">
+            <button id="save" title="Export (${$shortcut.ctrl('S')})">
                 ${$icons.download}
             </button>
             &nbsp;
