@@ -347,6 +347,20 @@ export function processTick(playback) {
 /**
  * @param {Playback} playback
  */
+function processTickTimeOnly(playback) {
+    if (playback.tick == 0) {
+        let {pos, row} = playback
+        let pattern = playback.mod.patterns[playback.mod.sequence[pos]]
+        for (let c = 0; c < playback.mod.numChannels; c++) {
+            processCellPlaybackEffects(playback, playback.channels[c], pattern[c][row])
+        }
+    }
+    return processTickAdvance(playback)
+}
+
+/**
+ * @param {Playback} playback
+ */
 function processTickAdvance(playback) {
     const {pos, row} = playback
     const pattern = playback.mod.patterns[playback.mod.sequence[pos]]
@@ -481,11 +495,6 @@ function processCellFirst(playback, channel, cell) {
                         channel.period = pitchToPeriod(cell.pitch, finetune)
                     }
                     break
-                case ExtEffect.PatternLoop:
-                    if (cell.param1 == 0) {
-                        channel.patLoopRow = playback.row
-                    }
-                    break
                 case ExtEffect.TremoloWave:
                     channel.tremolo.waveform = cell.param1 & 0x3
                     channel.tremolo.continue = (cell.param1 & 0x4) != 0
@@ -507,14 +516,26 @@ function processCellFirst(playback, channel, cell) {
                     break
             }
             break
-        case Effect.Speed: {
-            let speed = Cell.paramByte(cell)
-            if (speed < 0x20) {
-                playback.speed = speed
-            } else {
-                playback.tempo = speed
-            }
-            break
+    }
+    processCellPlaybackEffects(playback, channel, cell)
+}
+
+/**
+ * @param {Playback} playback
+ * @param {ChannelPlayback} channel
+ * @param {Readonly<Cell>} cell
+ */
+function processCellPlaybackEffects(playback, channel, cell) {
+    if (cell.effect == Effect.Speed) {
+        let speed = Cell.paramByte(cell)
+        if (speed < 0x20) {
+            playback.speed = speed
+        } else {
+            playback.tempo = speed
+        }
+    } else if (cell.effect == Effect.Extended && cell.param0 == ExtEffect.PatternLoop) {
+        if (cell.param1 == 0) {
+            channel.patLoopRow = playback.row
         }
     }
 }
@@ -881,7 +902,7 @@ export function jamRelease(playback, id) {
  */
 export async function render(module, progressCallback) {
     let playback = initWithoutContext(module)
-    while (!processTickAdvance(playback)) {
+    while (!processTickTimeOnly(playback)) {
         // nothing
     }
 
