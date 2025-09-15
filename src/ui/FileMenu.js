@@ -1,11 +1,13 @@
 import * as $dialog from './Dialog.js'
 import * as $dom from './DOMUtil.js'
 import * as $shortcut from './Shortcut.js'
+import * as $play from '../Playback.js'
 import * as $module from '../edit/Module.js'
 import * as $icons from '../gen/Icons.js'
 import * as $ext from '../file/External.js'
 import * as $local from '../file/LocalFiles.js'
 import * as $mod from '../file/Mod.js'
+import * as $wav from '../file/Wav.js'
 import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
 import {AlertDialog, ConfirmDialog, WaitDialogElement, MenuDialog, InfoDialog} from './dialogs/UtilDialogs.js'
@@ -225,6 +227,7 @@ export class FileMenu {
                 {value: 'clone', title: 'Duplicate', icon: $icons.content_copy},
                 {value: 'delete', title: 'Delete', icon: $icons.delete_outline},
                 {value: 'download', title: 'Download', icon: $icons.download},
+                {value: 'render', title: 'Export Audio', icon: $icons.waveform},
             ], name)
         } catch (e) {
             console.warn(e)
@@ -234,6 +237,7 @@ export class FileMenu {
         case 'clone': this.cloneLocalFile(id); break
         case 'delete': this.requestDeleteLocalFile(id, name); break
         case 'download': this.downloadLocalFile(id, name); break
+        case 'render': this.renderModule(id); break
         }
     }
 
@@ -389,6 +393,32 @@ export class FileMenu {
             }
         }
         console.log('Saved file', this.fileID)
+    }
+
+    /**
+     * @private
+     * @param {number} id
+     */
+    async renderModule(id) {
+        let dialog = new WaitDialogElement()
+        dialog.ctrl.prompt = 'Rendering...'
+        $dialog.open(dialog)
+        let module
+        try {
+            let data = await $local.readFile(this.db, id)
+            module = freeze($mod.read(data))
+        } catch (error) {
+            if (error instanceof Error) {
+                AlertDialog.open(error.message)
+            }
+            $dialog.close(dialog)
+            return
+        }
+        let buf = await $play.render(module, progress => dialog.ctrl.setProgress(progress))
+        let wavData = $wav.writeAudioBuffer(buf)
+        let blob = new Blob([wavData], {type: 'audio/wav'})
+        $dialog.close(dialog)
+        $ext.download(blob, (module.name || 'Untitled') + '.wav')
     }
 
     /** @private */

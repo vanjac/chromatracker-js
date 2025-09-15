@@ -258,8 +258,8 @@ export const InputDialogElement = $dom.defineView('input-dialog', InputDialog)
 
 const waitDialogTemplate = $dom.html`
 <dialog>
-    <span>Please wait...</span>
-    <progress></progress>
+    <span id="prompt"></span>
+    <progress id="progress"></progress>
 </dialog>
 `
 
@@ -270,14 +270,28 @@ export class WaitDialog {
     constructor(view) {
         /** @private */
         this.view = view
+        this.prompt = 'Please wait...'
     }
 
     connectedCallback() {
         let fragment = waitDialogTemplate.cloneNode(true)
+        /** @private */
+        this.elems = $dom.getElems(fragment, {
+            prompt: 'span',
+            progress: 'progress',
+        })
+        this.elems.prompt.textContent = this.prompt
 
         fragment.querySelector('dialog').addEventListener('cancel', e => e.preventDefault())
 
         this.view.appendChild(fragment)
+    }
+
+    /**
+     * @param {number} progress
+     */
+    setProgress(progress) {
+        this.elems.progress.value = progress
     }
 }
 export const WaitDialogElement = $dom.defineView('wait-dialog', WaitDialog)
