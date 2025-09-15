@@ -916,7 +916,7 @@ export async function render(module, progressCallback) {
     let animHandle = 0
     let animate = () => {
         animHandle = window.requestAnimationFrame(animate)
-        progressCallback(context.currentTime * context.sampleRate / context.length)
+        progressCallback(Math.sqrt(context.currentTime * context.sampleRate / context.length))
     }
     animate()
 
