@@ -877,8 +877,9 @@ export function jamRelease(playback, id) {
 
 /**
  * @param {Readonly<Module>} module
+ * @param {(progress: number) => void} progressCallback
  */
-export async function render(module) {
+export async function render(module, progressCallback) {
     let playback = initWithoutContext(module)
     while (!processTickAdvance(playback)) {
         // nothing
@@ -890,6 +891,17 @@ export async function render(module) {
     while (!processTick(playback)) {
         // nothing
     }
+
+    let animHandle = 0
+    let animate = () => {
+        animHandle = window.requestAnimationFrame(animate)
+        progressCallback(context.currentTime * context.sampleRate / context.length)
+    }
+    animate()
+
     let renderBuffer = await context.startRendering()
+    window.cancelAnimationFrame(animHandle)
+    progressCallback(1)
+
     return renderBuffer
 }
