@@ -157,7 +157,7 @@ function initWithoutContext(module) {
 }
 
 /**
- * @param {Playback} playback
+ * @param {Pick<Playback, 'channels' | 'jamChannels'>} playback
  */
 export function cleanup(playback) {
     for (let channel of playback.channels) {
@@ -213,8 +213,8 @@ export function setModule(playback, module) {
 }
 
 /**
- * @param {Playback} playback
- * @param {ChannelPlayback} channel
+ * @param {Pick<Playback, 'ctx' | 'mixer'>} playback
+ * @param {Pick<ChannelPlayback, 'panning' | 'panner' | 'gain'>} channel
  */
 function initChannelNodes(playback, channel) {
     let pan = calcPanning(channel.panning)
@@ -227,7 +227,7 @@ function initChannelNodes(playback, channel) {
 }
 
 /**
- * @param {ChannelPlayback} channel
+ * @param {Pick<ChannelPlayback, 'source' | 'gain' | 'panner'>} channel
  */
 function disconnectChannel(channel) {
     channel.source?.stop()
@@ -237,7 +237,7 @@ function disconnectChannel(channel) {
 }
 
 /**
- * @param {Playback} playback
+ * @param {Pick<Playback, 'activeSources'>} playback
  */
 export function stop(playback) {
     for (let source of playback.activeSources) {
@@ -256,7 +256,7 @@ export function stop(playback) {
 }
 
 /**
- * @param {Playback} playback
+ * @param {Pick<Playback, 'channels'>} playback
  * @param {number} c
  * @param {boolean} mute
  */
@@ -271,7 +271,7 @@ export function setChannelMute(playback, c, mute) {
 }
 
 /**
- * @param {Playback} playback
+ * @param {Readonly<Pick<Playback, 'analyser'>>} playback
  */
 export function getPeakAmp(playback) {
     // https://stackoverflow.com/a/44360729
@@ -399,7 +399,7 @@ function processTickAdvance(playback) {
 }
 
 /**
- * @param {ChannelPlayback} channel
+ * @param {Pick<ChannelPlayback, 'sample' | 'volume' | 'sampleOffset' | 'memOff'>} channel
  * @param {Readonly<Cell>} cell
  * @param {Readonly<Pick<Sample, 'volume'>>} sample
  */
@@ -421,7 +421,7 @@ function processCellInst(channel, cell, sample) {
 }
 
 /**
- * @param {Playback} playback
+ * @param {Pick<Playback, 'ctx' | 'mod' | 'samples' | 'activeSources' | 'time'>} playback
  * @param {ChannelPlayback} channel
  * @param {Readonly<Cell>} cell
  */
@@ -521,7 +521,7 @@ function processCellFirst(playback, channel, cell) {
 }
 
 /**
- * @param {Playback} playback
+ * @param {Pick<Playback, 'speed' | 'tempo' | 'row'>} playback
  * @param {ChannelPlayback} channel
  * @param {Readonly<Cell>} cell
  */
@@ -609,7 +609,7 @@ function processCellRest(playback, channel, cell) {
 /**
  * Process one tick of playback for one channel.
  * Called after processCellFirst/processCellRest.
- * @param {Playback} playback
+ * @param {Readonly<Pick<Playback, 'tick' | 'time'>>} playback
  * @param {ChannelPlayback} channel
  * @param {Readonly<Cell>} cell
  */
@@ -658,8 +658,8 @@ function processCellAll(playback, channel, cell) {
 
 /**
 * Process the end of a row for one channel.
-* @param {Playback} playback
-* @param {ChannelPlayback} channel
+* @param {Pick<Playback, 'pos' | 'row' | 'rowDelayCount'>} playback
+* @param {Pick<ChannelPlayback, 'patLoopRow' | 'patLoopCount'>} channel
 * @param {Readonly<Cell>} cell
 * @param {number} pos
 * @param {number} row
@@ -770,7 +770,7 @@ function calcOscillator(osc, sawDir) {
 }
 
 /**
- * @param {Playback} playback
+ * @param {Pick<Playback, 'ctx' | 'mod' | 'samples' | 'activeSources' | 'time'>} playback
  * @param {ChannelPlayback} channel
  */
 function playNote(playback, channel) {
@@ -805,9 +805,9 @@ function playNote(playback, channel) {
 }
 
 /**
- * @param {Playback} playback
+ * @param {Pick<Playback, 'ctx'>} playback
  * @param {Readonly<Pick<Sample, 'loopStart' | 'loopEnd'>>} sample,
- * @param {SamplePlayback} samplePlayback
+ * @param {Readonly<Pick<SamplePlayback, 'buffer'>>} samplePlayback
  * @returns {AudioBufferSourceNode}
  */
 function createNoteSource(playback, sample, samplePlayback) {
@@ -885,7 +885,7 @@ export function jamPlay(playback, id, c, cell, sampleOverride = null) {
 }
 
 /**
- * @param {Playback} playback
+ * @param {Pick<Playback, 'jamChannels'>} playback
  * @param {number|string} id
  */
 export function jamRelease(playback, id) {
