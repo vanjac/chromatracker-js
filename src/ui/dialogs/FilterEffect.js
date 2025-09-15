@@ -22,13 +22,14 @@ const graphFreq = new Float32Array(numGraphFreq)
 }
 
 /**
- * @typedef {object} FilterEffectParams
- * @property {BiquadFilterType} type
- * @property {number} freqStart
- * @property {number | null} freqEnd
- * @property {number} q
- * @property {number} gain
- * @property {boolean} dither
+ * @typedef {{
+ *      type: BiquadFilterType
+ *      freqStart: number
+ *      freqEnd: number | null
+ *      q: number
+ *      gain: number
+ *      dither: boolean
+ * }} FilterEffectParams
  */
 
 const template = $dom.html`

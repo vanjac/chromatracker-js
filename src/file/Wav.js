@@ -15,9 +15,10 @@ const smplChunkBaseSize = 36
 const smplChunkLoopSize = 24
 
 /**
- * @typedef {object} RIFFChunk
- * @property {number} pos Start of chunk data
- * @property {number} size Size of chunk data
+ * @typedef {{
+ *      pos: number
+ *      size: number
+ * }} RIFFChunk
  */
 
 /**
