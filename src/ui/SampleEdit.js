@@ -524,7 +524,7 @@ export class SampleEdit {
 
     /** @private */
     saveAudioFile() {
-        let blob = new Blob([$wav.write(this.viewSample)], {type: 'application/octet-stream'})
+        let blob = new Blob([$wav.writeSample(this.viewSample)], {type: 'application/octet-stream'})
         $ext.download(blob, (this.viewSample.name || 'sample') + '.wav')
     }
 

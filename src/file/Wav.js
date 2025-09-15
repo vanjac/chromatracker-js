@@ -1,9 +1,10 @@
 // https://sites.google.com/site/musicgapi/technical-documents/wav-file-format
 
 import * as $file from './FileUtil.js'
-import {mod, Sample} from '../Model.js'
 import * as $play from '../Playback.js'
 import * as $wave from '../edit/Wave.js'
+import {mod, Sample} from '../Model.js'
+import {clamp} from '../Util.js'
 
 const formatPCM = 1
 const formatIEEE = 3
@@ -150,32 +151,43 @@ export function read(buf, {channel, dithering, normalize}) {
 /**
  * @param {Readonly<Sample>} sample
  */
-export function write(sample) {
+export function writeSample(sample) {
     /** @type {Map<string, RIFFChunk>} */
     let chunks = new Map()
 
     let fileSize = 12
     fileSize = addChunk(chunks, fileSize, 'fmt ', fmtChunkSize)
-    fileSize = addChunk(chunks, fileSize, 'data', calcDataChunkSize(sample))
+    fileSize = addChunk(chunks, fileSize, 'data', calcSampleDataChunkSize(sample))
     fileSize = addChunk(chunks, fileSize, 'smpl', calcSmplChunkSize(sample))
     fileSize = addChunk(chunks, fileSize, 'xtra', xtraChunkSize)
 
     let buf = new ArrayBuffer(fileSize)
-    let view = new DataView(buf)
+    writeHeaders(buf, chunks)
 
-    $file.writeU8Array(buf, 0, 4, $file.encodeISO8859_1('RIFF'))
-    view.setUint32(4, fileSize - 8, true)
-    $file.writeU8Array(buf, 8, 4, $file.encodeISO8859_1('WAVE'))
-
-    for (let [id, chunk] of chunks.entries()) {
-        $file.writeU8Array(buf, chunk.pos - 8, 4, $file.encodeISO8859_1(id))
-        view.setUint32(chunk.pos - 4, chunk.size, true)
-    }
-
-    writeFmtChunk(chunkDataView(buf, chunks.get('fmt ')), sample)
-    writeDataChunk(chunkDataView(buf, chunks.get('data')), sample)
+    writeSampleFmtChunk(chunkDataView(buf, chunks.get('fmt ')), sample)
+    writeSampleDataChunk(chunkDataView(buf, chunks.get('data')), sample)
     writeSmplChunk(chunkDataView(buf, chunks.get('smpl')), sample)
     writeXtraChunk(chunkDataView(buf, chunks.get('xtra')), sample)
+
+    return buf
+}
+
+/**
+ * @param {AudioBuffer} audio
+ */
+export function writeAudioBuffer(audio) {
+    /** @type {Map<string, RIFFChunk>} */
+    let chunks = new Map()
+
+    let fileSize = 12
+    fileSize = addChunk(chunks, fileSize, 'fmt ', fmtChunkSize)
+    fileSize = addChunk(chunks, fileSize, 'data', calcAudioBufferDataChunkSize(audio))
+
+    let buf = new ArrayBuffer(fileSize)
+    writeHeaders(buf, chunks)
+
+    writeAudioBufferFmtChunk(chunkDataView(buf, chunks.get('fmt ')), audio)
+    writeAudioBufferDataChunk(chunkDataView(buf, chunks.get('data')), audio)
 
     return buf
 }
@@ -203,10 +215,27 @@ function chunkDataView(buf, chunk) {
 }
 
 /**
+ * @param {ArrayBuffer} buf
+ * @param {Map<string, RIFFChunk>} chunks
+ */
+function writeHeaders(buf, chunks) {
+    let view = new DataView(buf)
+
+    $file.writeU8Array(buf, 0, 4, $file.encodeISO8859_1('RIFF'))
+    view.setUint32(4, buf.byteLength - 8, true)
+    $file.writeU8Array(buf, 8, 4, $file.encodeISO8859_1('WAVE'))
+
+    for (let [id, chunk] of chunks.entries()) {
+        $file.writeU8Array(buf, chunk.pos - 8, 4, $file.encodeISO8859_1(id))
+        view.setUint32(chunk.pos - 4, chunk.size, true)
+    }
+}
+
+/**
  * @param {DataView} view
  * @param {Readonly<Sample>} sample
  */
-function writeFmtChunk(view, sample) {
+function writeSampleFmtChunk(view, sample) {
     // TODO: this doesn't match OpenMPT
     let freq = ($play.baseRate / 2) * (2 ** (sample.finetune / (12 * 8)))
 
@@ -219,19 +248,55 @@ function writeFmtChunk(view, sample) {
 }
 
 /**
+ * @param {DataView} view
+ * @param {AudioBuffer} audio
+ */
+function writeAudioBufferFmtChunk(view, audio) {
+    view.setUint16(0, formatPCM, true)
+    view.setUint16(2, audio.numberOfChannels, true)
+    view.setUint32(4, audio.sampleRate, true)
+    view.setUint32(8, audio.sampleRate * audio.numberOfChannels * 2, true)
+    view.setUint16(12, audio.numberOfChannels * 2, true)
+    view.setUint16(14, 16, true)
+}
+
+/**
  * @param {Readonly<Sample>} sample
  */
-function calcDataChunkSize(sample) {
+function calcSampleDataChunkSize(sample) {
     return sample.wave.length
+}
+
+/**
+ * @param {AudioBuffer} audio
+ */
+function calcAudioBufferDataChunkSize(audio) {
+    return audio.length * audio.numberOfChannels * 2
 }
 
 /**
  * @param {DataView} view
  * @param {Readonly<Sample>} sample
  */
-function writeDataChunk(view, sample) {
+function writeSampleDataChunk(view, sample) {
     for (let i = 0; i < sample.wave.length; i++) {
         view.setUint8(i, sample.wave[i] + 128)
+    }
+}
+
+/**
+ * @param {DataView} view
+ * @param {AudioBuffer} audio
+ */
+function writeAudioBufferDataChunk(view, audio) {
+    let stride = audio.numberOfChannels * 2
+    for (let c = 0; c < audio.numberOfChannels; c++) {
+        let data = audio.getChannelData(c)
+        let offset = c * 2
+        for (let i = 0; i < audio.length; i++) {
+            view.setInt16(offset, clamp(data[i], -1, 1) * 32767, true)
+            offset += stride
+        }
     }
 }
 
