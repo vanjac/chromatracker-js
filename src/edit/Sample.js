@@ -121,35 +121,31 @@ export function spliceEffect(sample, start, end, length, effect) {
  * @param {boolean} dithering
  * @returns {Promise<Readonly<Sample>>}
  */
-export function applyNode(sample, start, end, dithering, createNode) {
-    return new Promise(resolve => {
-        let length = end - start
-        let context = new OfflineAudioContext(1, length, defaultSampleRate)
+export async function applyNode(sample, start, end, dithering, createNode) {
+    let length = end - start
+    let context = new OfflineAudioContext(1, length, defaultSampleRate)
 
-        let buffer = context.createBuffer(1, length, context.sampleRate)
-        let srcData = buffer.getChannelData(0)
-        for (let i = 0; i < length; i++) {
-            srcData[i] = sample.wave[start + i] / 128.0
-        }
+    let buffer = context.createBuffer(1, length, context.sampleRate)
+    let srcData = buffer.getChannelData(0)
+    for (let i = 0; i < length; i++) {
+        srcData[i] = sample.wave[start + i] / 128.0
+    }
 
-        let source = context.createBufferSource()
-        source.buffer = buffer
+    let source = context.createBufferSource()
+    source.buffer = buffer
 
-        let effectNode = createNode(context)
-        source.connect(effectNode)
-        effectNode.connect(context.destination)
+    let effectNode = createNode(context)
+    source.connect(effectNode)
+    effectNode.connect(context.destination)
 
-        source.start()
-        context.oncomplete = e => {
-            let wave = sample.wave.slice()
-            let renderData = e.renderedBuffer.getChannelData(0)
-            let ditherFn = dithering ? $wave.dither : $wave.dontDither
-            let error = 0
-            for (let i = 0; i < renderData.length; i++) {
-                ;[wave[start + i], error] = ditherFn(renderData[i] * 128.0, error)
-            }
-            resolve(freeze({...sample, wave}))
-        }
-        context.startRendering()
-    })
+    source.start()
+    let renderBuffer = await context.startRendering()
+    let wave = sample.wave.slice()
+    let renderData = renderBuffer.getChannelData(0)
+    let ditherFn = dithering ? $wave.dither : $wave.dontDither
+    let error = 0
+    for (let i = 0; i < renderData.length; i++) {
+        ;[wave[start + i], error] = ditherFn(renderData[i] * 128.0, error)
+    }
+    return freeze({...sample, wave})
 }
