@@ -352,10 +352,6 @@ export class ModuleEdit {
         }
     }
 
-    getModule() {
-        return this.module.value
-    }
-
     /**
      * @param {Readonly<Module>} module
      */

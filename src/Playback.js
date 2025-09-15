@@ -6,7 +6,7 @@
 
 import * as $arr from './edit/ImmArray.js'
 import {clamp, freeze} from './Util.js'
-import {Cell, Effect, ExtEffect, mod, Module, Sample} from './Model.js'
+import {Cell, defaultSampleRate, Effect, ExtEffect, mod, Module, Sample} from './Model.js'
 import periodTable from './PeriodTable.js'
 
 const masterGain = 0.5
@@ -142,6 +142,17 @@ export function init(context, module) {
     play.mixer.connect(play.analyser)
     setModule(play, module)
     play.time = context.currentTime
+    return play
+}
+
+/**
+ * @param {Readonly<Module>} module
+ * @returns {Playback}
+ */
+function initWithoutContext(module) {
+    let play = playback()
+    play.mod = module
+    play.channels = [...Array(module.numChannels)].map(() => channelPlayback())
     return play
 }
 
@@ -295,6 +306,7 @@ function createSamplePlayback(ctx, sample) {
 
 /**
  * @param {Playback} playback
+ * @returns {boolean} Whether playback has reached a (possibly) infinite loop.
  */
 export function processTick(playback) {
     // in case module changed since last call
@@ -302,7 +314,7 @@ export function processTick(playback) {
         playback.pos = playback.mod.sequence.length - 1
     }
     const {pos} = playback
-    let pattern = playback.mod.patterns[playback.mod.sequence[pos]]
+    const pattern = playback.mod.patterns[playback.mod.sequence[pos]]
     if (playback.row >= pattern[0].length) {
         playback.row = pattern[0].length - 1
     }
@@ -329,7 +341,17 @@ export function processTick(playback) {
         processCellAll(playback, channel, cell)
     }
 
-    // advance...
+    return processTickAdvance(playback)
+}
+
+/**
+ * @param {Playback} playback
+ */
+function processTickAdvance(playback) {
+    const {pos, row} = playback
+    const pattern = playback.mod.patterns[playback.mod.sequence[pos]]
+
+    let looped = false
     playback.tick++
     if (playback.tick == playback.speed) {
         playback.tick = 0
@@ -341,6 +363,8 @@ export function processTick(playback) {
         }
         if (playback.pos == -1) {
             playback.pos = pos
+        } else if (playback.pos <= pos) {
+            looped = true
         }
         if (playback.row >= pattern[0].length) {
             playback.row = 0
@@ -348,13 +372,16 @@ export function processTick(playback) {
         }
         if (playback.userPatternLoop) {
             playback.pos = pos
+            looped = true
         }
         if (playback.pos >= playback.mod.sequence.length) {
             playback.pos = playback.mod.restartPos
+            looped = true
         }
     }
 
     playback.time += (60 / playback.tempo / 24)
+    return looped
 }
 
 /**
@@ -846,4 +873,23 @@ export function jamRelease(playback, id) {
         disconnectChannel(jam)
         playback.jamChannels.delete(id)
     }
+}
+
+/**
+ * @param {Readonly<Module>} module
+ */
+export async function render(module) {
+    let playback = initWithoutContext(module)
+    while (!processTickAdvance(playback)) {
+        // nothing
+    }
+
+    let context = new OfflineAudioContext(2, defaultSampleRate * playback.time, defaultSampleRate)
+
+    playback = init(context, module)
+    while (!processTick(playback)) {
+        // nothing
+    }
+    let renderBuffer = await context.startRendering()
+    return renderBuffer
 }
