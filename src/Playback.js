@@ -19,6 +19,8 @@ const resampleFactor = 3
 
 const minPeriod = 15
 
+const maxRenderMinutes = 10
+
 /** @typedef {ReturnType<playback>} Playback */
 
 function playback() {
@@ -903,7 +905,9 @@ export function jamRelease(playback, id) {
 export async function render(module, progressCallback) {
     let playback = initWithoutContext(module)
     while (!processTickTimeOnly(playback)) {
-        // nothing
+        if (playback.time > maxRenderMinutes * 60) {
+            throw Error(`Song is too long (max: ${maxRenderMinutes} minutes)`)
+        }
     }
 
     let context = new OfflineAudioContext(2, defaultSampleRate * playback.time, defaultSampleRate)
