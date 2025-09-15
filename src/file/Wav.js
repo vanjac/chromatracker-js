@@ -233,7 +233,7 @@ function writeHeaders(buf, chunks) {
 
 /**
  * @param {DataView} view
- * @param {Readonly<Sample>} sample
+ * @param {Readonly<Pick<Sample, 'finetune'>>} sample
  */
 function writeSampleFmtChunk(view, sample) {
     // TODO: this doesn't match OpenMPT
@@ -261,7 +261,7 @@ function writeAudioBufferFmtChunk(view, audio) {
 }
 
 /**
- * @param {Readonly<Sample>} sample
+ * @param {Readonly<Pick<Sample, 'wave'>>} sample
  */
 function calcSampleDataChunkSize(sample) {
     return sample.wave.length
@@ -276,7 +276,7 @@ function calcAudioBufferDataChunkSize(audio) {
 
 /**
  * @param {DataView} view
- * @param {Readonly<Sample>} sample
+ * @param {Readonly<Pick<Sample, 'wave'>>} sample
  */
 function writeSampleDataChunk(view, sample) {
     for (let i = 0; i < sample.wave.length; i++) {
@@ -301,7 +301,7 @@ function writeAudioBufferDataChunk(view, audio) {
 }
 
 /**
- * @param {Readonly<Sample>} sample
+ * @param {Readonly<Pick<Sample, 'loopStart' | 'loopEnd'>>} sample
  */
 function calcSmplChunkSize(sample) {
     return Sample.hasLoop(sample) ? (smplChunkBaseSize + smplChunkLoopSize) : smplChunkBaseSize
@@ -309,7 +309,7 @@ function calcSmplChunkSize(sample) {
 
 /**
  * @param {DataView} view
- * @param {Readonly<Sample>} sample
+ * @param {Readonly<Pick<Sample, 'loopStart' | 'loopEnd'>>} sample
  */
 function writeSmplChunk(view, sample) {
     view.setUint32(8, 118483, true) // sample period
@@ -323,7 +323,7 @@ function writeSmplChunk(view, sample) {
 
 /**
  * @param {DataView} view
- * @param {Readonly<Sample>} sample
+ * @param {Readonly<Pick<Sample, 'volume'>>} sample
  */
 function writeXtraChunk(view, sample) {
     // https://wiki.openmpt.org/Development:_OpenMPT_Format_Extensions#RIFF_WAVE

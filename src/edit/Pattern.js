@@ -14,7 +14,7 @@ export function create(numChannels) {
 }
 
 /**
- * @param {Readonly<Module>} module
+ * @param {Readonly<Pick<Module, 'patterns' | 'numChannels'>>} module
  * @param {number} idx
  * @returns {readonly Readonly<Pattern>[]}
  */

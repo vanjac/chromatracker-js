@@ -283,7 +283,7 @@ export function getPeakAmp(playback) {
 
 /**
  * @param {BaseAudioContext} ctx
- * @param {Readonly<Sample>} sample
+ * @param {Readonly<Pick<Sample, 'wave'>>} sample
  * @returns {SamplePlayback}
  */
 function createSamplePlayback(ctx, sample) {
@@ -401,7 +401,7 @@ function processTickAdvance(playback) {
 /**
  * @param {ChannelPlayback} channel
  * @param {Readonly<Cell>} cell
- * @param {Readonly<Sample>} sample
+ * @param {Readonly<Pick<Sample, 'volume'>>} sample
  */
 function processCellInst(channel, cell, sample) {
     if (sample) {
@@ -806,7 +806,7 @@ function playNote(playback, channel) {
 
 /**
  * @param {Playback} playback
- * @param {Readonly<Sample>} sample,
+ * @param {Readonly<Pick<Sample, 'loopStart' | 'loopEnd'>>} sample,
  * @param {SamplePlayback} samplePlayback
  * @returns {AudioBufferSourceNode}
  */

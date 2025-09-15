@@ -46,7 +46,7 @@ export function instString(inst) {
 }
 
 /**
- * @param {Readonly<Cell>} cell
+ * @param {Readonly<Pick<Cell, 'effect' | 'param0' | 'param1'>>} cell
  */
 export function effectString(cell) {
     if (! (cell.effect || cell.param0 || cell.param1)) {
@@ -57,7 +57,7 @@ export function effectString(cell) {
 }
 
 /**
- * @param {Readonly<Cell>} cell
+ * @param {Readonly<Pick<Cell, 'effect' | 'param0' | 'param1'>>} cell
  * @returns {Color}
  */
 export function effectColor(cell) {
@@ -69,7 +69,7 @@ export function effectColor(cell) {
 
 /**
  * @param {HTMLElement} elem
- * @param {Readonly<Cell>} cell
+ * @param {Readonly<Pick<Cell, 'effect' | 'param0' | 'param1'>>} cell
  */
 function setEffectColor(elem, cell) {
     let cellColor = effectColor(cell)

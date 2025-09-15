@@ -462,7 +462,7 @@ export class SampleEdit {
 
     /**
      * @private
-     * @param {Readonly<Module>} mod
+     * @param {Readonly<Pick<Module, 'samples'>>} mod
      */
     modPickSample(mod) {
         let dialog = new SamplePickerElement()

@@ -289,7 +289,7 @@ export class PatternEdit {
     }
 
     /**
-     * @param {Readonly<Module>} module
+     * @param {Readonly<Pick<Module, 'numChannels' | 'sequence' | 'patterns'>>} module
      */
     setModule(module) {
         this.elems.patternTable.ctrl.setNumChannels(module.numChannels)

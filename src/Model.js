@@ -40,7 +40,7 @@ export const Sample = freeze({
     }),
 
     /**
-     * @param {Readonly<Sample>} s
+     * @param {Readonly<Pick<Sample, 'loopStart' | 'loopEnd'>>} s
      */
     hasLoop(s) {
         return s.loopEnd > s.loopStart
@@ -83,7 +83,7 @@ export const Cell = freeze({
 
     /**
      * Interpret the parameter hex digits as a single byte
-     * @param {Readonly<Cell>} c
+     * @param {Readonly<Pick<Cell, 'param0' | 'param1'>>} c
      */
     paramByte(c) {
         return (c.param0 << 4) | c.param1
@@ -91,7 +91,7 @@ export const Cell = freeze({
 
     /**
      * Interpret the parameter hex digits as binary-coded decimal
-     * @param {Readonly<Cell>} c
+     * @param {Readonly<Pick<Cell, 'param0' | 'param1'>>} c
      */
     paramDecimal(c) {
         return c.param0 * 10 + c.param1

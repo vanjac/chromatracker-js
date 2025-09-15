@@ -1,7 +1,6 @@
 import * as $dialog from '../Dialog.js'
 import * as $cell from '../Cell.js'
 import * as $dom from '../DOMUtil.js'
-import * as $mod from '../../edit/Module.js'
 import * as $icons from '../../gen/Icons.js'
 import {makeKeyButton} from '../KeyPad.js'
 import {mod, Cell, Sample, Module} from '../../Model.js'
@@ -59,7 +58,7 @@ export class SamplePicker {
          * }}
          */
         this.callbacks = {}
-        /** @type {Readonly<Module>} */
+        /** @type {Readonly<Pick<Module, 'samples'>>} */
         this.module = null
     }
 
@@ -116,6 +115,6 @@ if (import.meta.main) {
     testElem = new SamplePickerElement()
     testElem.ctrl.callbacks = callbackDebugObject()
     let samples = freeze([null, Sample.empty, Sample.empty, Sample.empty, Sample.empty])
-    testElem.ctrl.module = freeze({...$mod.defaultNew, samples})
+    testElem.ctrl.module = freeze({samples})
     $dialog.open(testElem)
 }

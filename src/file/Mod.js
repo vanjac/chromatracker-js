@@ -228,7 +228,7 @@ export function write(module) {
 }
 
 /**
- * @param {Readonly<Module>} module
+ * @param {Readonly<Pick<Module, 'numChannels' | 'sequence' | 'samples'>>} module
  */
 export function calcSize(module) {
     return (headerSize + calcPatternsSize(module) + calcSamplesSize(module.samples)
@@ -236,7 +236,7 @@ export function calcSize(module) {
 }
 
 /**
- * @param {Readonly<Module>} module
+ * @param {Readonly<Pick<Module, 'numChannels' | 'sequence'>>} module
  */
 export function calcPatternsSize(module) {
     let patternSize = module.numChannels * mod.numRows * 4

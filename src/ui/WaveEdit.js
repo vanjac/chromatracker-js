@@ -26,7 +26,7 @@ const template = $dom.html`
 
 /**
  * @param {HTMLElement} mark
- * @param {Readonly<Sample>} sample
+ * @param {Readonly<Pick<Sample, 'wave'>>} sample
  * @param {number} pos
  */
 function setMarkPos(mark, sample, pos) {
