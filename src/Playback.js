@@ -367,7 +367,7 @@ function processTickAdvance(playback) {
     const {pos, row} = playback
     const pattern = playback.mod.patterns[playback.mod.sequence[pos]]
 
-    let looped = false
+    let looped = playback.speed == 0
     playback.tick++
     if (playback.tick == playback.speed) {
         playback.tick = 0
