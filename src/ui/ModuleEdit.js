@@ -554,7 +554,7 @@ export class ModuleEdit {
         let useChannel = this.selectedTab() == 'sequence'
         let channel = useChannel ? this.elems.patternEdit.ctrl.selChannel() : -1
         if (!cell) {
-            cell = this.getEntryCell()
+            cell = this.elems.cellEntry.ctrl.getPreviewCell()
         } else if (cell.pitch < 0) {
             cell = {...cell, pitch: this.getEntryCell().pitch}
         }

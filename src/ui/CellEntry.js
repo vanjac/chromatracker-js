@@ -456,6 +456,17 @@ export class CellEntry {
         return {pitch, inst, effect, param0, param1}
     }
 
+    /**
+     * @returns {Cell}
+     */
+    getPreviewCell() {
+        let cell = this.getCell()
+        if (!this.elems.effectEnable.checked) {
+            cell.effect = cell.param0 = cell.param1 = 0
+        }
+        return cell
+    }
+
     /** @private */
     getCellParts() {
         /** @type {CellPart} */
