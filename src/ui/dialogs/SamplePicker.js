@@ -15,7 +15,7 @@ const template = $dom.html`
         <div class="hflex">
             <label>
                 Preview note:&nbsp;
-                <select id="previewPitch" value="36">
+                <select id="previewPitch">
                     ${
                         [...Array(mod.numPitches)].map((_, i) => `
                             <option value="${i}"${i == 36 ? ` selected=""` : ``}>
