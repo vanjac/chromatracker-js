@@ -30,10 +30,14 @@ export default defineConfig([
             "no-lonely-if": "warn",
             "require-await": "warn",
             "class-methods-use-this": "warn",
-            "no-restricted-globals": ["error", "length"],
-            "no-restricted-properties": ["error", {
-                "property": "prototype",
-            }],
+            "no-restricted-globals": ["error", "length", "Reflect"],
+            "no-restricted-properties": [
+                "error",
+                {"property": "prototype"},
+                {"object": "Object", "property": "defineProperty"},
+                {"object": "Object", "property": "defineProperties"},
+                {"object": "Object", "property": "setPrototypeOf"},
+            ],
             "no-restricted-syntax": [
                 "error",
                 // no strict equality
