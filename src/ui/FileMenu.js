@@ -403,10 +403,11 @@ export class FileMenu {
         let dialog = new WaitDialogElement()
         dialog.ctrl.prompt = 'Rendering...'
         $dialog.open(dialog)
-        let module
+        let module, buf
         try {
             let data = await $local.readFile(this.db, id)
             module = freeze($mod.read(data))
+            buf = await $play.render(module, progress => dialog.ctrl.setProgress(progress))
         } catch (error) {
             if (error instanceof Error) {
                 AlertDialog.open(error.message)
@@ -414,7 +415,6 @@ export class FileMenu {
             $dialog.close(dialog)
             return
         }
-        let buf = await $play.render(module, progress => dialog.ctrl.setProgress(progress))
         let wavData = $wav.writeAudioBuffer(buf)
         let blob = new Blob([wavData], {type: 'audio/wav'})
         $dialog.close(dialog)
