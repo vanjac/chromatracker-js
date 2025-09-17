@@ -49,6 +49,11 @@ input {
     border: 1px solid currentColor;
     border-radius: 3px;
 }
+input:disabled {
+    /* override Safari disabled input style */
+    opacity: 1;
+    -webkit-text-fill-color: var(--color-fg);
+}
 
 input[type="range"] {
     padding: 0;
