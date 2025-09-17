@@ -84,6 +84,10 @@ function onPointerDown(e) {
  * @param {PointerEvent} e
  */
 function onPointerUp(e) {
+    if (tooltipTarget && !tooltipTarget.isConnected) {
+        tooltipElem.classList.add('tooltip-hide')
+        tooltipTarget = null
+    }
     if (e.target instanceof Element) {
         for (let elem = e.target; elem; elem = elem.parentElement) {
             elem.classList.remove('active')
