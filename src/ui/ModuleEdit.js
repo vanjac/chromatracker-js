@@ -12,7 +12,7 @@ import './PatternMatrix.js'
 import './SamplesList.js'
 
 const playbackQueueTime = 0.5
-const playbackDelay = 0.1
+const playbackDelay = 0.05
 const processInterval = 200
 
 /**
@@ -222,7 +222,7 @@ export class ModuleEdit {
             setEntryCell: this.setEntryCell.bind(this),
             openLocalFilePicker: (...args) => invoke(this.callbacks.openLocalFilePicker, ...args),
             requestAudioContext: callback => {
-                this.initContext()
+                this.initContext() // no await
                 callback(this.context)
             },
         }
@@ -383,21 +383,26 @@ export class ModuleEdit {
      * Must be called as result of user interaction
      * @private
      */
-    initContext() {
+    async initContext() {
         if (!this.context) {
             this.context = new AudioContext({latencyHint: 'interactive'})
-        } else if (this.context.state != 'running') {
-            this.context.resume()
         }
+        if (this.context.state != 'running') {
+            await this.context.resume()
+        }
+        // context could have been destroyed
+        return this.context?.state == 'running'
     }
 
     /**
      * Must be called as result of user interaction
      * @private
      */
-    resetPlayback({restoreSpeed = false, restorePos = false, restoreRow = false} = {}) {
+    async resetPlayback({restoreSpeed = false, restorePos = false, restoreRow = false} = {}) {
         this.pause()
-        this.initContext()
+        if (!await this.initContext()) {
+            return false
+        }
         this.playback = $play.init(this.context, this.module.value)
         this.playback.time += playbackDelay // avoid "catching up"
 
@@ -419,6 +424,7 @@ export class ModuleEdit {
         }
 
         this.updatePlaySettings()
+        return true
     }
 
     /** @private */
@@ -437,11 +443,11 @@ export class ModuleEdit {
      * Must be called as result of user interaction
      * @private
      */
-    enablePlayback() {
+    async enablePlayback() {
         if (!this.playback) {
-            this.resetPlayback()
+            return await this.resetPlayback()
         } else {
-            this.initContext()
+            return await this.initContext()
         }
     }
 
@@ -491,23 +497,26 @@ export class ModuleEdit {
     }
 
     /** @private */
-    playFromStart() {
+    async playFromStart() {
         this.elems.patternLoop.checked = false
-        this.resetPlayback()
-        this.play()
+        if (await this.resetPlayback()) {
+            this.play()
+        }
     }
 
     /** @private */
-    playPattern() {
+    async playPattern() {
         this.elems.patternLoop.checked = true
-        this.resetPlayback({restoreSpeed: true, restorePos: true})
-        this.play()
+        if (await this.resetPlayback({restoreSpeed: true, restorePos: true})) {
+            this.play()
+        }
     }
 
     /** @private */
-    playFromHere() {
-        this.resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})
-        this.play()
+    async playFromHere() {
+        if (await this.resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})) {
+            this.play()
+        }
     }
 
     /** @private */
@@ -551,8 +560,10 @@ export class ModuleEdit {
      * @param {Readonly<Cell>} cell
      * @param {Readonly<Sample>} sampleOverride
      */
-    jamPlay(id, cell = null, sampleOverride = null) {
-        this.enablePlayback()
+    async jamPlay(id, cell = null, sampleOverride = null) {
+        if (!await this.enablePlayback()) {
+            return
+        }
         this.enableAnimation()
         let useChannel = this.selectedTab() == 'sequence'
         let channel = useChannel ? this.elems.patternEdit.ctrl.selChannel() : -1
