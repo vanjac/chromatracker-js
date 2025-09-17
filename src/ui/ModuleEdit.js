@@ -191,7 +191,10 @@ export class ModuleEdit {
                 this.elems.patternEdit.ctrl.setFollowState(this.elems.follow.checked)
             }
         })
-        this.elems.undo.addEventListener('click', () => this.undo())
+        this.elems.undo.addEventListener('click', () => {
+            this.undo()
+            navigator.vibrate?.(1) // eslint-disable-line compat/compat
+        })
 
         this.view.appendChild(fragment)
 
@@ -693,7 +696,9 @@ export class ModuleEdit {
     undo() {
         if (this.module.undo()) {
             this.refreshModule()
+            return true
         }
+        return false
     }
 
     /** @private */
