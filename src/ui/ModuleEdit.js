@@ -619,7 +619,7 @@ export class ModuleEdit {
         let curTime = this.context.currentTime
         if (this.context.outputLatency) { // if supported
             // TODO: weird hack for Chrome?
-            curTime -= this.context.outputLatency / 2
+            curTime -= (this.context.outputLatency + this.context.baseLatency) / 2
         }
         if (this.selectedTab() == 'arrange') {
             let peak = $play.getPeakAmp(this.playback)
