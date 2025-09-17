@@ -462,12 +462,12 @@ export class ModuleEdit {
         if (this.isPlaying()) {
             $play.stop(this.playback)
             window.clearInterval(this.intervalHandle)
+            this.intervalHandle = 0
             this.queuedStates = []
             this.queuedTime = 0
             if (this.playback.jamChannels.size == 0) {
                 this.disableAnimation() // should be called after clearing queuedStates
             }
-            this.intervalHandle = 0
             this.setPlayState(false)
             this.elems.patternEdit.ctrl.setFollowState(false)
         }
@@ -619,6 +619,10 @@ export class ModuleEdit {
 
     /** @private */
     frameUpdate() {
+        if (this.context.state == 'interrupted' && this.isPlaying()) {
+            this.pause()
+            return
+        }
         let curTime = this.context.currentTime
         if (this.context.outputLatency) { // if supported
             // TODO: weird hack for Chrome?
