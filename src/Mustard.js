@@ -1,6 +1,7 @@
 'use strict'
 
 try {
+    AudioContext
     HTMLDialogElement // Firefox 98, iOS 15.4
     new Function('null?.null') // Chrome 80
 } catch (e) {
