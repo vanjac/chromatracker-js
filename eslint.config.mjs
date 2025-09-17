@@ -34,6 +34,7 @@ export default defineConfig([
             "no-restricted-properties": [
                 "error",
                 {"property": "prototype"},
+                {"object": "Object", "property": "create"},
                 {"object": "Object", "property": "defineProperty"},
                 {"object": "Object", "property": "defineProperties"},
                 {"object": "Object", "property": "setPrototypeOf"},
