@@ -521,6 +521,10 @@ export class ModuleEdit {
 
     /** @private */
     processPlayback() {
+        if (this.context.state != 'running') {
+            this.pause()
+            return
+        }
         while (this.queuedTime < this.context.currentTime + playbackQueueTime) {
             let {pos, row, tick, time} = this.playback
             $play.processTick(this.playback)
@@ -630,10 +634,6 @@ export class ModuleEdit {
 
     /** @private */
     frameUpdate() {
-        if (this.context.state == 'interrupted' && this.isPlaying()) {
-            this.pause()
-            return
-        }
         let curTime = this.context.currentTime
         if (this.context.outputLatency) { // if supported
             // TODO: weird hack for Chrome?
