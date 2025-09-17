@@ -133,7 +133,7 @@ export class RecordDialog {
         }
 
         if (this.context.state != 'running') {
-            this.context.resume()
+            await this.context.resume()
         }
         let source = this.context.createMediaStreamSource(this.stream)
         this.analyser = this.context.createAnalyser()
