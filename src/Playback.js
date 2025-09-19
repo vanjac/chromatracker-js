@@ -72,7 +72,7 @@ function channelPlayback() {
     return {
         /** @type {AudioBufferSourceNode} */
         source: null,
-        /** @type {Sample} */
+        /** @type {Readonly<Sample>} */
         sourceSample: null,
         /** @type {GainNode} */
         gain: null,
