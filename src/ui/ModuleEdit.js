@@ -711,9 +711,7 @@ export class ModuleEdit {
     undo() {
         if (this.module.undo()) {
             this.refreshModule()
-            return true
         }
-        return false
     }
 
     /** @private */
