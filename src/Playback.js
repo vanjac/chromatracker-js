@@ -322,7 +322,6 @@ function createSamplePlayback(ctx, sample) {
     let sp = samplePlayback()
     sp.wave = sample.wave
     if (sample.wave.length) {
-        // TODO: support protracker one-shot loops
         sp.buffer = ctx.createBuffer(1, sample.wave.length * resampleFactor,
             baseRate * resampleFactor)
         let data = sp.buffer.getChannelData(0)
@@ -415,6 +414,7 @@ function processTickAdvance(playback) {
         if (playback.rowDelayCount < delay) {
             playback.rowDelayCount++
             playback.row = row
+            playback.pos = pos
         } else {
             playback.rowDelayCount = 0
         }
@@ -449,7 +449,6 @@ function processTickAdvance(playback) {
  */
 function processCellInst(channel, cell, sample) {
     if (sample) {
-        // TODO: support sample swapping
         channel.sample = cell.inst
         channel.volume = sample.volume
         // this is how Protracker behaves, kinda (sample offsets are sticky)
