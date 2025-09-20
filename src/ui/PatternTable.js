@@ -124,10 +124,7 @@ export class PatternTable {
         this.addHandleEvents(this.selectHandles[3], true, true)
 
         new KeyPad(this.elems.tbody, (id, elem, ev) => {
-            let selectEnabled = !this.selectMode
-                || this.elems.patternScroll.classList.contains('scroll-lock-pattern')
-                || this.pointerQuery.matches
-            if (selectEnabled && elem.dataset.c != null) {
+            if (this.tapPreviewEnabled() && elem.dataset.c != null) {
                 let c = Number(elem.dataset.c)
                 let row = Number(elem.dataset.row)
                 let extend = (ev.type == 'pointermove' && this.selectMode) || ev.shiftKey
@@ -200,6 +197,13 @@ export class PatternTable {
             return true
         }
         return false
+    }
+
+    /** @private */
+    tapPreviewEnabled() {
+        return !this.selectMode
+            || this.elems.patternScroll.classList.contains('scroll-lock-pattern')
+            || this.pointerQuery.matches
     }
 
     /**
@@ -327,6 +331,13 @@ export class PatternTable {
                     td.classList.toggle('dim', muteStates[c] || row >= logicalLength)
                     td.dataset.c = c.toString()
                     td.dataset.row = row.toString()
+                    td.addEventListener('click', () => {
+                        if (!this.tapPreviewEnabled()) {
+                            this.selChannelA = this.selChannelB = c
+                            this.selRowA = this.selRowB = row
+                            this.updateSelection()
+                        }
+                    })
 
                     tr.appendChild(cellFrag)
                 }
