@@ -357,8 +357,8 @@ export function processTick(playback) {
         if (playback.tick == 0 && playback.rowDelayCount == 0) {
             // Protracker instrument changes always take effect at the start of the row
             // (not affected by note delays). Other trackers are different!
-            let sample = playback.mod.samples[cell.inst]
-            processCellInst(channel, cell, sample)
+            // ChromaTracker delays changing volume.
+            processCellInst(channel, cell)
             if (! (cell.effect == Effect.Extended && cell.param0 == ExtEffect.NoteDelay
                     && cell.param1)) {
                 processCellNote(playback, channel, cell)
@@ -406,7 +406,7 @@ function processTickAdvance(playback) {
         let delay = 0
         for (let c = 0; c < playback.mod.numChannels; c++) {
             let cell = pattern[c][row]
-            processCellEnd(playback, playback.channels[c], cell, pos, row)
+            processCellEnd(playback, playback.channels[c], cell, pos)
             if (cell.effect == Effect.Extended && cell.param0 == ExtEffect.PatternDelay) {
                 delay = cell.param1
             }
@@ -445,12 +445,10 @@ function processTickAdvance(playback) {
 /**
  * @param {Pick<ChannelPlayback, 'sample' | 'volume' | 'sampleOffset' | 'memOff'>} channel
  * @param {Readonly<Cell>} cell
- * @param {Readonly<Pick<Sample, 'volume'>>} sample
  */
-function processCellInst(channel, cell, sample) {
-    if (sample) {
+function processCellInst(channel, cell) {
+    if (cell.inst) {
         channel.sample = cell.inst
-        channel.volume = sample.volume
         // this is how Protracker behaves, kinda (sample offsets are sticky)
         channel.sampleOffset = 0
     }
@@ -472,6 +470,7 @@ function processCellNote(playback, channel, cell) {
     let sample = playback.mod.samples[channel.sample]
     if (cell.pitch >= 0 && sample
             && cell.effect != Effect.Portamento && cell.effect != Effect.VolSlidePort) {
+        channel.volume = sample.volume
         channel.period = pitchToPeriod(cell.pitch, sample.finetune)
         playNote(playback, channel)
     }
@@ -630,14 +629,11 @@ function processCellRest(playback, channel, cell) {
                         channel.volume = 0
                     }
                     break
-                case ExtEffect.NoteDelay: {
-                    let sample = playback.mod.samples[channel.sample]
-                    if (playback.tick == cell.param1 && cell.pitch >= 0 && sample) {
-                        channel.period = pitchToPeriod(cell.pitch, sample.finetune)
-                        playNote(playback, channel)
+                case ExtEffect.NoteDelay:
+                    if (playback.tick == cell.param1) {
+                        processCellNote(playback, channel, cell)
                     }
                     break
-                }
             }
             break
     }
@@ -705,9 +701,8 @@ function processCellAll(playback, channel, cell) {
 * @param {Pick<ChannelPlayback, 'patLoopRow' | 'patLoopCount'>} channel
 * @param {Readonly<Cell>} cell
 * @param {number} pos
-* @param {number} row
 */
-function processCellEnd(playback, channel, cell, pos, row) {
+function processCellEnd(playback, channel, cell, pos) {
     switch (cell.effect) {
         case Effect.PositionJump:
             playback.pos = Cell.paramByte(cell)
@@ -901,9 +896,10 @@ export function jamPlay(playback, id, c, cell, sampleOverride = null) {
     playback.jamChannels.set(id, jam)
 
     initChannelNodes(playback, jam)
+    processCellInst(jam, cell)
     let sample = sampleOverride ?? playback.mod.samples[cell.inst]
-    processCellInst(jam, cell, sample)
     if (sample) {
+        jam.volume = sample.volume
         jam.period = pitchToPeriod(cell.pitch, sample.finetune)
         processCellFirst(playback, jam, cell)
 
