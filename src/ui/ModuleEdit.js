@@ -416,6 +416,23 @@ export class ModuleEdit {
         return true
     }
 
+    /**
+     * Must be called as result of user interaction
+     * @private
+     */
+    async resumePlayback() {
+        if (!this.playback) {
+            return await this.resetPlayback()
+        } else {
+            this.pause()
+            if (await this.initContext()) {
+                $play.start(this.playback, playbackDelay)
+                return true
+            }
+            return false
+        }
+    }
+
     /** @private */
     initPlaybackSpeed() {
         this.playback.tempo = this.elems.patternEdit.ctrl.getTempo()
@@ -438,15 +455,11 @@ export class ModuleEdit {
      * Must be called as result of user interaction
      * @private
      */
-    async resumePlayback() {
+    async enablePlayback() {
         if (!this.playback) {
             return await this.resetPlayback()
         } else {
-            if (await this.initContext()) {
-                $play.start(this.playback, playbackDelay)
-                return true
-            }
-            return false
+            return await this.initContext()
         }
     }
 
@@ -572,7 +585,7 @@ export class ModuleEdit {
      * @param {Readonly<Sample>} sampleOverride
      */
     async jamPlay(id, cell = null, sampleOverride = null) {
-        if (!await this.resumePlayback()) {
+        if (!await this.enablePlayback()) {
             return
         }
         this.enableAnimation()
