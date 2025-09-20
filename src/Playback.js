@@ -468,11 +468,13 @@ function processCellInst(channel, cell) {
  */
 function processCellNote(playback, channel, cell) {
     let sample = playback.mod.samples[channel.sample]
-    if (cell.pitch >= 0 && sample) {
+    if (sample) {
         if (cell.inst) {
             channel.volume = sample.volume
         }
-        if (cell.effect != Effect.Portamento && cell.effect != Effect.VolSlidePort) {
+        let isNewNote = cell.pitch >= 0
+            && cell.effect != Effect.Portamento && cell.effect != Effect.VolSlidePort
+        if (isNewNote) {
             channel.period = pitchToPeriod(cell.pitch, sample.finetune)
             playNote(playback, channel)
         }
