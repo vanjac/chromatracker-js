@@ -357,7 +357,7 @@ export function processTick(playback) {
         if (playback.tick == 0 && playback.rowDelayCount == 0) {
             // Protracker instrument changes always take effect at the start of the row
             // (not affected by note delays). Other trackers are different!
-            // ChromaTracker delays changing volume.
+            // ChromaTracker currently delays volume changes (unlike PT).
             processCellInst(channel, cell)
             if (! (cell.effect == Effect.Extended && cell.param0 == ExtEffect.NoteDelay
                     && cell.param1)) {
@@ -468,11 +468,14 @@ function processCellInst(channel, cell) {
  */
 function processCellNote(playback, channel, cell) {
     let sample = playback.mod.samples[channel.sample]
-    if (cell.pitch >= 0 && sample
-            && cell.effect != Effect.Portamento && cell.effect != Effect.VolSlidePort) {
-        channel.volume = sample.volume
-        channel.period = pitchToPeriod(cell.pitch, sample.finetune)
-        playNote(playback, channel)
+    if (cell.pitch >= 0 && sample) {
+        if (cell.inst) {
+            channel.volume = sample.volume
+        }
+        if (cell.effect != Effect.Portamento && cell.effect != Effect.VolSlidePort) {
+            channel.period = pitchToPeriod(cell.pitch, sample.finetune)
+            playNote(playback, channel)
+        }
     }
 }
 
