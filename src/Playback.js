@@ -15,7 +15,7 @@ const rampTimeConstant = 0.003
 /** Rate of C-3 */
 export const baseRate = 16574.27
 const basePeriod = periodTable[8][3*12] // TODO: combine with above, move to MOD constants
-const resampleFactor = 3
+const resampleFactor = 4
 
 const minPeriod = 15
 
