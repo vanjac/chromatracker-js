@@ -262,7 +262,7 @@ function disconnectChannel(channel) {
 }
 
 /**
- * @param {Pick<Playback, 'activeSources'>} playback
+ * @param {Pick<Playback, 'activeSources' | 'channels'>} playback
  */
 export function stop(playback) {
     for (let source of playback.activeSources) {
@@ -278,6 +278,11 @@ export function stop(playback) {
         source.disconnect()
     }
     playback.activeSources.clear()
+    for (let channel of playback.channels) {
+        channel.source = null
+        channel.sourceSample = null
+        channel.sample = 0
+    }
 }
 
 /**
