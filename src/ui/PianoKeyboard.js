@@ -24,17 +24,17 @@ const template = $dom.html`
     <form id="piano" method="dialog" class="hflex flex-grow hscrollable scroll-lock" autocomplete="off">
         <div>
             <div id="octave1">
-                <div id="blackKeys" class="hflex black-keys">
+                <div id="blackKeys" class="hflex black-keys keypad-target">
                     <div class="keypad-half-key"></div>
                 </div>
-                <div id="whiteKeys" class="hflex white-keys"></div>
+                <div id="whiteKeys" class="hflex white-keys keypad-target"></div>
             </div>
             <div id="octave0" class="hide">
-                <div id="blackKeys" class="hflex black-keys">
+                <div id="blackKeys" class="hflex black-keys keypad-target">
                     <div class="octave-space"></div>
                     <div class="keypad-half-key"></div>
                 </div>
-                <div id="whiteKeys" class="hflex white-keys">
+                <div id="whiteKeys" class="hflex white-keys keypad-target">
                     <div class="octave-space"></div>
                 </div>
             </div>
@@ -120,7 +120,7 @@ export class PianoKeyboard {
         this.setPitch(36)
 
         new KeyPad(this.elems.piano, (id, elem) => {
-            let input = elem.querySelector('input')
+            let input = (elem instanceof HTMLLabelElement) && elem.querySelector('input')
             if (input) {
                 $dom.selectRadio(this.elems.piano, 'pitch1', input.value)
                 $dom.selectRadio(this.elems.piano, 'pitch0', input.value)

@@ -40,7 +40,7 @@ export class KeyPad {
                 this.onPress(event.pointerId, target, event)
             }
         }
-        return valid
+        return target != null
     }
 }
 
