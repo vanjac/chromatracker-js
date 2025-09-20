@@ -404,9 +404,21 @@ function processTickAdvance(playback) {
         playback.row++
         playback.pos = -1
 
+        let delay = 0
         for (let c = 0; c < playback.mod.numChannels; c++) {
-            processCellEnd(playback, playback.channels[c], pattern[c][row], pos, row)
+            let cell = pattern[c][row]
+            processCellEnd(playback, playback.channels[c], cell, pos, row)
+            if (cell.effect == Effect.Extended && cell.param0 == ExtEffect.PatternDelay) {
+                delay = cell.param1
+            }
         }
+        if (playback.rowDelayCount < delay) {
+            playback.rowDelayCount++
+            playback.row = row
+        } else {
+            playback.rowDelayCount = 0
+        }
+
         if (playback.pos == -1) {
             playback.pos = pos
         } else if (playback.pos <= pos) {
@@ -722,15 +734,6 @@ function processCellEnd(playback, channel, cell, pos, row) {
                         }
                     }
                     break
-                case ExtEffect.PatternDelay:
-                    // TODO: problems with multiple delays or other control effects on the same row
-                    // see MOD test cases
-                    if (playback.rowDelayCount < cell.param1) {
-                        playback.rowDelayCount++
-                        playback.row = row
-                    } else {
-                        playback.rowDelayCount = 0
-                    }
             }
             break
     }
