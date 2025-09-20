@@ -809,7 +809,11 @@ function playNote(playback, channel) {
     if (!source) {
         return
     }
-    channel.source?.stop(playback.time)
+    if (channel.source) {
+        // ramp down
+        channel.gain.gain.setTargetAtTime(0, playback.time - rampTimeConstant * 2, rampTimeConstant)
+        channel.source.stop(playback.time)
+    }
 
     channel.source = source
     channel.sourceSample = sourceSample
