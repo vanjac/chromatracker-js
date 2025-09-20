@@ -5,7 +5,7 @@ hr {
 
 body {
     font-family: 'Iosevka Aile Custom Web', system-ui, sans-serif;
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 1.5;
     --line-height: 1.5em;
 

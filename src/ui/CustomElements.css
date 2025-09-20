@@ -106,7 +106,7 @@ pattern-table table {
 }
 pattern-table table,
 .pattern-cell {
-    font-size: 15px;
+    font-size: 0.9375rem;
 }
 /* https://issues.chromium.org/issues/40511425 */
 pattern-table th {
