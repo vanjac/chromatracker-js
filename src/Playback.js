@@ -10,7 +10,9 @@ import {Cell, defaultSampleRate, Effect, ExtEffect, mod, Module, Sample} from '.
 import periodTable from './PeriodTable.js'
 
 const masterGain = 0.5
+// https://developer.mozilla.org/en-US/docs/Web/API/AudioParam/setTargetAtTime#choosing_a_good_timeconstant
 const rampTimeConstant = 0.003
+const rampDownTime = 0.005
 
 /** Rate of C-3 */
 export const baseRate = 16574.27
@@ -811,7 +813,7 @@ function playNote(playback, channel) {
     }
     if (channel.source) {
         // ramp down
-        channel.gain.gain.setTargetAtTime(0, playback.time - rampTimeConstant * 2, rampTimeConstant)
+        channel.gain.gain.setTargetAtTime(0, playback.time - rampDownTime, rampTimeConstant)
         channel.source.stop(playback.time)
     }
 
