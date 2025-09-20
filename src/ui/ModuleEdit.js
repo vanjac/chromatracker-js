@@ -398,33 +398,28 @@ export class ModuleEdit {
      * Must be called as result of user interaction
      * @private
      */
-    async resetPlayback({restoreSpeed = false, restorePos = false, restoreRow = false} = {}) {
+    async resetPlayback() {
         this.pause()
         if (!await this.initContext()) {
             return false
         }
         this.playback = $play.init(this.context, this.module.value)
-        this.playback.time += playbackDelay // avoid "catching up"
+        $play.start(this.playback, playbackDelay) // avoid "catching up"
 
         for (let c = 0; c < this.module.value.numChannels; c++) {
             if (this.elems.patternEdit.ctrl.isChannelMuted(c)) {
                 $play.setChannelMute(this.playback, c, true)
             }
         }
-        if (restoreSpeed) {
-            this.playback.tempo = this.elems.patternEdit.ctrl.getTempo()
-            this.playback.speed = this.elems.patternEdit.ctrl.getSpeed()
-            // TODO: restore channel properties (panning, effect memory, ...)
-        }
-        if (restorePos) {
-            this.playback.pos = this.elems.patternEdit.ctrl.selPos()
-        }
-        if (restoreRow) {
-            this.playback.row = this.elems.patternEdit.ctrl.selRow()
-        }
 
         this.updatePlaySettings()
         return true
+    }
+
+    /** @private */
+    initPlaybackSpeed() {
+        this.playback.tempo = this.elems.patternEdit.ctrl.getTempo()
+        this.playback.speed = this.elems.patternEdit.ctrl.getSpeed()
     }
 
     /** @private */
@@ -443,11 +438,15 @@ export class ModuleEdit {
      * Must be called as result of user interaction
      * @private
      */
-    async enablePlayback() {
+    async resumePlayback() {
         if (!this.playback) {
             return await this.resetPlayback()
         } else {
-            return await this.initContext()
+            if (await this.initContext()) {
+                $play.start(this.playback, playbackDelay)
+                return true
+            }
+            return false
         }
     }
 
@@ -499,6 +498,7 @@ export class ModuleEdit {
     /** @private */
     async playFromStart() {
         this.elems.patternLoop.checked = false
+        this.updatePlaySettings()
         if (await this.resetPlayback()) {
             this.play()
         }
@@ -507,14 +507,21 @@ export class ModuleEdit {
     /** @private */
     async playPattern() {
         this.elems.patternLoop.checked = true
-        if (await this.resetPlayback({restoreSpeed: true, restorePos: true})) {
+        this.updatePlaySettings()
+        if (await this.resumePlayback()) {
+            this.initPlaybackSpeed()
+            $play.setPos(this.playback, this.elems.patternEdit.ctrl.selPos(), 0)
             this.play()
         }
     }
 
     /** @private */
     async playFromHere() {
-        if (await this.resetPlayback({restoreSpeed: true, restorePos: true, restoreRow: true})) {
+        if (await this.resumePlayback()) {
+            this.initPlaybackSpeed()
+            let pos = this.elems.patternEdit.ctrl.selPos()
+            let row = this.elems.patternEdit.ctrl.selRow()
+            $play.setPos(this.playback, pos, row)
             this.play()
         }
     }
@@ -565,7 +572,7 @@ export class ModuleEdit {
      * @param {Readonly<Sample>} sampleOverride
      */
     async jamPlay(id, cell = null, sampleOverride = null) {
-        if (!await this.enablePlayback()) {
+        if (!await this.resumePlayback()) {
             return
         }
         this.enableAnimation()

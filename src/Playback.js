@@ -143,8 +143,31 @@ export function init(context, module) {
     play.analyser = context.createAnalyser()
     play.mixer.connect(play.analyser)
     setModule(play, module)
-    play.time = context.currentTime
+    start(play, 0)
     return play
+}
+
+/**
+ * @param {Playback} playback
+ * @param {number} pos
+ * @param {number} row
+ */
+export function setPos(playback, pos, row) {
+    playback.pos = pos
+    playback.row = row
+    playback.tick = 0
+    playback.rowDelayCount = 0
+    for (let channel of playback.channels) {
+        channel.patLoopCount = 0
+    }
+}
+
+/**
+ * @param {Playback} playback
+ * @param {number} delay
+ */
+export function start(playback, delay) {
+    playback.time = playback.ctx.currentTime + delay
 }
 
 /**
