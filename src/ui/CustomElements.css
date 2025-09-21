@@ -28,6 +28,19 @@
     .pattern-edit-layout {
         flex-direction: row;
     }
+    .entry-bar-button-gap {
+        width: 2.5em;
+    }
+}
+
+.entry-bar-space {
+    flex: 1 0 0;
+}
+@media (min-width: 44em) {
+    .entry-bar-space {
+        flex-grow: 0;
+        min-width: 3em;
+    }
 }
 
 /* SequenceEdit */

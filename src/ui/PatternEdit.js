@@ -59,10 +59,11 @@ const template = $dom.html`
         </div>
     </div>
     <div class="hflex">
+        <div class="entry-bar-button-gap"></div>
         <button id="lift" title="Lift Cell (Shift+Enter)">
             ${$icons.export_}
         </button>
-        <div class="flex-grow"></div>
+        <div class="entry-bar-space"></div>
         <span id="entryCell" class="pattern-cell">
             <span class="cell-pitch">...</span>
             <span class="cell-inst">..</span>
@@ -70,7 +71,7 @@ const template = $dom.html`
                 <span id="effDigit0">.</span><span id="effDigit1">.</span><span id="effDigit2">.</span>
             </span>
         </span>
-        <div class="flex-grow"></div>
+        <div class="entry-bar-space"></div>
         <button id="write" title="Write Cell (Enter)">
             ${$icons.pencil_plus}
         </button>
