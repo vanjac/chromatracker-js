@@ -12,4 +12,5 @@ export default {
     // Effect parameters
     lastResampleSemitones: 12,
     lastLoopRepeat: 2,
+    lastPatternFactor: 2,
 }

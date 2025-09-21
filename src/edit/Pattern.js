@@ -166,6 +166,7 @@ export function channelDelete(pattern, cStart, cEnd, r, count) {
  * @returns {Readonly<Pattern>}
  */
 export function expand(pattern, factor) {
+    if (factor < 1) { return pattern }
     let emptyCells = $arr.repeat(factor - 1, Cell.empty)
     return freeze(pattern.map(channel =>
         channel.flatMap(cell => [cell, ...emptyCells]).slice(0, channel.length)))
@@ -177,6 +178,7 @@ export function expand(pattern, factor) {
  * @returns {Readonly<Pattern>}
  */
 export function shrink(pattern, factor) {
+    if (factor < 1) { return pattern }
     let numRows = pattern[0].length
     let emptyCells = $arr.repeat(numRows - Math.ceil(numRows / factor), Cell.empty)
     return freeze(pattern.map(channel =>

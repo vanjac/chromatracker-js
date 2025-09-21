@@ -12,7 +12,7 @@ import {Cell, CellPart, Module, Pattern, Sample} from '../Model.js'
 import global from './GlobalState.js'
 import './PatternTable.js'
 import './SequenceEdit.js'
-import {AlertDialog} from './dialogs/UtilDialogs.js'
+import {AlertDialog, InputDialog, MenuDialog} from './dialogs/UtilDialogs.js'
 /** @import {ModuleEditCallbacks, JamCallbacks} from './ModuleEdit.js' */
 
 const template = $dom.html`
@@ -50,6 +50,9 @@ const template = $dom.html`
                         <input id="select" type="checkbox">
                         <span>${$icons.selection}</span>
                     </label>
+                    <button id="overflow" title="Edit (${$shortcut.ctrl('E')})">
+                        ${$icons.dots_vertical}
+                    </button>
                 </div>
             </div>
             <pattern-table id="patternTable"></pattern-table>
@@ -140,6 +143,7 @@ export class PatternEdit {
             cut: 'button',
             copy: 'button',
             paste: 'button',
+            overflow: 'button',
             insert: 'button',
             delete: 'button',
         })
@@ -193,6 +197,7 @@ export class PatternEdit {
         this.elems.cut.addEventListener('click', () => this.cut())
         this.elems.copy.addEventListener('click', () => this.copy())
         this.elems.paste.addEventListener('click', () => this.paste())
+        this.elems.overflow.addEventListener('click', () => this.overflowMenu())
         this.elems.insert.addEventListener('click', () => {
             this.insert()
             vibrate()
@@ -275,6 +280,10 @@ export class PatternEdit {
                 this.paste()
                 return true
             }
+        }
+        if (event.key == 'e' && $shortcut.commandKey(event)) {
+            this.overflowMenu()
+            return true
         }
         return false
     }
@@ -500,6 +509,50 @@ export class PatternEdit {
         ))
     }
 
+    /** @private */
+    async overflowMenu() {
+        let option
+        try {
+            option = await MenuDialog.open([
+                {value: 'expand', title: 'Expand', accessKey: 'e'},
+                {value: 'shrink', title: 'Shrink', accessKey: 's'},
+            ], 'Edit Pattern:')
+        } catch (e) {
+            console.warn(e)
+            return
+        }
+        switch (option) {
+        case 'expand': this.expand(); break
+        case 'shrink': this.shrink(); break
+        }
+    }
+
+    /** @private */
+    expand() {
+        InputDialog.open(
+            'Factor:',
+            'Expand Pattern',
+            global.lastPatternFactor,
+            {integerOnly: true, positiveOnly: true},
+        ).then(factor => {
+            this.changePattern(p => $pattern.expand(p, factor))
+            global.lastPatternFactor = factor
+        }).catch(console.warn)
+    }
+
+    /** @private */
+    shrink() {
+        InputDialog.open(
+            'Factor:',
+            'Shrink Pattern',
+            global.lastPatternFactor,
+            {integerOnly: true, positiveOnly: true},
+        ).then(factor => {
+            this.changePattern(p => $pattern.shrink(p, factor))
+            global.lastPatternFactor = factor
+        }).catch(console.warn)
+    }
+
     /**
      * @param {Readonly<Cell>} cell
      */
@@ -635,7 +688,7 @@ export class PatternEdit {
 export const PatternEditElement = $dom.defineView('pattern-edit', PatternEdit)
 
 let testSamples = freeze([null, ...$arr.repeat(30, Sample.empty)])
-let testModule = freeze({...$module.defaultNew, testSamples})
+let testModule = freeze({...$module.defaultNew, samples: testSamples})
 /** @type {InstanceType<typeof PatternEditElement>} */
 let testElem
 if (import.meta.main) {
