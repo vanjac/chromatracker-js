@@ -31,9 +31,9 @@ is available under the terms of the
 export const installTemplate = $dom.html`
 <h3>Install as PWA</h3>
 
-<p>ChromaTracker works best when it's installed as a PWA.</p>
+<p>ChromaTracker works best when it's installed as an app (PWA).</p>
 
-<p>Use the "Install" or "Add to Home Screen" button in your browser menu to install the app.</p>
+<p>Use the "Install" or "Add to Home Screen" button in your browser's menu to install ChromaTracker.</p>
 
 <p>For more information, read <a target="_blank" href="https://www.installpwa.com/from/tracker.chroma.zone">these instructions</a>.</p>
 `

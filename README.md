@@ -1,12 +1,10 @@
 # ChromaTracker
 
-ChromaTracker will be a web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) tracker with a touch-friendly interface. Currently it's unfinished!
+ChromaTracker is an (unfinshed!) web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) tracker with a touch-friendly interface.
 
-This shares a name with [a previous project](https://github.com/vanjac/chromatracker) I attempted -- this new iteration of ChromaTracker is more limited in scope.
+The design is inspired by Alexander Zolotov's apps [SunVox](https://www.warmplace.ru/soft/sunvox/) and [PixiTracker](https://www.warmplace.ru/soft/pixitracker/), as well as [MilkyTracker](https://milkytracker.org/) and others.
 
-The design is inspired by Alexander Zolotov's apps [SunVox](https://www.warmplace.ru/soft/sunvox/) and [PixiTracker](https://www.warmplace.ru/soft/pixitracker/), as well as [MilkyTracker](https://milkytracker.org/).
-
-<span><img src="docs/screenshot1.png" width="180"> <img src="docs/screenshot2.png" width="180"> <img src="docs/screenshot3.png" width="180"></span>
+<span><img src="docs/screenshot1.png" width="135"> <img src="docs/screenshot2.png" width="135"> <img src="docs/screenshot3.png" width="135"></span>
 
 Currently implemented:
 
@@ -20,7 +18,7 @@ Currently implemented:
 - Persistent local file storage
 - Supports mobile browsers and PWA installation
 
-You can try the current alpha build at [tracker.chroma.zone](https://tracker.chroma.zone/). It works best when it's installed as a PWA, see [these instructions](https://www.installpwa.com/from/tracker.chroma.zone).
+You can try the current alpha build at [tracker.chroma.zone](https://tracker.chroma.zone/). On mobile devices it works best when it's installed as a [PWA](https://www.installpwa.com/from/tracker.chroma.zone).
 
 Includes demo tracks from [modarchive.org](https://modarchive.org/).
 
