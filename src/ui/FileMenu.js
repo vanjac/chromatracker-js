@@ -10,11 +10,11 @@ import * as $mod from '../file/Mod.js'
 import * as $wav from '../file/Wav.js'
 import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
+import {aboutTemplate, installTemplate} from './About.js'
 import {
     AlertDialog, ConfirmDialog, WaitDialogElement, MenuDialog, InfoDialog
 } from './dialogs/UtilDialogs.js'
 import {freeze} from '../Util.js'
-import aboutTemplate from './About.js'
 import appVersion from '../Version.js'
 import appCommit from '../gen/Commit.js'
 
@@ -63,6 +63,10 @@ const template = $dom.html`
             <div id="demoList" class="button-list"></div>
         </nav>
         <em>Version:&nbsp;<span id="version"></span></em>
+        <button id="install" class="pwa-install-button show-checked">
+            ${$icons.monitor_arrow_down_variant}
+            <span>&nbsp;Install App</span>
+        </button>
     </div>
     <div id="editorContainer" class="flex-grow hide"></div>
 </div>
@@ -119,12 +123,14 @@ export class FileMenu {
             version: 'span',
             warningContainer: 'p',
             warningText: 'em',
+            install: 'button',
         })
 
         this.elems.newModule.addEventListener('click',
             () => this.openEditor(null, $module.createNew()))
         this.elems.fileOpen.addEventListener('click', () => this.importFile())
         this.elems.about.addEventListener('click', () => InfoDialog.open(aboutTemplate))
+        this.elems.install.addEventListener('click', () => InfoDialog.open(installTemplate))
 
         for (let info of samplePackFiles) {
             this.elems.samplePackList.appendChild(this.makeDemoButton(info))
@@ -160,11 +166,16 @@ export class FileMenu {
         /** @private */
         this.beforeUnloadListener = this.saveIfNeeded.bind(this)
         window.addEventListener('beforeunload', this.beforeUnloadListener)
+
+        /** @private */
+        this.beforeInstallListener = this.beforeInstall.bind(this)
+        window.addEventListener('beforeinstallprompt', this.beforeInstallListener)
     }
 
     disconnectedCallback() {
         document.removeEventListener('visibilitychange', this.visibilityChangeListener)
         window.removeEventListener('beforeunload', this.beforeUnloadListener)
+        window.removeEventListener('beforeinstallprompt', this.beforeInstallListener)
         this.saveIfNeeded()
         this.db?.close()
         this.db = null
@@ -440,6 +451,18 @@ export class FileMenu {
     async saveIfNeeded() {
         if (this.editor?.ctrl.isUnsaved()) {
             await this.saveModule(this.editor.ctrl.save())
+        }
+    }
+
+    /**
+     * @private
+     * @param {any} e TODO: BeforeInstallPromptEvent type is not defined
+     */
+    async beforeInstall(e) {
+        this.elems.install.classList.add('hide')
+        let result = await e.userChoice
+        if (result.outcome == 'dismissed') {
+            this.elems.install.classList.remove('hide')
         }
     }
 

@@ -15,6 +15,13 @@
     min-width: 0;
 }
 
+/* eslint-disable css/use-baseline */
+@media not (display-mode: browser) {
+    .pwa-install-button {
+        display: none !important;
+    }
+}
+
 /* PatternEdit */
 
 @media (min-width: 35em) {

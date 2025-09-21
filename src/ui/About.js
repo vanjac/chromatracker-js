@@ -1,6 +1,6 @@
 import * as $dom from './DOMUtil.js'
 
-export default $dom.html`
+export const aboutTemplate = $dom.html`
 <h3>About ChromaTracker</h3>
 
 <p>ChromaTracker is written by <a target="_blank" href="https://chroma.zone/">J. van't Hoog</a>.</p>
@@ -26,4 +26,14 @@ is available under the terms of the
     <li><em>ST-01</em> samples are from Ultimate Soundtracker by Karsten Obarski.</li>
     <li><em>nespack</em> samples are based on s3m2nsf tool by Juan Linietsky.</li>
 </ul>
+`
+
+export const installTemplate = $dom.html`
+<h3>Install as PWA</h3>
+
+<p>ChromaTracker works best when it's installed as a PWA.</p>
+
+<p>Use the "Install" or "Add to Home Screen" button in your browser menu to install the app.</p>
+
+<p>For more information, read <a target="_blank" href="https://www.installpwa.com/from/tracker.chroma.zone">these instructions</a>.</p>
 `

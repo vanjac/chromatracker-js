@@ -231,7 +231,8 @@ input:disabled {
 
 .label-button :active:checked + span,
 .label-button.active :checked + span,
-.show-checked.active {
+.show-checked.active,
+.show-checked:active {
     background: var(--color-bg-hl);
     color: var(--color-fg);
 }
