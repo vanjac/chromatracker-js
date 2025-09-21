@@ -1,12 +1,12 @@
 # ChromaTracker
 
-<span><img src="docs/screenshot1.png" width="180"> <img src="docs/screenshot2.png" width="180"> <img src="docs/screenshot3.png" width="180"></span>
-
 ChromaTracker will be a web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) tracker with a touch-friendly interface. Currently it's unfinished!
 
 This shares a name with [a previous project](https://github.com/vanjac/chromatracker) I attempted -- this new iteration of ChromaTracker is more limited in scope.
 
 The design is inspired by Alexander Zolotov's apps [SunVox](https://www.warmplace.ru/soft/sunvox/) and [PixiTracker](https://www.warmplace.ru/soft/pixitracker/), as well as [MilkyTracker](https://milkytracker.org/).
+
+<span><img src="docs/screenshot1.png" width="180"> <img src="docs/screenshot2.png" width="180"> <img src="docs/screenshot3.png" width="180"></span>
 
 Currently implemented:
 
