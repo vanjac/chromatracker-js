@@ -385,6 +385,12 @@ pattern-matrix #playbackLine {
     touch-action: none;
 }
 
+@media (min-width: 44em) {
+    cell-entry #effectKeyboard {
+        width: 30em;
+    }
+}
+
 .hex-grid {
     display: grid;
     grid: auto / 1fr 1fr 1fr 1fr;
