@@ -27,3 +27,7 @@ Includes demo tracks from [modarchive.org](https://modarchive.org/).
 **TODO:**
 
 The UI is currently optimized for small screens and does not scale very well. Many features are still missing, see [issues](https://github.com/vanjac/chromatracker-js/milestone/5).
+
+## Development
+
+See [Development.md](docs/Development.md).
