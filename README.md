@@ -1,6 +1,6 @@
 # ChromaTracker
 
-<span><img src="docs/screenshot1.png" width="270"> <img src="docs/screenshot2.png" width="270"> <img src="docs/screenshot3.png" width="270"></span>
+<span><img src="docs/screenshot1.png" width="180"> <img src="docs/screenshot2.png" width="180"> <img src="docs/screenshot3.png" width="180"></span>
 
 ChromaTracker will be a web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) tracker with a touch-friendly interface. Currently it's unfinished!
 
