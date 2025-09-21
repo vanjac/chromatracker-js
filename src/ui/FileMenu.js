@@ -130,7 +130,7 @@ export class FileMenu {
             () => this.openEditor(null, $module.createNew()))
         this.elems.fileOpen.addEventListener('click', () => this.importFile())
         this.elems.about.addEventListener('click', () => InfoDialog.open(aboutTemplate))
-        this.elems.install.addEventListener('click', () => InfoDialog.open(installTemplate))
+        this.elems.install.addEventListener('click', () => this.install())
 
         for (let info of samplePackFiles) {
             this.elems.samplePackList.appendChild(this.makeDemoButton(info))
@@ -167,6 +167,9 @@ export class FileMenu {
         this.beforeUnloadListener = this.saveIfNeeded.bind(this)
         window.addEventListener('beforeunload', this.beforeUnloadListener)
 
+        // TODO: BeforeInstallPromptEvent type is not defined
+        /** @private @type {any} */
+        this.beforeInstallEvent = null
         /** @private */
         this.beforeInstallListener = this.beforeInstall.bind(this)
         window.addEventListener('beforeinstallprompt', this.beforeInstallListener)
@@ -456,13 +459,20 @@ export class FileMenu {
 
     /**
      * @private
-     * @param {any} e TODO: BeforeInstallPromptEvent type is not defined
+     * @param {Event} e
      */
-    async beforeInstall(e) {
-        this.elems.install.classList.add('hide')
-        let result = await e.userChoice
-        if (result.outcome == 'dismissed') {
-            this.elems.install.classList.remove('hide')
+    beforeInstall(e) {
+        e.preventDefault()
+        this.beforeInstallEvent = e
+    }
+
+    /** @private*/
+    install() {
+        if (this.beforeInstallEvent) {
+            this.beforeInstallEvent.prompt()
+            this.beforeInstallEvent = null
+        } else {
+            InfoDialog.open(installTemplate)
         }
     }
 
