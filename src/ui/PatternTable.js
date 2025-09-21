@@ -201,9 +201,7 @@ export class PatternTable {
 
     /** @private */
     tapPreviewEnabled() {
-        return !this.selectMode
-            || this.elems.patternScroll.classList.contains('scroll-lock-pattern')
-            || this.pointerQuery.matches
+        return !this.selectMode || this.pointerQuery.matches
     }
 
     /**
@@ -727,13 +725,6 @@ export class PatternTable {
             return
         }
         invoke(this.callbacks.onChange, pattern)
-    }
-
-    /**
-     * @param {boolean} scrollLock
-     */
-    setScrollLock(scrollLock) {
-        this.elems.patternScroll.classList.toggle('scroll-lock-pattern', scrollLock)
     }
 
     /**

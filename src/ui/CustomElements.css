@@ -229,10 +229,6 @@ pattern-table .sel-cell { /* extra specificity */
     cursor: nwse-resize;
 }
 
-.scroll-lock-pattern .pattern-cell {
-    touch-action: none;
-}
-
 /* PatternMatrix */
 
 pattern-matrix table {

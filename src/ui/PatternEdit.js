@@ -50,10 +50,6 @@ const template = $dom.html`
                         <input id="select" type="checkbox">
                         <span>${$icons.selection}</span>
                     </label>
-                    <label class="label-button touch-only" title="Scroll Lock">
-                        <input id="scrollLock" type="checkbox">
-                        <span>${$icons.arrow_vertical_lock}</span>
-                    </label>
                 </div>
             </div>
             <pattern-table id="patternTable"></pattern-table>
@@ -136,7 +132,6 @@ export class PatternEdit {
             patternTools: 'div',
             select: 'input',
             selectTools: 'div',
-            scrollLock: 'input',
             entryCell: 'span',
             applySpeed: 'button',
             write: 'button',
@@ -180,10 +175,6 @@ export class PatternEdit {
         this.elems.applySpeed.addEventListener('blur', onBlur)
 
         this.elems.select.addEventListener('change', () => this.updateSelectMode())
-
-        this.elems.scrollLock.addEventListener('change', () => {
-            this.elems.patternTable.ctrl.setScrollLock(this.elems.scrollLock.checked)
-        })
 
         makeKeyButton(this.elems.entryCell, id => invoke(this.callbacks.jamPlay, id))
 
