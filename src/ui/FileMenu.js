@@ -33,7 +33,6 @@ const template = $dom.html`
             <h2>ChromaTracker</h2>
             <div class="flex-grow"></div>
         </div>
-        <hr>
         <div class="hflex">
             <button id="newModule" title="(${$shortcut.ctrl('M')})">
                 ${$icons.file_plus_outline}
@@ -49,15 +48,18 @@ const template = $dom.html`
                 <span>&nbsp;About</span>
             </button>
         </div>
-        <strong id="storageWarning" class="message-out warning"></strong>
-        <div class="flex-grow vscrollable">
+        <nav class="flex-grow vscrollable">
+            <p id="warningContainer" class="hide">
+                <em id="warningText" class="message-out warning"></em>
+            </p>
+            <h3>Your Files:</h3>
+            <p id="noFiles" class="hide"><em>(no files yet)</em></p>
             <div id="fileList" class="button-list"></div>
-            <hr>
-            <h3>&nbsp;Sample Packs:</h3>
+            <h3>Sample Packs:</h3>
             <div id="samplePackList" class="button-list"></div>
-            <h3>&nbsp;Demo Files:</h3>
+            <h3>Demo Files:</h3>
             <div id="demoList" class="button-list"></div>
-        </div>
+        </nav>
         <em>Version:&nbsp;<span id="version"></span></em>
     </div>
     <div id="editorContainer" class="flex-grow hide"></div>
@@ -107,12 +109,14 @@ export class FileMenu {
             fileOpen: 'button',
             about: 'button',
             fileMenu: 'div',
+            noFiles: 'p',
             fileList: 'div',
             samplePackList: 'div',
             demoList: 'div',
             editorContainer: 'div',
             version: 'span',
-            storageWarning: 'strong',
+            warningContainer: 'p',
+            warningText: 'em',
         })
 
         this.elems.newModule.addEventListener('click',
@@ -132,9 +136,10 @@ export class FileMenu {
         this.view.appendChild(fragment)
 
         $local.requestPersistentStorage().catch(/** @param {Error} e */e => {
-            let message = 'Warning: Persistent storage is not available in this browser!'
+            let message = 'Warning: Persistent storage is not available in this browser.'
                 + '\nReason: ' + e.message
-            this.elems.storageWarning.textContent = message
+            this.elems.warningText.textContent = message
+            this.elems.warningContainer.classList.remove('hide')
         })
         let waitDialog = $dialog.open(new WaitDialogElement())
         $local.openDB().then(db => {
@@ -195,6 +200,7 @@ export class FileMenu {
     /** @private */
     async listLocalFiles() {
         let files = await $local.listFiles(this.db)
+        this.elems.noFiles.classList.toggle('hide', files.length != 0)
         this.elems.fileList.textContent = ''
         for (let [id, metadata] of files) {
             let itemFrag = itemTemplate.cloneNode(true)

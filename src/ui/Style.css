@@ -27,6 +27,14 @@ li {
     contain: none;
 }
 
+h2 {
+    margin: 0.33rem 0;
+}
+
+h3 {
+    margin-top: 0.5rem;
+}
+
 .dim {
     color: var(--color-fg-dim);
     --color-fg: var(--color-fg-dim);

@@ -8,6 +8,7 @@
 .file-menu-layout #fileMenu {
     min-width: 0;
     max-width: 44em;
+    padding: 0 0.5em;
 }
 
 .file-menu-layout #editorContainer {
