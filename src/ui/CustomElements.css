@@ -335,6 +335,16 @@ pattern-matrix #playbackLine {
     }
 }
 
+.effect-button {
+    flex: 1 0 0;
+}
+@media (min-width: 44em) {
+    .effect-button {
+        flex-grow: 0;
+        min-width: 16em;
+    }
+}
+
 .keypad-button {
     margin-top: 0;
     margin-bottom: 0;

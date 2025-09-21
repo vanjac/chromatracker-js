@@ -42,7 +42,7 @@ const template = $dom.html`
                 <button id="resetEffect" disabled="" title="Reset Effect (\`)">
                     ${$icons.close}
                 </button>
-                <button id="effect" class="flex-grow justify-start" title="Effect (${$shortcut.alt('1')})"></button>
+                <button id="effect" class="effect-button justify-start" title="Effect (${$shortcut.alt('1')})"></button>
                 <button id="param0" title="Parameter (${$shortcut.alt('2')})"></button>
                 <button id="param1" title="Parameter (${$shortcut.alt('3')})"></button>
             </div>
@@ -512,7 +512,7 @@ export class CellEntry {
         }
         this.setSelSample(selSample)
         if (!anySamples) {
-            this.elems.sampleList.textContent = 'No samples.'
+            this.elems.sampleList.textContent = '(No samples)'
         }
     }
 
