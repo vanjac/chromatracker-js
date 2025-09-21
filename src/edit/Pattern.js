@@ -162,6 +162,29 @@ export function channelDelete(pattern, cStart, cEnd, r, count) {
 
 /**
  * @param {Readonly<Pattern>} pattern
+ * @param {number} factor
+ * @returns {Readonly<Pattern>}
+ */
+export function expand(pattern, factor) {
+    let emptyCells = $arr.repeat(factor - 1, Cell.empty)
+    return freeze(pattern.map(channel =>
+        channel.flatMap(cell => [cell, ...emptyCells]).slice(0, channel.length)))
+}
+
+/**
+ * @param {Readonly<Pattern>} pattern
+ * @param {number} factor
+ * @returns {Readonly<Pattern>}
+ */
+export function shrink(pattern, factor) {
+    let numRows = pattern[0].length
+    let emptyCells = $arr.repeat(numRows - Math.ceil(numRows / factor), Cell.empty)
+    return freeze(pattern.map(channel =>
+        [...channel.flatMap((cell, i) => (i % factor == 0) ? [cell] : []), ...emptyCells]))
+}
+
+/**
+ * @param {Readonly<Pattern>} pattern
  * @param {number} row
  * @param {number} speed
  * @returns {[Readonly<Pattern>, number]}
