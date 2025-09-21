@@ -90,6 +90,7 @@ function channelPlayback() {
         panning: 128,
         scheduledPanning: -1,
         portTarget: 0,
+        glissando: false,
         /** @type {OscillatorPlayback} */
         vibrato: oscillatorPlayback(),
         /** @type {OscillatorPlayback} */
@@ -531,6 +532,9 @@ function processCellFirst(playback, channel, cell) {
                 case ExtEffect.FineSlideDown:
                     channel.period += cell.param1
                     break
+                case ExtEffect.Glissando:
+                    channel.glissando = (cell.param1 != 0)
+                    break
                 case ExtEffect.VibratoWave:
                     channel.vibrato.waveform = cell.param1 & 0x3
                     channel.vibrato.continue = (cell.param1 & 0x4) != 0
@@ -653,7 +657,7 @@ function processCellRest(playback, channel, cell) {
 /**
  * Process one tick of playback for one channel.
  * Called after processCellFirst/processCellRest.
- * @param {Readonly<Pick<Playback, 'tick' | 'time'>>} playback
+ * @param {Readonly<Pick<Playback, 'tick' | 'time' | 'mod'>>} playback
  * @param {ChannelPlayback} channel
  * @param {Readonly<Cell>} cell
  */
@@ -684,6 +688,26 @@ function processCellAll(playback, channel, cell) {
 
         if (cell.effect == Effect.Vibrato || cell.effect == Effect.VolSlideVib) {
             period += calcOscillator(channel.vibrato, 1) * 2
+        } else if (cell.effect == Effect.Portamento && channel.glissando) {
+            // TODO: this may not be completely accurate
+            let sample = playback.mod.samples[channel.sample]
+            let table = periodTable[(sample?.finetune ?? 0) + 8]
+            // binary search for next lowest period
+            let min = 0
+            let max = table.length - 1
+            while (min <= max) {
+                let mid = (min + max) >> 1
+                let val = table[mid]
+                if (channel.period < val) {
+                    min = mid + 1
+                } else if (channel.period > val) {
+                    max = mid - 1
+                } else {
+                    min = max = mid
+                    break
+                }
+            }
+            period = table[min]
         }
         if (period != channel.scheduledPeriod) {
             channel.source.playbackRate.setValueAtTime(periodToRate(period), playback.time)
