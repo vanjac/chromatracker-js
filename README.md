@@ -8,7 +8,7 @@ The design is inspired by Alexander Zolotov's apps [SunVox](https://www.warmplac
 
 Currently implemented:
 
-- Custom MOD playback engine, mostly complete
+- Custom MOD playback engine using Web Audio.
   - Supports MOD extensions like extra channels, panning effects, and expanded frequency limits
 - Pattern editor with touch keyboard, built-in effect documentation
 - Sample editor with basic audio effects, 8-bit dithering, recording
@@ -24,4 +24,4 @@ Includes demo tracks from [modarchive.org](https://modarchive.org/).
 
 **TODO:**
 
-The UI is currently optimized for small screens and does not scale very well. MOD compatibility still needs work. Many features are still missing, see [issues](https://github.com/vanjac/chromatracker-js/milestone/4).
+The UI is currently optimized for small screens and does not scale very well. Many features are still missing, see [issues](https://github.com/vanjac/chromatracker-js/milestone/4).
