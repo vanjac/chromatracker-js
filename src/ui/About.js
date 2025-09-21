@@ -9,6 +9,8 @@ export default $dom.html`
 is available under the terms of the
 <a target="_blank" href="https://github.com/vanjac/chromatracker-js/blob/main/LICENSE">AGPLv3 license</a>.</p>
 
+<p><a target="_blank" href="https://chroma.zone/chromatracker/">Project Website</a></p>
+
 <h4>Assets Used</h4>
 
 <ul>

@@ -10,7 +10,9 @@ import * as $mod from '../file/Mod.js'
 import * as $wav from '../file/Wav.js'
 import {Module} from '../Model.js'
 import {ModuleEditElement} from './ModuleEdit.js'
-import {AlertDialog, ConfirmDialog, WaitDialogElement, MenuDialog, InfoDialog} from './dialogs/UtilDialogs.js'
+import {
+    AlertDialog, ConfirmDialog, WaitDialogElement, MenuDialog, InfoDialog
+} from './dialogs/UtilDialogs.js'
 import {freeze} from '../Util.js'
 import aboutTemplate from './About.js'
 import appVersion from '../Version.js'
