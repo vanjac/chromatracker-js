@@ -1,5 +1,7 @@
 # ChromaTracker
 
+<span><img src="docs/screenshot1.png" width="270"> <img src="docs/screenshot2.png" width="270"> <img src="docs/screenshot3.png" width="270"></span>
+
 ChromaTracker will be a web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) tracker with a touch-friendly interface. Currently it's unfinished!
 
 This shares a name with [a previous project](https://github.com/vanjac/chromatracker) I attempted -- this new iteration of ChromaTracker is more limited in scope.
