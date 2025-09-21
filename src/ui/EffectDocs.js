@@ -16,14 +16,14 @@ export const shortNames = freeze([
 ])
 
 export const extNames = freeze([
-    'Not Supported', 'Fine Pitch Up', 'Fine Pitch Down', 'Not Supported',
+    'Not Supported', 'Fine Pitch Up', 'Fine Pitch Down', 'Glissando Control',
     'Vibrato Waveform', 'Set Finetune', 'Pattern Loop', 'Tremolo Waveform',
     'Set Panning', 'Retrigger', 'Fine Volume Up', 'Fine Volume Down',
     'Note Cut', 'Note Delay', 'Pattern Delay', 'Not Supported',
 ])
 
 export const extShortNames = freeze([
-    '', 'Pitch Up', 'Pitch Down', '',
+    '', 'Pitch Up', 'Pitch Down', 'Glissando',
     'Vib. Wave', 'Set Finetune', 'Pat. Loop', 'Trem. Wave',
     '', 'Retrigger', 'Volume Up', 'Volume Down',
     'Note Cut', 'Note Delay', 'Pat. Delay', '',
@@ -195,7 +195,11 @@ export const extHelp = freeze([
     $dom.html`
 <h3>E3x: Glissando Control</h3>
 
-<p>This effect is currently <strong>not supported</strong> in ChromaTracker.</p>
+<p>Control whether <strong>3xx (Note Glide)</strong> slides smoothly or by semitones.</p>
+
+<p><strong>E30:</strong> Smooth note glide (default setting).</p>
+
+<p><strong>E31:</strong> Glissando.</p>
 `,
     $dom.html`
 <h3>E4x: Vibrato Waveform</h3>

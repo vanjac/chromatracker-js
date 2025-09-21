@@ -23,7 +23,7 @@ export const effectColors = freeze([
 
 /** @type {readonly Color[]}*/
 export const extEffectColors = freeze([
-    null, 'pitch', 'pitch', null,
+    null, 'pitch', 'pitch', 'pitch',
     'pitch', 'pitch', 'control', 'volume',
     null, 'timing', 'volume', 'volume',
     'timing', 'timing', 'control', null,

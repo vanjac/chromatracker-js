@@ -176,6 +176,8 @@ function getParam1Descriptions(effect, param0) {
             return keys.map(d => `+ ${d}`)
         case ExtEffect.FineSlideDown:
             return keys.map(d => `- ${d}`)
+        case ExtEffect.Glissando:
+            return keys.map(d => (d == 0) ? 'Disable' : (d == 1) ? 'Enable' : 'X')
         case ExtEffect.VibratoWave:
         case ExtEffect.TremoloWave:
             return [
