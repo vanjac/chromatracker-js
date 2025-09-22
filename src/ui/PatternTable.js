@@ -26,8 +26,8 @@ const template = $dom.html`
         </thead>
         <tbody id="tbody"></tbody>
     </table>
-    <hr>
     <div class="hflex">
+        <div class="tap-height"></div>
         <label for="length">Length:</label>
         <input id="length" type="number" inputmode="numeric" required="" value="64" min="1" max="64" autocomplete="off" accesskey="l">
     </div>
