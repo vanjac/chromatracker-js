@@ -138,6 +138,7 @@ output {
     appearance: none;
     padding: 0;
     border: none;
+    background: none;
 
     position: absolute;
     top: 0;
