@@ -117,6 +117,7 @@ export class ModuleEdit {
 
         /**
          * @type {{
+         *      saveIfNeeded?: () => void
          *      close?: () => void
          *      openLocalFilePicker?: (callback: (module: Readonly<Module>) => void) => void
          * }}
@@ -376,6 +377,7 @@ export class ModuleEdit {
     /** @private */
     close() {
         this.destroyPlayback()
+        invoke(this.callbacks.saveIfNeeded)
         invoke(this.callbacks.close)
     }
 
@@ -488,6 +490,7 @@ export class ModuleEdit {
             }
             this.setPlayState(false)
             this.elems.patternEdit.ctrl.setFollowState(false)
+            invoke(this.callbacks.saveIfNeeded)
         }
     }
 

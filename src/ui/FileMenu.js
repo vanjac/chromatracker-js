@@ -379,6 +379,7 @@ export class FileMenu {
         this.fileID = id
         this.editor = new ModuleEditElement()
         this.editor.ctrl.callbacks = {
+            saveIfNeeded: this.saveIfNeeded.bind(this),
             close: this.closeEditor.bind(this),
             openLocalFilePicker: this.openLocalFilePicker.bind(this)
         }
@@ -389,7 +390,6 @@ export class FileMenu {
 
     /** @private */
     closeEditor() {
-        this.saveIfNeeded()
         this.editor.remove()
 
         this.elems.fileMenu.classList.remove('hide')
