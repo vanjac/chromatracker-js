@@ -16,22 +16,25 @@ type TypedArray =
     | Int16Array | Uint16Array
     | Int32Array | Uint32Array
     | Float32Array | Float64Array
+    | BigInt64Array | BigUint64Array
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
-// This is incomplete
 type Serializable =
+    // Primitive types
     | null
     | undefined
     | boolean
     | number
     | bigint
     | string
+    // JavaScript Types
     | ArrayBuffer
-    | TypedArray
     | DataView
     | Date
     | Error
     | RegExp
+    | TypedArray
+    // Web API Types (incomplete)
     | Blob
     | DOMMatrixReadOnly
     | DOMPointReadOnly
@@ -40,6 +43,7 @@ type Serializable =
     | FileList
     | ImageBitmap
     | ImageData
+    // Aggregate Types
     | SerializableObject
     | SerializableArray
     | SerializableMap
