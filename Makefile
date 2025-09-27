@@ -8,10 +8,12 @@ lint: node_modules
 	npx eslint .
 
 bundle-js: node_modules
-	npx esbuild src/Main.js --bundle --minify --target=es2020 --outfile=build/bundle.js --log-override:empty-import-meta=silent
+	npx esbuild src/Main.js --bundle --minify --outfile=build/bundle.js \
+		--target=es2020 --define:import.meta.main=false
 
 bundle-css: node_modules
-	npx esbuild src/Main.css --bundle --minify --target=firefox102,chrome83,safari15 --outfile=build/bundle.css
+	npx esbuild src/Main.css --bundle --minify --outfile=build/bundle.css \
+		--target=firefox102,chrome83,safari15
 
 src/gen/Commit.js src/gen/Icons.js: commit assets/icons scripts/build.mjs
 	node scripts/build.mjs
