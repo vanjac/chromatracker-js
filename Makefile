@@ -8,8 +8,9 @@ lint: node_modules
 	npx eslint .
 
 bundle-js: node_modules
-	npx esbuild src/Main.js --bundle --minify --outfile=build/bundle.js --sourcemap \
-		--target=es2020 --define:import.meta.main=false --drop:console
+	npx esbuild src/Main.js --bundle --minify --outfile=build/bundle.js \
+		--target=es2020 --define:import.meta.main=false --drop:console \
+		--sourcemap --sources-content=false
 
 bundle-css: node_modules
 	npx esbuild src/Main.css --bundle --minify --outfile=build/bundle.css \
