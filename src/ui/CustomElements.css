@@ -16,7 +16,7 @@
 }
 
 /* eslint-disable css/use-baseline */
-@media not (display-mode: browser) {
+@media not all and (display-mode: browser) {
     .pwa-install-button {
         display: none !important;
     }
