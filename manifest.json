@@ -1,5 +1,6 @@
 {
     "name": "ChromaTracker",
+    "description": "Music tracker",
     "display": "standalone",
     "start_url": "./",
     "scope": ".",
