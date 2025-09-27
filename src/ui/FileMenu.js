@@ -132,6 +132,10 @@ export class FileMenu {
         this.elems.about.addEventListener('click', () => InfoDialog.open(aboutTemplate))
         this.elems.install.addEventListener('click', () => this.install())
 
+        if (!document.querySelector('link[rel="manifest"]')) {
+            this.elems.install.classList.add('hide')
+        }
+
         for (let info of samplePackFiles) {
             this.elems.samplePackList.appendChild(this.makeDemoButton(info))
         }
