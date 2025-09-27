@@ -5,3 +5,6 @@ window.onerror = (message, source, line) => {
 
 ${message}`)
 }
+window.onunhandledrejection = ev => {
+    alert(`Error in promise: ${ev.reason}`)
+}
