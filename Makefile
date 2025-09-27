@@ -1,13 +1,13 @@
-debug: src/gen/Commit.js src/gen/Icons.js types lint
+debug: types lint
 release: debug bundle-html
 
-types: node_modules
+types: node_modules gen-js
 	npx tsc --project ./jsconfig.json
 
-lint: node_modules
+lint: node_modules gen-js
 	npx eslint .
 
-bundle-js: node_modules
+bundle-js: node_modules gen-js
 	npx esbuild src/Main.js --bundle --minify --outfile=build/bundle.js \
 		--target=es2020 --define:import.meta.main=false --drop:console \
 		--sourcemap --sources-content=false
@@ -28,6 +28,8 @@ src/gen/Commit.js: commit scripts/gencommit.mjs
 
 src/gen/Icons.js: assets/icons scripts/genicons.mjs
 	node scripts/genicons.mjs
+
+gen-js: src/gen/Commit.js src/gen/Icons.js
 
 node_modules: package.json
 	npm install
