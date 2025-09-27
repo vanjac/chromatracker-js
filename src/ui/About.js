@@ -24,7 +24,6 @@ is available under the terms of the
     <li><a target="_blank" href="https://modarchive.org/index.php?request=view_by_moduleid&amp;query=57925"><em>space_debris</em></a> was composed by Markus Kaarlonen.</li>
     <li><a target="_blank" href="https://modarchive.org/index.php?request=view_by_moduleid&amp;query=42560"><em>guitar slinger</em></a> was composed by Jogeir Liljedahl.</li>
     <li><em>ST-01</em> samples are from Ultimate Soundtracker by Karsten Obarski.</li>
-    <li><em>nespack</em> samples are based on s3m2nsf tool by Juan Linietsky.</li>
 </ul>
 `
 
