@@ -5,8 +5,16 @@
     "scope": ".",
     "icons": [
         {
-            "src": "https://chroma.zone/share/icon256.png",
+            "src": "assets/appicon256.png",
             "sizes": "256x256"
+        },
+        {
+            "src": "assets/appicon192.png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "assets/appicon48.png",
+            "sizes": "48x48"
         }
     ],
     "background_color": "#001",
