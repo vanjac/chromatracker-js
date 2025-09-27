@@ -32,6 +32,11 @@
         width: 2.5em;
     }
 }
+@media (min-width: 35em) and (min-height: 30em) {
+    .entry-bar {
+        margin-bottom: 4px;
+    }
+}
 
 .entry-bar-space {
     flex: 1 0 0;

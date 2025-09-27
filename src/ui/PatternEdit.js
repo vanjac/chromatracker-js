@@ -58,7 +58,7 @@ const template = $dom.html`
             <pattern-table id="patternTable"></pattern-table>
         </div>
     </div>
-    <div class="hflex">
+    <div class="hflex entry-bar">
         <div class="entry-bar-button-gap"></div>
         <button id="lift" title="Lift Cell (Shift+Enter)">
             ${$icons.export_}
