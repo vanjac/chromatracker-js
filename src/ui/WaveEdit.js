@@ -131,7 +131,7 @@ export class WaveEdit {
             this.selectNone()
             return true
         }
-        if (!$dom.needsKeyboardInput(event.target)) {
+        if (!$dom.targetUsesInput(event)) {
             if (event.key == 'a' && $shortcut.commandKey(event)) {
                 this.selectAll()
                 return true

@@ -280,7 +280,7 @@ export class ModuleEdit {
             this.close()
             return true
         }
-        if (!$dom.needsKeyboardInput(event.target)) {
+        if (!$dom.targetUsesInput(event)) {
             if (event.key == 'z' && $shortcut.commandKey(event)) {
                 this.undo()
                 return true

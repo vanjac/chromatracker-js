@@ -351,7 +351,7 @@ export class CellEntry {
         } else if (this.elems.piano.ctrl.keyDown(event)) {
             return true
         }
-        if (!$dom.needsKeyboardInput(event.target)) {
+        if (!$dom.targetUsesInput(event)) {
             if (this.editDigit >= 0 && !$shortcut.commandKey(event) && event.key.length == 1) {
                 let num = parseInt(event.key, 16)
                 if (!Number.isNaN(num)) {

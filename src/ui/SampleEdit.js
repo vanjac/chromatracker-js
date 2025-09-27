@@ -259,7 +259,7 @@ export class SampleEdit {
         if (this.elems.waveEdit.ctrl.keyDown(event)) {
             return true
         }
-        if (!$dom.needsKeyboardInput(event.target)) {
+        if (!$dom.targetUsesInput(event)) {
             if (event.key == 'x' && $shortcut.commandKey(event)) {
                 this.cut()
                 return true

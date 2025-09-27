@@ -8,11 +8,29 @@ let tooltipTarget = null
 let tooltipElem = null
 
 /**
- * @param {EventTarget} target
+ * @param {KeyboardEvent} ev
  */
-export function needsKeyboardInput(target) {
-    return (target instanceof HTMLInputElement) || (target instanceof HTMLSelectElement)
-        || (target instanceof HTMLTextAreaElement)
+export function targetUsesInput(ev) {
+    let elem = ev.target
+    if (elem instanceof HTMLSelectElement || elem instanceof HTMLTextAreaElement) {
+        return true
+    } else if (elem instanceof HTMLInputElement) {
+        if (['radio', 'range'].includes(elem.type)) {
+            return ev.key.startsWith('Arrow') || ev.key == ' '
+        } else if (elem.type == 'checkbox') {
+            return ev.key == ' '
+        } else if (['button', 'reset', 'submit', 'image', 'file', 'color'].includes(elem.type)) {
+            return ev.key == 'Enter' || ev.key == ' '
+        } else {
+            return true
+        }
+    } else if (elem instanceof HTMLButtonElement) {
+        return ev.key == 'Enter' || ev.key == ' '
+    } else if (elem instanceof HTMLElement && elem.isContentEditable) {
+        return true
+    } else {
+        return false
+    }
 }
 
 /**
@@ -24,12 +42,17 @@ function dispatchKeyDown(event) {
     return mainElem?.ctrl?.keyDown?.(event) ?? false
 }
 
+document.addEventListener('beforeinput', e => {
+    console.log('beforeinput')
+})
+
 document.addEventListener('keydown', e => {
     if (e.target instanceof Element && !e.target.closest('dialog')) {
-        if (
-            e.key == 'Escape'
-                && (needsKeyboardInput(e.target) || e.target instanceof HTMLButtonElement)
-        ) {
+        console.log('keydown', e.key, e.target)
+        if (e.key == 'Escape' && (
+            e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement
+                || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement
+        )) {
             e.target.blur()
         } else if (dispatchKeyDown(e)) {
             e.preventDefault()
@@ -39,8 +62,9 @@ document.addEventListener('keydown', e => {
 
 // Disable context menu on mobile
 document.addEventListener('contextmenu', e => {
-    let blockMenu = !needsKeyboardInput(e.target) && !(e.target instanceof HTMLAnchorElement)
-    if (!pointerQuery.matches && blockMenu) {
+    let allowMenu = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement
+        || e.target instanceof HTMLAnchorElement
+    if (!pointerQuery.matches && !allowMenu) {
         e.preventDefault()
     }
 })

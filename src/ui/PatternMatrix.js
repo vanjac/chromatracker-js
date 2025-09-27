@@ -131,7 +131,7 @@ export class PatternMatrix {
         if (this.elems.moduleProperties.ctrl.keyDown(event)) {
             return true
         }
-        if (!$dom.needsKeyboardInput(event.target)) {
+        if (!$dom.targetUsesInput(event)) {
             if (event.key == 'ArrowDown' && $shortcut.commandKey(event)) {
                 this.setSelPos(this.selPos + 1)
                 invoke(this.callbacks.onSelectPos)

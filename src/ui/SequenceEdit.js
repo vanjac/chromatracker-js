@@ -95,7 +95,7 @@ export class SequenceEdit {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
-        if (!$dom.needsKeyboardInput(event.target)) {
+        if (!$dom.targetUsesInput(event)) {
             if (event.key == 'ArrowDown' && $shortcut.commandKey(event)) {
                 this.setSelPos(this.selPos + 1)
                 invoke(this.callbacks.onSelect)

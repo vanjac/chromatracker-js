@@ -143,7 +143,7 @@ export class PatternTable {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
-        if (!$dom.needsKeyboardInput(event.target)) {
+        if (!$dom.targetUsesInput(event)) {
             if (event.key == 'ArrowDown' && !$shortcut.commandKey(event)) {
                 this.keyboardMove(0, 1, event.shiftKey)
                 return true

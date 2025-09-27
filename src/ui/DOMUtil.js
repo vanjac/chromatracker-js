@@ -152,7 +152,7 @@ export function displayMain(elem) {
     document.body.append(elem)
 }
 
-export const {needsKeyboardInput} = $webapp
+export const {targetUsesInput} = $webapp
 
 const radioButtonTemplate = html`
 <label class="label-button">

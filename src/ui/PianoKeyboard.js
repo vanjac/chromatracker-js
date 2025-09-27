@@ -143,7 +143,7 @@ export class PianoKeyboard {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
-        if (!$dom.needsKeyboardInput(event.target) && !$shortcut.commandKey(event)) {
+        if (!$dom.targetUsesInput(event) && !$shortcut.commandKey(event)) {
             let note = noteShortcuts[event.code]
             if (note != null && !event.altKey) {
                 if (!event.repeat) {

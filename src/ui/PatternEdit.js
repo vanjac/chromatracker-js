@@ -246,11 +246,11 @@ export class PatternEdit {
                 return true
             }
         }
-        if (!$dom.needsKeyboardInput(event.target)) {
+        if (!$dom.targetUsesInput(event)) {
             if (event.key == '\\' && !$shortcut.commandKey(event)) {
                 this.elems.select.checked = !this.elems.select.checked
                 this.updateSelectMode()
-            } else if (event.key == 'Enter' && !(event.target instanceof HTMLButtonElement)) {
+            } else if (event.key == 'Enter') {
                 if (event.shiftKey) {
                     if (!event.repeat) {
                         this.lift(event.code)
@@ -259,7 +259,7 @@ export class PatternEdit {
                     this.write(event.code)
                 }
                 return true
-            } else if (event.key == ' ' && !(event.target instanceof HTMLButtonElement)) {
+            } else if (event.key == ' ') {
                 this.erase(event.code)
                 return true
             } else if (event.key == 'Backspace') {
