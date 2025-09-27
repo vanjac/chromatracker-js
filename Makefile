@@ -1,5 +1,5 @@
 debug: src/gen/Commit.js src/gen/Icons.js types lint
-release: debug bundle-js bundle-css
+release: debug bundle-html
 
 types: node_modules
 	npx tsc --project ./jsconfig.json
@@ -19,6 +19,9 @@ bundle-css: node_modules
 bundle-fonts: node_modules
 	npx esbuild assets/Font.css --bundle --minify --outfile=build/font.css \
 		--target=firefox102,chrome83,safari15 --loader:.woff2=dataurl
+
+bundle-html: bundle-js bundle-css bundle-fonts
+	node scripts/htmlbundle.mjs
 
 src/gen/Commit.js src/gen/Icons.js: commit assets/icons scripts/build.mjs
 	node scripts/build.mjs
