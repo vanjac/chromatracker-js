@@ -85,6 +85,13 @@ const template = $dom.html`
         <button id="delete" title="Delete (Del)">
             ${$icons.arrow_collapse_up}
         </button>
+        <div class="hflex mouse-only">
+            &nbsp;
+            <label class="label-button" title="Record Mode (${$shortcut.ctrl('Space')})">
+                <input id="record" type="checkbox">
+                <span>${$icons.record}</span>
+            </label>
+        </div>
     </div>
 </div>
 `
@@ -147,6 +154,7 @@ export class PatternEdit {
             overflow: 'button',
             insert: 'button',
             delete: 'button',
+            record: 'input',
         })
 
         /** @private */
@@ -250,7 +258,7 @@ export class PatternEdit {
             if (event.key == '\\' && !$shortcut.commandKey(event)) {
                 this.elems.select.checked = !this.elems.select.checked
                 this.updateSelectMode()
-            } else if (event.key == 'Enter') {
+            } else if (event.key == 'Enter' && !$shortcut.commandKey(event)) {
                 if (event.shiftKey) {
                     if (!event.repeat) {
                         this.lift(event.code)
@@ -260,7 +268,11 @@ export class PatternEdit {
                 }
                 return true
             } else if (event.key == ' ') {
-                this.erase(event.code)
+                if ($shortcut.commandKey(event)) {
+                    this.elems.record.checked = !this.elems.record.checked
+                } else {
+                    this.erase(event.code)
+                }
                 return true
             } else if (event.key == 'Backspace') {
                 this.backErase(event.code)
@@ -469,6 +481,17 @@ export class PatternEdit {
         let [minRow, maxRow] = this.elems.patternTable.ctrl.rowRange()
         this.changePattern(pattern => $pattern.channelDelete(
             pattern, minChannel, maxChannel + 1, minRow, maxRow - minRow + 1))
+    }
+
+    /**
+     * @param {number|string} id
+     */
+    jamEnterCell(id) {
+        if (this.elems.record.checked) {
+            this.write(id)
+            return true
+        }
+        return false
     }
 
     /** @private */

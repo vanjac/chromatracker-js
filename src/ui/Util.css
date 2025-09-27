@@ -10,6 +10,11 @@
         display: none !important;
     }
 }
+@media not all and (pointer: fine) and (hover: hover) {
+    .mouse-only {
+        display: none !important;
+    }
+}
 
 .hflex {
     display: flex;

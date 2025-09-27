@@ -228,7 +228,13 @@ export class ModuleEdit {
             },
         }
         this.elems.cellEntry.ctrl.callbacks = {
-            jamPlay: this.jamPlay.bind(this),
+            jamPlay: (id, cell, sampleOverride) => {
+                if (!(
+                    this.selectedTab() == 'sequence' && this.elems.patternEdit.ctrl.jamEnterCell(id)
+                )) {
+                    this.jamPlay(id, cell, sampleOverride)
+                }
+            },
             jamRelease: this.jamRelease.bind(this),
             updateCell: () => {
                 let cell = this.getEntryCell()
