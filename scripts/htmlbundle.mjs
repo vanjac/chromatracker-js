@@ -9,12 +9,12 @@ let html = fs.readFileSync('single.html', {encoding: 'utf8'})
 
 html = html.replace('<link href="build/bundle.css" rel="stylesheet">', () => `<style>
 ${cssBundle}
-</style>`)
+    </style>`)
 html = html.replace('<link href="build/font.css" rel="stylesheet">', () => `<style>
 ${fontBundle}
-</style>`)
+    </style>`)
 html = html.replace('<script src="build/bundle.js"></script>', () => `<script>
 ${jsBundle}
-</script>`)
+    </script>`)
 
 fs.writeFileSync('build/chromatracker.html', html)
