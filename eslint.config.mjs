@@ -23,6 +23,7 @@ export default defineConfig([
             "curly": "error",
             "no-undefined": "error",
             "no-sequences": "error",
+            "no-eval": ["error", {"allowIndirect": true}],
             "prefer-rest-params": "error",
             "object-shorthand": ["warn", "always", {"avoidExplicitReturnArrows": true}],
             "prefer-destructuring": ["warn", {"object": true}],
