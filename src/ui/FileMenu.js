@@ -190,6 +190,9 @@ export class FileMenu {
      * @param {KeyboardEvent} event
      */
     keyDown(event) {
+        if (event.code == 'BrowserBack') {
+            this.saveIfNeeded()
+        }
         if (this.editor?.ctrl.keyDown(event)) {
             return true
         }
