@@ -21,9 +21,7 @@ Currently implemented:
 
 You can try the current alpha build at [tracker.chroma.zone](https://tracker.chroma.zone/). On mobile devices it works best when it's installed as a [PWA](https://www.installpwa.com/from/tracker.chroma.zone).
 
-**TODO:**
-
-The UI is currently optimized for small screens and does not scale very well. Many features are still missing, see [issues](https://github.com/vanjac/chromatracker-js/milestone/5).
+Many features are still missing, see [issues](https://github.com/vanjac/chromatracker-js/milestone/1).
 
 ## Development
 
