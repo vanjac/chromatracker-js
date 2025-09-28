@@ -35,6 +35,7 @@ const processInterval = 200
  *      time: number
  *      pos: number
  *      row: number
+ *      tick: number
  *      tempo: number
  *      speed: number
  *      channels: readonly Readonly<$play.ChannelState>[]
@@ -557,13 +558,10 @@ export class ModuleEdit {
         while (this.queuedTime < this.context.currentTime + playbackQueueTime) {
             let {pos, row, tick, time} = this.playback
             $play.processTick(this.playback)
-            // TODO: pitch slides will be inaccurate
-            if (tick == 0) {
-                let {tempo, speed} = this.playback
-                let channels = freeze(this.playback.channels.map(
-                    channel => freeze($play.channelState(channel))))
-                this.queuedStates.push(freeze({time, pos, row, tempo, speed, channels}))
-            }
+            let {tempo, speed} = this.playback
+            let channels = freeze(this.playback.channels.map(
+                channel => freeze($play.channelState(channel))))
+            this.queuedStates.push(freeze({time, pos, row, tick, tempo, speed, channels}))
             this.queuedTime = time
         }
     }
@@ -696,7 +694,9 @@ export class ModuleEdit {
 
                 this.elems.patternEdit.ctrl.setTempoSpeed(curState.tempo, curState.speed)
                 if (this.elems.follow.checked) {
-                    this.elems.patternEdit.ctrl.selectRow(curState.row)
+                    if (this.elems.patternEdit.ctrl.selRow() != curState.row) {
+                        this.elems.patternEdit.ctrl.selectRow(curState.row)
+                    }
                     if (this.elems.patternEdit.ctrl.selPos() != curState.pos) {
                         this.elems.patternEdit.ctrl.setSelPos(curState.pos, true)
                         this.elems.patternMatrix.ctrl.setSelPos(curState.pos)
