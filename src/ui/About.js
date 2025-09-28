@@ -18,11 +18,9 @@ is available under the terms of the
     <li><a target="_blank" href="https://github.com/be5invis/Iosevka">Iosevka Aile</a> (SIL Open Font License v1.1)</li>
 </ul>
 
-<h4>Demo Files</h4>
+<h4>Sample Packs</h4>
 
 <ul>
-    <li><a target="_blank" href="https://modarchive.org/index.php?request=view_by_moduleid&amp;query=57925"><em>space_debris</em></a> was composed by Markus Kaarlonen.</li>
-    <li><a target="_blank" href="https://modarchive.org/index.php?request=view_by_moduleid&amp;query=42560"><em>guitar slinger</em></a> was composed by Jogeir Liljedahl.</li>
     <li><em>ST-01</em> samples are from Ultimate Soundtracker by Karsten Obarski.</li>
 </ul>
 `

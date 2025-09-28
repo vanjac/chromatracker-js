@@ -22,11 +22,9 @@ const samplePackFiles = freeze([
     {name: 'ST-01', url: 'https://chroma.zone/share/ST-01.mod'},
     {name: 'Basics', url: 'https://chroma.zone/share/Basics.mod'},
     {name: '808', url: 'https://chroma.zone/share/808.mod'},
+    {name: '909', url: 'https://chroma.zone/share/909.mod'},
 ])
-const demoFiles = freeze([
-    {name: 'space_debris', url: 'https://chroma.zone/share/space_debris.mod'},
-    {name: 'guitar slinger', url: 'https://chroma.zone/share/GSLINGER.MOD'}
-])
+const demoFiles = freeze([])
 
 const template = $dom.html`
 <div class="flex-grow file-menu-layout">
@@ -60,7 +58,6 @@ const template = $dom.html`
             <div id="fileList" class="button-list"></div>
             <h3>Sample Packs:</h3>
             <div id="samplePackList" class="button-list"></div>
-            <h3>Demo Files:</h3>
             <div id="demoList" class="button-list"></div>
         </nav>
         <em>Version:&nbsp;<span id="version"></span></em>
