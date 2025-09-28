@@ -9,8 +9,7 @@ let tooltipTarget = null
 let tooltipElem = null
 
 let longTapTimer = 0
-/** @type {number} */
-let longTapPointerId = null
+let longTapComplete = false
 
 /**
  * @param {KeyboardEvent} ev
@@ -81,7 +80,7 @@ document.addEventListener('touchmove', e => {
  * @param {PointerEvent} e
  */
 function onPointerDown(e) {
-    longTapPointerId = null
+    longTapComplete = false
     if (longTapTimer) {
         window.clearTimeout(longTapTimer)
         longTapTimer = 0
@@ -107,7 +106,7 @@ function onPointerDown(e) {
             showTooltip(titleElem, text)
         }
     }
-    if (navigator.platform.startsWith('i')) {
+    if (e.isPrimary && navigator.platform.startsWith('i')) {
         // simulate contextmenu event on iOS
         let contextMenuEvent = new PointerEvent('contextmenu', {
             bubbles: true,
@@ -115,8 +114,7 @@ function onPointerDown(e) {
         })
         longTapTimer = window.setTimeout(() => {
             if (!e.target.dispatchEvent(contextMenuEvent)) {
-                // steal pointer capture
-                longTapPointerId = e.pointerId
+                longTapComplete = true
             }
             longTapTimer = 0
         }, longTapTime)
@@ -151,10 +149,10 @@ document.addEventListener('pointerup', onPointerUp)
 document.addEventListener('pointerout', onPointerUp)
 
 document.body.addEventListener('click', e => {
-    if (longTapPointerId == e.pointerId) {
+    if (longTapComplete && (!(e instanceof PointerEvent) || e.isPrimary)) {
         e.stopPropagation()
         e.preventDefault()
-        longTapPointerId = null
+        longTapComplete = false
     }
 }, {capture: true})
 
