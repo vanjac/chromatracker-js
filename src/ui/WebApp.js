@@ -53,7 +53,6 @@ document.addEventListener('beforeinput', e => {
 
 document.addEventListener('keydown', e => {
     if (e.target instanceof Element && !e.target.closest('dialog')) {
-        console.log('keydown', e.key, e.target)
         if (e.key == 'Escape' && (
             e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement
                 || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLButtonElement

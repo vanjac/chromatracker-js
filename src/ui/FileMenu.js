@@ -20,7 +20,8 @@ import appCommit from '../gen/Commit.js'
 
 const samplePackFiles = freeze([
     {name: 'ST-01', url: 'https://chroma.zone/share/ST-01.mod'},
-    {name: 'Basics', url: 'https://chroma.zone/share/Basics.mod'}
+    {name: 'Basics', url: 'https://chroma.zone/share/Basics.mod'},
+    {name: '808', url: 'https://chroma.zone/share/808.mod'},
 ])
 const demoFiles = freeze([
     {name: 'space_debris', url: 'https://chroma.zone/share/space_debris.mod'},
