@@ -697,9 +697,9 @@ export class PatternTable {
                 continue
             }
             let targetValue = 0
-            if (state.volume && state.sourceSample && !this.isChannelMuted(c)) {
+            if (state.scheduledVolume && state.sourceSample && !this.isChannelMuted(c)) {
                 let pos = $play.getSamplePredictedPos(state, time)
-                targetValue = pos < state.sourceSample.wave.length ? state.volume : 0
+                targetValue = pos < state.sourceSample.wave.length ? state.scheduledVolume : 0
             }
             if (targetValue > meter.value) {
                 meter.value = targetValue

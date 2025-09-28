@@ -114,10 +114,12 @@ function channelPlayback() {
  */
 export function channelState(channel) {
     let {
-        sourceSample, sample, volume, scheduledPeriod, samplePredictPos, samplePredictTime, userMute
+        sourceSample, sample, scheduledVolume, scheduledPeriod,
+        samplePredictPos, samplePredictTime, userMute
     } = channel
     return {
-        sourceSample, sample, volume, scheduledPeriod, samplePredictPos, samplePredictTime, userMute
+        sourceSample, sample, scheduledVolume, scheduledPeriod,
+        samplePredictPos, samplePredictTime, userMute
     }
 }
 
