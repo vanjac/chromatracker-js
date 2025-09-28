@@ -47,10 +47,6 @@ function dispatchKeyDown(event) {
     return mainElem?.ctrl?.keyDown?.(event) ?? false
 }
 
-document.addEventListener('beforeinput', e => {
-    console.log('beforeinput')
-})
-
 document.addEventListener('keydown', e => {
     if (e.target instanceof Element && !e.target.closest('dialog')) {
         if (e.key == 'Escape' && (
