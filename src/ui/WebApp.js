@@ -1,11 +1,16 @@
 /** @import {ViewElement, Controller} from './DOMUtil.js' */
 
+const longTapTime = 500
 const pointerQuery = window.matchMedia('(pointer: fine) and (hover: hover)')
 const tooltipMargin = 4
 /** @type {HTMLElement} */
 let tooltipTarget = null
 /** @type {HTMLElement} */
 let tooltipElem = null
+
+let longTapTimer = 0
+/** @type {number} */
+let longTapPointerId = null
 
 /**
  * @param {KeyboardEvent} ev
@@ -81,6 +86,11 @@ document.addEventListener('touchmove', e => {
  * @param {PointerEvent} e
  */
 function onPointerDown(e) {
+    longTapPointerId = null
+    if (longTapTimer) {
+        window.clearTimeout(longTapTimer)
+        longTapTimer = 0
+    }
     let titleElem = null
     // Some browsers have delays on :active state
     if (e.target instanceof Element) {
@@ -102,12 +112,30 @@ function onPointerDown(e) {
             showTooltip(titleElem, text)
         }
     }
+    if (navigator.platform.startsWith('i')) {
+        // simulate contextmenu event on iOS
+        let contextMenuEvent = new PointerEvent('contextmenu', {
+            bubbles: true,
+            cancelable: true
+        })
+        longTapTimer = window.setTimeout(() => {
+            if (!e.target.dispatchEvent(contextMenuEvent)) {
+                // steal pointer capture
+                longTapPointerId = e.pointerId
+            }
+            longTapTimer = 0
+        }, longTapTime)
+    }
 }
 
 /**
  * @param {PointerEvent} e
  */
 function onPointerUp(e) {
+    if (longTapTimer) {
+        window.clearTimeout(longTapTimer)
+        longTapTimer = 0
+    }
     if (tooltipTarget && !tooltipTarget.isConnected) {
         tooltipElem.classList.add('tooltip-hide')
         tooltipTarget = null
@@ -126,6 +154,14 @@ function onPointerUp(e) {
 document.addEventListener('pointerdown', onPointerDown)
 document.addEventListener('pointerup', onPointerUp)
 document.addEventListener('pointerout', onPointerUp)
+
+document.body.addEventListener('click', e => {
+    if (longTapPointerId == e.pointerId) {
+        e.stopPropagation()
+        e.preventDefault()
+        longTapPointerId = null
+    }
+}, {capture: true})
 
 /**
  * @param {HTMLElement} target
