@@ -20,7 +20,7 @@ bundle-fonts: node_modules
 	npx esbuild assets/Font.css --bundle --minify --outfile=build/font.css \
 		--target=firefox102,chrome83,safari15 --loader:.woff2=dataurl
 
-bundle-html: bundle-js bundle-css bundle-fonts
+bundle-html: bundle-js bundle-css bundle-fonts scripts/htmlbundle.mjs
 	node scripts/htmlbundle.mjs
 
 src/gen/Commit.js: commit scripts/gencommit.mjs
