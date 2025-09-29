@@ -140,10 +140,6 @@ pattern-table th {
     background-color: var(--color-bg);
     z-index: 1;
 }
-pattern-table thead {
-    /* Fix borders disappearing in Safari, and incorrect Z order in old Chrome */
-    contain: none;
-}
 pattern-table thead th {
     top: 0;
 }
@@ -275,9 +271,6 @@ pattern-matrix thead th {
     background-color: var(--color-bg);
     z-index: 1;
     border-top: none;
-}
-pattern-matrix thead {
-    contain: none;
 }
 
 .select-row td,

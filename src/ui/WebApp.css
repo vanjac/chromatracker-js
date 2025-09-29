@@ -7,6 +7,10 @@
     padding: 0;
     contain: content;
 }
+table, thead {
+    /* fix various glitches in old browsers */
+    contain: none;
+}
 input, button, textarea, select {
     font: inherit;
     color: inherit;
