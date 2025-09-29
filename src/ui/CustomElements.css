@@ -322,6 +322,10 @@ pattern-matrix select {
     text-align-last: center;
 }
 
+pattern-matrix #scroll {
+    position: relative;
+}
+
 pattern-matrix #playbackLine {
     position: absolute;
     height: 2px;
