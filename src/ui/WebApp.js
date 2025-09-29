@@ -167,6 +167,7 @@ function showTooltip(target, text) {
     tooltipTarget = target
     let targetRect = target.getBoundingClientRect()
     tooltipElem = document.createElement('div')
+    tooltipElem.classList.add('tooltip')
     tooltipElem.role = 'tooltip'
     tooltipElem.textContent = text
     let left = (targetRect.left + targetRect.right) / 2

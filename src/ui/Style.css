@@ -302,7 +302,7 @@ table {
     border-collapse: collapse;
 }
 
-div[role="tooltip"] {
+.tooltip {
     position: fixed;
     transform: translate(-50%, -100%);
 	width: max-content;
@@ -315,10 +315,10 @@ div[role="tooltip"] {
     border-radius: 6px;
     opacity: 1;
 }
-div[role="tooltip"].tooltip-bottom {
+.tooltip.tooltip-bottom {
     transform: translate(-50%, 0);
 }
-div[role="tooltip"].tooltip-hide {
+.tooltip.tooltip-hide {
     visibility: hidden;
     opacity: 0;
     transition: visibility 0s 0.2s, opacity 0.2s linear;
