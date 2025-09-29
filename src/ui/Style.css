@@ -74,8 +74,7 @@ input[type="range"] {
 meter {
     /* https://css-tricks.com/html5-meter-element/ */
     width: 100%;
-    -webkit-appearance: none;
-    appearance: none;
+    appearance: none; /* no -webkit-appearance! */
     margin: 0.25em 0;
     height: 0.5em;
 }
