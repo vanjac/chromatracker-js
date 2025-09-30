@@ -14,11 +14,11 @@ bundle-js: node_modules gen-js
 
 bundle-css: node_modules
 	npx esbuild src/Main.css --bundle --minify --outfile=build/bundle.css \
-		--target=firefox102,chrome83,safari15
+		--target=firefox102,chrome84,safari15.6
 
 bundle-fonts: node_modules
 	npx esbuild assets/Font.css --bundle --minify --outfile=build/font.css \
-		--target=firefox102,chrome83,safari15 --loader:.woff2=dataurl
+		--target=firefox102,chrome84,safari15.6 --loader:.woff2=dataurl
 
 bundle-html: bundle-js bundle-css bundle-fonts scripts/htmlbundle.mjs
 	node scripts/htmlbundle.mjs
