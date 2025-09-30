@@ -28,7 +28,7 @@ const template = $dom.html`
         <label for="restart">Restart pos:</label>
         <input id="restart" type="number" inputmode="numeric" required="" value="0" min="0" max="127" autocomplete="off" accesskey="r">
     </div>
-    <div id="scroll" class="hscrollable vscrollable flex-grow align-start">
+    <div id="scroll" class="block hscrollable vscrollable flex-grow">
         <table>
             <thead>
                 <tr id="theadRow"></tr>

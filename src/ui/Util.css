@@ -16,6 +16,9 @@
     }
 }
 
+.block {
+    display: block;
+}
 .hflex {
     display: flex;
     flex-direction: row;
