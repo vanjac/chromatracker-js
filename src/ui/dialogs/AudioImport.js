@@ -17,7 +17,7 @@ const template = $dom.html`
         <div class="properties-grid">
             <label for="resample">Resample (Hz):</label>
             <div class="hflex">
-                <input id="sampleRate" name="sampleRate" type="number" inputmode="decimal" required="" min="8000" max="96000" step="0.01" value="16574.27" accesskey="r">
+                <input id="sampleRate" name="sampleRate" type="number" inputmode="decimal" required="" min="8000" max="96000" step="0.01" size="9" value="16574.27" accesskey="r">
                 <select id="tuneNote">
                     <option selected="" disabled="" hidden="">---</option>
                 </select>

@@ -23,9 +23,9 @@ const template = $dom.html`
             <div class="hflex">
                 <div id="speedTools" class="hflex shrink-clip-x">
                     <label for="tempo">BPM</label>
-                    <input id="tempo" type="number" inputmode="numeric" required="" value="125" min="32" max="255" autocomplete="off" accesskey="b">
+                    <input id="tempo" type="number" inputmode="numeric" required="" value="125" min="32" max="255" size="4" autocomplete="off" accesskey="b">
                     <label for="speed">Ticks</label>
-                    <input id="speed" type="number" inputmode="numeric" required="" value="6" min="1" max="31" autocomplete="off" accesskey="t">
+                    <input id="speed" type="number" inputmode="numeric" required="" value="6" min="1" max="31" size="3" autocomplete="off" accesskey="t">
                     <div id="applySpeedSection" class="hflex hide">
                         &nbsp;
                         <button id="applySpeed" class="control-effect" accesskey="a" title="Speed Effect (${$shortcut.accessKey('A')})">

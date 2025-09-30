@@ -99,9 +99,9 @@ const template = $dom.html`
                 ${$icons.select}
             </button>
             <span>&nbsp;</span>
-            <input id="loopStart" type="number" inputmode="numeric" required="" class="med-input" min="0" step="2" autocomplete="off" accesskey="l">
+            <input id="loopStart" type="number" inputmode="numeric" required="" class="med-input" min="0" max="131072" step="2" autocomplete="off" accesskey="l">
             <span>&nbsp;to&nbsp;</span>
-            <input id="loopEnd" type="number" inputmode="numeric" required="" class="med-input" min="0" step="2" autocomplete="off">
+            <input id="loopEnd" type="number" inputmode="numeric" required="" class="med-input" min="0" max="131072" step="2" autocomplete="off">
         </div>
     </div>
     <div class="flex-grow"></div>
