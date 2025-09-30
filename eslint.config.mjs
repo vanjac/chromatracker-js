@@ -3,6 +3,7 @@
 import {defineConfig, globalIgnores} from 'eslint/config'
 import js from '@eslint/js'
 import css from '@eslint/css'
+import html from '@html-eslint/eslint-plugin'
 import globals from 'globals'
 import compat from 'eslint-plugin-compat'
 
@@ -84,5 +85,17 @@ export default defineConfig([
             "css/no-invalid-at-rules": "error",
             "css/use-baseline": ["warn", {"available": 2022}],
         },
+    },
+    {
+        files: ["**/*.html"],
+        plugins: {html},
+        extends: ["html/recommended"],
+        language: "html/html",
+        rules: {
+            "html/use-baseline": ["warn", {"available": 2022}],
+            "html/indent": "off",
+            "html/attrs-newline": "off",
+            "html/require-title": "off",
+        }
     },
 ])
