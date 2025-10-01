@@ -89,6 +89,8 @@ export class PatternTable {
         this.viewLogicalLength = 0
         /** @private @type {HTMLTableRowElement} */
         this.playbackRow = null
+        /** @private @type {HTMLTableCellElement[]} */
+        this.selCells = []
 
         this.pointerQuery = window.matchMedia('(pointer: fine) and (hover: hover)')
     }
@@ -285,6 +287,7 @@ export class PatternTable {
         } else { // mismatched row length, or num channels changed
             this.viewNumRows = pattern[0].length
             this.playbackRow = null
+            this.selCells = []
             this.elems.tbody.textContent = ''
             let tableFrag = new DocumentFragment()
 
@@ -564,12 +567,13 @@ export class PatternTable {
 
     /** @private */
     updateSelection() {
-        for (let cell of this.elems.tbody.querySelectorAll('.sel-cell')) {
+        for (let cell of this.selCells) {
             cell.classList.remove('sel-cell')
             cell.classList.remove('sel-pitch')
             cell.classList.remove('sel-inst')
             cell.classList.remove('sel-effect')
         }
+        this.selCells = []
         let selCell = this.getTd(this.selChannel(), this.selRow())
         if (selCell) { $cell.toggleParts(selCell, this.viewEntryParts) }
 
@@ -580,7 +584,11 @@ export class PatternTable {
             let tr = this.getTr(row)
             if (!tr) { continue }
             for (let channel = minChannel; channel <= maxChannel; channel++) {
-                tr.children[channel + 1]?.classList.add('sel-cell')
+                let td = /** @type {HTMLTableCellElement} */(tr.children[channel + 1])
+                if (td) {
+                    td.classList.add('sel-cell')
+                    this.selCells.push(td)
+                }
             }
         }
         this.updateSelectionHandles()
