@@ -21,7 +21,7 @@ Currently implemented:
 
 You can try the current alpha build at [tracker.chroma.zone](https://tracker.chroma.zone/). On mobile devices it works best when it's installed as a [PWA](https://www.installpwa.com/from/tracker.chroma.zone).
 
-**Warning:** ChromaTracker is still in development; there will be bugs. Playback accuracy may be improved in the future, so your modules might not sound the same.
+**Warning:** ChromaTracker is still in development; there will be bugs. Playback accuracy may be improved in the future, so your modules might not sound the same. Make backups!
 
 ## Development
 
