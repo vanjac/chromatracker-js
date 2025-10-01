@@ -215,7 +215,10 @@ export class PatternTable {
         }
         console.debug('update pattern channels')
         this.viewNumChannels = numChannels
+        // will be updated when setPattern() is called:
         this.viewNumRows = 0
+        this.selChannelA = Math.min(this.selChannelA, numChannels - 1)
+        this.selChannelB = Math.min(this.selChannelB, numChannels - 1)
 
         this.elems.theadRow.textContent = ''
         let newMuteInputs = []
@@ -279,7 +282,7 @@ export class PatternTable {
                     }
                 }
             }
-        } else {
+        } else { // mismatched row length, or num channels changed
             this.viewNumRows = pattern[0].length
             this.playbackRow = null
             this.elems.tbody.textContent = ''
