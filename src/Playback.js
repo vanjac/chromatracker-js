@@ -312,8 +312,12 @@ export function getPeakAmp(playback) {
     // https://stackoverflow.com/a/44360729
     let samples = new Float32Array(playback.analyser.fftSize)
     playback.analyser.getFloatTimeDomainData(samples)
-    let peak = Math.max(-Math.min(...samples), Math.max(...samples))
-    return peak
+    let min = Infinity, max = -Infinity
+    for (let s of samples) {
+        if (s > max) { max = s }
+        if (s < min) { min = s }
+    }
+    return Math.max(-min, max)
 }
 
 /**
