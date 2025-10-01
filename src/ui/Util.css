@@ -77,16 +77,6 @@
     right: 0;
 }
 
-.z-0 {
-    z-index: 0;
-}
-.z-above {
-    z-index: 1;
-}
-.z-below {
-    z-index: -1;
-}
-
 .justify-start,
 .button-list > button,
 .button-list > .label-button span,
