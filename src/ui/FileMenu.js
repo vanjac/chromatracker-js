@@ -61,7 +61,7 @@ const template = $dom.html`
             <div id="demoList" class="button-list"></div>
         </nav>
         <em>Version:&nbsp;<span id="version"></span></em>
-        <div class="hflex browser-only">
+        <div id="browserToolbar" class="hflex browser-only">
             <button id="fullscreen" title="Fullscreen">
                 ${$icons.fullscreen}
             </button>
@@ -137,6 +137,7 @@ export class FileMenu {
             version: 'span',
             warningContainer: 'p',
             warningText: 'em',
+            browserToolbar: 'div',
             fullscreen: 'button',
             install: 'button',
         })
@@ -148,7 +149,7 @@ export class FileMenu {
         this.elems.install.addEventListener('click', () => this.install())
 
         if (!document.querySelector('link[rel="manifest"]')) {
-            this.elems.install.classList.add('hide')
+            this.elems.browserToolbar.classList.add('hide')
         }
 
         this.elems.fullscreen.addEventListener('click', () => fullscreen())
