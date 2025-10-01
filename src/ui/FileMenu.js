@@ -61,10 +61,15 @@ const template = $dom.html`
             <div id="demoList" class="button-list"></div>
         </nav>
         <em>Version:&nbsp;<span id="version"></span></em>
-        <button id="install" class="pwa-install-button show-checked">
-            ${$icons.monitor_arrow_down_variant}
-            <span>&nbsp;Install App</span>
-        </button>
+        <div class="hflex browser-only">
+            <button id="fullscreen" title="Fullscreen">
+                ${$icons.fullscreen}
+            </button>
+            <button id="install" class="flex-grow show-checked">
+                ${$icons.monitor_arrow_down_variant}
+                <span>&nbsp;Install App</span>
+            </button>
+        </div>
     </div>
     <div id="editorContainer" class="flex-grow hide"></div>
 </div>
@@ -88,6 +93,17 @@ function fetchFile(url) {
     return window.fetch(url)
         .then(r => r.blob())
         .then(b => b.arrayBuffer())
+}
+
+function fullscreen() {
+    if (document.fullscreenElement) {
+        document.exitFullscreen()
+    } else if ('requestFullscreen' in document.body) {
+        document.body.requestFullscreen()
+    } else if ('webkitRequestFullscreen' in document.body) {
+        // @ts-ignore
+        document.body.webkitRequestFullscreen()
+    }
 }
 
 export class FileMenu {
@@ -121,6 +137,7 @@ export class FileMenu {
             version: 'span',
             warningContainer: 'p',
             warningText: 'em',
+            fullscreen: 'button',
             install: 'button',
         })
 
@@ -133,6 +150,8 @@ export class FileMenu {
         if (!document.querySelector('link[rel="manifest"]')) {
             this.elems.install.classList.add('hide')
         }
+
+        this.elems.fullscreen.addEventListener('click', () => fullscreen())
 
         for (let info of samplePackFiles) {
             this.elems.samplePackList.appendChild(this.makeDemoButton(info))
