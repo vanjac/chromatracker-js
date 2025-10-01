@@ -50,7 +50,7 @@ export function fade({startAmp, endAmp, dithering, exp}, src, dst) {
     let error = 0
     for (let i = 0; i < dst.length; i++) {
         let t = i / dst.length
-        let x = (startAmp * (t - 1) + endAmp * t) ** exp
+        let x = (startAmp * (1 - t) + endAmp * t) ** exp
         ;[dst[i], error] = ditherFn(src[i] * x, error)
     }
 }
