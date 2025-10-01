@@ -174,15 +174,19 @@ function showTooltip(target, text) {
     tooltipElem.style.left = `${left}px`
     document.body.append(tooltipElem)
     let tooltipRect = tooltipElem.getBoundingClientRect()
-    if (tooltipRect.left < 0) {
-        left -= tooltipRect.left
+    let bodyStyle = window.getComputedStyle(document.body)
+    let paddingLeft = parseFloat(bodyStyle.paddingLeft)
+    let paddingRight = parseFloat(bodyStyle.paddingRight)
+    let paddingTop = parseFloat(bodyStyle.paddingTop)
+    if (tooltipRect.left < paddingLeft) {
+        left += paddingLeft - tooltipRect.left
         tooltipElem.style.left = `${left}px`
-    } else if (tooltipRect.right >= document.documentElement.clientWidth) {
-        left -= tooltipRect.right - document.documentElement.clientWidth
+    } else if (tooltipRect.right >= document.documentElement.clientWidth - paddingRight) {
+        left += document.documentElement.clientWidth - paddingRight - tooltipRect.right
         tooltipElem.style.left = `${left}px`
     }
     let top = targetRect.top - tooltipMargin
-    if (top - tooltipRect.height < 0) {
+    if (top - tooltipRect.height < paddingTop) {
         tooltipElem.style.top = `${targetRect.bottom + tooltipMargin}px`
         tooltipElem.classList.add('tooltip-bottom')
     } else {
