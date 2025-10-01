@@ -52,7 +52,7 @@ const template = $dom.html`
                 ${$icons.file_import_outline}
             </button>
             <button id="record" title="Record Audio (${$shortcut.ctrl('R')})">
-                ${$icons.record}
+                ${$icons.microphone}
             </button>
             <button id="save" title="Export (${$shortcut.ctrl('S')})">
                 ${$icons.download}
