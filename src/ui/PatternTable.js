@@ -87,6 +87,8 @@ export class PatternTable {
         /** @private @type {Readonly<Pattern>} */
         this.viewPattern = null
         this.viewLogicalLength = 0
+        /** @private @type {HTMLTableRowElement} */
+        this.playbackRow = null
 
         this.pointerQuery = window.matchMedia('(pointer: fine) and (hover: hover)')
     }
@@ -279,6 +281,7 @@ export class PatternTable {
             }
         } else {
             this.viewNumRows = pattern[0].length
+            this.playbackRow = null
             this.elems.tbody.textContent = ''
             let tableFrag = new DocumentFragment()
 
@@ -624,8 +627,9 @@ export class PatternTable {
      * @param {number} row
      */
     setPlaybackRow(row) {
-        this.elems.tbody.querySelector('.hilite-row')?.classList.remove('hilite-row')
-        this.getTr(row)?.classList.add('hilite-row')
+        this.playbackRow?.classList.remove('hilite-row')
+        this.playbackRow = this.getTr(row)
+        this.playbackRow?.classList.add('hilite-row')
     }
 
     /**
