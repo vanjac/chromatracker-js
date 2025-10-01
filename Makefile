@@ -23,13 +23,13 @@ bundle-fonts: node_modules
 bundle-html: bundle-js bundle-css bundle-fonts scripts/htmlbundle.mjs
 	node scripts/htmlbundle.mjs
 
-src/gen/Commit.js: commit scripts/gencommit.mjs
-	node scripts/gencommit.mjs
+src/gen/Channel.js: channel scripts/genchannel.mjs
+	node scripts/genchannel.mjs
 
 src/gen/Icons.js: assets/icons scripts/genicons.mjs
 	node scripts/genicons.mjs
 
-gen-js: src/gen/Commit.js src/gen/Icons.js
+gen-js: src/gen/Channel.js src/gen/Icons.js
 
 node_modules: package.json
 	npm install

@@ -16,7 +16,7 @@ import {
 } from './dialogs/UtilDialogs.js'
 import {freeze} from '../Util.js'
 import appVersion from '../Version.js'
-import appCommit from '../gen/Commit.js'
+import appChannel from '../gen/Channel.js'
 
 const samplePackFiles = freeze([
     {name: 'ST-01', url: 'https://chroma.zone/share/ST-01.mod'},
@@ -160,7 +160,7 @@ export class FileMenu {
             this.elems.demoList.appendChild(this.makeDemoButton(info))
         }
 
-        this.elems.version.textContent = `${appVersion} (${appCommit.slice(0, 7)})`
+        this.elems.version.textContent = `${appVersion} (${appChannel.slice(0, 7)})`
 
         this.view.appendChild(fragment)
 

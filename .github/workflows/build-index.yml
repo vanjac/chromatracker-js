@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: '22.x'
       - run: npm ci
-      - run: echo "${{ github.sha }}" > commit
+      - run: echo "${{ github.sha }}" > channel
       - run: make release
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
