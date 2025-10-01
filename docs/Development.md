@@ -12,7 +12,7 @@ ChromaTracker uses TypeScript with the [JSDoc syntax](https://www.typescriptlang
 
 ## Release Build
 
-Run `make release` to build the release JS/CSS bundles. These are loaded by `index.html`.
+Run `make release` to build the release JS/CSS bundles. These are loaded by `index.html`. This will also build the single-HTML-file version, under `build/chromatracker.html`.
 
 ## WEBL
 
@@ -28,7 +28,8 @@ Info about testing old browsers:
 
 - Firefox ESR:
   - [Version history](https://en.wikipedia.org/wiki/Firefox_version_history)
-  - [Download portable version for Windows](https://portableapps.com/apps/internet/firefox_portable/legacy)
+  - [Get old Firefox releases](https://ftp.mozilla.org/pub/firefox/releases/)
+    - Run with `--profile <path>` to avoid overwriting settings
 - Chrome:
   - Chrome/WebView 83 is included with Android 11 / API 30 emulator images.
   - [Android WebView versions list](https://docs.signageos.io/hc/en-us/articles/4405381554578-Browser-WebKit-and-Chromium-versions-by-each-Platform#h_01HABYXXZMDMS644M0BXH43GYD)
