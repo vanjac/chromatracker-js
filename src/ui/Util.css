@@ -95,3 +95,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.no-pointer-events {
+    pointer-events: none;
+}

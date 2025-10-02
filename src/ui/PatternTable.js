@@ -493,7 +493,7 @@ export class PatternTable {
             if (e.pointerType != 'mouse' || e.button == 0) {
                 handle.setPointerCapture(e.pointerId)
                 e.stopPropagation()
-                e.preventDefault()
+                this.elems.tbody.classList.add('no-pointer-events')
                 ;[startX, startY] = scrollCoords(this.elems.patternScroll, e.clientX, e.clientY)
                 // prefer to move B
                 isChannelB = maxChannel ?
@@ -559,6 +559,7 @@ export class PatternTable {
             }
         })
         handle.addEventListener('lostpointercapture', () => {
+            this.elems.tbody.classList.remove('no-pointer-events')
             if (animHandle) {
                 window.cancelAnimationFrame(animHandle)
             }
