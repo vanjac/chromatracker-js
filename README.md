@@ -18,6 +18,7 @@ Currently implemented:
 - A/V sync accounting for high-latency connections (e.g. Bluetooth)
 - Persistent local file storage
 - Supports mobile browsers and PWA installation
+- Interface fits comfortably on a phone screen in portrait orientation
 
 You can try the current alpha build at [tracker.chroma.zone](https://tracker.chroma.zone/). On mobile devices it works best when it's installed as a [PWA](https://www.installpwa.com/from/tracker.chroma.zone).
 
