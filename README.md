@@ -10,6 +10,7 @@ Currently implemented:
 
 - Custom MOD playback engine using Web Audio
   - Supports MOD extensions like extra channels, panning effects, and expanded frequency limits
+  - Supports almost all effects (only `E0x` and `EFx` are not supported)
 - Pattern editor with touch keyboard, built-in effect documentation
 - Sample editor with basic audio effects, 8-bit dithering, recording
 - Bird's-eye sequence overview (inspired by Renoise's Pattern Matrix)
