@@ -11,6 +11,8 @@ is available under the terms of the
 
 <p><a target="_blank" href="https://chroma.zone/chromatracker/">Project Website</a></p>
 
+<p>This is a pre-release version, it's probably buggy. Let me know if you find a bug.</p>
+
 <h4>Assets Used</h4>
 
 <ul>
