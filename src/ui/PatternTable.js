@@ -210,6 +210,7 @@ export class PatternTable {
 
     /** @private */
     blockClicks() {
+        // Safari doesn't always respect pointer-events setting
         return this.elems.tbody.classList.contains('no-pointer-events')
     }
 
