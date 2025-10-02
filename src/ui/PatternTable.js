@@ -493,6 +493,7 @@ export class PatternTable {
             if (e.pointerType != 'mouse' || e.button == 0) {
                 handle.setPointerCapture(e.pointerId)
                 e.stopPropagation()
+                e.preventDefault()
                 this.elems.tbody.classList.add('no-pointer-events')
                 ;[startX, startY] = scrollCoords(this.elems.patternScroll, e.clientX, e.clientY)
                 // prefer to move B
@@ -558,10 +559,11 @@ export class PatternTable {
                 updateDrag(lastTime)
             }
         })
+        handle.addEventListener('pointerup', e => {
+            e.preventDefault()
+        })
         handle.addEventListener('lostpointercapture', () => {
-            window.requestAnimationFrame(() => {
-                this.elems.tbody.classList.remove('no-pointer-events') // iOS jank
-            })
+            this.elems.tbody.classList.remove('no-pointer-events')
             if (animHandle) {
                 window.cancelAnimationFrame(animHandle)
             }
