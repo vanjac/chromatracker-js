@@ -463,7 +463,7 @@ export class CellEntry {
      */
     getPreviewCell() {
         let cell = this.getCell()
-        if (!this.elems.effectEnable.checked) {
+        if (!this.elems.effectEnable.checked && !this.hidePartToggles) {
             cell.effect = cell.param0 = cell.param1 = 0
         }
         return cell
