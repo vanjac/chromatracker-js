@@ -559,7 +559,9 @@ export class PatternTable {
             }
         })
         handle.addEventListener('lostpointercapture', () => {
-            this.elems.tbody.classList.remove('no-pointer-events')
+            window.requestAnimationFrame(() => {
+                this.elems.tbody.classList.remove('no-pointer-events') // iOS jank
+            })
             if (animHandle) {
                 window.cancelAnimationFrame(animHandle)
             }
