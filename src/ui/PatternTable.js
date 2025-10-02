@@ -568,13 +568,13 @@ export class PatternTable {
             }
         })
         handle.addEventListener('lostpointercapture', () => {
-            window.requestAnimationFrame(() => {
-                this.elems.tbody.classList.remove('no-pointer-events') // iOS jank
-            })
             if (animHandle) {
                 window.cancelAnimationFrame(animHandle)
             }
             animHandle = 0
+            $dom.fullRefresh().then(() => {
+                this.elems.tbody.classList.remove('no-pointer-events') // iOS jank
+            })
         })
     }
 
