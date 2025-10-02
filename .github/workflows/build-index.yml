@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: '22.x'
       - run: npm ci
-      - run: echo "${{ github.sha }}" > channel
+      - run: echo "${{ github.ref == 'refs/heads/main' && github.sha || github.ref_name }}" > channel
       - run: make release
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
