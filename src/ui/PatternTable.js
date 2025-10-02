@@ -208,11 +208,6 @@ export class PatternTable {
         return !this.selectMode || this.pointerQuery.matches
     }
 
-    /** @private */
-    blockClicks() {
-        return this.elems.tbody.classList.contains('no-pointer-events')
-    }
-
     /**
      * @param {number} numChannels
      */
@@ -301,24 +296,20 @@ export class PatternTable {
             let spacerHead = this.spacerRow.appendChild($dom.createElem('th'))
             spacerHead.classList.add('pattern-row-head')
             spacerHead.addEventListener('click', () => {
-                if (!this.blockClicks()) {
-                    this.selChannelA = this.selRowA = 0
-                    this.selChannelB = this.selectMode ? this.viewNumChannels - 1 : 0
-                    this.selRowB = this.selectMode ? this.viewNumRows - 1 : 0
-                    this.updateSelection()
-                }
+                this.selChannelA = this.selRowA = 0
+                this.selChannelB = this.selectMode ? this.viewNumChannels - 1 : 0
+                this.selRowB = this.selectMode ? this.viewNumRows - 1 : 0
+                this.updateSelection()
             })
             for (let c = 0; c < pattern.length; c++) {
                 let spacerData = this.spacerRow.appendChild($dom.createElem('td'))
                 spacerData.classList.add('pattern-cell')
                 spacerData.addEventListener('click', () => {
-                    if (!this.blockClicks()) {
-                        this.selChannelA = c
-                        this.selRowA = 0
-                        this.selChannelB = c
-                        this.selRowB = this.selectMode ? this.viewNumRows - 1 : 0
-                        this.updateSelection()
-                    }
+                    this.selChannelA = c
+                    this.selRowA = 0
+                    this.selChannelB = c
+                    this.selRowB = this.selectMode ? this.viewNumRows - 1 : 0
+                    this.updateSelection()
                 })
             }
 
@@ -328,13 +319,11 @@ export class PatternTable {
                 let th = $dom.createElem('th', {textContent: row.toString()})
                 th.classList.add('pattern-row-head')
                 th.addEventListener('click', () => {
-                    if (!this.blockClicks()) {
-                        this.selChannelA = 0
-                        this.selRowA = row
-                        this.selChannelB = this.selectMode ? this.viewNumChannels - 1 : 0
-                        this.selRowB = row
-                        this.updateSelection()
-                    }
+                    this.selChannelA = 0
+                    this.selRowA = row
+                    this.selChannelB = this.selectMode ? this.viewNumChannels - 1 : 0
+                    this.selRowB = row
+                    this.updateSelection()
                 })
                 tr.appendChild(th)
 
@@ -348,7 +337,7 @@ export class PatternTable {
                     td.dataset.c = c.toString()
                     td.dataset.row = row.toString()
                     td.addEventListener('click', () => {
-                        if (!this.tapPreviewEnabled() && !this.blockClicks()) {
+                        if (!this.tapPreviewEnabled()) {
                             this.selChannelA = this.selChannelB = c
                             this.selRowA = this.selRowB = row
                             this.updateSelection()
