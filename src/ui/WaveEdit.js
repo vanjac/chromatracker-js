@@ -179,7 +179,6 @@ export class WaveEdit {
         }
 
         if (sample.wave != this.viewSample?.wave) {
-            // TODO: async and only when visible!
             this.createSamplePreview(sample.wave)
         }
 

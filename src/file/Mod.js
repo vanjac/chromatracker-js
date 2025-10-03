@@ -47,7 +47,6 @@ export function read(buf) {
     /** @type {number} */
     let numChannels = mod.defaultChannels
     let initials = asciiDecode.decode(new DataView(buf, 1080, 4))
-    // TODO: support old 15-sample formats?
     let chanStr = initials.replace(/\D/g, '') // remove non-digits
     if (initials == 'OCTA' || initials == 'OKTA' || initials == 'CD81') {
         numChannels = 8

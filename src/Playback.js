@@ -898,7 +898,6 @@ export function getSamplePredictedPos(channel, time) {
     let timeDiff = time - channel.samplePredictTime
     if (timeDiff < 0) { return channel.samplePredictPos }
     let rate = periodToRate(channel.scheduledPeriod)
-    // TODO: use detune (arpeggios)
     let pos = Math.floor(channel.samplePredictPos + rate * baseRate * timeDiff)
     let {loopStart, loopEnd} = channel.sourceSample
     if (Sample.hasLoop(channel.sourceSample) && pos >= loopEnd) {
