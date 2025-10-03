@@ -1,6 +1,6 @@
 # ChromaTracker
 
-ChromaTracker is an (unfinshed) web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) [tracker](https://en.wikipedia.org/wiki/Music_tracker), designed especially for phones and tablets.
+ChromaTracker is an (unfinshed) web-based [MOD](https://en.wikipedia.org/wiki/MOD_(file_format)) music [tracker](https://en.wikipedia.org/wiki/Music_tracker), designed especially for phones and tablets.
 
 The design is primarily inspired by Alexander Zolotov's apps [SunVox](https://www.warmplace.ru/soft/sunvox/) and [PixiTracker](https://www.warmplace.ru/soft/pixitracker/), as well as [MilkyTracker](https://milkytracker.org/) and others.
 
