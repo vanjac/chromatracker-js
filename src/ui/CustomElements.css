@@ -15,7 +15,6 @@
     min-width: 0;
 }
 
-/* eslint-disable css/use-baseline */
 @media not all and (display-mode: browser) {
     .browser-only {
         display: none !important;

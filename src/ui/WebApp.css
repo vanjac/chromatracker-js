@@ -36,7 +36,7 @@ html, body {
     /* no pinch to zoom */
     touch-action: none;
     /* no swipe to go back or refresh */
-    overscroll-behavior: none;
+    overscroll-behavior: none; /* eslint-disable-line css/use-baseline */
     -webkit-touch-callout: none;
 }
 
