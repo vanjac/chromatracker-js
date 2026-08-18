@@ -709,7 +709,7 @@ function processCellAll(playback, channel, cell) {
                 } else if (channel.period > val) {
                     max = mid - 1
                 } else {
-                    min = max = mid
+                    min = mid
                     break
                 }
             }
