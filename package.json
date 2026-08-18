@@ -3,7 +3,7 @@
         "@eslint/css": "^1.4.0",
         "@eslint/js": "^10.0.0",
         "@html-eslint/eslint-plugin": "^0.65.0",
-        "esbuild": "^0.25.0",
+        "esbuild": "^0.28.0",
         "eslint": "^10.8.0",
         "eslint-plugin-compat": "^7.0.0",
         "globals": "^17.11.0",
